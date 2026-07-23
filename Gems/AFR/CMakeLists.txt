@@ -5,6 +5,6 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 #
 #
-o3de_gem_setup("AFR")
+o3de_gem_setup()
 
 add_subdirectory(Code)

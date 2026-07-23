@@ -6,7 +6,7 @@
 #
 #
 
-o3de_gem_setup("OpenParticleSystem")
+o3de_gem_setup()
 
 add_subdirectory(Code)
 add_subdirectory(Tools)
