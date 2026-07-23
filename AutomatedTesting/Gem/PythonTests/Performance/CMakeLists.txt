@@ -10,7 +10,7 @@ if(NOT O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED OR NOT O3DE_PAL_TRAIT_BUILD_HOST_TOO
     return()
 endif()
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_dir)
 include(${pal_dir}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)
 
 if(O3DE_PAL_TRAIT_EDITOR_LEVEL_PERF_DX12_TESTS_SUPPORTED)

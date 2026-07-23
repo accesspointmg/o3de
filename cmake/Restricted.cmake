@@ -25,12 +25,18 @@ function(o3de_pal_path path_to_where_the_platform_file_should_be path_to_where_t
     set(${path_to_where_the_platform_file_really_is} ${path_to_where_the_platform_file_should_be} PARENT_SCOPE)
 endfunction()
 
-#! o3de_pal_dir: upstream-compatible PAL directory resolution.
+#! o3de_pal_dir: DEPRECATED upstream-compatible PAL directory resolution.
 #
-# Object CMakeLists (gems/projects) call
+# Kept for backward compatibility with object CMakeLists that call
 #   o3de_pal_dir(out_dir <dir> "${restricted_path}" "${object_path}" "${parent_relative_path}")
-# The trailing args are ignored legacy parameters.
+# The trailing arguments are ignored legacy (restricted-era) parameters.
+#
+# New code should call o3de_pal_path(<dir> <out_var>) instead.
 function(o3de_pal_dir out_dir in_dir)
+    message(DEPRECATION
+        "o3de_pal_dir is deprecated; call o3de_pal_path(<path> <out_var>) instead. "
+        "Restricted-era arguments are ignored - platform code is delivered by "
+        "overlay objects at workspace compose time.")
     set(${out_dir} ${in_dir} PARENT_SCOPE)
 endfunction()
 

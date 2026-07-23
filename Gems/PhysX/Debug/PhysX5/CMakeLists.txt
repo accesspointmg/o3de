@@ -10,7 +10,7 @@ o3de_gem_setup()
 
 # This gem relies on the PhysX gem
 o3de_find_gem("PhysX5" physx_gem_path)
-o3de_pal_dir(physx_pal_source_dir ${physx_gem_path}/Source/Platform/${O3DE_PAL_PLATFORM_NAME})
+o3de_pal_path(${physx_gem_path}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} physx_pal_source_dir)
 
 include(${physx_pal_source_dir}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake) # for O3DE_PAL_TRAIT_PHYSX_SUPPORTED
 

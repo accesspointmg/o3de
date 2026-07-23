@@ -6,7 +6,7 @@
 #
 #
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_dir)
 
 include(${pal_dir}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake) # for O3DE_PAL_TRAIT_WHITEBOX Traits
 
