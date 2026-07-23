@@ -20,15 +20,8 @@
 #foreach(pal_tools_file ${pal_tools_files})
 #    include(${pal_tools_file})
 #endforeach()
-#file(GLOB pal_restricted_tools_files "restricted/*/cmake/PALTools_*.cmake")
-#foreach(pal_restricted_tools_file ${pal_restricted_tools_files})
-#    include(${pal_restricted_tools_file})
 #endforeach()
 
-# Set the AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS macro using the aggregate of all the O3DE_PAL_TOOLS_RESTRICTED_PLATFORM_DEFINES variable
-#if(O3DE_PAL_TOOLS_RESTRICTED_PLATFORM_DEFINES)
-#    list(JOIN O3DE_PAL_TOOLS_RESTRICTED_PLATFORM_DEFINES " " RESTRICTED_PLATFORM_DEFINES_MACRO)
-#    list(APPEND O3DE_PAL_TOOLS_DEFINES "AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS=${RESTRICTED_PLATFORM_DEFINES_MACRO}")
 #endif()
 #o3de_set(O3DE_PAL_TOOLS_DEFINES ${O3DE_PAL_TOOLS_DEFINES})
 

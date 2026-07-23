@@ -153,26 +153,6 @@ class TestRepoValidation20:
         assert validation.valid_o3de_repo_json(f)
 
 
-class TestRestrictedValidation20:
-    def test_valid_restricted_file(self, tmp_path):
-        data = {"$schemaVersion": "2.0.0", "restricted": {"name": "TestRestricted", "version": "1.0.0"}}
-        f = tmp_path / "restricted.json"
-        f.write_text(json.dumps(data))
-        assert validation.valid_o3de_restricted_json(f)
-
-    def test_invalid_restricted_file(self, tmp_path):
-        data = {"$schemaVersion": "2.0.0"}
-        f = tmp_path / "restricted.json"
-        f.write_text(json.dumps(data))
-        assert not validation.valid_o3de_restricted_json(f)
-
-    def test_legacy_restricted_still_works(self, tmp_path):
-        data = {"restricted_name": "LegacyRestricted"}
-        f = tmp_path / "restricted.json"
-        f.write_text(json.dumps(data))
-        assert validation.valid_o3de_restricted_json(f)
-
-
 class TestGetObjectName:
     def test_legacy_engine(self):
         data = {"engine_name": "o3de"}

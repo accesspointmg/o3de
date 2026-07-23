@@ -459,8 +459,7 @@ def search_repo(manifest_json_data: dict,
                 engine_name: str = None,
                 project_name: str = None,
                 gem_name: str = None,
-                template_name: str = None,
-                restricted_name: str = None) -> dict or None:
+                template_name: str = None) -> dict or None:
 
     # don't search this repo if it isn't enabled
     if not repo_enabled(manifest_json_data):
@@ -479,8 +478,6 @@ def search_repo(manifest_json_data: dict,
             o3de_object = search_o3de_manifest_for_object(manifest_json_data, 'gems', 'gem.json', 'gem_name', gem_name)
         elif isinstance(template_name, str):
             o3de_object = search_o3de_manifest_for_object(manifest_json_data, 'templates', 'template.json', 'template_name', template_name)
-        elif isinstance(restricted_name, str):
-            o3de_object = search_o3de_manifest_for_object(manifest_json_data, 'restricted', 'restricted.json', 'restricted_name', restricted_name)
         else:
             return None
         
@@ -494,8 +491,6 @@ def search_repo(manifest_json_data: dict,
             o3de_object = search_o3de_repo_for_object(manifest_json_data, 'gems_data', 'gem_name', gem_name)
         elif isinstance(template_name, str):
             o3de_object = search_o3de_repo_for_object(manifest_json_data, 'templates_data', 'template_name', template_name)
-        elif isinstance(restricted_name, str):
-            o3de_object = search_o3de_repo_for_object(manifest_json_data, 'restricted_data', 'restricted_name', restricted_name)
         else:
             return None
 
@@ -507,14 +502,12 @@ def search_repo(manifest_json_data: dict,
             'project_name': ('projects', 'project'),
             'gem_name': ('gems', 'gem'),
             'template_name': ('templates', 'template'),
-            'restricted_name': ('restricted', 'restricted'),
         }
         name_params = {
             'engine_name': engine_name,
             'project_name': project_name,
             'gem_name': gem_name,
             'template_name': template_name,
-            'restricted_name': restricted_name,
         }
         for key, name_val in name_params.items():
             if isinstance(name_val, str):

@@ -44,7 +44,6 @@ def is_valid_canonical_tag(tag: str) -> bool:
         "Gem",
         "Template",
         "Repo",
-        "Restricted",
         "Extension"
     }
     return tag in valid_tags
@@ -55,8 +54,7 @@ def is_valid_canonical_tag(tag: str) -> bool:
         "project": "Project",
         "gem": "Gem",
         "template": "Template",
-        "repo": "Repo",
-        "restricted": "Restricted"
+        "repo": "Repo"
     }
     return tag.lower() in canonical_mapping
 
@@ -66,8 +64,7 @@ def get_canonical_tag(tag: str) -> str:
         "project": "Project",
         "gem": "Gem",
         "template": "Template",
-        "repo": "Repo",
-        "restricted": "Restricted"
+        "repo": "Repo"
     }
     return canonical_mapping.get(tag.lower())
 
@@ -89,7 +86,6 @@ def upgrade_0_0_0_to_1_0_0(json_path, input_data) -> tuple[int, dict]:
         output_data['default_projects_folder'] = input_data.get('default_projects_folder', o3de_object.get_user_o3de_projects_path().as_posix())
         output_data['default_gems_folder'] = input_data.get('default_gems_folder', o3de_object.get_user_o3de_gems_path().as_posix())
         output_data['default_templates_folder'] = input_data.get('default_templates_folder', o3de_object.get_user_o3de_templates_path().as_posix())
-        output_data['default_restricted_folder'] = input_data.get('default_restricted_folder', o3de_object.get_user_o3de_restricteds_path().as_posix())
         output_data['default_repos_folder'] = input_data.get('default_repos_folder', o3de_object.get_user_o3de_repos_path().as_posix())
         output_data['default_third_party_folder'] = input_data.get('default_third_party_folder', o3de_object.get_user_o3de_third_party_path().as_posix())
 
@@ -140,16 +136,6 @@ def upgrade_0_0_0_to_1_0_0(json_path, input_data) -> tuple[int, dict]:
         if 'repo_type' in input_data or 'type' in input_data:
             output_data['repo_type'] = input_data.get('repo_type', input_data.get('type', ""))
 
-    elif 'restricted_name' in input_data:
-        output_data['restricted_name'] = input_data['restricted_name']
-        if 'restricted_uri' in input_data or 'restricted_url' in input_data or 'url' in input_data or 'uri' in input_data:
-            output_data['restricted_uri'] = input_data.get('restricted_uri', input_data.get('restricted_url', input_data.get('url', input_data.get('uri', ""))))
-        if 'restricted_type' in input_data or 'type' in input_data:
-            output_data['restricted_type'] = input_data.get('restricted_type', input_data.get('type', ""))
-        output_data['extends'] = input_data.get('extends', '')
-        output_data['precedence'] = input_data.get('precedence', 0)
-        output_data['platform_maps'] = input_data.get('platform_maps', [])
-        output_data['platform_wart_maps'] = input_data.get('platform_wart_maps', [])
 
     if 'o3de_manifest_name' not in input_data:
         output_data['version'] = input_data.get('version', '0.0.0')
@@ -236,20 +222,12 @@ def upgrade_0_0_0_to_1_0_0(json_path, input_data) -> tuple[int, dict]:
         output_data['templates'] = input_data['templates']
     if 'repos' in input_data:
         output_data['repos'] = input_data['repos']
-    if 'restricteds' in input_data:
-        output_data['restricteds'] = input_data['restricteds']
-    if 'restricted' in input_data:
-        output_data['restricted'] = input_data['restricted']
 
     if 'copyFiles' in input_data:
         output_data['copyFiles'] = input_data['copyFiles']
     if 'createDirectories' in input_data:
         output_data['createDirectories'] = input_data['createDirectories']
 
-    if 'restricted_platform_relative_path' in input_data:
-        output_data['restricted_platform_relative_path'] = input_data['restricted_platform_relative_path']
-    if 'template_restricted_platform_relative_path' in input_data:
-        output_data['template_restricted_platform_relative_path'] = input_data['template_restricted_platform_relative_path']
 
     if 'source_control_uri' in input_data:
         output_data['source_control_uri'] = input_data['source_control_uri']
@@ -305,7 +283,6 @@ def upgrade_1_0_0_to_2_0_0(input_json_path, input_data) -> tuple[int, dict]:
     is_gem = False
     is_template = False
     is_repo = False
-    is_restricted = False
 
     if 'o3de_manifest_name' in input_data:
         is_manifest = True
@@ -329,7 +306,6 @@ def upgrade_1_0_0_to_2_0_0(input_json_path, input_data) -> tuple[int, dict]:
             'gems_path': input_data.get('default_gems_folder', o3de_object.get_user_o3de_gems_path().as_posix()),
             'templates_path': input_data.get('default_templates_folder', o3de_object.get_user_o3de_templates_path().as_posix()),
             'repos_path': input_data.get('default_repos_folder', o3de_object.get_user_o3de_repos_path().as_posix()),
-            'restricteds_path': input_data.get('default_restricted_folder', input_data.get('default_restricteds_folder', o3de_object.get_user_o3de_restricteds_path().as_posix())),
             'third_party_path': input_data.get('default_third_party_folder', o3de_object.get_user_o3de_third_party_path().as_posix())
         }
 
@@ -629,30 +605,10 @@ def upgrade_1_0_0_to_2_0_0(input_json_path, input_data) -> tuple[int, dict]:
         output_data['repo']['copyright_year'] = input_data.get('copyright_year', "")
         output_data['repo']['copyright_text'] = input_data.get('copyright_text', "")
 
-    elif 'restricted_name' in input_data:
-        is_restricted = True
-        output_data["$schema"] = "https://canonical.o3de.org/o3de-restricted-2.0.0.json"
-        output_data['restricted'] = {}
-        if is_reverse_domain_format(input_data.get("restricted_name")):
-            output_data['restricted']['name'] = input_data.get('restricted_name', '').lower()
-        else:
-            output_data['restricted']['name'] = f"{reversed_domain}.restricted.{input_data.get('restricted_name', '')}".lower()
-            is_o3de = True
-        output_data['restricted']['version'] = input_data.get('version', '0.0.0')
-        output_data['extends'] = input_data.get('extends', '')
-        output_data['platform_maps'] = input_data.get('platform_maps', [])
-        output_data['platform_wart_maps'] = input_data.get('platform_wart_maps', [])
-        output_data['precedence'] = input_data.get('precedence', 0)
-        output_data['restricted']['display_name'] = input_data.get('display_name', input_data.get('name', ""))
-        output_data['restricted']['description'] = input_data.get('description', input_data.get('summary', input_data.get('display_name', input_data.get('name', ""))))
-        output_data['restricted']['type'] = input_data.get('restricted_type', input_data.get('type', "")).lower()
-        output_data['restricted']['id'] = input_data.get('restricted_id', "")
-        output_data['restricted']['copyright_year'] = input_data.get('copyright_year', "")
-        output_data['restricted']['copyright_text'] = input_data.get('copyright_text', input_data.get('copyright', ""))
 
 
     # if it has no origin and is in the o3de directory then add the default o3de owned origin
-    for field in ["engine_name", "gem_name", "project_name", "template_name", "repo_name", "restricted_name"]:
+    for field in ["engine_name", "gem_name", "project_name", "template_name", "repo_name"]:
         if field in input_data:
             if "o3de" in input_data[field].lower():
                 is_o3de = True
@@ -697,10 +653,6 @@ def upgrade_1_0_0_to_2_0_0(input_json_path, input_data) -> tuple[int, dict]:
             output_data['origin']['uri'] = input_data['repo_uri']
         elif 'repo_url' in input_data:
             output_data['origin']['uri'] = input_data['repo_url']
-        elif 'restricted_uri' in input_data:
-            output_data['origin']['uri'] = input_data['restricted_uri']
-        elif 'restricted_url' in input_data:
-            output_data['origin']['uri'] = input_data['restricted_url']
         elif 'uri' in input_data:
             output_data['origin']['uri'] = input_data['uri']
         elif 'url' in input_data:
@@ -871,13 +823,6 @@ def upgrade_1_0_0_to_2_0_0(input_json_path, input_data) -> tuple[int, dict]:
                     output_data['user_tags'].remove(input_data['repo_name'])
                 if output_data['repo']['name'] not in output_data['user_tags']:
                     output_data['user_tags'].append(output_data['repo']['name'])
-            elif is_restricted:
-                if 'Restricted' not in output_data['canonical_tags']:
-                    output_data['canonical_tags'].append(get_canonical_tag('restricted'))
-                if input_data['restricted_name'] in output_data['user_tags']:
-                    output_data['user_tags'].remove(input_data['restricted_name'])
-                if output_data['restricted']['name'] not in output_data['user_tags']:
-                    output_data['user_tags'].append(output_data['restricted']['name'])
 
             #remove duplicates
             output_data['canonical_tags'] = list(set(output_data['canonical_tags']))
@@ -899,16 +844,14 @@ def upgrade_1_0_0_to_2_0_0(input_json_path, input_data) -> tuple[int, dict]:
         "projects": [],
         "gems": [],
         "templates": [],
-        "repos": [],
-        "restricteds": []
+        "repos": []
     }
     remote = {
         "engines": [],
         "projects": [],
         "gems": [],
         "templates": [],
-        "repos": [],
-        "restricteds": []
+        "repos": []
     }
     
     def _split_local_remote(collection):
@@ -1002,23 +945,7 @@ def upgrade_1_0_0_to_2_0_0(input_json_path, input_data) -> tuple[int, dict]:
         if remote_repos:
             _process_remote_urls(remote_repos, 'repo', remote)
 
-    # Process restricted
-    if input_data.get('restricted'):
-        if isinstance(input_data.get('restricted'), list):
-            local_restricteds, remote_restricteds = _split_local_remote(input_data['restricted'])
-            if local_restricteds:
-                children['restricteds'] = [o3de_object.sanitize_uri(restricted, "restricted.json") for restricted in local_restricteds]
-            if remote_restricteds:
-                _process_remote_urls(remote_restricteds, 'restricted', remote)
     
-    if input_data.get('restricteds'):
-        local_restricteds, remote_restricteds = _split_local_remote(input_data['restricteds'])
-        if local_restricteds:
-            children['restricteds'].extend([o3de_object.sanitize_uri(restricted, "restricted.json") for restricted in local_restricteds])
-        if remote_restricteds:
-            ext_remote = {}
-            _process_remote_urls(remote_restricteds, 'restricted', ext_remote)
-            remote['restricteds'].extend(ext_remote.get('restricteds', []))
 
 
     # Process external_subdirectories
@@ -1187,8 +1114,7 @@ def upgrade_1_0_0_to_2_0_0(input_json_path, input_data) -> tuple[int, dict]:
                 'gems': 'gem',
                 'external_subdirectories': 'gem',
                 'templates': 'template',
-                'repos': 'repo',
-                'restricteds': 'restricted'
+                'repos': 'repo'
             }
             for json_name, o3de_type in collections.items():
                 if json_name in json_data:
@@ -1217,18 +1143,6 @@ def upgrade_1_0_0_to_2_0_0(input_json_path, input_data) -> tuple[int, dict]:
         # If we got here, the object wasn't found
         return None, None
 
-    def _get_restricted_version(restricted_name):
-        # load the o3de_manifest.json file
-        manifest_path = o3de_object.get_user_o3de_manifest_path().as_posix()
-
-        # Read restricted.json from the restricted path
-        restricted_path, restricted_json_data = _find_object_by_type_and_name(manifest_path, "restricted", restricted_name)
-        if not restricted_json_data:
-            logger.error(f'Could not read restricted.json content under {restricted_path}.')
-            return '0.0.0'
-
-        # include the version specifier if provided e.g. restricted==1.2.3
-        return restricted_json_data['version'] or '0.0.0'
 
     def _get_gem_version(gem_name):
         # load the o3de_manifest.json file
@@ -1293,13 +1207,6 @@ def upgrade_1_0_0_to_2_0_0(input_json_path, input_data) -> tuple[int, dict]:
 
         
         output_data['dependent'] = dependent
-
-        #disable the restricteds as they are not declared anymore
-        #if 'restricted' in input_data:
-        #    if utils.has_version_specifier(input_data['restricted']) or is_reverse_domain_format(input_data['restricted']):
-        #        output_data['restricteds'] = [input_data['restricted']]
-        #    else:
-        #        output_data['restricteds'] = [f"org.o3de.restricted.{input_data['restricted']}>={_get_restricted_version(input_data['restricted'])}".lower()]
 
         if 'download_source_uri' in input_data or 'download_lfs_uri' in input_data or 'download_targz_uri' in input_data or 'download_lfs_targz_uri' in input_data:
             # Schema 2.0.0 uses 'downloads' array with 'source' and 'lfs' properties
@@ -1399,9 +1306,6 @@ def upgrade_1_0_0_to_2_0_0(input_json_path, input_data) -> tuple[int, dict]:
             output_data['releases'].extend(releases)
         
         #add platforms
-        if 'restricted_name' in input_data:
-            output_data["platforms"] = [
-            ]
         else:
             output_data["platforms"] = [
                 "Windows",

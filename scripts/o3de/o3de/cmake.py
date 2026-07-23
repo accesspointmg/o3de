@@ -403,9 +403,6 @@ def get_templates_for_project_creation() -> list:
 def get_templates_for_gem_creation() -> list:
     return o3de_manifest.get_child_gem_templates()
 
-def get_templates_for_restricted_creation() -> list:
-    return o3de_manifest.get_child_restricted_templates()
-
 def get_templates_for_repo_creation() -> list:
     return o3de_manifest.get_child_repo_templates()
 
@@ -565,7 +562,6 @@ def get_registered(engine_name: str = None,
                    template_name: str = None,
                    default_folder: str = None,
                    repo_name: str = None,
-                   restricted_name: str = None,
                    project_path: pathlib.Path = None) -> pathlib.Path or None:
     """
        Looks up a registered entry in either the  ~/.o3de/o3de_manifest.json, <this-engine-root>/engine.json
@@ -582,12 +578,9 @@ def get_registered(engine_name: str = None,
             with the project.json
        :param repo_name: Name of a repo to lookup in the ~/.o3de/o3de_manifest.json
        :param default_folder: Type of "default" folder to lookup in the ~/.o3de/o3de_manifest.json
-              Valid values are "engines", "projects", "gems", "templates,", "restricted"
-       :param restricted_name: Name of a restricted directory object to lookup in either the ~/.o3de/o3de_manifest.json,
-            <this-engine-root>/engine.json or <project-path>/project.json.
-            NOTE: The project_path parameter must be supplied to lookup the registration with the project.json
+              Valid values are "engines", "projects", "gems", "templates"
        :param project_path: Path to project root, which is used to examined the project.json file in order to
-              query either gems, templates or restricted directories registered with the project
+              query either gems or templates registered with the project
 
        :return path value associated with the registered object name if found. Otherwise None is returned
     """
@@ -648,24 +641,6 @@ def get_registered(engine_name: str = None,
                         if this_templates_name == template_name:
                             return template_path
 
-    elif isinstance(restricted_name, str):
-        restricted = get_manifest_child_restricteds()
-        for restricted_path in restricted:
-            restricted_path = pathlib.Path(restricted_path).resolve()
-            restricted_json = restricted_path / 'restricted.json'
-            if not pathlib.Path(restricted_json).is_file():
-                logger.warning(f'{restricted_json} does not exist')
-            else:
-                with restricted_json.open('r') as f:
-                    try:
-                        restricted_json_data = json.load(f)
-                    except json.JSONDecodeError as e:
-                        logger.warning(f'{restricted_json} failed to load: {str(e)}')
-                    else:
-                        this_restricted_name = restricted_json_data['restricted_name']
-                        if this_restricted_name == restricted_name:
-                            return restricted_path
-
     elif isinstance(default_folder, str):
         if default_folder == 'engines':
             if 'default_engines_folder' in json_data:
@@ -695,13 +670,6 @@ def get_registered(engine_name: str = None,
                 default_templates_folder = pathlib.Path(
                     get_default_o3de_manifest_json_data().get('default_templates_folder', None))
             return default_templates_folder.resolve() if default_templates_folder else None
-        elif default_folder == 'restricteds':
-            if 'default_restricteds_folder' in json_data:
-                default_restricteds_folder = pathlib.Path(json_data['default_restricteds_folder'])
-            else:
-                default_restricteds_folder = pathlib.Path(
-                    get_default_o3de_manifest_json_data().get('default_restricteds_folder', None))
-            return default_restricteds_folder.resolve() if default_restricteds_folder else None
 
     elif isinstance(repo_name, str):
         cache_folder = get_user_o3de_cache_path()

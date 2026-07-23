@@ -190,20 +190,3 @@ def valid_o3de_template_json(file_name: str or pathlib.Path) -> bool:
             return valid_o3de_template_json_data(json.load(f))
         except json.JSONDecodeError:
             return False
-    
-
-
-def valid_o3de_restricted_json(file_name: str or pathlib.Path) -> bool:
-    file_name = pathlib.Path(file_name).resolve()
-    if not file_name.is_file():
-        return False
-
-    with file_name.open('r') as f:
-        try:
-            json_data = json.load(f)
-            if _is_schema_2(json_data):
-                return _valid_2_0_header(json_data, "restricted")
-            _ = json_data['restricted_name']
-        except (json.JSONDecodeError, KeyError):
-            return False
-    return True

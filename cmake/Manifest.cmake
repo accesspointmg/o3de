@@ -95,7 +95,7 @@ set_property(GLOBAL PROPERTY O3DE_MANIFEST_RESOLVED_JSON_DATA ${O3DE_MANIFEST_RE
 message("Loading O3DE resolved manifest...")
 
 #manifest properties
-set(manifest_properties "country_code;default_engines_path;default_projects_path;default_gems_path;default_templates_path;default_repos_path;default_restricteds_path;default_third_party_path")
+set(manifest_properties "country_code;default_engines_path;default_projects_path;default_gems_path;default_templates_path;default_repos_path;default_third_party_path")
 foreach(manifest_property IN LISTS manifest_properties)
     string(TOUPPER ${manifest_property} manifest_property_upper)
     o3de_get_json_key(O3DE_MANIFEST_${manifest_property_upper} ${O3DE_MANIFEST_RESOLVED_JSON_DATA} ${manifest_property})
@@ -104,7 +104,7 @@ endforeach()
 
 #manifest name arrays
 #note: these 'names' are "name==version" i.e. "org.o3de.template.assetgem==1.0.0"
-set(manifest_arrays "all_engine_names;all_project_names;all_gem_names;all_template_names;all_restricted_names;all_repo_names")
+set(manifest_arrays "all_engine_names;all_project_names;all_gem_names;all_template_names;all_repo_names")
 foreach(manifest_array IN LISTS manifest_arrays)
     string(TOUPPER ${manifest_array} manifest_array_upper)
     o3de_get_json_array(O3DE_MANIFEST_${manifest_array_upper} ${O3DE_MANIFEST_RESOLVED_JSON_DATA} ${manifest_array})
@@ -112,7 +112,7 @@ foreach(manifest_array IN LISTS manifest_arrays)
 endforeach()
 
 #manifest path arrays
-set(manifest_arrays "all_engine_paths;all_project_paths;all_gem_paths;all_template_paths;all_restricted_paths;all_repo_paths")
+set(manifest_arrays "all_engine_paths;all_project_paths;all_gem_paths;all_template_paths;all_repo_paths")
 foreach(manifest_array IN LISTS manifest_arrays)
     string(TOUPPER ${manifest_array} manifest_array_upper)
     o3de_get_json_array(O3DE_MANIFEST_${manifest_array_upper} ${O3DE_MANIFEST_RESOLVED_JSON_DATA} ${manifest_array})
@@ -150,7 +150,7 @@ foreach(manifest_array IN LISTS manifest_arrays)
             endforeach()
         
             # Read the engine arrays
-            set(engine_arrays "canonical_tags;user_tags;platforms;restricteds;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_restricted_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_restricteds;dependent_repos")
+            set(engine_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_repos")
             foreach(engine_array IN LISTS engine_arrays)
                 string(TOUPPER ${engine_array} engine_array_upper)
                 o3de_get_json_array(O3DE_PATH_${path_entry}_${engine_array_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${engine_array})
@@ -208,7 +208,7 @@ foreach(manifest_array IN LISTS manifest_arrays)
             endforeach()
 
             # Read the project arrays
-            set(project_arrays "canonical_tags;user_tags;platforms;restricteds;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_restricted_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_restricteds;dependent_repos")
+            set(project_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_repos")
             foreach(project_array IN LISTS project_arrays)
                 string(TOUPPER ${project_array} project_array_upper)
                 o3de_get_json_array(O3DE_PATH_${path_entry}_${project_array_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${project_array})
@@ -288,7 +288,7 @@ foreach(manifest_array IN LISTS manifest_arrays)
             endforeach()
 
             # Read the gem arrays
-            set(gem_arrays "canonical_tags;user_tags;platforms;restricteds;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_restricted_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_restricteds;dependent_repos")
+            set(gem_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_repos")
             foreach(gem_array IN LISTS gem_arrays)
                 string(TOUPPER ${gem_array} gem_array_upper)
                 o3de_get_json_array(O3DE_PATH_${path_entry}_${gem_array_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${gem_array})
@@ -346,7 +346,7 @@ foreach(manifest_array IN LISTS manifest_arrays)
             endforeach()
 
             # Read the template arrays
-            set(template_arrays "canonical_tags;user_tags;platforms;restricteds;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_restricted_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_restricteds;dependent_repos")
+            set(template_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_repos")
             foreach(template_array IN LISTS template_arrays)
                 string(TOUPPER ${template_array} template_array_upper)
                 o3de_get_json_array(O3DE_PATH_${path_entry}_${template_array_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${template_array})
@@ -404,7 +404,7 @@ foreach(manifest_array IN LISTS manifest_arrays)
             endforeach()
 
             # Read the repo arrays
-            set(repo_arrays "canonical_tags;user_tags;platforms;restricteds;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_restricted_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_restricteds;dependent_repos")
+            set(repo_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_repos")
             foreach(repo_array IN LISTS repo_arrays)
                 string(TOUPPER ${repo_array} repo_array_upper)
                 o3de_get_json_array(O3DE_PATH_${path_entry}_${repo_array_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${repo_array})
@@ -437,63 +437,6 @@ foreach(manifest_array IN LISTS manifest_arrays)
                 endforeach()
             endif()
 
-        elseif(manifest_array STREQUAL "all_restricted_paths")
-            # Read the restricted object at this path
-            o3de_get_json_key(O3DE_PATH_${path_entry}_JSON_DATA ${O3DE_MANIFEST_RESOLVED_JSON_DATA} ${path_entry})
-            set_property(GLOBAL PROPERTY O3DE_PATH_${path_entry}_JSON_DATA ${O3DE_PATH_${path_entry}_JSON_DATA})
-
-            # Read the restricted properties
-            set(restricted_properties "name;version;display_name;description;type;id;copyright_year;copyright_text;extends;precedence")
-            foreach(restricted_property IN LISTS restricted_properties)
-                string(TOUPPER ${restricted_property} restricted_property_upper)
-                o3de_get_json_key(O3DE_PATH_${path_entry}_${restricted_property_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${restricted_property})
-                set_property(GLOBAL PROPERTY O3DE_PATH_${path_entry}_${restricted_property_upper} ${O3DE_PATH_${path_entry}_${restricted_property_upper}})
-
-                if(restricted_property STREQUAL "name")
-                    set(last_restricted_name ${O3DE_PATH_${path_entry}_NAME})
-                endif()
-
-                if(restricted_property STREQUAL "version")
-                    set(last_restricted_version ${O3DE_PATH_${path_entry}_VERSION})
-
-                    set(O3DE_RESTRICTED_${last_restricted_name}_${last_restricted_version} ${path_entry})
-                    set_property(GLOBAL PROPERTY O3DE_PROJECT_${last_restricted_name}_${last_restricted_version} ${O3DE_PROJECT_${last_restricted_name}_${last_restricted_version}})
-                endif()
-            endforeach()
-
-            # Read the restricted arrays
-            set(restricted_arrays "canonical_tags;user_tags;platforms;platform_maps;platform_wart_maps;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_restricted_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_restricteds;dependent_repos")
-            foreach(restricted_array IN LISTS restricted_arrays)
-                string(TOUPPER ${restricted_array} restricted_array_upper)
-                o3de_get_json_array(O3DE_PATH_${path_entry}_${restricted_array_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${restricted_array})
-                list(REMOVE_DUPLICATES O3DE_PATH_${path_entry}_${restricted_array_upper})
-                set_property(GLOBAL PROPERTY O3DE_PATH_${path_entry}_${restricted_array_upper} ${O3DE_PATH_${path_entry}_${restricted_array_upper}})
-            endforeach()
-
-            # Check for optional overrides in the user/restricted.json
-            # get the parent directory of the path_entry
-            get_filename_component(restricted_path "${path_entry}" DIRECTORY)
-            set(user_restricted_json ${restricted_path}/user/restricted.json)
-            if(EXISTS ${user_restricted_json})
-                file(READ "${user_restricted_json}" O3DE_PATH_${user_restricted_json}_JSON_DATA)
-                set_property(GLOBAL PROPERTY O3DE_PATH_${user_restricted_json}_JSON_DATA ${O3DE_PATH_${user_restricted_json}_JSON_DATA})
-
-                # Read the restricted override properties
-                set(restricted_override_properties "")
-                foreach(restricted_override_property IN LISTS restricted_override_properties)
-                    string(TOUPPER ${restricted_override_property} restricted_override_property_upper)
-                    o3de_get_json_key(O3DE_PATH_${path_entry}_${restricted_override_property_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${restricted_override_property})
-                    set_property(GLOBAL PROPERTY O3DE_PATH_${path_entry}_${restricted_override_property_upper} ${O3DE_PATH_${path_entry}_${restricted_override_property_upper}})
-                endforeach()
-
-                # Read the restricted override arrays
-                set(restricted_override_arrays "")
-                foreach(restricted_array IN LISTS restricted_arrays)
-                    string(TOUPPER ${restricted_array} restricted_array_upper)
-                    o3de_get_json_array(O3DE_PATH_${path_entry}_${restricted_array_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${restricted_array})
-                    set_property(GLOBAL PROPERTY O3DE_PATH_${path_entry}_${restricted_array_upper} ${O3DE_PATH_${path_entry}_${restricted_array_upper}})
-                endforeach()
-            endif()
         endif()
     endforeach()
 endforeach()

@@ -11,7 +11,7 @@
 # This cmake file provides variables and configurations for the current platform
 
 # Initialize O3DE platform mappings
-# These can be extended by restricted.json files or other configuration
+# These can be extended by overlay objects or other configuration
 
 #! o3de_add_pal_platform_name: Add a platform name to the global list of supported platforms
 #

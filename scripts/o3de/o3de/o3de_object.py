@@ -224,11 +224,6 @@ def get_user_o3de_templates_path() -> pathlib.Path:
     return templates_path
 
 
-def get_user_o3de_restricteds_path() -> pathlib.Path:
-    """ Returns the path to the user's O3DE restricteds directory."""
-    restricted_path = get_user_o3de_path() / 'Restricteds'
-    restricted_path.mkdir(parents=True, exist_ok=True)
-    return restricted_path
 
 
 def get_user_o3de_repos_path() -> pathlib.Path:
@@ -278,7 +273,6 @@ def get_default_o3de_manifest_json_data() -> dict:
     default_projects_path = get_user_o3de_projects_path()
     default_gems_path = get_user_o3de_gems_path()
     default_templates_path = get_user_o3de_templates_path()
-    default_restricteds_path = get_user_o3de_restricteds_path()
     default_repos_path = get_user_o3de_repos_path()
     default_third_party_path = get_user_o3de_third_party_path()
 
@@ -297,7 +291,6 @@ def get_default_o3de_manifest_json_data() -> dict:
             'gems_path': f'{default_gems_path.as_posix()}',
             'templates_path': f'{default_templates_path.as_posix()}',
             'repos_path': f'{default_repos_path.as_posix()}',
-            'restricteds_path': f'{default_restricteds_path.as_posix()}',
             'third_party_path': f'{default_third_party_path.as_posix()}'
         },
         'children': {
@@ -308,7 +301,6 @@ def get_default_o3de_manifest_json_data() -> dict:
             'gems': [],
             'templates': [],
             'repos': [],
-            'restricteds': []
         },
         'remote': {
             'engines': [],
@@ -316,7 +308,6 @@ def get_default_o3de_manifest_json_data() -> dict:
             'gems': [],
             'templates': [],
             'repos': [],
-            'restricteds': []
         }
     }
 
@@ -325,7 +316,7 @@ def get_default_o3de_manifest_json_data() -> dict:
 
 """
 O3DE Header Class
-This class represents an O3DE object, which can be an engine, project, gem, template, repo or restricted.
+This class represents an O3DE object, which can be an engine, project, gem, template, or repo.
 It provides methods to load, parse, and manage the object data, including its dependencies, compatibilities, and other attributes.
 """
 class O3deHeader:
@@ -431,7 +422,7 @@ class O3deCountry:
 
 """
 O3DE Objects Lists Class
-This class represents a list of O3DE objects, such as engines, projects, gems, templates, repos and restricteds.
+This class represents a list of O3DE objects, such as engines, projects, gems, templates, and reposs.
 It provides methods to retrieve the lists of these objects.
 """    
 class O3deObjectsLists:
@@ -465,9 +456,6 @@ class O3deObjectsLists:
         """Returns the repos"""
         return self.json_data.get('repos', [])
     
-    def get_restricteds(self):
-        """Returns the restricteds"""
-        return self.json_data.get('restricteds', [])
 
 """
 O3DE Documentation Class
@@ -809,7 +797,7 @@ class O3deOrigin:
     
 """
 O3DE Object Class
-This class represents an O3DE object, which can be an engine, project, gem, template, repo or restricted.
+This class represents an O3DE object, which can be an engine, project, gem, template, or repo.
 It provides methods to load, parse, and manage the object data, including its dependencies, compatibilities, and other attributes.
 """    
 class O3deObject:
@@ -828,14 +816,12 @@ class O3deObject:
         self.childGemObjects = []
         self.childTemplateObjects = []
         self.childRepoObjects = []
-        self.childRestrictedObjects = []
 
         self.remoteEngineObjects = []
         self.remoteProjectObjects = []
         self.remoteGemObjects = []
         self.remoteTemplateObjects = []
         self.remoteRepoObjects = []
-        self.remoteRestrictedObjects = []
         
         # traversed is a set of traversed URIs to avoid circular references
         if traversed is None:
@@ -959,7 +945,6 @@ class O3deObject:
             'gems': ('gem.json', self.childGemObjects, O3deGem),
             'templates': ('template.json', self.childTemplateObjects, O3deTemplate),
             'repos': ('repo.json', self.childRepoObjects, O3deRepo),
-            'restricteds': ('restricted.json', self.childRestrictedObjects, O3deRestricted)
         }
         
         # Process children section
@@ -991,7 +976,6 @@ class O3deObject:
             'gems': ('gem.json', self.remoteGemObjects, O3deGem),
             'templates': ('template.json', self.remoteTemplateObjects, O3deTemplate),
             'repos': ('repo.json', self.remoteRepoObjects, O3deRepo),
-            'restricteds': ('restricted.json', self.remoteRestrictedObjects, O3deRestricted)
         }
         
         # Process remote section
@@ -1034,14 +1018,12 @@ class O3deObject:
                 self.childGemObjects,
                 self.childTemplateObjects,
                 self.childRepoObjects,
-                self.childRestrictedObjects,
 
                 self.remoteEngineObjects,
                 self.remoteProjectObjects,
                 self.remoteGemObjects,
                 self.remoteTemplateObjects,
                 self.remoteRepoObjects,
-                self.remoteRestrictedObjects
             ]
             
             # Print objects            
@@ -1079,7 +1061,6 @@ class O3deObject:
                 self.childGemObjects,
                 self.childTemplateObjects,
                 self.childRepoObjects,
-                self.childRestrictedObjects
             ]
             
             # Print child objects            
@@ -1117,7 +1098,6 @@ class O3deObject:
                 self.remoteGemObjects,
                 self.remoteTemplateObjects,
                 self.remoteRepoObjects,
-                self.remoteRestrictedObjects,
                 self.remoteExtensionObjects
             ]
             
@@ -1159,7 +1139,6 @@ class O3deObject:
                     self.childGemObjects,
                     self.childTemplateObjects,
                     self.childRepoObjects,
-                    self.childRestrictedObjects
                 ]
 
                 for collection in collections:
@@ -1207,7 +1186,6 @@ class O3deObject:
             self.childGemObjects,
             self.childTemplateObjects,
             self.childRepoObjects,
-            self.childRestrictedObjects
         ]
 
         for collection in collections:
@@ -1237,7 +1215,6 @@ class O3deObject:
             self.childGemObjects,
             self.childTemplateObjects,
             self.childRepoObjects,
-            self.childRestrictedObjects
         ]
 
         for collection in collections:
@@ -1267,7 +1244,6 @@ class O3deObject:
             self.childGemObjects,
             self.childTemplateObjects,
             self.childRepoObjects,
-            self.childRestrictedObjects
         ]
 
         for collection in collections:
@@ -1298,7 +1274,6 @@ class O3deObject:
             self.childGemObjects,
             self.childTemplateObjects,
             self.childRepoObjects,
-            self.childRestrictedObjects
         ]
 
         for collection in collections:
@@ -1329,7 +1304,6 @@ class O3deObject:
             self.childGemObjects,
             self.childTemplateObjects,
             self.childRepoObjects,
-            self.childRestrictedObjects
         ]
 
         for collection in collections:
@@ -1360,7 +1334,6 @@ class O3deObject:
             self.childGemObjects,
             self.childTemplateObjects,
             self.childRepoObjects,
-            self.childRestrictedObjects
         ]
 
         for collection in collections:
@@ -1373,35 +1346,6 @@ class O3deObject:
                             summaries.append(extended_summary)
         return summaries
 
-    def get_restricted(self, recurse=False, traversed=None):
-        """Returns the restricted objects of the object"""
-        if recurse == False:
-            return self.json_data.get('restricted', [])
-        
-        if not traversed:
-            traversed = set()
-        traversed.add(self.object_uri)
-
-        restricted_objects = [self.json_data.get('restricted', [])]
-
-        if recurse:
-            collections = [
-                self.childEngineObjects,
-                self.childProjectObjects,
-                self.childGemObjects,
-                self.childTemplateObjects,
-                self.childRepoObjects
-            ]
-
-            for collection in collections:
-                for item in collection:
-                    if item.get_object_uri() not in traversed:
-                        traversed.add(item.get_object_uri())
-                        extended_restricted_objects = item.get_restricted(True, traversed)
-                        for extended_restricted_object in extended_restricted_objects:
-                            if extended_restricted_object not in restricted_objects:
-                                restricted_objects.append(extended_restricted_object)
-        return restricted_objects
 
     def get_dependent(self, recurse=False, traversed=None):
         """Returns the dependencies of the object"""
@@ -1421,7 +1365,6 @@ class O3deObject:
                 self.childGemObjects,
                 self.childTemplateObjects,
                 self.childRepoObjects,
-                self.childRestrictedObjects
             ]
 
             for collection in collections:
@@ -1452,7 +1395,6 @@ class O3deObject:
                 self.childGemObjects,
                 self.childTemplateObjects,
                 self.childRepoObjects,
-                self.childRestrictedObjects
             ]
 
             for collection in collections:
@@ -1483,7 +1425,6 @@ class O3deObject:
                 self.childGemObjects,
                 self.childTemplateObjects,
                 self.childRepoObjects,
-                self.childRestrictedObjects
             ]
 
             for collection in collections:
@@ -1515,7 +1456,6 @@ class O3deObject:
                 self.childGemObjects,
                 self.childTemplateObjects,
                 self.childRepoObjects,
-                self.childRestrictedObjects
             ]
 
             for collection in collections:
@@ -1549,7 +1489,6 @@ class O3deObject:
             gem_parent_path = parent_path / 'gem.json'
             template_parent_path = parent_path / 'template.json'
             repo_parent_path = parent_path / 'repo.json'
-            restricted_parent_path = parent_path / 'restricted.json'
        
             if engine_parent_path.exists():
                 for full_path, object in zip(all_manifest_object_paths, all_manifest_child_objects):
@@ -1617,16 +1556,6 @@ class O3deObject:
                             parent_objects.extend(parent_ancestor_objects)
                         return parent_paths, parent_objects
 
-            elif restricted_parent_path.exists():
-                for full_path, object in zip(all_manifest_object_paths, all_manifest_child_objects):
-                    if full_path == restricted_parent_path.as_posix():
-                        parent_paths.append(full_path)
-                        parent_objects.append(object)
-                        if recurse:
-                            parent_ancestor_paths, parent_ancestor_objects = object.get_parent(True)
-                            parent_paths.extend(parent_ancestor_paths)
-                            parent_objects.extend(parent_ancestor_objects)
-                        return parent_paths, parent_objects
 
             else:
                  if parent_path in manifest_object_paths:
@@ -1655,7 +1584,6 @@ class O3deObject:
                 self.childGemObjects,
                 self.childTemplateObjects,
                 self.childRepoObjects,
-                self.childRestrictedObjects
             ]
 
             for collection in collections:
@@ -1710,7 +1638,6 @@ class O3deObject:
                 self.childGemObjects,
                 self.childTemplateObjects,
                 self.childRepoObjects,
-                self.childRestrictedObjects
             ]
 
             for collection in collections:
@@ -1742,7 +1669,6 @@ class O3deObject:
                 self.childGemObjects,
                 self.childTemplateObjects,
                 self.childRepoObjects,
-                self.childRestrictedObjects
             ]
 
             for collection in collections:
@@ -1774,7 +1700,6 @@ class O3deObject:
                 self.childGemObjects,
                 self.childTemplateObjects,
                 self.childRepoObjects,
-                self.childRestrictedObjects
             ]
 
             for collection in collections:
@@ -1805,7 +1730,6 @@ class O3deObject:
                 self.childGemObjects,
                 self.childTemplateObjects,
                 self.childRepoObjects,
-                self.childRestrictedObjects
             ]
 
             for collection in collections:
@@ -1818,36 +1742,6 @@ class O3deObject:
                                 dependent_repos.append(extended_dependent_repo)
         return dependent_repos
 
-    def get_dependent_restricteds(self, recurse=False, traversed=None):
-        """Returns the restricted names of the object"""
-        if recurse == False:
-            return self.get_dependent().get_restricteds()
-        
-        if not traversed:
-            traversed = set()
-        traversed.add(self.object_uri)
-
-        dependent_restricteds = self.get_dependent().get_restricteds()
-
-        if recurse:
-            collections = [
-                self.childEngineObjects,
-                self.childProjectObjects,
-                self.childGemObjects,
-                self.childTemplateObjects,
-                self.childRepoObjects,
-                self.childRestrictedObjects
-            ]
-
-            for collection in collections:
-                for item in collection:
-                    if item not in traversed:
-                        traversed.add(item.get_object_uri())
-                        extended_dependent_restricteds = item.get_dependent_restricteds(True, traversed)
-                        for extended_dependent_restricted in extended_dependent_restricteds:
-                            if extended_dependent_restricted not in dependent_restricteds:
-                                dependent_restricteds.append(extended_dependent_restricted)
-        return dependent_restricteds
 
 
     def _find_child_object(self, object_type, object_name, recurse=False, traversed=None):
@@ -1872,7 +1766,6 @@ class O3deObject:
             'gem': self.childGemObjects,
             'template': self.childTemplateObjects,
             'repo': self.childRepoObjects,
-            'restricted': self.childRestrictedObjects
         }
         
         # First check the primary collection for the requested type
@@ -1914,8 +1807,6 @@ class O3deObject:
         return self._find_child_object('repo', repo_name, recurse, traversed)
 
 
-    def find_child_restricted_object(self, restricted_name, recurse=False, traversed=None):
-        return self._find_child_object('restricted', restricted_name, recurse, traversed)
 
 
     def find_this_engine_object(self):
@@ -1956,7 +1847,6 @@ class O3deObject:
             'gem': self.remoteGemObjects,
             'template': self.remoteTemplateObjects,
             'repo': self.remoteRepoObjects,
-            'restricted': self.remoteRestrictedObjects
         }
         
         # First check the primary collection for the requested type
@@ -1998,8 +1888,6 @@ class O3deObject:
         return self._find_remote_object('repo', repo_name, recurse, traversed)
 
 
-    def find_remote_restricted_object(self, restricted_name, recurse=False, traversed=None):
-        return self._find_remote_object('restricted', restricted_name, recurse, traversed)
 
 
     def find_engine_object(self, engine_name, recurse=False, traversed=None):
@@ -2037,11 +1925,6 @@ class O3deObject:
         return repo
 
 
-    def find_restricted_object(self, restricted_name, recurse=False, traversed=None):
-        restricted = self._find_child_object('restricted', restricted_name, recurse, traversed)
-        if not restricted:
-            restricted = self._find_remote_object('restricted', restricted_name, recurse, traversed)
-        return restricted
 
 
 
@@ -2092,13 +1975,6 @@ class O3deObject:
         self.json_data['children']['repos'].append(repo_path)
 
 
-    def add_child_restricted(self, restricted_path):
-        """Add a child restricted."""
-        if 'children' not in self.json_data:
-            self.json_data['children'] = {}
-        if 'restricted' not in self.json_data['children']:
-            self.json_data['children']['restricted'] = []
-        self.json_data['children']['restricted'].append(restricted_path)
 
 
     def add_remote_engine(self, engine_uri):
@@ -2146,13 +2022,6 @@ class O3deObject:
         self.json_data['remote']['repos'].append(repo_uri)
 
 
-    def add_remote_restricted(self, restricted_uri):
-        """Add a remote restricted."""
-        if 'remote' not in self.json_data:
-            self.json_data['remote'] = {}
-        if 'restricted' not in self.json_data['remote']:
-            self.json_data['remote']['restricted'] = []
-        self.json_data['remote']['restricted'].append(restricted_uri)
 
 
 
@@ -2180,7 +2049,6 @@ class O3deObject:
             'gem': self.childGemObjects,
             'template': self.childTemplateObjects,
             'repo': self.childRepoObjects,
-            'restricted': self.childRestrictedObjects
         }
     
         full_paths = []
@@ -2230,9 +2098,6 @@ class O3deObject:
         return self._get_child_objects('repo', recurse, traversed)
 
 
-    def get_child_restricted_objects(self, recurse=False, traversed=None):
-        """Get the list of child restricteds."""
-        return self._get_child_objects('restricted', recurse, traversed)
     
     def get_all_child_objects(self, recurse=False, traversed=None):
         """Get all child objects of all types."""
@@ -2248,7 +2113,6 @@ class O3deObject:
             self.childGemObjects,
             self.childTemplateObjects,
             self.childRepoObjects,
-            self.childRestrictedObjects
         ]
         
         for collection in collections:
@@ -2289,7 +2153,6 @@ class O3deObject:
             'gem': self.remoteGemObjects,
             'template': self.remoteTemplateObjects,
             'repo': self.remoteRepoObjects,
-            'restricted': self.remoteRestrictedObjects
         }
         
         uris = []
@@ -2339,9 +2202,6 @@ class O3deObject:
         return self._get_remote_objects('repo', recurse, traversed)
 
 
-    def get_remote_restricted_objects(self, recurse=False, traversed=None):
-        """Get the list of remote restricteds."""
-        return self._get_remote_objects('restricted', recurse, traversed)
 
 
     def _get_child_template_objects_by_type(self, template_type, file_marker, recurse=False, traversed=None):
@@ -2379,7 +2239,6 @@ class O3deObject:
                 self.childGemObjects,
                 self.childTemplateObjects,
                 self.childRepoObjects,
-                self.childRestrictedObjects
             ]
             
             for collection in collections:
@@ -2414,9 +2273,6 @@ class O3deObject:
         return self._get_child_templates_by_type('repo', 'repo.json', recurse, traversed)
 
 
-    def get_child_restricted_template_objects(self, recurse=False, traversed=None):
-        """Get the list of child templates that make restricteds."""
-        return self._get_child_templates_by_type('restricted', 'restricted.json', recurse, traversed)
 
 
     def get_child_generic_template_objects(self, recurse=False, traversed=None):
@@ -2438,8 +2294,7 @@ class O3deObject:
                         if copyFile['file'] != 'engine.json' and \
                             copyFile['file'] != 'project.json' and \
                             copyFile['file'] != 'gem.json' and \
-                            copyFile['file'] != 'repo.json' and \
-                            copyFile['file'] != 'restricted.json':
+                            copyFile['file'] != 'repo.json':
                             traversed.add(item.get_object_uri())
                             if item.get_object_uri() not in full_paths:
                                 full_paths.append(item.get_object_uri())
@@ -2471,12 +2326,6 @@ class O3deObject:
                         full_paths.append(child_full_path)
                         o3de_objects.append(child_object)
             for item in self.childRepoObjects:
-                child_full_paths, child_objects = item.get_child_generic_templates(True, traversed)
-                for child_full_path, child_object in zip(child_full_paths, child_objects):
-                    if child_full_path not in full_paths:
-                        full_paths.append(child_full_path)
-                        o3de_objects.append(child_object)
-            for item in self.childRestrictedObjects:
                 child_full_paths, child_objects = item.get_child_generic_templates(True, traversed)
                 for child_full_path, child_object in zip(child_full_paths, child_objects):
                     if child_full_path not in full_paths:
@@ -2523,7 +2372,6 @@ class O3deObject:
                 self.remoteGemObjects,
                 self.remoteTemplateObjects,
                 self.remoteRepoObjects,
-                self.remoteRestrictedObjects,
                 self.remoteExtensionObjects
             ]
             
@@ -2559,9 +2407,6 @@ class O3deObject:
         return self._get_remote_template_objects_by_type('repo', 'repo.json', recurse, traversed)
 
 
-    def get_remote_restricted_template_objects(self, recurse=False, traversed=None):
-        """Get the list of remote templates that make restricteds."""
-        return self._get_remote_template_objects_by_type('restricted', 'restricted.json', recurse, traversed)
 
 
     def get_remote_generic_template_objects(self, recurse=False, traversed=None):
@@ -2583,8 +2428,7 @@ class O3deObject:
                         if copyFile['file'] != 'engine.json' and \
                             copyFile['file'] != 'project.json' and \
                             copyFile['file'] != 'gem.json' and \
-                            copyFile['file'] != 'repo.json' and \
-                            copyFile['file'] != 'restricted.json':
+                            copyFile['file'] != 'repo.json':
                             traversed.add(item.get_object_uri())
                             if item.get_object_uri() not in full_paths:
                                 full_paths.append(item.get_object_uri())
@@ -2616,12 +2460,6 @@ class O3deObject:
                         full_paths.append(child_full_path)
                         o3de_objects.append(child_object)
             for item in self.remoteRepoObjects:
-                child_full_paths, child_objects = item.get_remote_generic_template_objects(True, traversed)
-                for child_full_path, child_object in zip(child_full_paths, child_objects):
-                    if child_full_path not in full_paths:
-                        full_paths.append(child_full_path)
-                        o3de_objects.append(child_object)
-            for item in self.remoteRestrictedObjects:
                 child_full_paths, child_objects = item.get_remote_generic_template_objects(True, traversed)
                 for child_full_path, child_object in zip(child_full_paths, child_objects):
                     if child_full_path not in full_paths:
@@ -2698,19 +2536,6 @@ class O3deObject:
         return full_paths, o3de_objects
 
 
-    def get_restricted_template_objects(self, recurse=False, traversed=None):
-        """Get restricted templates, both local and remote."""
-        if not traversed:
-            traversed = set()
-
-        full_paths, o3de_objects = self.get_child_restricted_template_objects(recurse, traversed)
-        remote_full_paths, remote_o3de_objects = self.get_remote_restricted_template_objects(recurse, traversed)
-        for remote_full_path, remote_o3de_object in zip(remote_full_paths, remote_o3de_objects):
-            if remote_full_path not in full_paths:
-                full_paths.append(remote_full_path)
-                o3de_objects.append(remote_o3de_object)
-        
-        return full_paths, o3de_objects
 
 
     def get_generic_template_objects(self, recurse=False, traversed=None):
@@ -2810,7 +2635,6 @@ class O3deObject:
                     self.childGemObjects,
                     self.childTemplateObjects,
                     self.childRepoObjects,
-                    self.childRestrictedObjects
                 ]
                 
                 # Upgrade each local child
@@ -2890,7 +2714,6 @@ class O3deObject:
                     self.childGemObjects,
                     self.childTemplateObjects,
                     self.childRepoObjects,
-                    self.childRestrictedObjects
                 ]
                 
                 # Upgrade each local child
@@ -2955,13 +2778,6 @@ class O3deManifest(O3deObject):
         """Returns the default repos path for o3de_manifest"""
         return self.json_data['default']['repos_path']
     
-    def get_default_restricteds_path(self):
-        """Returns the default restricteds path for o3de_manifest.
-
-        Restricted objects are deprecated in Schema 2.0 (superseded by
-        overlays); newer manifests may not carry this key.
-        """
-        return self.json_data['default'].get('restricteds_path', '')
 
     def get_default_third_party_path(self):
         """Returns the default third party path for o3de_manifest"""
@@ -3099,38 +2915,6 @@ class O3deRepo(O3deObject):
         """
         super().__init__('repo', repo_uri, traversed, repo_json_data)
 
-"""
-O3deRestricted Class
-This class represents an O3DE restricted object.
-It inherits from O3deObject and provides specific methods for accessing restricted properties.
-"""
-class O3deRestricted(O3deObject):
-    def __init__(self, restricted_uri: str, traversed: set, restricted_json_data: dict = None):
-        """
-        Initialize the O3DE restricted object.
-        :param restricted_uri: URI of the restricted file
-        :param traversed: Set of traversed URIs
-        :param restricted_json_data: JSON data of the restricted object
-        """
-        super().__init__('restricted', restricted_uri, traversed, restricted_json_data)
-
-    def get_extends(self):
-        """Returns what object this restricted extends"""
-        return self.json_data['extends']
-    
-    def get_precedence(self):
-        """Returns the precedence for the restricted object"""
-        return self.json_data.get('precedence', 0)
-
-    def get_platform_maps(self):
-        """Returns the platform maps for the restricted object"""
-        return self.json_data.get('platform_maps', [])
-
-    def get_platform_wart_maps(self):
-        """Returns the platform wart maps for the restricted object"""
-        return self.json_data.get('platform_wart_maps', [])
-
-
 # Load the o3de manifest
 manifest = O3deManifest()        
 
@@ -3208,7 +2992,6 @@ class ResolveDependencies:
                     ("Gem", object.get_dependent_gems()),
                     ("Template", object.get_dependent_templates()),
                     ("Repo", object.get_dependent_repos()),
-                    ("Restricted", object.get_dependent_restricteds())
                 ]
                 
                 for dep_type, deps in dependency_types:
@@ -3302,7 +3085,7 @@ class ResolveDependencies:
                 return requirement_or_candidate.identify()
             
             def get_preference(self, identifier, resolutions, candidates, information, **_):
-                # Prefer engines > projects > gems > templates > repos > restricteds
+                # Prefer engines > projects > gems > templates > repos
                 if "Engine:" in identifier:
                     return 1000
                 elif "Project:" in identifier:
@@ -3313,8 +3096,6 @@ class ResolveDependencies:
                     return 400
                 elif "Repo:" in identifier:
                     return 200
-                elif "Restricted:" in identifier:
-                    return 100
                 return 0
             
             def find_matches(self, identifier, requirements, incompatibilities):
@@ -3475,7 +3256,7 @@ class ResolveDependencies:
             return requirement_or_candidate.identify()
         
         def get_preference(self, identifier, resolutions, candidates, information, **_):
-            # Prefer engines > projects > gems > templates > repos > restricteds
+            # Prefer engines > projects > gems > templates > repos
             if "Engine" in identifier:
                 return 1000
             elif "Project" in identifier:
@@ -3486,8 +3267,6 @@ class ResolveDependencies:
                 return 400
             elif "Repo" in identifier:
                 return 200
-            elif "Restricted" in identifier:
-                return 100
             return 0
         
         def find_matches(self, identifier, requirements, incompatibilities):
@@ -3554,7 +3333,6 @@ def _resolve(args: argparse) -> int:
     manifest_all_child_gem_json_paths, manifest_all_child_gem_objects = manifest.get_child_gem_objects(True)
     manifest_all_child_template_json_paths, manifest_all_child_template_objects = manifest.get_child_template_objects(True)
     manifest_all_child_repo_json_paths, manifest_all_child_repo_objects = manifest.get_child_repo_objects(True)
-    manifest_all_child_restricted_json_paths, manifest_all_child_restricted_objects = manifest.get_child_restricted_objects(True)
 
     manifest_all_engine_names = []
     for engine in manifest_all_child_engine_objects:
@@ -3591,12 +3369,6 @@ def _resolve(args: argparse) -> int:
         name_with_version = f'{name}=={version}'
         manifest_all_repo_names.append(name_with_version)
 
-    manifest_all_restricted_names = []
-    for restricted in manifest_all_child_restricted_objects:
-        name = restricted.get_header().get_name()
-        version = restricted.get_header().get_version()
-        name_with_version = f'{name}=={version}'
-        manifest_all_restricted_names.append(name_with_version)
 
     # ==== ADVANCED DEPENDENCY RESOLUTION USING RESOLVELIB ====
     print("Resolving dependency constraints using ResolveLib...")
@@ -3617,7 +3389,6 @@ def _resolve(args: argparse) -> int:
         resolver.add_objects('gem', manifest_all_child_gem_objects)
         resolver.add_objects('template', manifest_all_child_template_objects)
         resolver.add_objects('repo', manifest_all_child_repo_objects)
-        resolver.add_objects('restricted', manifest_all_child_restricted_objects)
         
         # Process each Engine as a root
         for engine in manifest_all_child_engine_objects:
@@ -3703,7 +3474,6 @@ def _resolve(args: argparse) -> int:
     resolved['default_gems_path'] = manifest.get_default_gems_path()
     resolved['default_templates_path'] = manifest.get_default_templates_path()
     resolved['default_repos_path'] = manifest.get_default_repos_path()
-    resolved['default_restricteds_path'] = manifest.get_default_restricteds_path()
     resolved['default_third_party_path'] = manifest.get_default_third_party_path()
 
     resolved['all_engine_paths'] = manifest_all_child_engine_json_paths
@@ -3711,14 +3481,12 @@ def _resolve(args: argparse) -> int:
     resolved['all_gem_paths'] = manifest_all_child_gem_json_paths
     resolved['all_template_paths'] = manifest_all_child_template_json_paths
     resolved['all_repo_paths'] = manifest_all_child_repo_json_paths
-    resolved['all_restricted_paths'] = manifest_all_child_restricted_json_paths
 
     resolved['all_engine_names'] = manifest_all_engine_names
     resolved['all_project_names'] = manifest_all_project_names
     resolved['all_gem_names'] = manifest_all_gem_names
     resolved['all_template_names'] = manifest_all_template_names
     resolved['all_repo_names'] = manifest_all_repo_names
-    resolved['all_restricted_names'] = manifest_all_restricted_names
 
     # query all objects from the the point of view of the engine object
     for engine in manifest_all_child_engine_objects:
@@ -3727,7 +3495,6 @@ def _resolve(args: argparse) -> int:
         child_gem_json_paths, child_gem_objects = engine.get_child_gem_objects(True)
         child_template_json_paths, child_template_objects = engine.get_child_template_objects(True)
         child_repo_json_paths, child_repo_objects = engine.get_child_repo_objects(True)
-        child_restricted_json_paths, child_restricted_objects = engine.get_child_restricted_objects(True)
 
         parent_json_paths, parent_objects = engine.get_parent(True)
 
@@ -3736,36 +3503,9 @@ def _resolve(args: argparse) -> int:
         dependent_gems = engine.get_dependent_gems(True)
         dependent_templates = engine.get_dependent_templates(True)
         dependent_repos = engine.get_dependent_repos(True)
-        dependent_restricteds = engine.get_dependent_restricteds(True)
 
-        # Get all restricted objects that are compatible with this object and all its parents
-        restricteds = []
-        restricteds_precedence = []
-        restricteds_json_paths = []
-        restricteds_object_json_paths = []
         compatible_objects = [engine]
         compatible_objects.extend(parent_objects)
-        for restricted in manifest_all_child_restricted_objects:
-            extends = O3deNameVersion()
-            extends.from_string(restricted.get_extends())
-            for compatible_object in compatible_objects:
-                if extends.compatible_with(compatible_object.get_header().get_name(), compatible_object.get_header().get_version()):
-                    restricteds_object_json_paths.append(compatible_object.get_object_uri())
-                    restricteds_json_paths.append(restricted.get_object_uri())
-                    restricteds_precedence.append(restricted.get_precedence())
-        # Sort restricted arrays based on precedence
-        if restricteds_precedence:
-            sorted_data = sorted(zip(restricteds_precedence, restricteds_json_paths, restricteds_object_json_paths), reverse=True)
-            sorted_precedence, sorted_json_paths, sorted_object_json_paths = zip(*sorted_data)
-            restricteds_precedence = list(sorted_precedence)
-            restricteds_json_paths = list(sorted_json_paths)
-            restricteds_object_json_paths = list(sorted_object_json_paths)
-            for restricted_precedence, restricted_json_path, restricted_object_json_path in zip(restricteds_precedence, restricteds_json_paths, restricteds_object_json_paths):
-                restricteds.append({
-                    'restricted_precedence': restricted_precedence,
-                    'restricted_object_json_path': restricted_object_json_path,
-                    'restricted_json_path': restricted_json_path,
-                })
 
         resolved[engine.get_object_uri()] = {
             'name': engine.get_header().get_name(),
@@ -3792,14 +3532,12 @@ def _resolve(args: argparse) -> int:
             'user_tags': engine.get_user_tags(),
             'platforms': engine.get_platforms(),
 
-            'restricteds': restricteds,
 
             'child_engine_json_paths': child_engine_json_paths,
             'child_project_json_paths': child_project_json_paths,
             'child_gem_json_paths': child_gem_json_paths,
             'child_template_json_paths': child_template_json_paths,
             'child_repo_json_paths': child_repo_json_paths,
-            'child_restricted_json_paths': child_restricted_json_paths,
 
             'parent_json_paths': parent_json_paths,
 
@@ -3808,7 +3546,6 @@ def _resolve(args: argparse) -> int:
             'dependent_gems': dependent_gems,
             'dependent_templates': dependent_templates,
             'dependent_repos': dependent_repos,
-            'dependent_restricteds': dependent_restricteds,
         }
 
     # query all objects from the the point of view of the project object
@@ -3818,7 +3555,6 @@ def _resolve(args: argparse) -> int:
         child_gem_json_paths, child_gem_objects = project.get_child_gem_objects(True)
         child_template_json_paths, child_template_objects = project.get_child_template_objects(True)
         child_repo_json_paths, child_repo_objects = project.get_child_repo_objects(True)
-        child_restricted_json_paths, child_restricted_objects = project.get_child_restricted_objects(True)
 
         parent_json_paths, parent_objects = project.get_parent(True)
 
@@ -3827,36 +3563,9 @@ def _resolve(args: argparse) -> int:
         dependent_gems = project.get_dependent_gems(True)
         dependent_templates = project.get_dependent_templates(True)
         dependent_repos = project.get_dependent_repos(True)
-        dependent_restricteds = project.get_dependent_restricteds(True)
 
-        # Get all restricted objects that are compatible with this object and all its parents
-        restricteds = []
-        restricteds_precedence = []
-        restricteds_json_paths = []
-        restricteds_object_json_paths = []
         compatible_objects = [project]
         compatible_objects.extend(parent_objects)
-        for restricted in manifest_all_child_restricted_objects:
-            extends = O3deNameVersion()
-            extends.from_string(restricted.get_extends())
-            for compatible_object in compatible_objects:
-                if extends.compatible_with(compatible_object.get_header().get_name(), compatible_object.get_header().get_version()):
-                    restricteds_object_json_paths.append(compatible_object.get_object_uri())
-                    restricteds_json_paths.append(restricted.get_object_uri())
-                    restricteds_precedence.append(restricted.get_precedence())
-        # Sort restricted arrays based on precedence
-        if restricteds_precedence:
-            sorted_data = sorted(zip(restricteds_precedence, restricteds_json_paths, restricteds_object_json_paths), reverse=True)
-            sorted_precedence, sorted_json_paths, sorted_object_json_paths = zip(*sorted_data)
-            restricteds_precedence = list(sorted_precedence)
-            restricteds_json_paths = list(sorted_json_paths)
-            restricteds_object_json_paths = list(sorted_object_json_paths)
-            for restricted_precedence, restricted_json_path, restricted_object_json_path in zip(restricteds_precedence, restricteds_json_paths, restricteds_object_json_paths):
-                restricteds.append({
-                    'restricted_precedence': restricted_precedence,
-                    'restricted_object_json_path': restricted_object_json_path,
-                    'restricted_json_path': restricted_json_path,
-                })
 
         resolved[project.get_object_uri()] = {
             'name': project.get_header().get_name(),
@@ -3876,14 +3585,12 @@ def _resolve(args: argparse) -> int:
             'executable_name': project.get_executable_name(),           
             'engine': project.get_engine(),
 
-            'restricteds': restricteds,
 
             'child_engine_json_paths': child_engine_json_paths,
             'child_project_json_paths': child_project_json_paths,
             'child_gem_json_paths': child_gem_json_paths,
             'child_template_json_paths': child_template_json_paths,
             'child_repo_json_paths': child_repo_json_paths,
-            'child_restricted_json_paths': child_restricted_json_paths,
 
             'parent_json_paths': parent_json_paths,
 
@@ -3892,7 +3599,6 @@ def _resolve(args: argparse) -> int:
             'dependent_gems': dependent_gems,
             'dependent_templates': dependent_templates,
             'dependent_repos': dependent_repos,
-            'dependent_restricteds': dependent_restricteds
         }
 
     # query all objects from the the point of view of the gem object
@@ -3902,7 +3608,6 @@ def _resolve(args: argparse) -> int:
         child_gem_json_paths, child_gem_objects = gem.get_child_gem_objects(True)
         child_template_json_paths, child_template_objects = gem.get_child_template_objects(True)
         child_repo_json_paths, child_repo_objects = gem.get_child_repo_objects(True)
-        child_restricted_json_paths, child_restricted_objects = gem.get_child_restricted_objects(True)
 
         parent_json_paths, parent_objects = gem.get_parent(True)
 
@@ -3911,36 +3616,9 @@ def _resolve(args: argparse) -> int:
         dependent_gems = gem.get_dependent_gems(True)
         dependent_templates = gem.get_dependent_templates(True)
         dependent_repos = gem.get_dependent_repos(True)
-        dependent_restricteds = gem.get_dependent_restricteds(True)
 
-        # Get all restricted objects that are compatible with this object and all its parents
-        restricteds = []
-        restricteds_precedence = []
-        restricteds_json_paths = []
-        restricteds_object_json_paths = []
         compatible_objects = [gem]
         compatible_objects.extend(parent_objects)
-        for restricted in manifest_all_child_restricted_objects:
-            extends = O3deNameVersion()
-            extends.from_string(restricted.get_extends())
-            for compatible_object in compatible_objects:
-                if extends.compatible_with(compatible_object.get_header().get_name(), compatible_object.get_header().get_version()):
-                    restricteds_object_json_paths.append(compatible_object.get_object_uri())
-                    restricteds_json_paths.append(restricted.get_object_uri())
-                    restricteds_precedence.append(restricted.get_precedence())
-        # Sort restricted arrays based on precedence
-        if restricteds_precedence:
-            sorted_data = sorted(zip(restricteds_precedence, restricteds_json_paths, restricteds_object_json_paths), reverse=True)
-            sorted_precedence, sorted_json_paths, sorted_object_json_paths = zip(*sorted_data)
-            restricteds_precedence = list(sorted_precedence)
-            restricteds_json_paths = list(sorted_json_paths)
-            restricteds_object_json_paths = list(sorted_object_json_paths)
-            for restricted_precedence, restricted_json_path, restricted_object_json_path in zip(restricteds_precedence, restricteds_json_paths, restricteds_object_json_paths):
-                restricteds.append({
-                    'restricted_precedence': restricted_precedence,
-                    'restricted_object_json_path': restricted_object_json_path,
-                    'restricted_json_path': restricted_json_path,
-                })
 
         resolved[gem.get_object_uri()] = {
             'name': gem.get_header().get_name(),
@@ -3956,14 +3634,12 @@ def _resolve(args: argparse) -> int:
             'user_tags': gem.get_user_tags(),
             'platforms': gem.get_platforms(),
 
-            'restricteds': restricteds,
 
             'child_engine_json_paths': child_engine_json_paths,
             'child_project_json_paths': child_project_json_paths,
             'child_gem_json_paths': child_gem_json_paths,
             'child_template_json_paths': child_template_json_paths,
             'child_repo_json_paths': child_repo_json_paths,
-            'child_restricted_json_paths': child_restricted_json_paths,
 
             'parent_json_paths': parent_json_paths,
 
@@ -3972,7 +3648,6 @@ def _resolve(args: argparse) -> int:
             'dependent_gems': dependent_gems,
             'dependent_templates': dependent_templates,
             'dependent_repos': dependent_repos,
-            'dependent_restricteds': dependent_restricteds
         }
 
     # query all objects from the the point of view of the template object
@@ -3982,7 +3657,6 @@ def _resolve(args: argparse) -> int:
         child_gem_json_paths, child_gem_objects = template.get_child_gem_objects(True)
         child_template_json_paths, child_template_objects = template.get_child_template_objects(True)
         child_repo_json_paths, child_repo_objects = template.get_child_repo_objects(True)
-        child_restricted_json_paths, child_restricted_objects = template.get_child_restricted_objects(True)
 
         parent_json_paths, parent_objects = template.get_parent(True)
 
@@ -3991,36 +3665,9 @@ def _resolve(args: argparse) -> int:
         dependent_gems = template.get_dependent_gems(True)
         dependent_templates = template.get_dependent_templates(True)
         dependent_repos = template.get_dependent_repos(True)
-        dependent_restricteds = template.get_dependent_restricteds(True)
 
-        # Get all restricted objects that are compatible with this object and all its parents
-        restricteds = []
-        restricteds_precedence = []
-        restricteds_json_paths = []
-        restricteds_object_json_paths = []
         compatible_objects = [template]
         compatible_objects.extend(parent_objects)
-        for restricted in manifest_all_child_restricted_objects:
-            extends = O3deNameVersion()
-            extends.from_string(restricted.get_extends())
-            for compatible_object in compatible_objects:
-                if extends.compatible_with(compatible_object.get_header().get_name(), compatible_object.get_header().get_version()):
-                    restricteds_object_json_paths.append(compatible_object.get_object_uri())
-                    restricteds_json_paths.append(restricted.get_object_uri())
-                    restricteds_precedence.append(restricted.get_precedence())
-        # Sort restricted arrays based on precedence
-        if restricteds_precedence:
-            sorted_data = sorted(zip(restricteds_precedence, restricteds_json_paths, restricteds_object_json_paths), reverse=True)
-            sorted_precedence, sorted_json_paths, sorted_object_json_paths = zip(*sorted_data)
-            restricteds_precedence = list(sorted_precedence)
-            restricteds_json_paths = list(sorted_json_paths)
-            restricteds_object_json_paths = list(sorted_object_json_paths)
-            for restricted_precedence, restricted_json_path, restricted_object_json_path in zip(restricteds_precedence, restricteds_json_paths, restricteds_object_json_paths):
-                restricteds.append({
-                    'restricted_precedence': restricted_precedence,
-                    'restricted_object_json_path': restricted_object_json_path,
-                    'restricted_json_path': restricted_json_path,
-                })
 
         resolved[template.get_object_uri()] = {
             'name': template.get_header().get_name(),
@@ -4036,14 +3683,12 @@ def _resolve(args: argparse) -> int:
             'user_tags': template.get_user_tags(),
             'platforms': template.get_platforms(),
 
-            'restricteds': restricteds,
 
             'child_engine_json_paths': child_engine_json_paths,
             'child_project_json_paths': child_project_json_paths,
             'child_gem_json_paths': child_gem_json_paths,
             'child_template_json_paths': child_template_json_paths,
             'child_repo_json_paths': child_repo_json_paths,
-            'child_restricted_json_paths': child_restricted_json_paths,
 
             'parent_json_paths': parent_json_paths,
 
@@ -4052,7 +3697,6 @@ def _resolve(args: argparse) -> int:
             'dependent_gems': dependent_gems,
             'dependent_templates': dependent_templates,
             'dependent_repos': dependent_repos,
-            'dependent_restricteds': dependent_restricteds
         }
 
     # query all objects from the the point of view of the repo object
@@ -4062,7 +3706,6 @@ def _resolve(args: argparse) -> int:
         child_gem_json_paths, child_gem_objects = repo.get_child_gem_objects(True)
         child_template_json_paths, child_template_objects = repo.get_child_template_objects(True)
         child_repo_json_paths, child_repo_objects = repo.get_child_repo_objects(True)
-        child_restricted_json_paths, child_restricted_objects = repo.get_child_restricted_objects(True)
 
         parent_json_paths, parent_objects = repo.get_parent(True)
 
@@ -4071,36 +3714,9 @@ def _resolve(args: argparse) -> int:
         dependent_gems = repo.get_dependent_gems(True)
         dependent_templates = repo.get_dependent_templates(True)
         dependent_repos = repo.get_dependent_repos(True)
-        dependent_restricteds = repo.get_dependent_restricteds(True)
 
-        # Get all restricted objects that are compatible with this object and all its parents
-        restricteds = []
-        restricteds_precedence = []
-        restricteds_json_paths = []
-        restricteds_object_json_paths = []
         compatible_objects = [repo]
         compatible_objects.extend(parent_objects)
-        for restricted in manifest_all_child_restricted_objects:
-            extends = O3deNameVersion()
-            extends.from_string(restricted.get_extends())
-            for compatible_object in compatible_objects:
-                if extends.compatible_with(compatible_object.get_header().get_name(), compatible_object.get_header().get_version()):
-                    restricteds_object_json_paths.append(compatible_object.get_object_uri())
-                    restricteds_json_paths.append(restricted.get_object_uri())
-                    restricteds_precedence.append(restricted.get_precedence())
-        # Sort restricted arrays based on precedence
-        if restricteds_precedence:
-            sorted_data = sorted(zip(restricteds_precedence, restricteds_json_paths, restricteds_object_json_paths), reverse=True)
-            sorted_precedence, sorted_json_paths, sorted_object_json_paths = zip(*sorted_data)
-            restricteds_precedence = list(sorted_precedence)
-            restricteds_json_paths = list(sorted_json_paths)
-            restricteds_object_json_paths = list(sorted_object_json_paths)
-            for restricted_precedence, restricted_json_path, restricted_object_json_path in zip(restricteds_precedence, restricteds_json_paths, restricteds_object_json_paths):
-                restricteds.append({
-                    'restricted_precedence': restricted_precedence,
-                    'restricted_object_json_path': restricted_object_json_path,
-                    'restricted_json_path': restricted_json_path,
-                })
 
         resolved[repo.get_object_uri()] = {
             'name': repo.get_header().get_name(),
@@ -4116,14 +3732,12 @@ def _resolve(args: argparse) -> int:
             'user_tags': repo.get_user_tags(),
             'platforms': repo.get_platforms(),
 
-            'restricteds': restricteds,
 
             'child_engine_json_paths': child_engine_json_paths,
             'child_project_json_paths': child_project_json_paths,
             'child_gem_json_paths': child_gem_json_paths,
             'child_template_json_paths': child_template_json_paths,
             'child_repo_json_paths': child_repo_json_paths,
-            'child_restricted_json_paths': child_restricted_json_paths,
 
             'parent_json_paths': parent_json_paths,
 
@@ -4132,61 +3746,6 @@ def _resolve(args: argparse) -> int:
             'dependent_gems': dependent_gems,
             'dependent_templates': dependent_templates,
             'dependent_repos': dependent_repos,
-            'dependent_restricteds': dependent_restricteds
-        }
-
-    # query all objects from the the point of view of the restricted object
-    for restricted in manifest_all_child_restricted_objects:
-        child_engine_json_paths, child_engine_objects = restricted.get_child_engine_objects(True)
-        child_project_json_paths, child_project_objects = restricted.get_child_project_objects(True)
-        child_gem_json_paths, child_gem_objects = restricted.get_child_gem_objects(True)
-        child_template_json_paths, child_template_objects = restricted.get_child_template_objects(True)
-        child_repo_json_paths, child_repo_objects = restricted.get_child_repo_objects(True)
-        child_restricted_json_paths, child_restricted_objects = restricted.get_child_restricted_objects(True)
-
-        parent_json_paths, parent_objects = restricted.get_parent(True)
-
-        dependent_engines = restricted.get_dependent_engines(True)
-        dependent_projects = restricted.get_dependent_projects(True)
-        dependent_gems = restricted.get_dependent_gems(True)
-        dependent_templates = restricted.get_dependent_templates(True)
-        dependent_repos = restricted.get_dependent_repos(True)
-        dependent_restricteds = restricted.get_dependent_restricteds(True)
-
-        resolved[restricted.get_object_uri()] = {
-            'name': restricted.get_header().get_name(),
-            'version': restricted.get_header().get_version(),
-            'display_name': restricted.get_header().get_display_name(),
-            'description': restricted.get_header().get_description(),
-            'type': restricted.get_header().get_type(),
-            'id': restricted.get_header().get_id(),
-            'copyright_year': restricted.get_header().get_copyright_year(),
-            'copyright_text': restricted.get_header().get_copyright_text(),
-
-            'extends': restricted.get_extends(),
-            'precedence': restricted.get_precedence(),
-
-            'canonical_tags': restricted.get_canonical_tags(),
-            'user_tags': restricted.get_user_tags(),
-            'platforms': restricted.get_platforms(),
-            'platform_maps': restricted.get_platform_maps(),
-            'platform_wart_maps': restricted.get_platform_wart_maps(),
-
-            'child_engine_json_paths': child_engine_json_paths,
-            'child_project_json_paths': child_project_json_paths,
-            'child_gem_json_paths': child_gem_json_paths,
-            'child_template_json_paths': child_template_json_paths,
-            'child_repo_json_paths': child_repo_json_paths,
-            'child_restricted_json_paths': child_restricted_json_paths,
-
-            'parent_json_paths': parent_json_paths,
-
-            'dependent_engines': dependent_engines,
-            'dependent_projects': dependent_projects,
-            'dependent_gems': dependent_gems,
-            'dependent_templates': dependent_templates,
-            'dependent_repos': dependent_repos,
-            'dependent_restricteds': dependent_restricteds,
         }
 
     # write the resolved dictionary to a JSON file

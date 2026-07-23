@@ -146,7 +146,7 @@ function(o3de_find_package o3de_package_name_and_version)# found, object_json_pa
             #set the list of types to try on the candidate_path
             set(package_path ${${cmake_package_name}_DIR})
             set(candidate_path ${package_path})
-            set(candidate_types "engine.json" "project.json" "gem.json" "template.json" "repo.json" "restricted.json")
+            set(candidate_types "engine.json" "project.json" "gem.json" "template.json" "repo.json")
 
             #walk up from the package dir until an object json is found
             unset(object_json_path)

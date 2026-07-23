@@ -6,6 +6,5 @@
 #
 #
 
-#o3de_pal_ dir(pal_dir ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Platform/${O3DE_PAL_PLATFORM_NAME} "${O3DE_ENGINE_RESTRICTED_PATH}" "${O3DE_ENGINE_PATH}")
 #include(${pal_dir}/RuntimeDependencies_${O3DE_PAL_PLATFORM_WART}.cmake)
 

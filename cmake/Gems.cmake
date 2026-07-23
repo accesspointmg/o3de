@@ -683,14 +683,3 @@ function(o3de_find_gem gem_name output_gem_path)
     get_property(gem_path GLOBAL PROPERTY "@GEMROOT:${gem_name}@")
     set(${output_gem_path} ${gem_path} PARENT_SCOPE)
 endfunction()
-
-#! o3de_restricted_path: legacy restricted-object lookup.
-#
-#  Restricted objects are superseded by overlays, which are applied at
-#  workspace compose time — nothing to resolve at configure time.
-function(o3de_restricted_path object_json output_restricted_path)
-    set(${output_restricted_path} "" PARENT_SCOPE)
-    if(${ARGC} GREATER 2)
-        set(${ARGV2} "" PARENT_SCOPE)
-    endif()
-endfunction()
