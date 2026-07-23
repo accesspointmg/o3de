@@ -24,7 +24,7 @@ block()
 endblock()
 
 get_property(this_gem_root GLOBAL PROPERTY "@GEMROOT:${gem_name}@")
-ly_get_engine_relative_source_dir(${this_gem_root} relative_this_gem_root)
+o3de_get_engine_relative_source_dir(${this_gem_root} relative_this_gem_root)
 set_property(TARGET ${MESHOPTIMIZER_TARGET} PROPERTY FOLDER "${relative_this_gem_root}/External")
 
 add_library(3rdParty::${MESHOPTIMIZER_TARGET} ALIAS ${MESHOPTIMIZER_TARGET})

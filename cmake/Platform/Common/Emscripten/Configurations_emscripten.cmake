@@ -23,7 +23,7 @@ set(O3DE_COMPILE_OPTION_EXPORT_SYMBOLS PRIVATE -fvisibility=default)
 # those 3rd Party targets ONLY.
 set(O3DE_COMPILE_OPTION_DISABLE_WARNINGS PRIVATE -w)
 
-ly_append_configurations_options(
+o3de_append_configurations_options(
     DEFINES_PROFILE
         _FORTIFY_SOURCE=2
     DEFINES_RELEASE
@@ -73,7 +73,7 @@ ly_append_configurations_options(
 )
 
 if(LY_BUILD_WITH_ADDRESS_SANITIZER)
-    ly_append_configurations_options(
+    o3de_append_configurations_options(
         COMPILATION_DEBUG
             -fsanitize=address
             -fno-omit-frame-pointer

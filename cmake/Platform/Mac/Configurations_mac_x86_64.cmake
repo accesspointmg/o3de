@@ -10,7 +10,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 
     include(cmake/Platform/Common/Clang/Configurations_clang.cmake)
 
-    ly_append_configurations_options(
+    o3de_append_configurations_options(
         DEFINES
             APPLE
             MAC

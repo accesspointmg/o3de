@@ -27,7 +27,7 @@ if (NOT DISABLE_GEM_TESTS AND O3DE_PAL_TRAIT_TEST_GOOGLE_TEST_SUPPORTED)
     # eg, ctest -P <build-config> --test-dir <path-to-your-build-dir>
     # eg, ctest -P profile --test-dir build/windows
     # eg, ctest -P debug --test-dir build\linux
-    ly_add_googletest(
+    o3de_add_googletest(
             NAME Gem::${gem_name}.Tests
         # optional parameters: 
         # TEST_SUITE "main" or "sandbox" or "smoke"

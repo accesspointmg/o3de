@@ -160,7 +160,7 @@ if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         )
 
         # Add ${gem_name}.Tests to googletest
-        ly_add_googletest(
+        o3de_add_googletest(
             NAME Gem::${gem_name}.Tests
         )
     endif()
@@ -188,7 +188,7 @@ if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             )
 
             # Add ${gem_name}.Editor.Tests to googletest
-            ly_add_googletest(
+            o3de_add_googletest(
                 NAME Gem::${gem_name}.Editor.Tests
             )
         endif()

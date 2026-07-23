@@ -358,7 +358,7 @@ function(o3de_fixup_fetchcontent_targets)
             continue()
         endif()
         get_property(this_gem_root GLOBAL PROPERTY "@GEMROOT:${gem_name}@")
-        ly_get_engine_relative_source_dir(${this_gem_root} relative_this_gem_root)
+        o3de_get_engine_relative_source_dir(${this_gem_root} relative_this_gem_root)
 
         # Set the location that the library shows up in the IDE:
         set_property(TARGET ${TARGET_TO_FIXUP} PROPERTY FOLDER "${relative_this_gem_root}/External")
@@ -384,7 +384,7 @@ function(o3de_fixup_fetchcontent_targets)
             target_compile_options(${TARGET_TO_FIXUP} ${O3DE_COMPILE_OPTION_DISABLE_WARNINGS})
 
             # install any libraries to the install/lib/<Profile/Debug/Release> folder
-            ly_install(TARGETS ${TARGET_TO_FIXUP}
+            o3de_install(TARGETS ${TARGET_TO_FIXUP}
                 ARCHIVE
                     DESTINATION "${BASE_LIBRARY_FOLDER}/${conf}"
                     COMPONENT ${LY_INSTALL_PERMUTATION_COMPONENT}_${UCONF}

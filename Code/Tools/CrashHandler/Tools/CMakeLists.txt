@@ -50,4 +50,4 @@ o3de_add_target(
         Qt5_NO_LINK_QTMAIN TRUE
 )
 
-ly_add_dependencies(Editor ToolsCrashUploader)
+o3de_add_dependencies(Editor ToolsCrashUploader)

@@ -23,7 +23,7 @@ if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.ap_builder_test
         PATH  ${CMAKE_CURRENT_LIST_DIR}/ap_builder_test.py
         TEST_SUITE main

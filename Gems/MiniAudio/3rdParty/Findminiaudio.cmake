@@ -66,7 +66,7 @@ endblock()
 target_compile_definitions(miniaudio PRIVATE "MA_COINIT_VALUE=2")
 
 get_property(this_gem_root GLOBAL PROPERTY "@GEMROOT:${gem_name}@")
-ly_get_engine_relative_source_dir(${this_gem_root} relative_this_gem_root)
+o3de_get_engine_relative_source_dir(${this_gem_root} relative_this_gem_root)
 
 set(MINIAUDIO_TARGETS 
         miniaudio
@@ -85,9 +85,9 @@ o3de_fixup_fetchcontent_targets(
 
 # Copy headers and license files, as well as a custom "find" file that declares the targets as IMPORTED
 FetchContent_GetProperties(miniaudio SOURCE_DIR miniaudio_source_dir)
-ly_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/Findminiaudio.cmake DESTINATION cmake/3rdParty)
-ly_install(FILES ${miniaudio_source_dir}/miniaudio.h DESTINATION include/miniaudio COMPONENT CORE)
-ly_install(FILES ${miniaudio_source_dir}/LICENSE DESTINATION include/miniaudio COMPONENT CORE)
+o3de_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/Findminiaudio.cmake DESTINATION cmake/3rdParty)
+o3de_install(FILES ${miniaudio_source_dir}/miniaudio.h DESTINATION include/miniaudio COMPONENT CORE)
+o3de_install(FILES ${miniaudio_source_dir}/LICENSE DESTINATION include/miniaudio COMPONENT CORE)
 
 # On Apple platforms, miniaudio.c uses Objective-C APIs like CoreAudio and AVFoundation.
 # Because the file has a .c extension, it compiles as plain C by default.
@@ -102,7 +102,7 @@ endif()
 
 # plugin headers
 foreach(node_plugin ma_channel_combiner_node ma_channel_separator_node ma_ltrim_node ma_reverb_node ma_vocoder_node)
-    ly_install(
+    o3de_install(
         FILES        "${miniaudio_source_dir}/extras/nodes/${node_plugin}/${node_plugin}.h"
         DESTINATION  "include/miniaudio/extras/nodes/${node_plugin}"
         COMPONENT    CORE)
@@ -111,7 +111,7 @@ endforeach()
 # decoder headers
 # note: Future proofed for if opus is added.
 foreach(decoder_plugin libopus libvorbis)
-    ly_install(
+    o3de_install(
         FILES        "${miniaudio_source_dir}/extras/decoders/${decoder_plugin}/miniaudio_${decoder_plugin}.h"
         DESTINATION  "include/miniaudio/extras/decoders/${decoder_plugin}"
         COMPONENT    CORE)

@@ -20,7 +20,7 @@ endif()
 # eg, ctest -P profile --test-dir build/windows
 # eg, ctest -P debug --test-dir build\linux
 # Unit tests.
-ly_add_pytest(
+o3de_add_pytest(
     NAME PyTestMain_main_no_gpu  
         # the name of the test also has extra optional tags on the end of it, eg
         # optional addition of "_main", "_sandbox", "_periodic", "_smoke" puts it in that suite.  Unspecified = main

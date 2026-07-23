@@ -62,7 +62,7 @@ block()
     # can't really guarantee that the 3rd party library will compile cleanly with our settings.
     set(RECAST_TARGETS DebugUtils Detour DetourCrowd DetourTileCache Recast)
     get_property(this_gem_root GLOBAL PROPERTY "@GEMROOT:${gem_name}@")
-    ly_get_engine_relative_source_dir(${this_gem_root} relative_this_gem_root)
+    o3de_get_engine_relative_source_dir(${this_gem_root} relative_this_gem_root)
 
     foreach(Recast_Target ${RECAST_TARGETS})
         if (NOT TARGET ${Recast_Target})
