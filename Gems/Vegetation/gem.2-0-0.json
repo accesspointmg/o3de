@@ -96,16 +96,14 @@
         "projects": [],
         "gems": [],
         "templates": [],
-        "repos": [],
-        "restricteds": []
+        "repos": []
     },
     "remote": {
         "engines": [],
         "projects": [],
         "gems": [],
         "templates": [],
-        "repos": [],
-        "restricteds": []
+        "repos": []
     },
     "dependent": {
         "gems": [
