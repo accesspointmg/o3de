@@ -32,79 +32,22 @@ def add_args(parser: argparse.ArgumentParser) -> None:
     o3de_package_dir = (script_dir / 'o3de').resolve()
     # add the scripts/o3de directory to the front of the sys.path
     sys.path.insert(0, str(o3de_package_dir))
-    from o3de import android, engine_properties, engine_template, gem_properties, \
-        global_project, register, print_registration, get_registration, \
-        enable_gem, disable_gem, project_properties, sha256, download, \
-        export_project, repo, repo_properties, cache, upgrade_schema, \
-        gitget, schema, o3de_object, data_to_schema, createdirs
+    # NOTE: The engine scripts only carry commands the engine itself needs
+    # (manifest resolve for the CMake build, android project generation and
+    # project export). All object management (register, properties, repos,
+    # downloads, templates, schema tooling) is owned by o3de-cli.
+    from o3de import android, export_project, o3de_object
     # Remove the temporarily added path
     sys.path = sys.path[1:]
 
-    # global project
-    global_project.add_args(subparsers)
-
-    # engine template
-    engine_template.add_args(subparsers)
-
-    # registration
-    register.add_args(subparsers)
-
-    # show registration
-    print_registration.add_args(subparsers)
-
-    # get registration
-    get_registration.add_args(subparsers)
-
-    # add a gem to a project
-    enable_gem.add_args(subparsers)
-
-    # remove a gem from a project
-    disable_gem.add_args(subparsers)
-
-    # modify engine properties
-    engine_properties.add_args(subparsers)
-
-    # modify project properties
-    project_properties.add_args(subparsers)
-
-    # modify gem properties
-    gem_properties.add_args(subparsers)
-
-    # sha256
-    sha256.add_args(subparsers)
-
-    # download
-    download.add_args(subparsers)
-
     # export_project
     export_project.add_args(subparsers)
-    
-    # repo
-    repo.add_args(subparsers)
-
-    # modify remote repo
-    repo_properties.add_args(subparsers)
-
-    # cache
-    cache.add_args(subparsers)
 
     # Android
     android.add_args(subparsers)
 
-    # Upgrade schema
-    upgrade_schema.add_args(subparsers)
-
-    # gitget
-    gitget.add_args(subparsers)
-
-    # license to schema
-    data_to_schema.add_args(subparsers)
-
-    # o3de object
+    # o3de object (resolve - required by the CMake build)
     o3de_object.add_args(subparsers)
-
-    # createdirs
-    createdirs.add_args(subparsers)
 
 
 if __name__ == "__main__":
