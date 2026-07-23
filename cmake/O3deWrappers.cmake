@@ -323,25 +323,18 @@ function(o3de_add_target)
 
     o3de_configure_target_platform_properties()
 
-    # Handle Qt MOC, RCC, UIC
-    # https://gitlab.kitware.com/cmake/cmake/issues/18749
-    # AUTOMOC is supposed to always rebuild because it checks files that are not listed in the sources (like extra
-    # "_p.h" headers) and which may change outside the visibility of the generator.
-    # We are not using AUTOUIC because of:
-    # https://gitlab.kitware.com/cmake/cmake/-/issues/18741
-    # To overcome this problem, we manually wrap all the ui files listed in the target with qt5_wrap_ui
-    foreach(prop IN ITEMS AUTOMOC AUTORCC)
-        if(${o3de_add_target_${prop}})
-            set_property(TARGET ${o3de_add_target_NAME} PROPERTY ${prop} ON)
-        endif()
-    endforeach()
+    # Handle Qt MOC, RCC, UIC via the explicit wrappers provided by the Qt
+    # package's FindQt.cmake (Qt 6.10+). CMake's AUTOMOC/AUTORCC autogen is
+    # no longer used - the package wires moc/rcc/uic itself.
+    get_target_property(all_sources ${o3de_add_target_NAME} SOURCES)
+    if(${o3de_add_target_AUTOMOC})
+        ly_qt_moc_target(${o3de_add_target_NAME} "${all_sources}")
+    endif()
     if(${o3de_add_target_AUTOUIC})
-        get_target_property(all_ui_sources ${o3de_add_target_NAME} SOURCES)
-        list(FILTER all_ui_sources INCLUDE REGEX "^.*\\.ui$")
-        if(NOT all_ui_sources)
-            message(FATAL_ERROR "Target ${o3de_add_target_NAME} contains AUTOUIC but doesnt have any .ui file")
-        endif()
-        o3de_qt_uic_target(${o3de_add_target_NAME} "${all_ui_sources}")
+        o3de_qt_uic_target(${o3de_add_target_NAME} "${all_sources}")
+    endif()
+    if(${o3de_add_target_AUTORCC})
+        ly_qt_qrc_target(${o3de_add_target_NAME} "${all_sources}")
     endif()
 
     # Add dependencies that were added before this target was available
