@@ -66,7 +66,7 @@ o3de_add_target(
 ################################################################################
 # Tests
 ################################################################################
-if(O3DE_O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
     o3de_add_target(
         NAME AzToolsFrameworkTestCommon STATIC
