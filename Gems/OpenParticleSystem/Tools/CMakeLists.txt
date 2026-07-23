@@ -6,10 +6,10 @@
 #
 #
 
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
         NAME OpenParticleSystemEditor STATIC
         NAMESPACE Gem
         AUTOMOC
@@ -17,7 +17,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
         AUTOUIC
         FILES_CMAKE
             openparticlesystemeditor_files.cmake
-            OpenParticleSystemEditor/Platform/${PAL_PLATFORM_NAME}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+            OpenParticleSystemEditor/Platform/${O3DE_PAL_PLATFORM_NAME}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
         INCLUDE_DIRECTORIES
             PUBLIC
                 .

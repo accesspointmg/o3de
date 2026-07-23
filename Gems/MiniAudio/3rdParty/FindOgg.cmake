@@ -59,9 +59,9 @@ o3de_fixup_fetchcontent_targets(
 
 # Copy headers and license files, as well as a custom "find" file that declares the targets as IMPORTED
 FetchContent_GetProperties(ogg SOURCE_DIR ogg_source_dir)
-ly_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/Findogg.cmake DESTINATION cmake/3rdParty)
-ly_install(DIRECTORY ${ogg_source_dir}/include/ogg DESTINATION include/ogg COMPONENT CORE)
-ly_install(FILES ${ogg_source_dir}/COPYING DESTINATION include/ogg COMPONENT CORE)
+o3de_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/Findogg.cmake DESTINATION cmake/3rdParty)
+o3de_install(DIRECTORY ${ogg_source_dir}/include/ogg DESTINATION include/ogg COMPONENT CORE)
+o3de_install(FILES ${ogg_source_dir}/COPYING DESTINATION include/ogg COMPONENT CORE)
 
 # signal that find_package(ogg) has succeeded.
 # we have to set it on the PARENT_SCOPE since we're in a function

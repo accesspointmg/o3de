@@ -19,7 +19,7 @@ set(ogg_GIT_REPO "https://github.com/xiph/ogg.git")
 set(ogg_GIT_TAG "v1.3.6")
 message(STATUS "MiniAudio Gem uses ${ogg_GIT_REPO} ${ogg_GIT_TAG} (BSD 3-Clause)")
 
-set(BASE_LIBRARY_FOLDER "${LY_ROOT_FOLDER}/lib/${PAL_PLATFORM_NAME}")
+set(BASE_LIBRARY_FOLDER "${O3DE_ENGINE_PATH}/lib/${O3DE_PAL_PLATFORM_NAME}")
 
 add_library(ogg STATIC IMPORTED GLOBAL)
 set_target_properties(ogg PROPERTIES 
@@ -27,7 +27,7 @@ set_target_properties(ogg PROPERTIES
     IMPORTED_LOCATION_DEBUG   "${BASE_LIBRARY_FOLDER}/debug/${CMAKE_STATIC_LIBRARY_PREFIX}ogg${CMAKE_STATIC_LIBRARY_SUFFIX}"
     IMPORTED_LOCATION_RELEASE "${BASE_LIBRARY_FOLDER}/release/${CMAKE_STATIC_LIBRARY_PREFIX}ogg${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
-ly_target_include_system_directories(TARGET ogg INTERFACE "${LY_ROOT_FOLDER}/include/ogg")
+o3de_target_include_system_directories(TARGET ogg INTERFACE "${O3DE_ENGINE_PATH}/include/ogg")
 
 add_library(3rdParty::ogg ALIAS ogg)
 

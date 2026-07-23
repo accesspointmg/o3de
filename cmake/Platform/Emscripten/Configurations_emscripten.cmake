@@ -9,5 +9,5 @@
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     include(cmake/Platform/Common/Emscripten/Configurations_emscripten.cmake)
 else()
-    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} not supported in ${PAL_PLATFORM_NAME}")
+    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} not supported in ${O3DE_PAL_PLATFORM_NAME}")
 endif()

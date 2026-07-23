@@ -19,7 +19,7 @@ set(RECAST_GIT_REPO "https://github.com/recastnavigation/recastnavigation.git")
 set(RECAST_GIT_TAG 5a870d4)
 message(STATUS "RecastNavigation Gem uses ${RECAST_GIT_REPO} commit 5a870d4 (License: Zlib)")
     
-set(BASE_LIBRARY_FOLDER "${LY_ROOT_FOLDER}/lib/${PAL_PLATFORM_NAME}")
+set(BASE_LIBRARY_FOLDER "${O3DE_ENGINE_PATH}/lib/${O3DE_PAL_PLATFORM_NAME}")
 
 # import each library as its static library from where it is located in the installer:
 set(recastLibraries DebugUtils;Detour;DetourCrowd;DetourTileCache;Recast)
@@ -32,9 +32,9 @@ foreach(recastLibrary ${recastLibraries})
             IMPORTED_LOCATION_DEBUG   "${BASE_LIBRARY_FOLDER}/debug/${CMAKE_STATIC_LIBRARY_PREFIX}${recastLibrary}${CMAKE_STATIC_LIBRARY_SUFFIX}"
             IMPORTED_LOCATION_RELEASE "${BASE_LIBRARY_FOLDER}/release/${CMAKE_STATIC_LIBRARY_PREFIX}${recastLibrary}${CMAKE_STATIC_LIBRARY_SUFFIX}")
     target_compile_definitions(3rdParty::RecastNavigation::${recastLibrary} INTERFACE DT_POLYREF64)
-    ly_target_include_system_directories(TARGET 3rdParty::RecastNavigation::${recastLibrary} 
+    o3de_target_include_system_directories(TARGET 3rdParty::RecastNavigation::${recastLibrary} 
         INTERFACE 
-            "${LY_ROOT_FOLDER}/Include/recastnavigation")
+            "${O3DE_ENGINE_PATH}/Include/recastnavigation")
 endforeach()
 
 # notify O3DE That we have satisfied the RecastNavigation find_package requirements.

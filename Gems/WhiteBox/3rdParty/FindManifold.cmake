@@ -165,5 +165,5 @@ add_library(3rdParty::Manifold ALIAS ManifoldInterface)
 set(Manifold_FOUND TRUE)
 
 if (COMMAND ly_install)
-    ly_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/FindManifold.cmake DESTINATION cmake/3rdParty)
+    o3de_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/FindManifold.cmake DESTINATION cmake/3rdParty)
 endif()

@@ -62,9 +62,9 @@ o3de_fixup_fetchcontent_targets(
 
 # Copy headers and license files, as well as a custom "find" file that declares the targets as IMPORTED
 FetchContent_GetProperties(vorbis SOURCE_DIR vorbis_source_dir)
-ly_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/Findvorbis.cmake DESTINATION cmake/3rdParty)
-ly_install(DIRECTORY ${vorbis_source_dir}/include/vorbis DESTINATION include/vorbis COMPONENT CORE)
-ly_install(FILES ${vorbis_source_dir}/COPYING DESTINATION include/vorbis COMPONENT CORE)
+o3de_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/Findvorbis.cmake DESTINATION cmake/3rdParty)
+o3de_install(DIRECTORY ${vorbis_source_dir}/include/vorbis DESTINATION include/vorbis COMPONENT CORE)
+o3de_install(FILES ${vorbis_source_dir}/COPYING DESTINATION include/vorbis COMPONENT CORE)
 
 # using EXCLUDE_FROM_ALL actually removes all targets from the default dependency tree calculation
 # when in project generation, meaning, unless something explicitly depends on these libraries, they won't

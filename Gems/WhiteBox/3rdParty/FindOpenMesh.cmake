@@ -134,7 +134,7 @@ block()
     # Part 4: Make sure things work in the Installer version of O3DE. 
     # To make it simple, we just have a premade FindOpenMesh.cmake for the installer specifically
     # that we put in a folder (cmake/3rdParty) that is already part of the search path for find_package calls in installers.
-    ly_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/FindOpenMesh.cmake DESTINATION cmake/3rdParty)
+    o3de_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/FindOpenMesh.cmake DESTINATION cmake/3rdParty)
     
     # signal that find_package(OpenMesh) has succeeded.
     # we have to set it on the PARENT_SCOPE since we're in a block scope

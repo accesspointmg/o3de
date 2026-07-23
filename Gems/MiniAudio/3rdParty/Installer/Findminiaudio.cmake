@@ -24,7 +24,7 @@ set(MINIAUDIO_GIT_REPO "https://github.com/mackron/miniaudio.git")
 set(MINIAUDIO_GIT_TAG "0.11.22")
 message(STATUS "MiniAudio Gem uses ${MINIAUDIO_GIT_REPO} ${MINIAUDIO_GIT_TAG} (MIT No Attribution)")
 
-set(BASE_LIBRARY_FOLDER "${LY_ROOT_FOLDER}/lib/${PAL_PLATFORM_NAME}")
+set(BASE_LIBRARY_FOLDER "${O3DE_ENGINE_PATH}/lib/${O3DE_PAL_PLATFORM_NAME}")
 
 set(MINIAUDIO_TARGETS 
         miniaudio
@@ -44,7 +44,7 @@ foreach(MiniAudio_Target ${MINIAUDIO_TARGETS})
     IMPORTED_LOCATION         "${BASE_LIBRARY_FOLDER}/profile/${CMAKE_STATIC_LIBRARY_PREFIX}${MiniAudio_Target}${CMAKE_STATIC_LIBRARY_SUFFIX}"
     IMPORTED_LOCATION_DEBUG   "${BASE_LIBRARY_FOLDER}/debug/${CMAKE_STATIC_LIBRARY_PREFIX}${MiniAudio_Target}${CMAKE_STATIC_LIBRARY_SUFFIX}"
     IMPORTED_LOCATION_RELEASE "${BASE_LIBRARY_FOLDER}/release/${CMAKE_STATIC_LIBRARY_PREFIX}${MiniAudio_Target}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    ly_target_include_system_directories(TARGET ${MiniAudio_Target} INTERFACE "${LY_ROOT_FOLDER}/include/miniaudio")
+    o3de_target_include_system_directories(TARGET ${MiniAudio_Target} INTERFACE "${O3DE_ENGINE_PATH}/include/miniaudio")
     add_library(3rdParty::${MiniAudio_Target} ALIAS ${MiniAudio_Target})
 endforeach()
 

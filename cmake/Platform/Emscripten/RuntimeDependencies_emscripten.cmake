@@ -6,5 +6,5 @@
 #
 #
 
-set(LY_RUNTIME_DEPENDENCIES_TEMPLATE ${LY_ROOT_FOLDER}/cmake/Platform/Common/runtime_dependencies_common.cmake.in)
+set(LY_RUNTIME_DEPENDENCIES_TEMPLATE ${O3DE_ENGINE_PATH}/cmake/Platform/Common/runtime_dependencies_common.cmake.in)
 include(cmake/Platform/Common/RuntimeDependencies_common.cmake)

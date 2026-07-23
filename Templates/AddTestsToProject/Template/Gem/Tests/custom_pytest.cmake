@@ -9,9 +9,9 @@
 # Include this file in your Project/Gem/CMakeLists.txt using "include(Tests/custom_pytest.cmake)" at the end.
 
 # Add a cache variable or set -DDISABLE_GEM_TESTS=ON to disable tests for this gem
-# PAL_TRAIT_TEST_PYTEST_SUPPORTED is defined in the O3DE CMake code and will be
+# O3DE_PAL_TRAIT_TEST_PYTEST_SUPPORTED is defined in the O3DE CMake code and will be
 # FALSE if the current platform (like IOS for example) does not support python tests
-if (DISABLE_GEM_TESTS OR NOT PAL_TRAIT_TEST_PYTEST_SUPPORTED)
+if (DISABLE_GEM_TESTS OR NOT O3DE_PAL_TRAIT_TEST_PYTEST_SUPPORTED)
     return()
 endif()
 

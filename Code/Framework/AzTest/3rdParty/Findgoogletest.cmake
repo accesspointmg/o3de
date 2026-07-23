@@ -19,7 +19,7 @@ endif()
 
 # You should not be generating dependencies on googletest (via AzTest)
 # if you are on a platform that cannot actually compile googletest (See cmake/Platform/platformname/PAL_platformname.cmake)
-if (NOT PAL_TRAIT_TEST_GOOGLE_TEST_SUPPORTED)
+if (NOT O3DE_PAL_TRAIT_TEST_GOOGLE_TEST_SUPPORTED)
     return()
 endif()
 
@@ -131,21 +131,21 @@ block()
     # and have install/gmock_gtest be the include path that is added to your compiler settings when you use these libraries, 
     # so that #include <gtest/gtest> still works (since its relative to that path) BUT it adds no additional other
     # files or libraries to your include path that would otherwise leak in.
-    ly_install(DIRECTORY ${googletest_source_dir}/googletest/include/gtest DESTINATION include/gmock_gtest COMPONENT CORE)
-    ly_install(DIRECTORY ${googletest_source_dir}/googlemock/include/gmock DESTINATION include/gmock_gtest COMPONENT CORE)
+    o3de_install(DIRECTORY ${googletest_source_dir}/googletest/include/gtest DESTINATION include/gmock_gtest COMPONENT CORE)
+    o3de_install(DIRECTORY ${googletest_source_dir}/googlemock/include/gmock DESTINATION include/gmock_gtest COMPONENT CORE)
     # include the license files just for good measure (Although using the library will disclose the
     # source git repository and version anyway.
-    ly_install(FILES ${googletest_source_dir}/LICENSE COMPONENT CORE DESTINATION include/gmock_gtest/gtest)
-    ly_install(FILES ${googletest_source_dir}/LICENSE COMPONENT CORE DESTINATION include/gmock_gtest/gmock)
+    o3de_install(FILES ${googletest_source_dir}/LICENSE COMPONENT CORE DESTINATION include/gmock_gtest/gtest)
+    o3de_install(FILES ${googletest_source_dir}/LICENSE COMPONENT CORE DESTINATION include/gmock_gtest/gmock)
 
     # Make the installer find-files be used when in an installer pre-built mode
-    ly_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/Findgoogletest.cmake DESTINATION cmake/3rdParty)
+    o3de_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/Findgoogletest.cmake DESTINATION cmake/3rdParty)
 
     # install the libraries making sure to use different directories for debug/release/etc
-    set(BASE_LIBRARY_FOLDER "lib/${PAL_PLATFORM_NAME}")
+    set(BASE_LIBRARY_FOLDER "lib/${O3DE_PAL_PLATFORM_NAME}")
     foreach(conf IN LISTS CMAKE_CONFIGURATION_TYPES)
         string(TOUPPER ${conf} UCONF)
-        ly_install(TARGETS gtest gmock
+        o3de_install(TARGETS gtest gmock
             ARCHIVE
                 DESTINATION "${BASE_LIBRARY_FOLDER}/${conf}"
                 COMPONENT ${LY_INSTALL_PERMUTATION_COMPONENT}_${UCONF}

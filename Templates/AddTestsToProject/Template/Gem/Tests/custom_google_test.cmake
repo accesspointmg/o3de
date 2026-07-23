@@ -9,12 +9,12 @@
 # Include this file in your Project/Gem/CMakeLists.txt using "include(Tests/custom_google_test.cmake)" at the end.
 
 # Add a cache variable or set -DDISABLE_GEM_TESTS=ON to disable tests for this gem
-# PAL_TRAIT_TEST_GOOGLE_TEST_SUPPORTED is defined in the O3DE CMake code and will be
+# O3DE_PAL_TRAIT_TEST_GOOGLE_TEST_SUPPORTED is defined in the O3DE CMake code and will be
 # FALSE if the current platform (like IOS for example) does not support Google Test
-if (NOT DISABLE_GEM_TESTS AND PAL_TRAIT_TEST_GOOGLE_TEST_SUPPORTED)
+if (NOT DISABLE_GEM_TESTS AND O3DE_PAL_TRAIT_TEST_GOOGLE_TEST_SUPPORTED)
     # add the test cpp code (add new files in the _test_files.cmake file)
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             ${CMAKE_CURRENT_LIST_DIR}/test_files.cmake

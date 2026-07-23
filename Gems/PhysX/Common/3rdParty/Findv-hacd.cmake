@@ -23,7 +23,7 @@ FetchContent_MakeAvailable(v-hacd)
 
 FetchContent_GetProperties(v-hacd SOURCE_DIR V_HACD_SOURCE_DIR)
 add_library(3rdParty::v-hacd IMPORTED INTERFACE GLOBAL ${V_HACD_SOURCE_DIR}/include/VHACD.h)
-ly_target_include_system_directories(TARGET 3rdParty::v-hacd INTERFACE ${V_HACD_SOURCE_DIR}/include)
+o3de_target_include_system_directories(TARGET 3rdParty::v-hacd INTERFACE ${V_HACD_SOURCE_DIR}/include)
 
-ly_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/Findv-hacd.cmake DESTINATION cmake/3rdParty)
+o3de_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/Findv-hacd.cmake DESTINATION cmake/3rdParty)
 set(v-hacd_FOUND TRUE)

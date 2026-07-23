@@ -20,7 +20,7 @@ set(vorbis_GIT_REPO "https://github.com/xiph/vorbis.git")
 set(vorbis_GIT_TAG "v1.3.7")
 message(STATUS "MiniAudio Gem uses ${vorbis_GIT_REPO} ${vorbis_GIT_TAG} (BSD 3-Clause)")
 
-set(BASE_LIBRARY_FOLDER "${LY_ROOT_FOLDER}/lib/${PAL_PLATFORM_NAME}")
+set(BASE_LIBRARY_FOLDER "${O3DE_ENGINE_PATH}/lib/${O3DE_PAL_PLATFORM_NAME}")
 
 set(VORBIS_TARGETS vorbis vorbisfile)
 foreach(Vorbis_Target ${VORBIS_TARGETS})
@@ -29,7 +29,7 @@ foreach(Vorbis_Target ${VORBIS_TARGETS})
     IMPORTED_LOCATION         "${BASE_LIBRARY_FOLDER}/profile/${CMAKE_STATIC_LIBRARY_PREFIX}${Vorbis_Target}${CMAKE_STATIC_LIBRARY_SUFFIX}"
     IMPORTED_LOCATION_DEBUG   "${BASE_LIBRARY_FOLDER}/debug/${CMAKE_STATIC_LIBRARY_PREFIX}${Vorbis_Target}${CMAKE_STATIC_LIBRARY_SUFFIX}"
     IMPORTED_LOCATION_RELEASE "${BASE_LIBRARY_FOLDER}/release/${CMAKE_STATIC_LIBRARY_PREFIX}${Vorbis_Target}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    ly_target_include_system_directories(TARGET ${Vorbis_Target} INTERFACE "${LY_ROOT_FOLDER}/include/miniaudio")
+    o3de_target_include_system_directories(TARGET ${Vorbis_Target} INTERFACE "${O3DE_ENGINE_PATH}/include/miniaudio")
     add_library(3rdParty::${Vorbis_Target} ALIAS ${Vorbis_Target})
 endforeach()
 

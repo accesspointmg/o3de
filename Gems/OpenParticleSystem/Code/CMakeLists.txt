@@ -6,9 +6,9 @@
 #
 #
 
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
 
-ly_add_target(
+o3de_add_target(
     NAME SimuCore.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -25,7 +25,7 @@ ly_add_target(
             AZ::AzFramework
 )
 
-ly_add_target(
+o3de_add_target(
     NAME SimuCoreParticleModules.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -41,7 +41,7 @@ ly_add_target(
             Gem::SimuCore.Static
 )
 
-ly_add_target(
+o3de_add_target(
         NAME ${gem_name}.API HEADERONLY
         NAMESPACE Gem
         FILES_CMAKE
@@ -52,7 +52,7 @@ ly_add_target(
 )
 
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -70,8 +70,8 @@ ly_add_target(
             SimuCoreParticleModules.Static
 )
 
-ly_add_target(
-        NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+        NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             openparticlesystem_shared_files.cmake
@@ -83,13 +83,13 @@ ly_add_target(
                 ${gem_name}.Static
 )
 
-ly_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::${gem_name})
 
 # If we are on a host platform, we want to add the host tools targets like the OpenParticleSystem.Editor target which
 # will also depend on OpenParticleSystem.Private.Static
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
         NAME ${gem_name}.Editor.Static STATIC
         NAMESPACE Gem
         AUTOMOC
@@ -110,7 +110,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::AtomToolsFramework.Static
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
         NAMESPACE Gem
         AUTORCC
@@ -132,7 +132,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::OpenParticleSystemEditor
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Builder.Static STATIC
         NAMESPACE Gem
         FILES_CMAKE
@@ -152,7 +152,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::Atom_RHI.Public
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Builder GEM_MODULE
         NAMESPACE Gem
         OUTPUT_NAME ${gem_name}.Builder.Gem
@@ -168,7 +168,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 AZ::AssetBuilderSDK
     )
 
-    ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
-    ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Builder)
+    o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Builder)
 
 endif()

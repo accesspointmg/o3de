@@ -16,7 +16,7 @@ endif()
 
 # You should not be generating dependencies on googletest (via AzTest)
 # if you are on a platform that cannot actually compile googletest (See cmake/Platform/platformname/PAL_platformname.cmake)
-if (NOT PAL_TRAIT_TEST_GOOGLE_TEST_SUPPORTED)
+if (NOT O3DE_PAL_TRAIT_TEST_GOOGLE_TEST_SUPPORTED)
     return()
 endif()
 
@@ -25,19 +25,19 @@ endif()
 # ALWAYS DISCLOSE THE USE OF 3rd Party Libraries.  Even if they are internally linked.
 message(STATUS "AzTest library uses googletest v1.15.2 (BSD-3-Clause) from https://github.com/google/googletest.git")
 
-set(BASE_LIBRARY_FOLDER "${LY_ROOT_FOLDER}/lib/${PAL_PLATFORM_NAME}")
+set(BASE_LIBRARY_FOLDER "${O3DE_ENGINE_PATH}/lib/${O3DE_PAL_PLATFORM_NAME}")
 
 add_library(gtest STATIC IMPORTED GLOBAL)
 set_target_properties(gtest PROPERTIES 
     IMPORTED_LOCATION       "${BASE_LIBRARY_FOLDER}/profile/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
     IMPORTED_LOCATION_DEBUG "${BASE_LIBRARY_FOLDER}/debug/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
-ly_target_include_system_directories(TARGET gtest INTERFACE "${LY_ROOT_FOLDER}/include/gmock_gtest")
+o3de_target_include_system_directories(TARGET gtest INTERFACE "${O3DE_ENGINE_PATH}/include/gmock_gtest")
 
 add_library(gmock STATIC IMPORTED GLOBAL)
 set_target_properties(gmock PROPERTIES 
     IMPORTED_LOCATION       "${BASE_LIBRARY_FOLDER}/profile/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
     IMPORTED_LOCATION_DEBUG "${BASE_LIBRARY_FOLDER}/debug/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}")
-ly_target_include_system_directories(TARGET gmock INTERFACE "${LY_ROOT_FOLDER}/include/gmock_gtest")
+o3de_target_include_system_directories(TARGET gmock INTERFACE "${O3DE_ENGINE_PATH}/include/gmock_gtest")
     
 add_library(3rdParty::googletest::GTest ALIAS gtest)
 add_library(3rdParty::googletest::GMock ALIAS gmock)

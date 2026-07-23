@@ -90,24 +90,24 @@ block()
     # Part 4: Make sure things work in the Installer version of O3DE. 
     # To make it simple, we just have a premade FindRecastNavigation.cmake for the installer specifically
     # that we put in a folder (cmake/3rdParty) that is already part of the search path for find_package calls in installers.
-    ly_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/FindRecastNavigation.cmake DESTINATION cmake/3rdParty)
+    o3de_install(FILES ${CMAKE_CURRENT_LIST_DIR}/Installer/FindRecastNavigation.cmake DESTINATION cmake/3rdParty)
     
     FetchContent_GetProperties(RecastNavigation SOURCE_DIR recastnavigation_source_dir)
     FetchContent_GetProperties(RecastNavigation BINARY_DIR recastnavigation_binary_dir)
     
     # install header files
-    ly_install(DIRECTORY ${recastnavigation_source_dir}/Recast/Include DESTINATION Include/recastnavigation COMPONENT CORE)
-    ly_install(DIRECTORY ${recastnavigation_source_dir}/DebugUtils/Include DESTINATION Include/recastnavigation COMPONENT CORE)
-    ly_install(DIRECTORY ${recastnavigation_source_dir}/Detour/Include DESTINATION Include/recastnavigation COMPONENT CORE)
-    ly_install(DIRECTORY ${recastnavigation_source_dir}/DetourCrowd/Include DESTINATION Include/recastnavigation COMPONENT CORE)
-    ly_install(DIRECTORY ${recastnavigation_source_dir}/DetourTileCache/Include DESTINATION Include/recastnavigation COMPONENT CORE)
+    o3de_install(DIRECTORY ${recastnavigation_source_dir}/Recast/Include DESTINATION Include/recastnavigation COMPONENT CORE)
+    o3de_install(DIRECTORY ${recastnavigation_source_dir}/DebugUtils/Include DESTINATION Include/recastnavigation COMPONENT CORE)
+    o3de_install(DIRECTORY ${recastnavigation_source_dir}/Detour/Include DESTINATION Include/recastnavigation COMPONENT CORE)
+    o3de_install(DIRECTORY ${recastnavigation_source_dir}/DetourCrowd/Include DESTINATION Include/recastnavigation COMPONENT CORE)
+    o3de_install(DIRECTORY ${recastnavigation_source_dir}/DetourTileCache/Include DESTINATION Include/recastnavigation COMPONENT CORE)
 
     # note that recast also generates a version.h file, which we could copy here, but the name "version.h" is way too easy
     # and generic to conflict with others, and it does not actually use "version.h" itself in any way.  if this becomes a problem
     # in the future, we can always copy it with a unique name, or add a subfolder for it to live in.
     
     # install license file.
-    ly_install(FILES ${recastnavigation_source_dir}/License.txt DESTINATION Include/recastnavigation COMPONENT CORE)
+    o3de_install(FILES ${recastnavigation_source_dir}/License.txt DESTINATION Include/recastnavigation COMPONENT CORE)
     
     # signal that find_package(Recast) has succeeded.
     # we have to set it on the PARENT_SCOPE since we're in a block scope
