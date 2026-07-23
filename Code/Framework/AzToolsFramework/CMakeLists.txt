@@ -10,7 +10,7 @@ if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
+o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
 
 o3de_add_target(
     NAME AzToolsFramework.Static STATIC
