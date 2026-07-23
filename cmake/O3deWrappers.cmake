@@ -331,7 +331,7 @@ function(o3de_add_target)
         ly_qt_moc_target(${o3de_add_target_NAME} "${all_sources}")
     endif()
     if(${o3de_add_target_AUTOUIC})
-        o3de_qt_uic_target(${o3de_add_target_NAME} "${all_sources}")
+        ly_qt_uic_target(${o3de_add_target_NAME} "${all_sources}")
     endif()
     if(${o3de_add_target_AUTORCC})
         ly_qt_qrc_target(${o3de_add_target_NAME} "${all_sources}")
@@ -542,7 +542,7 @@ function(o3de_delayed_target_link_libraries)
                     else()
                         # Namespace::Name aliases are directory-scoped and
                         # not visible here, but the underlying interface
-                        # target <Name> is created GLOBAL — strip the
+                        # target <Name> is created GLOBAL ??? strip the
                         # namespace and retry.
                         o3de_strip_target_namespace(TARGET ${alias_item} OUTPUT_VARIABLE stripped_item)
                         if(NOT stripped_item STREQUAL alias_item AND TARGET ${stripped_item})
