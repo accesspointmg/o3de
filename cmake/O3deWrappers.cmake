@@ -341,7 +341,7 @@ function(o3de_add_target)
         if(NOT all_ui_sources)
             message(FATAL_ERROR "Target ${o3de_add_target_NAME} contains AUTOUIC but doesnt have any .ui file")
         endif()
-        o3de_qt_uic_target(${o3de_add_target_NAME})
+        o3de_qt_uic_target(${o3de_add_target_NAME} "${all_ui_sources}")
     endif()
 
     # Add dependencies that were added before this target was available
