@@ -82,7 +82,7 @@ public:
     MOCK_METHOD1(SetActiveView, void(CViewport*));
     MOCK_METHOD0(GetFileMonitor, struct IEditorFileMonitor* ());
     MOCK_METHOD0(GetLevelIndependentFileMan, class CLevelIndependentFileMan* ());
-    MOCK_METHOD2(UpdateViews, void(int , const AABB* ));
+    MOCK_METHOD2(UpdateViews, void(int , const AZ::Aabb* ));
     MOCK_METHOD0(ResetViews, void());
     MOCK_METHOD0(ReloadTrackView, void());
 
@@ -103,9 +103,6 @@ public:
     MOCK_METHOD1(RestoreUndo, void(bool));
     MOCK_METHOD1(AcceptUndo, void(const QString& ));
     MOCK_METHOD0(CancelUndo, void());
-    MOCK_METHOD0(SuperBeginUndo, void());
-    MOCK_METHOD1(SuperAcceptUndo, void(const QString&));
-    MOCK_METHOD0(SuperCancelUndo, void());
     MOCK_METHOD0(SuspendUndo, void());
     MOCK_METHOD0(ResumeUndo, void());
     MOCK_METHOD0(Undo, void());

@@ -6,22 +6,20 @@
  *
  */
 
-#ifndef PROPERTY_DOUBLESLIDER_CTRL
-#define PROPERTY_DOUBLESLIDER_CTRL
-
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/base.h>
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzQtComponents/Components/Widgets/SliderCombo.h>
-#include "PropertyEditorAPI.h"
 
-#endif
+#include "PropertyEditorAPI.h"
 
 namespace AzToolsFramework
 {
-    class PropertyDoubleSliderCtrl
+    class AZTF_API PropertyDoubleSliderCtrl
         : public QWidget
     {
         Q_OBJECT
@@ -84,7 +82,7 @@ namespace AzToolsFramework
         }
     };
 
-    class doublePropertySliderHandler
+    class AZTF_API doublePropertySliderHandler
         : QObject
         , public DoubleSliderHandlerCommon<double>
     {
@@ -103,7 +101,7 @@ namespace AzToolsFramework
         bool ModifyTooltip(QWidget* widget, QString& toolTipString) override;
     };
 
-    class floatPropertySliderHandler
+    class AZTF_API floatPropertySliderHandler
         : QObject
         , public DoubleSliderHandlerCommon<float>
     {
@@ -120,7 +118,5 @@ namespace AzToolsFramework
     };
 
 
-    void RegisterDoubleSliderHandlers();
+    AZTF_API void RegisterDoubleSliderHandlers();
 }
-
-#endif

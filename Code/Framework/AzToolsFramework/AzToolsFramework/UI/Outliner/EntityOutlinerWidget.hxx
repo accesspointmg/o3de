@@ -8,7 +8,8 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/base.h>
 
@@ -27,9 +28,6 @@
 
 #include <QIcon>
 #include <QWidget>
-#endif
-
-#pragma once
 
 class QAction;
 class QItemSelection;
@@ -55,7 +53,7 @@ namespace AzToolsFramework
         enum class DisplayOption : unsigned char;
     }
 
-    class EntityOutlinerWidget
+    class AZTF_API EntityOutlinerWidget
         : public QWidget
         , private EditorPickModeNotificationBus::Handler
         , private EntityHighlightMessages::Bus::Handler
@@ -136,6 +134,10 @@ namespace AzToolsFramework
         EntityOutlinerSortFilterProxyModel* m_proxyModel;
         AZStd::vector<AZ::EntityId> m_selectedEntityIds;
 
+        // ToolsApplicationEventBus handler
+        void BeforeUndoRedo() override;
+        void AfterUndoRedo() override;
+
         void PrepareSelection();
         void DoCreateEntity();
         void DoCreateEntityWithParent(const AZ::EntityId& parentId);
@@ -193,6 +195,8 @@ namespace AzToolsFramework
 
         QIcon m_emptyIcon;
         QIcon m_clearIcon;
+
+        bool m_isDuringUndoRedo = false;
 
         void QueueContentUpdateSort(const AZ::EntityId& entityId);
         void SortContent();

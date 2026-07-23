@@ -8,10 +8,9 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzQtComponents/Utilities/SelectionProxyModel.h>
-#include <QtCore/QSortFilterProxyModel>
-#endif
+
+#include <QSortFilterProxyModel>
 
 QT_FORWARD_DECLARE_CLASS(QItemSelectionModel)
 

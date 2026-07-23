@@ -72,8 +72,8 @@ namespace AZ
         return (testValue & (testValue - 1)) == 0;
     }
 
-    //! Calculates at compile-time the integral log base 2 of the input value.
-    constexpr uint32_t Log2(uint64_t maxValue)
+    //! Calculates at compile-time the number of bits required to represent the given max value.
+    constexpr uint32_t RequiredBitsForValue(uint64_t maxValue)
     {
         uint32_t bits = 0;
         do
@@ -397,15 +397,75 @@ namespace AZ
         return a + (b - a) * t;
     }
 
-    //! Returns a value t where Lerp(a, b, t) == value (or 0 if a == b).
+    // note that the following functions may raise C4723 on some compilers (potential divide by zero)
+    // but this is an erroneous warning as the function guards against this case by checking that
+    // a and b are close to epsilon before performing the division.
+    AZ_PUSH_DISABLE_WARNING(4723, "-Wunknown-warning-option") // potential divide by 0 (needs to wrap the function)
     inline float LerpInverse(float a, float b, float value)
     {
         return IsClose(a, b, AZStd::numeric_limits<float>::epsilon()) ? 0.0f : (value - a) / (b - a);
+        
     }
 
     inline double LerpInverse(double a, double b, double value)
     {
         return IsClose(a, b, AZStd::numeric_limits<double>::epsilon()) ? 0.0 : (value - a) / (b - a);
+    }
+    AZ_POP_DISABLE_WARNING
+
+    //! Smooths a value towards a target using a critically damped spring system.
+    //! This function adjusts `value` towards `target` while maintaining continuity of `value` and its rate of change (`valueRate`).
+    //! The smoothing is controlled by `smoothTime`, with `timeDelta` representing the time since the last update.
+    //!
+    //! @param[in,out] value      The value to be smoothed.
+    //! @param[in,out] valueRate  The rate of change of the value.
+    //! @param[in]     timeDelta  The time interval since the last update (in seconds).
+    //! @param[in]     target     The target value to smooth towards.
+    //! @param[in]     smoothTime The timescale for smoothing (lag time or 2/omega, where omega is the spring frequency).
+    //!
+    //! @note This implements a critically damped spring system for smooth ease-in/ease-out behavior.
+    //! @note Uses a polynomial approximation to the exponential function for performance, accurate within 0.1% when
+    //!       smoothTime > 2 * timeDelta. For stiff springs or large frame spikes, accuracy may degrade slightly.
+    //! @note Based on "Critically Damped Ease-In/Ease-Out Smoothing" by Thomas Lowe, Game Programming Gems IV.
+    template<typename T>
+    AZ_MATH_INLINE void SmoothCriticallyDamped(T& value, T& valueRate, float timeDelta, const T& target, float smoothTime)
+    {
+        if (smoothTime > 0.0f)
+        {
+            const float omega = 2.0f / smoothTime;
+            const float x = omega * timeDelta;
+            const float exp = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
+            const T change = value - target;
+            const T temp = static_cast<T>((valueRate + change * omega) * timeDelta);
+            valueRate = static_cast<T>((valueRate - temp * omega) * exp);
+            value = static_cast<T>(target + (change + temp) * exp);
+        }
+        else if (timeDelta > 0.0f)
+        {
+            valueRate = static_cast<T>((target - value) / timeDelta);
+            value = target;
+        }
+        else
+        {
+            value = target;
+            valueRate = T(0); // Zero the rate
+        }
+    }
+
+    //! Returns the successive critically dampted value and updated rate..
+    AZ_MATH_INLINE AZStd::tuple<float, float> SmoothCriticallyDamped(float& value, float& valueRate, float timeDelta, const float& target, float smoothTime)
+    {
+        SmoothCriticallyDamped<float>(value, valueRate, timeDelta, target, smoothTime);
+        return AZStd::make_tuple(value, valueRate);
+    }
+
+    //! Returns a smooth S-curve interpolation between 2 values.
+    template<typename T>
+    AZ_MATH_INLINE T SmoothStep(const T& a, const T& b, float t)
+    {
+        t = GetClamp(t, 0.f, 1.f);
+        float smoothT = t * t * (3.f - 2.f * t);
+        return a + (b - a) * smoothT;
     }
 
     //! Returns true if the number provided is even.
@@ -692,5 +752,5 @@ namespace AZ
 
     //! Creates a unit quaternion uniformly sampled from the space of all possible rotations.
     //! See Graphics Gems III, chapter 6.
-    Quaternion CreateRandomQuaternion(SimpleLcgRandom& rng);
+    AZCORE_API Quaternion CreateRandomQuaternion(SimpleLcgRandom& rng);
 }

@@ -7,6 +7,8 @@
  */
 
 #include "Atom_RHI_Vulkan_Platform.h"
+#include "Instance.h"
+
 #include <Atom/RHI/PipelineStateDescriptor.h>
 #include <Atom/RHI/RHISystemInterface.h>
 #include <Atom/RHI/XRRenderingInterface.h>
@@ -138,7 +140,7 @@ namespace AZ
                     *nativeDimensions = m_dimensions;
                     nativeDimensions->m_imageFormat = ConvertFormat(m_surfaceFormat.format);
                 }
-            }    
+            }
 
             SetName(GetName());
             return result;
@@ -348,6 +350,64 @@ namespace AZ
             }
         }
 
+        void SwapChain::SetHDRMetaData(float maxOutputNits, float minOutputNits, float maxContentLightLevel,
+            float maxFrameAverageLightLevel)
+        {
+            auto& device = static_cast<Device&>(GetDevice());
+
+            //From DX12 RHI
+            struct DisplayChromacities
+            {
+                float RedX;
+                float RedY;
+                float GreenX;
+                float GreenY;
+                float BlueX;
+                float BlueY;
+                float WhiteX;
+                float WhiteY;
+            };
+            static const DisplayChromacities DisplayChromacityList[] =
+            {
+                { 0.64000f, 0.33000f, 0.30000f, 0.60000f, 0.15000f, 0.06000f, 0.31270f, 0.32900f }, // Display Gamut Rec709
+                { 0.70800f, 0.29200f, 0.17000f, 0.79700f, 0.13100f, 0.04600f, 0.31270f, 0.32900f }, // Display Gamut Rec2020
+            };
+
+            // Select the chromaticity based on HDR format
+            int selectedChroma = 0;
+            if (m_colorSpace == VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT)
+            {
+                selectedChroma = 0;
+            }
+            else if (m_colorSpace == VK_COLOR_SPACE_HDR10_ST2084_EXT)
+            {
+                selectedChroma = 1;
+            }
+            else
+            {
+                AZ_Assert(false, "Unhandled color space for swapchain.");
+            }
+
+            const DisplayChromacities& Chroma = DisplayChromacityList[selectedChroma];
+            VkHdrMetadataEXT hdrMetadata = {};
+            hdrMetadata.sType = VK_STRUCTURE_TYPE_HDR_METADATA_EXT;
+            //DX12 RHI scales these by 50000 but VKD3D removes that so just use the raw values.
+            hdrMetadata.displayPrimaryRed = {Chroma.RedX, Chroma.RedY};
+            hdrMetadata.displayPrimaryGreen = {Chroma.GreenX, Chroma.GreenY};
+            hdrMetadata.displayPrimaryBlue = {Chroma.BlueX, Chroma.BlueY};
+            hdrMetadata.whitePoint = {Chroma.WhiteX, Chroma.WhiteY};
+            //Mult. by 10,000 because its what VKD3D does, you can look at convert_max_luminance and convert_min_luminance for reference.
+            //Since the DX12 RHI scales these by 10000 we should too but VKD3D downscales by the same amount for minLuminance.
+            //https://github.com/HansKristian-Work/vkd3d-proton/blob/8165096180a9019542b693ce1fcb80f44433b1e2/libs/vkd3d/swapchain.c#L866C36-L866C57
+            hdrMetadata.maxLuminance = maxOutputNits * 10000.0f;
+            hdrMetadata.minLuminance = minOutputNits;
+            hdrMetadata.maxContentLightLevel = maxContentLightLevel;
+            hdrMetadata.maxFrameAverageLightLevel = maxFrameAverageLightLevel;
+
+            AZ_Assert(device.GetContext().SetHdrMetadataEXT != nullptr, "Calling SetHDRMetaData when HDR isn't supported.");
+            device.GetContext().SetHdrMetadataEXT(device.GetNativeDevice(), 1, &m_nativeSwapChain, &hdrMetadata);
+        }
+
         RHI::ResultCode SwapChain::BuildSurface(const RHI::SwapChainDescriptor& descriptor)
         {
             WSISurface::Descriptor surfaceDesc{};
@@ -368,26 +428,44 @@ namespace AZ
                 dimensions.m_imageHeight <= m_surfaceCapabilities.maxImageExtent.height);
         }
 
-        VkSurfaceFormatKHR SwapChain::GetSupportedSurfaceFormat(const RHI::Format rhiFormat) const
+        VkSurfaceFormatKHR SwapChain::GetSupportedSurfaceFormat(const RHI::Format rhiFormat, const VkColorSpaceKHR preferredColorSpace) const
         {
             AZ_Assert(m_surface, "Surface has not been initialized.");
             auto& device = static_cast<Device&>(GetDevice());
             const auto& physicalDevice = static_cast<const PhysicalDevice&>(device.GetPhysicalDevice());
             uint32_t surfaceFormatCount = 0;
-            AssertSuccess(device.GetContext().GetPhysicalDeviceSurfaceFormatsKHR(
-                physicalDevice.GetNativePhysicalDevice(), m_surface->GetNativeSurface(), &surfaceFormatCount, nullptr));
+            [[maybe_unused]] VkResult vkResult = device.GetContext().GetPhysicalDeviceSurfaceFormatsKHR(
+                physicalDevice.GetNativePhysicalDevice(), m_surface->GetNativeSurface(), &surfaceFormatCount, nullptr);
+            VK_RESULT_ASSERT(vkResult);
+
             AZ_Assert(surfaceFormatCount > 0, "Surface support no format.");
             AZStd::vector<VkSurfaceFormatKHR> surfaceFormats(surfaceFormatCount);
-            AssertSuccess(device.GetContext().GetPhysicalDeviceSurfaceFormatsKHR(
-                physicalDevice.GetNativePhysicalDevice(), m_surface->GetNativeSurface(), &surfaceFormatCount, surfaceFormats.data()));
+
+            vkResult = device.GetContext().GetPhysicalDeviceSurfaceFormatsKHR(
+                    physicalDevice.GetNativePhysicalDevice(), m_surface->GetNativeSurface(), &surfaceFormatCount, surfaceFormats.data());
+            VK_RESULT_ASSERT(vkResult);
 
             const VkFormat format = ConvertFormat(rhiFormat);
+            VkSurfaceFormatKHR matchedFormat = {};
+            matchedFormat.format = VK_FORMAT_UNDEFINED;
             for (uint32_t index = 0; index < surfaceFormatCount; ++index)
             {
                 if (surfaceFormats[index].format == format)
                 {
-                    return surfaceFormats[index];
+                    if (surfaceFormats[index].colorSpace == preferredColorSpace)
+                    {
+                        return surfaceFormats[index];
+                    }
+
+                    if (matchedFormat.format == VK_FORMAT_UNDEFINED)
+                    {
+                        matchedFormat = surfaceFormats[index];
+                    }
                 }
+            }
+            if (matchedFormat.format != VK_FORMAT_UNDEFINED)
+            {
+                return matchedFormat;
             }
             AZ_Warning("Vulkan", false, "Given format is not supported, so it uses a supported format.");
             return surfaceFormats[0];
@@ -411,14 +489,16 @@ namespace AZ
             const auto& physicalDevice = static_cast<const PhysicalDevice&>(device.GetPhysicalDevice());
 
             uint32_t modeCount = 0;
-            AssertSuccess(device.GetContext().GetPhysicalDeviceSurfacePresentModesKHR(
-                physicalDevice.GetNativePhysicalDevice(), m_surface->GetNativeSurface(), &modeCount, nullptr));
+            [[maybe_unused]] VkResult vkResult = device.GetContext().GetPhysicalDeviceSurfacePresentModesKHR(
+                physicalDevice.GetNativePhysicalDevice(), m_surface->GetNativeSurface(), &modeCount, nullptr);
+            VK_RESULT_ASSERT(vkResult);
             // VK_PRESENT_MODE_FIFO_KHR has to be supported.
             // https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/VkPresentModeKHR.html
             AZ_Assert(modeCount > 0, "no available present mode.");
             AZStd::vector<VkPresentModeKHR> supportedModes(modeCount);
-            AssertSuccess(device.GetContext().GetPhysicalDeviceSurfacePresentModesKHR(
-                physicalDevice.GetNativePhysicalDevice(), m_surface->GetNativeSurface(), &modeCount, supportedModes.data()));
+            vkResult = device.GetContext().GetPhysicalDeviceSurfacePresentModesKHR(
+                physicalDevice.GetNativePhysicalDevice(), m_surface->GetNativeSurface(), &modeCount, supportedModes.data());
+            VK_RESULT_ASSERT(vkResult);
 
             for (VkPresentModeKHR preferredMode : preferredModes)
             {
@@ -441,9 +521,9 @@ namespace AZ
             const auto& physicalDevice = static_cast<const PhysicalDevice&>(device.GetPhysicalDevice());
 
             VkSurfaceCapabilitiesKHR surfaceCapabilities;
-            VkResult vkResult = device.GetContext().GetPhysicalDeviceSurfaceCapabilitiesKHR(
+            [[maybe_unused]] VkResult vkResult = device.GetContext().GetPhysicalDeviceSurfaceCapabilitiesKHR(
                 physicalDevice.GetNativePhysicalDevice(), m_surface->GetNativeSurface(), &surfaceCapabilities);
-            AssertSuccess(vkResult);
+            VK_RESULT_ASSERT(vkResult);
 
             return surfaceCapabilities;
         }
@@ -499,6 +579,14 @@ namespace AZ
                 }
             }
 
+            bool hdrEnabled = false;
+
+            if (m_surfaceFormat.format == VK_FORMAT_A2R10G10B10_UNORM_PACK32 &&
+                m_surfaceFormat.colorSpace == VK_COLOR_SPACE_HDR10_ST2084_EXT)
+            {
+                hdrEnabled = true;
+            }
+
             VkSwapchainCreateInfoKHR createInfo{};
             createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
             createInfo.pNext = nullptr;
@@ -525,7 +613,17 @@ namespace AZ
 
             const VkResult result =
                 device.GetContext().CreateSwapchainKHR(device.GetNativeDevice(), &createInfo, VkSystemAllocator::Get(), &m_nativeSwapChain);
-            AssertSuccess(result);
+            VK_RESULT_ASSERT(result);
+
+            if(hdrEnabled)
+            {
+                m_colorSpace = createInfo.imageColorSpace;
+                float maxOutputNits = 1000.f;
+                float minOutputNits = 0.001f;
+                float maxContentLightLevelNits = 2000.f;
+                float maxFrameAverageLightLevelNits = 500.f;
+                SetHDRMetaData(maxOutputNits, minOutputNits, maxContentLightLevelNits, maxFrameAverageLightLevelNits);
+            }
 
             return ConvertResult(result);
         }
@@ -585,10 +683,16 @@ namespace AZ
         {
             auto& device = static_cast<Device&>(GetDevice());
 
+            VkColorSpaceKHR preferredColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+            if (r_hdrOutput && m_dimensions.m_imageFormat == RHI::Format::R10G10B10A2_UNORM)
+            {
+                preferredColorSpace = VK_COLOR_SPACE_HDR10_ST2084_EXT;
+            }
+
             m_surfaceCapabilities = GetSurfaceCapabilities();
-            m_surfaceFormat = GetSupportedSurfaceFormat(m_dimensions.m_imageFormat);
+            m_surfaceFormat = GetSupportedSurfaceFormat(m_dimensions.m_imageFormat, preferredColorSpace);
             m_presentMode = GetSupportedPresentMode(GetDescriptor().m_verticalSyncInterval);
-            m_compositeAlphaFlagBits = GetSupportedCompositeAlpha(); 
+            m_compositeAlphaFlagBits = GetSupportedCompositeAlpha();
 
             if (!ValidateSurfaceDimensions(m_dimensions))
             {
@@ -624,7 +728,7 @@ namespace AZ
             m_dimensions.m_imageCount = 0;
             VkResult vkResult =
                 device.GetContext().GetSwapchainImagesKHR(device.GetNativeDevice(), m_nativeSwapChain, &m_dimensions.m_imageCount, nullptr);
-            AssertSuccess(vkResult);
+            VK_RESULT_ASSERT(vkResult);
             RETURN_RESULT_IF_UNSUCCESSFUL(ConvertResult(vkResult));
 
             m_swapchainNativeImages.resize(m_dimensions.m_imageCount);
@@ -633,7 +737,7 @@ namespace AZ
             // available when we init the images in InitImageInternal
             vkResult = device.GetContext().GetSwapchainImagesKHR(
                 device.GetNativeDevice(), m_nativeSwapChain, &m_dimensions.m_imageCount, m_swapchainNativeImages.data());
-            AssertSuccess(vkResult);
+            VK_RESULT_ASSERT(vkResult);
             RETURN_RESULT_IF_UNSUCCESSFUL(ConvertResult(vkResult));
             AZLOG_DEBUG("Obtained presentable images.\n");
 

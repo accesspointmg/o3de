@@ -7,9 +7,8 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <QAbstractItemModel>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QString>
 #include <QSortFilterProxyModel>
 #include <QTableView>
@@ -23,7 +22,6 @@
 
 #include <GraphCanvas/Components/SceneBus.h>
 #include <GraphCanvas/Widgets/StyledItemDelegates/IconDecoratedNameDelegate.h>
-#endif
 
 namespace ScriptCanvasEditor
 {
@@ -87,6 +85,10 @@ namespace ScriptCanvasEditor
         void OnVariablePriorityChanged() override;
         ////
 
+        // VariableNotificationBus
+        void OnVariableRenamed(AZStd::string_view newVariableName) override;
+        ///
+
         QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
 
@@ -125,7 +127,7 @@ namespace ScriptCanvasEditor
 
     private:
         QString m_filter;
-        QRegExp m_filterRegex;
+        QRegularExpression m_filterRegex;
 
         ScriptCanvas::GraphVariable::Comparator m_variableComparator;
     };

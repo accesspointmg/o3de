@@ -8,6 +8,7 @@
 
 #include <PostProcess/GradientWeightModifier/EditorGradientWeightModifierComponent.h>
 #include <AtomO3deIntegration/CommonFeatures/PostProcess/GradientWeightModifier/GradientWeightModifierComponentConstants.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 namespace AZ
 {
@@ -25,14 +26,14 @@ namespace AZ
                 if (AZ::EditContext* editContext = serializeContext->GetEditContext())
                 {
                     editContext->Class<EditorGradientWeightModifierComponent>(
-                        "PostFX Gradient Weight Modifier", "Modifies PostFX override factor based on a gradient signal sampled from an entity")
+                        QT_TRANSLATE_NOOP("AtomO3deIntegration", "PostFX Gradient Weight Modifier"), QT_TRANSLATE_NOOP("AtomO3deIntegration", "Modifies PostFX override factor based on a gradient signal sampled from an entity"))
                         ->ClassElement(Edit::ClassElements::EditorData, "")
                         ->Attribute(Edit::Attributes::Category, "Graphics/PostFX")
                         ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Component_Placeholder.svg")
                         ->Attribute(AZ::Edit::Attributes::ViewportIcon, "Icons/Components/Viewport/Component_Placeholder.svg")
                         ->Attribute(Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                         ->Attribute(Edit::Attributes::AutoExpand, true)
-                        ->Attribute(Edit::Attributes::HelpPageURL, "https://o3de.org/docs/user-guide/components/reference/atom/postfx-gradient-weight-modifier/")
+                        ->Attribute(Edit::Attributes::HelpPageURL, "https://www.o3de.org/docs/user-guide/components/reference/atom/postfx-gradient-weight-modifier/")
                         ;
 
                     editContext->Class<GradientWeightModifierComponentController>("GradientWeightModifierComponentController", "")
@@ -43,7 +44,7 @@ namespace AZ
                         ;
 
                     editContext->Class<GradientWeightModifierComponentConfig>("GradientWeightModifierComponentConfig", "")
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &GradientWeightModifierComponentConfig::m_gradientSampler, "Gradient Sampler", "Gradient sampler configuration")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &GradientWeightModifierComponentConfig::m_gradientSampler, QT_TRANSLATE_NOOP("AtomO3deIntegration", "Gradient Sampler"), QT_TRANSLATE_NOOP("AtomO3deIntegration", "Gradient sampler configuration"))
                         ->Attribute(Edit::Attributes::ChangeNotify, Edit::PropertyRefreshLevels::ValuesOnly)
                         ;
                 }

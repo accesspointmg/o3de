@@ -24,7 +24,7 @@ namespace AZ
         RPI::Ptr<DiffuseProbeGridQueryPass> DiffuseProbeGridQueryPass::Create(const RPI::PassDescriptor& descriptor)
         {
             RPI::Ptr<DiffuseProbeGridQueryPass> pass = aznew DiffuseProbeGridQueryPass(descriptor);
-            return AZStd::move(pass);
+            return pass;
         }
 
         DiffuseProbeGridQueryPass::DiffuseProbeGridQueryPass(const RPI::PassDescriptor& descriptor)
@@ -161,7 +161,7 @@ namespace AZ
             }
 
             // output buffer
-            {                      
+            {
                 RHI::BufferScopeAttachmentDescriptor desc;
                 desc.m_attachmentId = m_outputBufferAttachmentId;
                 desc.m_bufferViewDescriptor = m_outputBufferViewDesc;
@@ -228,7 +228,7 @@ namespace AZ
                 RHI::ShaderInputBufferIndex bufferIndex = m_srgLayout->FindShaderInputBufferIndex(AZ::Name("m_irradianceQueries"));
                 RHI::Ptr<RHI::Buffer> buffer = diffuseProbeGridFeatureProcessor->GetQueryBuffer()->GetRHIBuffer();
                 RHI::BufferViewDescriptor bufferViewDescriptor = diffuseProbeGridFeatureProcessor->GetQueryBufferViewDescriptor();
-                diffuseProbeGrid->GetQuerySrg()->SetBufferView(bufferIndex, buffer->BuildBufferView(bufferViewDescriptor).get());
+                diffuseProbeGrid->GetQuerySrg()->SetBufferView(bufferIndex, buffer->GetBufferView(bufferViewDescriptor).get());
 
                 // bind output UAV
                 bufferIndex = m_srgLayout->FindShaderInputBufferIndex(AZ::Name("m_output"));
@@ -270,7 +270,7 @@ namespace AZ
             DiffuseProbeGridFeatureProcessor* diffuseProbeGridFeatureProcessor = scene->GetFeatureProcessor<DiffuseProbeGridFeatureProcessor>();
 
             diffuseProbeGridFeatureProcessor->ClearIrradianceQueries();
-                
+
             RenderPass::FrameEndInternal();
         }
     }   // namespace Render

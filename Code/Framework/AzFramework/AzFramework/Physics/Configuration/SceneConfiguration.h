@@ -14,6 +14,7 @@
 #include <AzCore/std/string/string.h>
 
 #include <AzFramework/Physics/Common/PhysicsTypes.h>
+#include <AzFramework/AzFrameworkAPI.h>
 
 namespace AZ
 {
@@ -23,7 +24,7 @@ namespace AZ
 namespace AzPhysics
 {
     //! Configuration object that contains data to setup a Scene.
-    struct SceneConfiguration
+    struct AZF_API SceneConfiguration
     {
         AZ_CLASS_ALLOCATOR_DECL;
         AZ_TYPE_INFO(SceneConfiguration, "{4ABF9993-8E52-4E41-B38D-28FD569B4EAF}");
@@ -43,6 +44,7 @@ namespace AzPhysics
         //! Enables reporting of changed Simulated bodies on the OnSceneActiveSimulatedBodiesEvent event.
         bool m_enableActiveActors = true; 
         bool m_enablePcm = true; //!< Enables the persistent contact manifold algorithm to be used as the narrow phase algorithm.
+        bool m_enableEnhancedDeterminism = false; //!< Enables improved determinism at a performance cost. Applied at scene creation only.
         bool m_kinematicFiltering = true; //!< Enables filtering between kinematic/kinematic  objects.
         bool m_kinematicStaticFiltering = true; //!< Enables filtering between kinematic/static objects.
         float m_bounceThresholdVelocity = 2.0f; //!< Relative velocity below which colliding objects will not bounce.

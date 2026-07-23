@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
-#include <qobject.h>
+#include <QObject>
 
 #include <GraphCanvas/Widgets/GraphCanvasTreeModel.h>
 
@@ -319,5 +319,4 @@ namespace GraphCanvas
         Q_EMIT(OnTreeItemAdded(itemAdded));
     }
 
-    #include <StaticLib/GraphCanvas/Widgets/moc_GraphCanvasTreeModel.cpp>
 }

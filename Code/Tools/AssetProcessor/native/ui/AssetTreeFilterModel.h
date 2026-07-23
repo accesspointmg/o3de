@@ -8,11 +8,12 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/std/containers/list.h>
 #include <AzCore/std/smart_ptr/shared_ptr.h>
+
 #include <QSortFilterProxyModel>
-#endif
+
+class QRegularExpression;
 
 namespace AZ
 {
@@ -41,7 +42,7 @@ namespace AssetProcessor
         bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override;
         bool lessThan(const QModelIndex& left, const QModelIndex& right) const override;
 
-        bool DescendantMatchesFilter(const AssetTreeItem& assetTreeItem, const QRegExp& filter, const AZ::Uuid& filterAsUuid) const;
+        bool DescendantMatchesFilter(const AssetTreeItem& assetTreeItem, const QRegularExpression& filter, const AZ::Uuid& filterAsUuid) const;
 
         AZStd::list<AZStd::shared_ptr<AssetTreeItemData>> m_pathToForceVisibleAsset;
     };

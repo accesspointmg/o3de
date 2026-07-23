@@ -9,17 +9,19 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include "PropertyEditorAPI.h"
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 #include <AzCore/base.h>
 #include <AzCore/Memory/SystemAllocator.h>
-#include <QtWidgets/QWidget>
-#include "PropertyEditorAPI.h"
-#endif
+
+#include <QWidget>
+
 class QCheckBox;
 
 namespace AzToolsFramework
 {
-    class PropertyCheckBoxCtrl
+    class AZTF_API PropertyCheckBoxCtrl
         : public QWidget
     {
         Q_OBJECT
@@ -51,10 +53,9 @@ namespace AzToolsFramework
         QCheckBox* m_checkBox;
     };
 
-    class CheckBoxHandlerCommon
+    class AZTF_API CheckBoxHandlerCommon
         : public QObject
     {
-        Q_OBJECT
     public:
         AZ_CLASS_ALLOCATOR(CheckBoxHandlerCommon, AZ::SystemAllocator);
         QWidget* CreateGUICommon(QWidget* parent);
@@ -63,7 +64,7 @@ namespace AzToolsFramework
     };
 
     template <typename ValueType>
-    class PropertyCheckBoxHandlerCommon
+    class AZTF_API PropertyCheckBoxHandlerCommon
         : public CheckBoxHandlerCommon
         , public PropertyHandler<ValueType, PropertyCheckBoxCtrl>
     {
@@ -77,11 +78,9 @@ namespace AzToolsFramework
         void ConsumeAttribute(PropertyCheckBoxCtrl* widget, AZ::u32 attrib, PropertyAttributeReader* attrValue, const char* debugName) override;
     };
 
-    class BoolPropertyCheckBoxHandler
+    class AZTF_API BoolPropertyCheckBoxHandler
         : public PropertyCheckBoxHandlerCommon<bool>
     {
-        // this is a Qt Object purely so it can connect to slots with context.  This is the only reason its in this header.
-        Q_OBJECT
     public:
         AZ_CLASS_ALLOCATOR(BoolPropertyCheckBoxHandler, AZ::SystemAllocator);
 
@@ -98,11 +97,10 @@ namespace AzToolsFramework
 
     // A CheckBoxGenericHandler is used to register a checkbox widget that doesn't depend on the underlying type
     // This is useful if we want UI checkbox element that doesn't have any specific underlying storage
-    class CheckBoxGenericHandler
+    class AZTF_API CheckBoxGenericHandler
         : public CheckBoxHandlerCommon
         , public GenericPropertyHandler<PropertyCheckBoxCtrl>
     {
-        Q_OBJECT
     public:
         AZ_CLASS_ALLOCATOR(CheckBoxGenericHandler, AZ::SystemAllocator);
 
@@ -118,6 +116,6 @@ namespace AzToolsFramework
         void ConsumeAttribute(PropertyCheckBoxCtrl* widget, AZ::u32 attrib, PropertyAttributeReader* attrValue, const char* debugName) override;
     };
 
-    void RegisterCheckBoxHandlers();
+    AZTF_API void RegisterCheckBoxHandlers();
 };
 

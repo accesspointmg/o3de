@@ -11,8 +11,10 @@
 #include "AssetCatalogModel.h"
 
 #include <IEditor.h>
-#include <qevent.h>
-#include <qmimedata.h>
+#include <QEvent>
+#include <QMimeData>
+#include <QRegularExpression>
+#include <QTimer>
 
 #include <AzCore/Memory/Memory.h>
 #include <AzCore/RTTI/TypeInfo.h>
@@ -31,8 +33,6 @@
 #include <AzToolsFramework/ToolsComponents/ComponentAssetMimeDataContainer.h>
 #include <AzToolsFramework/ToolsComponents/ScriptEditorComponent.h>
 #include <AzToolsFramework/ToolsComponents/TransformComponent.h>
-
-#include <QTimer>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -185,13 +185,13 @@ AZ::Data::AssetType AssetCatalogModel::GetAssetType(const QString &filename) con
 {
 
     //  Compare file extensions with the map created from the asset database.
-    int dotIndex = filename.lastIndexOf('.');
+    int dotIndex = static_cast<int>(filename.lastIndexOf('.'));
     if (dotIndex < 0)
     {
         return AZ::Uuid::CreateNull();
     }
 
-    QStringRef extension = filename.midRef(dotIndex);
+    QString extension = filename.mid(dotIndex);
     for (const auto& pair : m_extensionToAssetType)
     {
         QString qExtensions = pair.first.c_str();
@@ -244,7 +244,7 @@ QStandardItem* AssetCatalogModel::GetPath(QString& path, bool createIfNeeded, QS
     QString currentFolder;
     QString restOfPath;
 
-    int slashIdx = cleanPath.indexOf('/', 1);
+    int slashIdx = static_cast<int>(cleanPath.indexOf('/', 1));
     if (slashIdx < 0)
     {
         currentFolder = cleanPath;
@@ -312,7 +312,7 @@ AssetCatalogEntry* AssetCatalogModel::FindAsset(QString assetPath)
     QString asset;
 
     //  Separate file name and folder name.
-    int slashIdx = assetPath.lastIndexOf('/');
+    int slashIdx = static_cast<int>(assetPath.lastIndexOf('/'));
     if (slashIdx < 0)
     {
         asset = assetPath;
@@ -348,7 +348,7 @@ AssetCatalogEntry* AssetCatalogModel::AddAsset(QString assetPath, AZ::Data::Asse
     QString asset;
 
     //  Separate file name and folder name.
-    int slashIdx = assetPath.lastIndexOf('/');
+    int slashIdx = static_cast<int>(assetPath.lastIndexOf('/'));
     if (slashIdx < 0)
     {
         asset = assetPath;
@@ -360,7 +360,7 @@ AssetCatalogEntry* AssetCatalogModel::AddAsset(QString assetPath, AZ::Data::Asse
         asset = assetPath.mid(slashIdx + 1);
     }
 
-    QRegExp mipMapExtension("\\.dds\\.\\d+a?$");    // Files that end with ".dds.#", with an optional "a"
+    QRegularExpression mipMapExtension("\\.dds\\.\\d+a?$");    // Files that end with ".dds.#", with an optional "a"
     if (asset.contains(mipMapExtension))
     {
         //  Mip map files should be ignored by the file browser.
@@ -628,12 +628,13 @@ void AssetCatalogModel::BuildFilter(QStringList& criteriaList, AzToolsFramework:
                 filter += "(?=.*" + text + ")"; //  Using Lookaheads to produce an "and" effect.
             }
 
-            SetFilterRegExp(tag.toStdString().c_str(), QRegExp(filter, Qt::CaseInsensitive));
+            SetFilterRegExp(
+                tag.toStdString().c_str(), QRegularExpression(filter, QRegularExpression::PatternOption::CaseInsensitiveOption));
         }
     }
 }
 
-void AssetCatalogModel::SetFilterRegExp(const AZStd::string& filterType, const QRegExp& regExp)
+void AssetCatalogModel::SetFilterRegExp(const AZStd::string& filterType, const QRegularExpression& regExp)
 {
     m_filtersRegExp[filterType] = regExp;
 }
@@ -644,12 +645,12 @@ void AssetCatalogModel::ClearFilterRegExp(const AZStd::string& filterType)
     {
         for (auto& it : m_filtersRegExp)
         {
-            it.second = QRegExp();
+            it.second = QRegularExpression();
         }
     }
     else
     {
-        m_filtersRegExp[filterType] = QRegExp();
+        m_filtersRegExp[filterType] = QRegularExpression();
     }
 }
 
@@ -666,7 +667,7 @@ void AssetCatalogModel::ApplyFilter(QStandardItem* parent)
     for (int i = 0; i < parent->rowCount(); i++)
     {
         QStandardItem* child = parent->child(i);
-        if (m_filtersRegExp["name"].isEmpty())
+        if (m_filtersRegExp["name"].pattern().isEmpty())
         {
             child->setData(true, AssetCatalogEntry::VisibilityRole);
         }
@@ -738,5 +739,4 @@ AssetCatalogEntry* AssetCatalogModel::AssetData(const QModelIndex& index) const
 // End of context menu handling
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <UI/moc_AssetCatalogModel.cpp>
 

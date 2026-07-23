@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include <AzCore/Math/Aabb.h>
-#include <AzCore/Math/Obb.h>
 #include <AzCore/Math/Vector2.h>
 #include <AzCore/Math/Vector3.h>
 #include <AzCore/Math/Vector4.h>
@@ -17,11 +15,9 @@
 #include <AzCore/Math/Transform.h>
 #include <AzCore/Math/Matrix3x3.h>
 #include <AzCore/Math/Matrix3x4.h>
-#include <AzCore/Math/Quaternion.h>
 #include <AzCore/Component/EntityId.h>
 #include <AzCore/Math/Plane.h>
 #include <Cry_Math.h>
-#include <Cry_Geo.h>
 #include <Cry_Color.h>
 
 inline AZ::Vector2 LYVec2ToAZVec2(const Vec2& source)
@@ -42,6 +38,16 @@ inline AZ::Vector3 LYVec3ToAZVec3(const Vec3& source)
 inline Vec3 AZVec3ToLYVec3(const AZ::Vector3& source)
 {
     return Vec3(source.GetX(), source.GetY(), source.GetZ());
+}
+
+inline AZ::Vector3 LYAng3ToAZVec3(const Ang3& source)
+{
+    return AZ::Vector3(source.x, source.y, source.z);
+}
+
+inline Ang3 AZVec3ToLYAng3(const AZ::Vector3& source)
+{
+    return Ang3(source.GetX(), source.GetY(), source.GetZ());
 }
 
 inline AZ::Vector4 LYVec4ToAZVec4(const Vec4& source)
@@ -69,6 +75,8 @@ inline Vec4 AZColorToLYVec4(const AZ::Color& source)
     return Vec4(source.GetR(), source.GetG(), source.GetB(), source.GetA());
 }
 
+// Disable the deprecated-declarations warning for all conversion operators of ColorF
+AZ_PUSH_DISABLE_WARNING(4996, "-Wdeprecated-declarations");
 inline ColorF AZColorToLYColorF(const AZ::Color& source)
 {
     return ColorF(source.ToU32());
@@ -78,7 +86,10 @@ inline AZ::Color LYColorFToAZColor(const ColorF& source)
 {
     return AZ::Color(source.r, source.g, source.b, source.a);
 }
+AZ_POP_DISABLE_WARNING
 
+// Disable the deprecated-declarations warning for all conversion operators of ColorB
+AZ_PUSH_DISABLE_WARNING(4996, "-Wdeprecated-declarations");
 inline ColorB AZColorToLYColorB(const AZ::Color& source)
 {
     return ColorB(source.ToU32());
@@ -88,30 +99,10 @@ inline AZ::Color LYColorBToAZColor(const ColorB& source)
 {
     return AZ::Color(source.r, source.g, source.b, source.a);
 }
+AZ_POP_DISABLE_WARNING
 
-
-inline AZ::Quaternion LYQuaternionToAZQuaternion(const Quat& source)
-{
-    const float f4[4] = { source.v.x, source.v.y, source.v.z, source.w };
-    return AZ::Quaternion::CreateFromFloat4(f4);
-}
-
-inline Quat AZQuaternionToLYQuaternion(const AZ::Quaternion& source)
-{
-    float f4[4];
-    source.StoreToFloat4(f4);
-    return Quat(f4[3], f4[0], f4[1], f4[2]);
-}
-
-inline Matrix34 AZTransformToLYTransform(const AZ::Transform& source)
-{
-    return Matrix34::CreateFromVectors(
-        AZVec3ToLYVec3(source.GetBasisX()),
-        AZVec3ToLYVec3(source.GetBasisY()),
-        AZVec3ToLYVec3(source.GetBasisZ()),
-        AZVec3ToLYVec3(source.GetTranslation()));
-}
-
+// Disable the deprecated-declarations warning for all conversion operators of Matrix33
+AZ_PUSH_DISABLE_WARNING(4996, "-Wdeprecated-declarations");
 inline Matrix33 AZMatrix3x3ToLYMatrix3x3(const AZ::Matrix3x3& source)
 {
     return Matrix33::CreateFromVectors(
@@ -126,6 +117,18 @@ inline AZ::Matrix3x3 LyMatrix3x3ToAzMatrix3x3(const Matrix33& source)
         LYVec3ToAZVec3(source.GetColumn(0)),
         LYVec3ToAZVec3(source.GetColumn(1)),
         LYVec3ToAZVec3(source.GetColumn(2)));
+}
+AZ_POP_DISABLE_WARNING
+
+// Disable the deprecated-declarations warning for all conversion operators of Matrix34
+AZ_PUSH_DISABLE_WARNING(4996, "-Wdeprecated-declarations");
+inline Matrix34 AZTransformToLYTransform(const AZ::Transform& source)
+{
+    return Matrix34::CreateFromVectors(
+        AZVec3ToLYVec3(source.GetBasisX()),
+        AZVec3ToLYVec3(source.GetBasisY()),
+        AZVec3ToLYVec3(source.GetBasisZ()),
+        AZVec3ToLYVec3(source.GetTranslation()));
 }
 
 inline Matrix34 AZMatrix3x4ToLYMatrix3x4(const AZ::Matrix3x4& source)
@@ -152,35 +155,7 @@ inline AZ::Matrix3x4 LYTransformToAZMatrix3x4(const Matrix34& source)
 {
     return AZ::Matrix3x4::CreateFromRowMajorFloat12(source.GetData());
 }
-
-inline AABB AZAabbToLyAABB(const AZ::Aabb& source)
-{
-    return AABB(AZVec3ToLYVec3(source.GetMin()), AZVec3ToLYVec3(source.GetMax()));
-}
-
-inline AZ::Aabb LyAABBToAZAabb(const AABB& source)
-{
-    return AZ::Aabb::CreateFromMinMax(LYVec3ToAZVec3(source.min), LYVec3ToAZVec3(source.max));
-}
-
-inline AZ::Obb LyOBBtoAZObb(const OBB& source)
-{
-    const AZ::Vector3 position = LYVec3ToAZVec3(source.c);
-    const AZ::Quaternion rotation = AZ::Quaternion::CreateFromMatrix3x3(LyMatrix3x3ToAzMatrix3x3(source.m33));
-    const AZ::Vector3 halfLengths(source.h.x, source.h.y, source.h.z);
-    return AZ::Obb::CreateFromPositionRotationAndHalfLengths(position, rotation, halfLengths);
-}
-
-inline OBB AZObbToLyOBB(const AZ::Obb& source)
-{
-    return OBB::CreateOBB(
-        Matrix33::CreateFromVectors(
-            AZVec3ToLYVec3(source.GetAxisX()),
-            AZVec3ToLYVec3(source.GetAxisY()),
-            AZVec3ToLYVec3(source.GetAxisZ())),
-        Vec3(source.GetHalfLengthX(), source.GetHalfLengthY(), source.GetHalfLengthZ()),
-        AZVec3ToLYVec3(source.GetPosition()));
-}
+AZ_POP_DISABLE_WARNING
 
 inline AZ::Plane LyPlaneToAZPlane(const ::Plane& source)
 {

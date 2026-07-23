@@ -19,6 +19,7 @@ o3de_add_target(
     BUILD_DEPENDENCIES
         PRIVATE
             AZ::AzCore
+            AZ::AzFramework
 )
 
 o3de_add_target(

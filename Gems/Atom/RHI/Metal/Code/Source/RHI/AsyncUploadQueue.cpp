@@ -109,7 +109,7 @@ namespace AZ
                 fenceToSignal = &fence;
             }
 
-            m_copyQueue->QueueCommand([=](void* queue)
+            m_copyQueue->QueueCommand([=, this](void* queue)
             {
                 AZ_PROFILE_SCOPE(RHI, "Upload Buffer");
                 size_t pendingByteOffset = 0;
@@ -164,13 +164,13 @@ namespace AZ
         {
             auto& device = static_cast<Device&>(GetDevice());
             id<MTLDevice> mtlDevice = device.GetMtlDevice();
-            auto* image = static_cast<Image*>(request.m_image);
+            auto* image = static_cast<Image*>(request.m_image.get());
             const uint16_t startMip = residentMip - 1;
             const uint16_t endMip = static_cast<uint16_t>(residentMip - request.m_mipSlices.size());
 
             uint64_t queueValue = m_uploadFence.Increment();
             
-            CommandQueue::Command command = [=](void* queue)
+            CommandQueue::Command command = [=, this](void* queue)
             {
                 CommandQueue* commandQueue = static_cast<CommandQueue*>(queue);
                 FramePacket* framePacket = BeginFramePacket(commandQueue);

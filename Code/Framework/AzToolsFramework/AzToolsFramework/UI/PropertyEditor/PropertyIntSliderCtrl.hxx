@@ -5,20 +5,16 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
-
-#ifndef PROPERTY_INTSLIDER_CTRL
-#define PROPERTY_INTSLIDER_CTRL
-
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 #include <AzToolsFramework/UI/PropertyEditor/PropertyIntCtrlCommon.h>
 #include <AzQtComponents/Components/Widgets/SliderCombo.h>
-#endif
 
 namespace AzToolsFramework
 {
-    class PropertyIntSliderCtrl
+    class AZTF_API PropertyIntSliderCtrl
         : public QWidget
     {
         Q_OBJECT
@@ -64,7 +60,7 @@ namespace AzToolsFramework
     };
 
     // Base class to allow QObject inheritance and definitions for IntSpinBoxHandlerCommon class template
-    class IntSliderHandlerQObject
+    class AZTF_API IntSliderHandlerQObject
         : public QObject
     {
         // this is a Qt Object purely so it can connect to slots with context.  This is the only reason its in this header.
@@ -91,8 +87,13 @@ namespace AzToolsFramework
     QWidget* IntSliderHandler<ValueType>::CreateGUI(QWidget* parent)
     {
         PropertyIntSliderCtrl* newCtrl = static_cast<PropertyIntSliderCtrl*>(BaseHandler::CreateGUI(parent));
+        this->connect(newCtrl, &PropertyIntSliderCtrl::valueChanged, this, [newCtrl]()
+        {
+            AzToolsFramework::PropertyEditorGUIMessages::Bus::Broadcast(&PropertyEditorGUIMessages::Bus::Events::RequestWrite, newCtrl);
+        });
         this->connect(newCtrl, &PropertyIntSliderCtrl::editingFinished, this, [newCtrl]()
         {
+            AzToolsFramework::PropertyEditorGUIMessages::Bus::Broadcast(&PropertyEditorGUIMessages::Bus::Handler::RequestWrite, newCtrl);
             AzToolsFramework::PropertyEditorGUIMessages::Bus::Broadcast(&PropertyEditorGUIMessages::Bus::Handler::OnEditingFinished, newCtrl);
         });
 
@@ -135,7 +136,5 @@ namespace AzToolsFramework
         }
     }
 
-    void RegisterIntSliderHandlers();
+    AZTF_API void RegisterIntSliderHandlers();
 };
-
-#endif

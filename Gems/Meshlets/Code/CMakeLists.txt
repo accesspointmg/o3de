@@ -14,11 +14,9 @@ o3de_add_target(
     INCLUDE_DIRECTORIES
         PUBLIC
             Include
-            External/Include
             Source
             Source/${gem_name}
         PRIVATE
-            External/Include
             Source
             Source/${gem_name}
     BUILD_DEPENDENCIES
@@ -27,6 +25,7 @@ o3de_add_target(
             AZ::AzFramework
             Gem::CommonFeaturesAtom.Static
             Gem::Atom_RPI.Public
+            3rdParty::meshoptimizer
 )
 
 # Here add ${gem_name} target, it depends on the ${gem_name}.Static
@@ -88,7 +87,6 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
         NAMESPACE Gem
-        AUTOMOC
         FILES_CMAKE
             meshlets_editor_shared_files.cmake
         INCLUDE_DIRECTORIES

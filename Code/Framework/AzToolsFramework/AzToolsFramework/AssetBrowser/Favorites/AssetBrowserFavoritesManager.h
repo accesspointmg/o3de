@@ -12,6 +12,7 @@
 
 #include <AzFramework/Asset/AssetCatalogBus.h>
 
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 #include <AzToolsFramework/AssetBrowser/AssetBrowserBus.h>
 #include <AzToolsFramework/AssetBrowser/Entries/FolderAssetBrowserEntry.h>
 #include <AzToolsFramework/AssetBrowser/Favorites/EntryAssetBrowserFavoriteItem.h>
@@ -27,7 +28,7 @@ namespace AzToolsFramework
         class EntryAssetBrowserFavoriteItem;
         class AssetBrowserFavoritesView;
 
-        class AssetBrowserFavoritesManager
+        class AZTF_API AssetBrowserFavoritesManager
             : private AzFramework::AssetCatalogEventBus::Handler
             , private AssetBrowserFavoriteRequestBus::Handler
             , private AzToolsFramework::AssetBrowser::AssetBrowserComponentNotificationBus::Handler
@@ -75,6 +76,10 @@ namespace AzToolsFramework
             bool m_loading = false;
 
             AZStd::unordered_map<const AssetBrowserEntry*, AssetBrowserFavoriteItem*> m_favoriteEntriesCache;
+
+            // Paths that could not be resolved during LoadFavorites (cache not yet populated).
+            // These are preserved across saves so they are not lost between sessions.
+            AZStd::vector<AZStd::string> m_unresolvedFavoritePaths;
 
             QString GetProjectName();
             void AddFavoriteItem(AssetBrowserFavoriteItem* item);

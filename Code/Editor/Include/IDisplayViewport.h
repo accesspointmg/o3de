@@ -9,7 +9,10 @@
 #pragma once
 
 class QPoint;
-struct AABB;
+namespace AZ
+{
+    class Aabb;
+}
 class CViewport;
 
 struct IDisplayViewport
@@ -35,8 +38,8 @@ struct IDisplayViewport
     };
     virtual void GetPerpendicularAxis(EAxis* axis, bool* is2D) const = 0;
 
-    virtual const Matrix34& GetViewTM() const = 0;
-    virtual const Matrix34& GetScreenTM() const = 0;
+    virtual const AZ::Matrix3x4& GetViewTM() const = 0;
+    virtual const AZ::Matrix3x4& GetScreenTM() const = 0;
     virtual QPoint WorldToView(const Vec3& worldPoint) const = 0;
     virtual Vec3 WorldToView3D(const Vec3& worldPoint, int flags = 0) const = 0;
     virtual Vec3 ViewToWorld(const QPoint& vp, bool* collideWithTerrain = nullptr, bool onlyTerrain = false, bool bSkipVegetation = false, bool bTestRenderMesh = false, bool* collideWithObject = nullptr) const = 0;
@@ -45,7 +48,7 @@ struct IDisplayViewport
 
     virtual float GetAspectRatio() const = 0;
 
-    virtual bool IsBoundsVisible(const AABB& box) const = 0;
+    virtual bool IsBoundsVisible(const AZ::Aabb& box) const = 0;
 
     virtual void ScreenToClient(QPoint& pt) const = 0;
     virtual void GetDimensions(int* width, int* height) const = 0;

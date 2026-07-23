@@ -32,12 +32,12 @@ namespace EMStudio
         // create the layout
         QVBoxLayout* layout = new QVBoxLayout();
         layout->setSpacing(2);
-        layout->setMargin(0);
+        layout->setContentsMargins(0, 0, 0, 0);
 
         // checkbox to enable/disable manual mode for all morph targets
         m_selectAll = new QCheckBox("Select All");
         m_selectAll->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
-        connect(m_selectAll, &QCheckBox::stateChanged, this, &MorphTargetGroupWidget::SetManualModeForAll);
+        connect(m_selectAll, &QCheckBox::checkStateChanged, this, &MorphTargetGroupWidget::SetManualModeForAll);
 
         // button for resetting all morph targets
         QPushButton* resetAll = new QPushButton("Reset All");
@@ -49,7 +49,7 @@ namespace EMStudio
         topControlLayout->addWidget(m_selectAll);
         topControlLayout->addWidget(resetAll);
         topControlLayout->setSpacing(5);
-        topControlLayout->setMargin(0);
+        topControlLayout->setContentsMargins(0, 0, 0, 0);
 
         // add the top control layout in the main layout
         layout->addLayout(topControlLayout);
@@ -375,4 +375,3 @@ namespace EMStudio
 } // namespace EMStudio
 
 
-#include <EMotionFX/Tools/EMotionStudio/Plugins/StandardPlugins/Source/MorphTargetsWindow/moc_MorphTargetGroupWidget.cpp>

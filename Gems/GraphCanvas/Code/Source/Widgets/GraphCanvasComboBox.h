@@ -7,7 +7,6 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <QCompleter>
 #include <QDialog>
 #include <QLineEdit>
@@ -16,6 +15,7 @@
 #include <QTableView>
 #include <QTimer>
 #include <QWidget>
+#include <QRegularExpression>
 
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/PlatformDef.h>
@@ -24,7 +24,6 @@
 #include <GraphCanvas/Editor/EditorTypes.h>
 #include <GraphCanvas/Utils/StateControllers/StackStateController.h>
 #include <GraphCanvas/Widgets/ComboBox/ComboBoxItemModelInterface.h>
-#endif
 
 namespace GraphCanvas
 {
@@ -53,7 +52,7 @@ namespace GraphCanvas
 
     private:
         QString m_filter;
-        QRegExp m_testRegex;
+        QRegularExpression m_testRegex;
     };
 
     class GraphCanvasComboBoxMenu

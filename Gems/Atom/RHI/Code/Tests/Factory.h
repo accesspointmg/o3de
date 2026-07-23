@@ -90,6 +90,8 @@ namespace UnitTest
 
         AZ::RHI::Ptr<AZ::RHI::DeviceRayTracingBlas> CreateRayTracingBlas() override;
 
+        AZ::RHI::Ptr<AZ::RHI::DeviceRayTracingClusterBlas> CreateRayTracingClusterBlas() override;
+
         AZ::RHI::Ptr<AZ::RHI::DeviceRayTracingTlas> CreateRayTracingTlas() override;
 
         AZ::RHI::Ptr<AZ::RHI::DeviceRayTracingPipelineState> CreateRayTracingPipelineState() override;
@@ -97,5 +99,9 @@ namespace UnitTest
         AZ::RHI::Ptr<AZ::RHI::DeviceRayTracingShaderTable> CreateRayTracingShaderTable() override;
 
         AZ::RHI::Ptr<AZ::RHI::DeviceDispatchRaysIndirectBuffer> CreateDispatchRaysIndirectBuffer() override;
+
+        AZ::RHI::Ptr<AZ::RHI::DeviceRayTracingCompactionQueryPool> CreateRayTracingCompactionQueryPool() override;
+
+        AZ::RHI::Ptr<AZ::RHI::DeviceRayTracingCompactionQuery> CreateRayTracingCompactionQuery() override;
     };
 }

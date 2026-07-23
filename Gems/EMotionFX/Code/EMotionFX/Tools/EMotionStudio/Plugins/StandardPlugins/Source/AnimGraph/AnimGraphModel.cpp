@@ -20,9 +20,9 @@
 #include <EMotionFX/CommandSystem/Source/AnimGraphConnectionCommands.h>
 #include <EMotionFX/CommandSystem/Source/AnimGraphTriggerActionCommands.h>
 #include <EMotionStudio/Plugins/StandardPlugins/Source/AnimGraph/AnimGraphModel.h>
-#include <QtGui/QFont>
-#include <QtGui/QColor>
-#include <QtGui/QPixmap>
+#include <QFont>
+#include <QColor>
+#include <QPixmap>
 
 
 namespace EMStudio
@@ -1460,4 +1460,3 @@ namespace EMStudio
     }
 } // namespace EMStudio
 
-#include <EMotionFX/Tools/EMotionStudio/Plugins/StandardPlugins/Source/AnimGraph/moc_AnimGraphModel.cpp>

@@ -225,7 +225,7 @@ namespace AssetProcessor
 
         if (queueDbCommandsOnMainThread && !m_shutdownRequested)
         {
-            AZ::SystemTickBus::QueueFunction([=]()
+            AZ::SystemTickBus::QueueFunction([this, productPK, databaseConnection, dependencyTokenName, missingDependencies, callback]()
             {
                 ReportMissingDependencies(productPK, databaseConnection, dependencyTokenName, missingDependencies, callback);
             });
@@ -596,7 +596,7 @@ namespace AssetProcessor
                         // This first check will catch paths that include the project name, as well as references to assets that include a scan folder in the path.
                         if (culledProductPath.compare(searchName, Qt::CaseInsensitive) != 0)
                         {
-                            int nextFolderIndex = culledProductPath.indexOf(AZ_CORRECT_DATABASE_SEPARATOR_STRING);
+                            int nextFolderIndex = static_cast<int>(culledProductPath.indexOf(AZ_CORRECT_DATABASE_SEPARATOR_STRING));
                             if (nextFolderIndex == -1)
                             {
                                 continue;

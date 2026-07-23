@@ -45,6 +45,10 @@ o3de_add_target(
         Gem::AtomToolsFramework.Editor
 )
 
+if(O3DE_PAL_TRAIT_BUILD_EXTERNAL_CRASH_HANDLER_SUPPORTED)
+    ly_target_link_libraries(ShaderManagementConsole PRIVATE AZ::ToolsCrashHandler)
+endif()
+
 o3de_set_gem_variant_to_load(TARGETS ShaderManagementConsole VARIANTS Tools)
 
 # Add a 'builders' alias to allow the ShaderManagementConsole root gem path to be added to the generated

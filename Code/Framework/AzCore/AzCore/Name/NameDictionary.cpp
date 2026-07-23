@@ -93,7 +93,7 @@ namespace AZ
         // invalidating our list.
         m_deferredHead.m_linkedToDictionary = true;
     }
-    
+
     NameDictionary::~NameDictionary()
     {
         // Unload deferred names
@@ -102,7 +102,7 @@ namespace AZ
         // Ensure our module's static name list is up-to-date with what's in our deferred list.
         // This allows the NameDictionary to be recreated and restore and name literals that still exist
         // in e.g. unit tests.
-        Name::s_staticNameBegin = m_deferredHead.m_nextName;
+        Name::SetStaticNameBegin(m_deferredHead.m_nextName);
 
         [[maybe_unused]] bool leaksDetected = false;
 
@@ -226,13 +226,13 @@ namespace AZ
 
         Name::Hash hash = CalcHash(nameString);
 
-        // If we find the same name with the same hash, just return it. 
+        // If we find the same name with the same hash, just return it.
         // This path is faster than the loop below because FindName() takes a shared_lock whereas the
         // loop requires a unique_lock to modify the dictionary.
         Name name = FindName(hash);
         if (name.GetStringView() == nameString)
         {
-            return AZStd::move(name);
+            return name;
         }
 
         // The name doesn't exist in the dictionary, so we have to lock and add it

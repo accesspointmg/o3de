@@ -7,15 +7,14 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
 #include <QTableView>
+#include <QRegularExpression>
 
 #include <AzCore/Memory/SystemAllocator.h>
 
 #include <ScriptCanvas/Data/Data.h>
-#endif
 
 namespace ScriptCanvasEditor
 {
@@ -96,6 +95,6 @@ namespace ScriptCanvasEditor
 
     private:
         QString m_filter;
-        QRegExp m_testRegex;
+        QRegularExpression m_testRegex;
     };
 }

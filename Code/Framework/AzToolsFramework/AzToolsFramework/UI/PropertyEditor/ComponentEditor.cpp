@@ -27,7 +27,6 @@
 #include <AzQtComponents/Components/Widgets/CardNotification.h>
 #include <AzQtComponents/Utilities/QtViewPaneEffects.h>
 
-#include <QDesktopWidget>
 #include <QMenu>
 #include <QPushButton>
 AZ_PUSH_DISABLE_WARNING(4251, "-Wunknown-warning-option") // 4251: 'QLayoutItem::align': class 'QFlags<Qt::AlignmentFlag>' needs to have dll-interface to be used by clients of class 'QLayoutItem'
@@ -38,7 +37,7 @@ AZ_PUSH_DISABLE_WARNING(4251 4244, "-Wunknown-warning-option") // 4251: 'QInputE
                                                                // 4244: 'return': conversion from 'qreal' to 'int', possible loss of data
 #include <QContextMenuEvent>
 AZ_POP_DISABLE_WARNING
-#include <QtWidgets/QApplication>
+#include <QApplication>
 #include <AzToolsFramework/Viewport/ViewportMessages.h>
 
 namespace AzToolsFramework
@@ -46,7 +45,7 @@ namespace AzToolsFramework
     namespace ComponentEditorConstants
     {
         static const int kPropertyLabelWidth = 160; // Width of property label column in property grid.
-        static const char* kUnknownComponentTitle = "-";
+        static const char* kUnknownComponentTitle = "";
 
         // names for widgets so they can be found in stylesheet
         static const char* kPropertyEditorId = "PropertyEditor";
@@ -440,7 +439,7 @@ namespace AzToolsFramework
         auto featureButton = notification->addButtonFeature(tr("Add Required Component \342\226\276"));
         connect(featureButton, &QPushButton::clicked, this, [this, featureButton, services, incompatibleServices]()
         {
-            QRect screenRect(qApp->desktop()->availableGeometry(featureButton));
+            QRect screenRect(qApp->primaryScreen()->availableGeometry());
             QRect menuRect(
                 featureButton->mapToGlobal(featureButton->rect().topLeft()),
                 featureButton->mapToGlobal(featureButton->rect().bottomRight()));
@@ -470,6 +469,11 @@ namespace AzToolsFramework
 
     bool ComponentEditor::AreAnyComponentsDisabled() const
     {
+        if (m_preventDataAccess) // are we during some sort of full ui rebuild?
+        {
+            return false;
+        }
+
         for (auto component : m_components)
         {
             auto entity = component->GetEntity();
@@ -605,6 +609,11 @@ namespace AzToolsFramework
 
     void ComponentEditor::QueuePropertyEditorInvalidationForComponent(AZ::EntityComponentIdPair entityComponentIdPair, PropertyModificationRefreshLevel refreshLevel)
     {
+        if (m_preventDataAccess) // are we during some sort of full ui rebuild?
+        {
+            return;
+        }
+
         for (const auto component : m_components)
         {
             if ((component->GetId() == entityComponentIdPair.GetComponentId()) 
@@ -623,6 +632,7 @@ namespace AzToolsFramework
 
     void ComponentEditor::PreventRefresh(bool shouldPrevent)
     {
+        m_preventDataAccess = shouldPrevent;
         GetPropertyEditor()->PreventDataAccess(shouldPrevent);
     }
 
@@ -979,6 +989,11 @@ namespace AzToolsFramework
 
     bool ComponentEditor::HasComponentWithId(AZ::ComponentId componentId)
     {
+        if (m_preventDataAccess) // are we during some sort of full ui rebuild?
+        {
+            return false;
+        }
+
         for (AZ::Component* component : m_components)
         {
             if (component->GetId() == componentId)
@@ -1030,4 +1045,3 @@ namespace AzToolsFramework
     }
 }
 
-#include "UI/PropertyEditor/moc_ComponentEditor.cpp"

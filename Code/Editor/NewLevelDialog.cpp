@@ -13,22 +13,27 @@
 #include "NewLevelDialog.h"
 
 // Qt
-#include <QtWidgets/QPushButton>
+#include <QApplication>
+#include <QComboBox>
+#include <QLabel>
+#include <QPainter>
+#include <QPushButton>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QStyledItemDelegate>
 #include <QTimer>
 #include <QToolButton>
 #include <QListWidgetItem>
+#include <QRegularExpression>
+#include <QSignalBlocker>
 
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <ui_NewLevelDialog.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
-
 
 // Folder in which levels are stored
 static const char kNewLevelDialog_LevelsFolder[] = "Levels";
 static constexpr const char* RegistryKey_CustomTemplatePaths = "/O3DE/Preferences/Prefab/CustomTemplatePaths";
 static constexpr const char* DefaultTemplate = "Default_Level.prefab";
+
 
 class LevelFolderValidator : public QValidator
 {
@@ -74,15 +79,20 @@ CNewLevelDialog::CNewLevelDialog(QWidget* pParent /*=nullptr*/)
     setStyleSheet("QListWidget::item {height: 148px; padding-left: 0px; padding-right: 0px; background-color: transparent;}");
     InitTemplateListWidget();
 
+    // Populate the "Root" combo box from the project + active gems, then
+    // hide it entirely if the project is the only available root so the
+    // dialog looks identical for legacy projects.
+    PopulateRootSelector();
+
     // Level name only supports ASCII characters
-    QRegExp rx("[_a-zA-Z0-9-]+");
-    QValidator* validator = new QRegExpValidator(rx, this);
+    QRegularExpression rx("[_a-zA-Z0-9-]+");
+    QValidator* validator = new QRegularExpressionValidator(rx, this);
     ui->LEVEL->setValidator(validator);
 
     validator = new LevelFolderValidator(this);
     ui->LEVEL_FOLDERS->lineEdit()->setValidator(validator);
     ui->LEVEL_FOLDERS->setErrorToolTip(
-        QString("The location must be a folder underneath the current project's %1 folder. (%2)")
+        QString("The location must be a folder underneath the selected %1 root. (%2)")
             .arg(kNewLevelDialog_LevelsFolder)
             .arg(GetLevelsFolder()));
 
@@ -151,7 +161,7 @@ void CNewLevelDialog::InitTemplateListWidget() const
         {
             if (fileName.compare(QString::fromUtf8(DefaultTemplate), Qt::CaseInsensitive) == 0)
             {
-                defaultItem = allTemplateFiles.size();
+                defaultItem = static_cast<int>(allTemplateFiles.size());
             }
             allTemplateFiles.push_back(projectTemplateDirectory.filePath(fileName));
         }
@@ -174,6 +184,7 @@ void CNewLevelDialog::InitTemplateListWidget() const
     ui->listTemplates->setViewMode(QListWidget::IconMode);
     ui->listTemplates->setIconSize(iconSize);
     ui->listTemplates->setDragDropMode(QAbstractItemView::NoDragDrop);
+    ui->listTemplates->setItemDelegate(new DrawIconWithBackgroundDelegate(ui->listTemplates));
     if (ui->listTemplates->count() > 0)
     {
         ui->listTemplates->setCurrentRow(defaultItem);
@@ -240,16 +251,85 @@ void CNewLevelDialog::OnInitDialog()
 //////////////////////////////////////////////////////////////////////////
 void CNewLevelDialog::ReloadLevelFolder()
 {
+    // Use the active root's absolute path as the displayed location. This
+    // keeps GetLevel()'s "relative to the active root" computation
+    // unambiguous - feeding a literal "Levels/" placeholder back through
+    // QDir::relativeFilePath returns the placeholder unchanged, which then
+    // duplicates the Levels segment when CreateLevel reassembles the path.
     ui->LEVEL_FOLDERS->lineEdit()->clear();
-    ui->LEVEL_FOLDERS->setText(QString(kNewLevelDialog_LevelsFolder) + '/');
+    ui->LEVEL_FOLDERS->setText(GetLevelsFolder());
 }
 
 QString CNewLevelDialog::GetLevelsFolder() const
 {
+    // Resolve to whichever root the user has currently selected (project by
+    // default, or one of the gems exposed via the LEVEL_ROOT combo).
+    if (const LevelRoots::Root* root = CurrentRoot())
+    {
+        return QDir(root->absolutePath).absolutePath();
+    }
+
     QDir projectDir = QDir(Path::GetEditingGameDataFolder().c_str());
     QDir projectLevelsDir = QDir(QStringLiteral("%1/%2").arg(projectDir.absolutePath()).arg(kNewLevelDialog_LevelsFolder));
 
     return projectLevelsDir.absolutePath();
+}
+
+//======================================================================
+// Root selector
+//======================================================================
+void CNewLevelDialog::PopulateRootSelector()
+{
+    // The New Level dialog is a save flow, so include every active gem
+    // even if its Assets/Levels folder is missing - CreateLevel will mkdir
+    // any missing intermediate directories on first save.
+    m_roots = LevelRoots::Enumerate(LevelRoots::Mode::AllActive);
+
+    QComboBox* combo = ui->LEVEL_ROOT;
+    QSignalBlocker blocker(combo);
+    combo->clear();
+    for (const LevelRoots::Root& root : m_roots)
+    {
+        combo->addItem(root.displayName, root.absolutePath);
+    }
+    combo->setCurrentIndex(0);
+
+    connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &CNewLevelDialog::OnRootSelected);
+
+    // Hide the row for legacy single-root projects so the dialog stays
+    // visually identical when no gem advertises a Levels folder.
+    const bool multipleRoots = m_roots.size() > 1;
+    if (auto* label = findChild<QLabel*>(QStringLiteral("LEVEL_ROOT_LABEL")))
+    {
+        label->setVisible(multipleRoots);
+    }
+    combo->setVisible(multipleRoots);
+}
+
+const LevelRoots::Root* CNewLevelDialog::CurrentRoot() const
+{
+    const int index = ui->LEVEL_ROOT ? ui->LEVEL_ROOT->currentIndex() : 0;
+    if (index >= 0 && index < m_roots.size())
+    {
+        return &m_roots[index];
+    }
+    return nullptr;
+}
+
+void CNewLevelDialog::OnRootSelected(int /*index*/)
+{
+    // Anchor the location field to the new root's absolute path so that
+    // GetLevel()'s relative-path computation produces just "<levelName>"
+    // and CreateLevel doesn't end up doubling the "Levels" segment.
+    m_levelFolders = GetLevelsFolder();
+    UpdateData(false);
+    ui->LEVEL_FOLDERS->setErrorToolTip(
+        QString("The location must be a folder underneath the selected %1 root. (%2)")
+            .arg(kNewLevelDialog_LevelsFolder)
+            .arg(GetLevelsFolder()));
+    // Re-validate; UpdateData(true) is a no-op since the line edit already
+    // matches m_levelFolders, but the OK button enable state depends on it.
+    OnLevelNameChange();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -296,8 +376,21 @@ void CNewLevelDialog::OnLevelNameChange()
 {
     UpdateData(true);
 
-    // QRegExpValidator means the string will always be valid as long as it's not empty:
-    const bool valid = !m_level.isEmpty() && ValidateLevel();
+    // QRegularExpressionValidator means the string will always be valid as long as it's not empty:
+    bool valid = !m_level.isEmpty() && ValidateLevel();
+    if (valid)
+    {
+        QDir levelDir(QString("%1/%2/").arg(m_levelFolders, m_level));
+        QString strLevelPath = levelDir.absoluteFilePath(m_level + EditorUtils::LevelFile::GetDefaultFileExtension());
+        
+        if (strLevelPath.length() >= AZ::IO::MaxPathLength)
+        {
+            valid = false;
+
+            qsizetype levelMaxLength = (AZ::IO::MaxPathLength - m_levelFolders.length() - QString(EditorUtils::LevelFile::GetDefaultFileExtension()).length() - 2) / 2;
+            QMessageBox::warning(this, tr("Unable to Save Level"), QObject::tr("The level name is too long, the maximum is '%1'.").arg(levelMaxLength), QMessageBox::Ok, QMessageBox::Ok);
+        }
+    }
 
     // Use the validity to dynamically change the Ok button's enabled state
     if (QPushButton* button = ui->buttonBox->button(QDialogButtonBox::Ok))
@@ -335,4 +428,3 @@ void CNewLevelDialog::showEvent(QShowEvent* event)
     QDialog::showEvent(event);
 }
 
-#include <moc_NewLevelDialog.cpp>

@@ -403,23 +403,36 @@ namespace Multiplayer
 
     void NetworkEntityManager::RemoveEntities()
     {
-        AZStd::vector<NetEntityId> removeList;
-        removeList.swap(m_removeList);
-        for (NetEntityId entityId : removeList)
+        // this removes entities locally, and from the tracking list in the network entity tracker.
+        // 
+
+        // First collect their entityIds and remove them from the tracker itself.
+        AZStd::vector<AZ::EntityId> removeEntityIds;
+        removeEntityIds.reserve(m_removeList.size());
+        for (const NetEntityId& entityId : m_removeList)
         {
             NetworkEntityHandle removeEntity = m_networkEntityTracker.Get(entityId);
-
             if (removeEntity != nullptr)
             {
-                // If we've spawned entities through @NetworkEntityManager::CreateEntitiesImmediate
-                // then we destroy those entities here by processing the removal list.
-                // Note that if we've spawned entities through @NetworkPrefabSpawnerComponent::SpawnPrefab
-                // we should instead use the SpawnableEntitiesManager to destroy them.
-                AzFramework::GameEntityContextRequestBus::Broadcast(
-                    &AzFramework::GameEntityContextRequestBus::Events::DestroyGameEntity, removeEntity.GetEntity()->GetId());
-
-                m_networkEntityTracker.erase(entityId);
+                removeEntityIds.push_back(removeEntity.GetEntity()->GetId());
             }
+            m_networkEntityTracker.erase(entityId);
+        }
+        m_removeList.clear();
+
+        // Now, erase them from the "real" entity game local context, using just the cached
+        // entityIds.
+        // iterate over the entityIds in the removeEntityIds vector, in reverse.  The order won't
+        // actually cause problems no matter what order we do it in, but since entities tend to get
+        // added to the tracker from parent first, then child, reversing will more often than not
+        // remove children first, which causes less events to fire.  This is "free" to do, but
+        // actually trying to force this into the order of the children will be more expensive
+        // than actually removing the entities in the wrong order, so don't bother actually searching
+        // first.
+        for (auto it = removeEntityIds.rbegin(); it != removeEntityIds.rend(); ++it)
+        {
+            AzFramework::GameEntityContextRequestBus::Broadcast(
+                &AzFramework::GameEntityContextRequestBus::Events::DestroyGameEntity, *it);
         }
     }
 
@@ -464,6 +477,12 @@ namespace Multiplayer
                 auto it = originalToCloneIdMap.find(parentId);
                 if (it != originalToCloneIdMap.end())
                 {
+                    // Note: The need to remove and readd the transform component parent will go away once this method replaces serializeContext->CloneObject
+                    //    with the standard AzFramework::SpawnableEntitiesInterface::SpawnEntities
+                    // This stops SetParentRelative() from printing distracting warnings, due to the cloned component m_entity being null.
+                    // AddComponent properly sets the component's m_entity. 
+                    clone->RemoveComponent(cloneTransformComponent);
+                    clone->AddComponent(cloneTransformComponent);
                     cloneTransformComponent->SetParentRelative(it->second);
                 }
                 else
@@ -482,7 +501,12 @@ namespace Multiplayer
 
             const NetEntityId netEntityId = NextId();
             cloneNetBindComponent->PreInit(clone, prefabEntityId, netEntityId, netEntityRole);
-            cloneTransformComponent->SetWorldTM(transform);
+
+            // Set the transform if we're a root entity (have no parent); otherwise, keep the local transform
+            if (!parentId.IsValid() || removeParent)
+            {
+                cloneTransformComponent->SetWorldTM(transform);
+            }
 
             if (autoActivate == AutoActivate::DoNotActivate)
             {
@@ -643,7 +667,7 @@ namespace Multiplayer
         return ticket;
     }
 
-    void NetworkEntityManager::OnRootSpawnableAssigned(AZ::Data::Asset<AzFramework::Spawnable> rootSpawnable,
+    void NetworkEntityManager::OnRootSpawnableAssigned([[maybe_unused]] AZ::Data::Asset<AzFramework::Spawnable> rootSpawnable,
         [[maybe_unused]] uint32_t generation)
     {
         auto* multiplayer = GetMultiplayer();

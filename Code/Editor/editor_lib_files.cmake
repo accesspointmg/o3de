@@ -256,6 +256,8 @@ set(FILES
     StartupTraceHandler.h
     LevelTreeModel.cpp
     LevelTreeModel.h
+    LevelRoots.cpp
+    LevelRoots.h
     Include/Command.h
     Include/HitContext.h
     Include/ICommandManager.h
@@ -393,7 +395,6 @@ set(FILES
     IPostRenderer.h
     ToolBox.h
     TrackViewNewSequenceDialog.h
-    Util/GeometryUtil.h
     LevelIndependentFileMan.cpp
     LevelIndependentFileMan.h
     PythonEditorFuncs.cpp
@@ -497,6 +498,7 @@ set(FILES
     TrackView/SelectKeyUIControls.cpp
     TrackView/SequenceKeyUIControls.cpp
     TrackView/SoundKeyUIControls.cpp
+    TrackView/StringKeyUIControls.cpp
     TrackView/TrackEventKeyUIControls.cpp
     TrackView/TrackViewTrackPropsDlg.ui
     TrackView/TVEventsDialog.cpp
@@ -522,6 +524,7 @@ set(FILES
     TrackView/TrackViewEventNode.h
     TrackView/TrackViewMessageBox.cpp
     TrackView/TrackViewMessageBox.h
+    TrackView/VectorKeyUIControls.cpp
     Util/AffineParts.h
     Util/AutoLogTime.cpp
     Util/AutoLogTime.h
@@ -538,7 +541,6 @@ set(FILES
     Util/FileUtil.h
     Util/FileUtil_Common.h
     Util/FileUtil_Common.cpp
-    Util/GeometryUtil.cpp
     Util/GuidUtil.cpp
     Util/GuidUtil.h
     Util/Mailer.h

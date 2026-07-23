@@ -47,7 +47,7 @@ namespace UnitTest
         EXPECT_THAT(matrix * vector, IsClose(vector + translation));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4CreateFixture, ::testing::ValuesIn(MathTestData::Vector3s));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4CreateFixture, ::testing::ValuesIn(MathTestData::Vector3s));
 
     TEST(MATH_Matrix3x4, CreateFromValue)
     {
@@ -172,7 +172,7 @@ namespace UnitTest
         EXPECT_NEAR(projectedDotProduct, projectedMagnitudeSq * cosf(angle), 1e-3f);
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4CreateRotationFixture, ::testing::ValuesIn(MathTestData::Angles));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4CreateRotationFixture, ::testing::ValuesIn(MathTestData::Angles));
 
     TEST(MATH_Matrix3x4, CreateFromRows)
     {
@@ -345,7 +345,7 @@ namespace UnitTest
         const AZ::Quaternion quaternion = GetParam();
         const AZ::Matrix3x4 matrix = AZ::Matrix3x4::CreateFromQuaternion(quaternion);
         EXPECT_THAT(matrix.GetTranslation(), IsClose(AZ::Vector3::CreateZero()));
-        const AZ::Vector3 vector(2.3f, -0.6, 1.8f);
+        const AZ::Vector3 vector(2.3f, -0.6f, 1.8f);
         EXPECT_THAT(matrix * vector, IsClose(quaternion.TransformVector(vector)));
     }
 
@@ -355,7 +355,7 @@ namespace UnitTest
         const AZ::Vector3 translation(-2.6f, 1.7f, 0.8f);
         const AZ::Matrix3x4 matrix = AZ::Matrix3x4::CreateFromQuaternionAndTranslation(quaternion, translation);
         EXPECT_THAT(matrix.GetTranslation(), IsClose(translation));
-        const AZ::Vector3 vector(2.3f, -0.6, 1.8f);
+        const AZ::Vector3 vector(2.3f, -0.6f, 1.8f);
         EXPECT_THAT(matrix * vector, IsClose(quaternion.TransformVector(vector) + translation));
     }
 
@@ -364,11 +364,11 @@ namespace UnitTest
         const AZ::Quaternion quaternion = GetParam();
         AZ::Matrix3x4 matrix = AZ::Matrix3x4::CreateIdentity();
         matrix.SetRotationPartFromQuaternion(quaternion);
-        const AZ::Vector3 vector(2.3f, -0.6, 1.8f);
+        const AZ::Vector3 vector(2.3f, -0.6f, 1.8f);
         EXPECT_THAT(matrix * vector, IsClose(quaternion.TransformVector(vector)));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4CreateFromQuaternionFixture, ::testing::ValuesIn(MathTestData::UnitQuaternions));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4CreateFromQuaternionFixture, ::testing::ValuesIn(MathTestData::UnitQuaternions));
 
     using Matrix3x4CreateFromMatrix3x3Fixture = ::testing::TestWithParam<AZ::Matrix3x3>;
 
@@ -377,7 +377,7 @@ namespace UnitTest
         const AZ::Matrix3x3 matrix3x3 = GetParam();
         const AZ::Matrix3x4 matrix3x4 = AZ::Matrix3x4::CreateFromMatrix3x3(matrix3x3);
         EXPECT_THAT(matrix3x4.GetTranslation(), IsClose(AZ::Vector3::CreateZero()));
-        const AZ::Vector3 vector(2.3f, -0.6, 1.8f);
+        const AZ::Vector3 vector(2.3f, -0.6f, 1.8f);
         EXPECT_THAT(matrix3x4.TransformVector(vector), IsClose(matrix3x3 * vector));
     }
 
@@ -387,11 +387,11 @@ namespace UnitTest
         const AZ::Vector3 translation(-2.6f, 1.7f, 0.8f);
         const AZ::Matrix3x4 matrix3x4 = AZ::Matrix3x4::CreateFromMatrix3x3AndTranslation(matrix3x3, translation);
         EXPECT_THAT(matrix3x4.GetTranslation(), IsClose(translation));
-        const AZ::Vector3 vector(2.3f, -0.6, 1.8f);
+        const AZ::Vector3 vector(2.3f, -0.6f, 1.8f);
         EXPECT_THAT(matrix3x4 * vector, IsClose(matrix3x3 * vector + translation));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4CreateFromMatrix3x3Fixture, ::testing::ValuesIn(MathTestData::Matrix3x3s));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4CreateFromMatrix3x3Fixture, ::testing::ValuesIn(MathTestData::Matrix3x3s));
 
     using Matrix3x4CreateFromMatrix4x4Fixture = ::testing::TestWithParam<AZ::Matrix4x4>;
 
@@ -400,13 +400,13 @@ namespace UnitTest
         const AZ::Matrix4x4 matrix4x4 = GetParam();
         const AZ::Matrix3x4 matrix3x4 = AZ::Matrix3x4::UnsafeCreateFromMatrix4x4(matrix4x4);
         EXPECT_THAT(matrix3x4.GetTranslation(), IsClose(matrix4x4.GetTranslation()));
-        const AZ::Vector3 vector(2.3f, -0.6, 1.8f);
+        const AZ::Vector3 vector(2.3f, -0.6f, 1.8f);
         EXPECT_THAT(matrix3x4.TransformVector(vector), IsClose((matrix4x4 * AZ::Vector4(vector, 0.0f)).GetAsVector3()));
-        const AZ::Vector3 point(12.3f, -5.6, 7.3f);
+        const AZ::Vector3 point(12.3f, -5.6f, 7.3f);
         EXPECT_THAT(matrix3x4.TransformPoint(point), IsClose((matrix4x4 * AZ::Vector4(point, 1.0f)).GetAsVector3()));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4CreateFromMatrix4x4Fixture, ::testing::ValuesIn(MathTestData::Matrix4x4s));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4CreateFromMatrix4x4Fixture, ::testing::ValuesIn(MathTestData::Matrix4x4s));
 
     TEST(MATH_Matrix3x4, TransformPoint)
     {
@@ -467,7 +467,7 @@ namespace UnitTest
         EXPECT_THAT(forward, IsClose(expectedForward.GetNormalized()));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4CreateLookAtFixture, ::testing::ValuesIn(MathTestData::Axes));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4CreateLookAtFixture, ::testing::ValuesIn(MathTestData::Axes));
 
     TEST(MATH_Matrix3x4, CreateLookAtDegenerateCases)
     {
@@ -702,7 +702,7 @@ namespace UnitTest
         EXPECT_THAT(transpose.GetColumn(2), IsClose(matrix.GetRowAsVector3(2)));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4TransposeFixture, ::testing::ValuesIn(MathTestData::NonOrthogonalMatrix3x4s));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4TransposeFixture, ::testing::ValuesIn(MathTestData::NonOrthogonalMatrix3x4s));
 
     using Matrix3x4InvertFullFixture = ::testing::TestWithParam<AZ::Matrix3x4>;
 
@@ -727,7 +727,7 @@ namespace UnitTest
         EXPECT_THAT((inverse * matrix), IsClose(AZ::Matrix3x4::Identity()));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4InvertFullFixture, ::testing::ValuesIn(MathTestData::NonOrthogonalMatrix3x4s));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4InvertFullFixture, ::testing::ValuesIn(MathTestData::NonOrthogonalMatrix3x4s));
 
     TEST(MATH_Matrix3x4, GetInverseFullSingularMatrix)
     {
@@ -782,7 +782,7 @@ namespace UnitTest
         EXPECT_THAT(inverseFast, IsClose(inverseFull));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4InvertFastFixture, ::testing::ValuesIn(MathTestData::OrthogonalMatrix3x4s));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4InvertFastFixture, ::testing::ValuesIn(MathTestData::OrthogonalMatrix3x4s));
 
     using Matrix3x4ScaleFixture = ::testing::TestWithParam<AZ::Matrix3x4>;
 
@@ -829,7 +829,7 @@ namespace UnitTest
         EXPECT_THAT(scaledMatrix.GetReciprocalScaled(), IsClose(reciprocalScaledMatrix));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4ScaleFixture, ::testing::ValuesIn(MathTestData::OrthogonalMatrix3x4s));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4ScaleFixture, ::testing::ValuesIn(MathTestData::OrthogonalMatrix3x4s));
 
     TEST(MATH_Matrix3x4, IsOrthogonal)
     {
@@ -944,7 +944,7 @@ namespace UnitTest
         EXPECT_THAT(matrix, IsClose(rotX * rotY * rotZ));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4SetFromEulerDegreesFixture, ::testing::ValuesIn(MathTestData::EulerAnglesDegrees));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4SetFromEulerDegreesFixture, ::testing::ValuesIn(MathTestData::EulerAnglesDegrees));
 
     using Matrix3x4SetFromEulerRadiansFixture = ::testing::TestWithParam<AZ::Vector3>;
 
@@ -959,7 +959,7 @@ namespace UnitTest
         EXPECT_THAT(matrix, IsClose(rotX * rotY * rotZ));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4SetFromEulerRadiansFixture, ::testing::ValuesIn(MathTestData::EulerAnglesRadians));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4SetFromEulerRadiansFixture, ::testing::ValuesIn(MathTestData::EulerAnglesRadians));
 
     using Matrix3x4GetEulerFixture = ::testing::TestWithParam<AZ::Matrix3x4>;
 
@@ -980,7 +980,7 @@ namespace UnitTest
         EXPECT_THAT(eulerMatrix, IsClose(matrix));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4GetEulerFixture, ::testing::ValuesIn(MathTestData::OrthogonalMatrix3x4s));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4GetEulerFixture, ::testing::ValuesIn(MathTestData::OrthogonalMatrix3x4s));
 
     using Matrix3x4GetDeterminantFixture = ::testing::TestWithParam<AZ::Matrix3x4>;
 
@@ -990,7 +990,7 @@ namespace UnitTest
         EXPECT_NEAR(matrix.GetDeterminant3x3(), 1.0f, 1e-3f);
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Matrix3x4, Matrix3x4GetDeterminantFixture, ::testing::ValuesIn(MathTestData::OrthogonalMatrix3x4s));
+    INSTANTIATE_TEST_SUITE_P(MATH_Matrix3x4, Matrix3x4GetDeterminantFixture, ::testing::ValuesIn(MathTestData::OrthogonalMatrix3x4s));
 
     TEST(MATH_Matrix3x4, GetDeterminantOfArbitraryMatrices)
     {
@@ -1009,6 +1009,16 @@ namespace UnitTest
         EXPECT_NEAR((matrix2 * matrix3).GetDeterminant3x3(), expected2 * expected3, 1e-3f);
         EXPECT_NEAR(matrix2.GetTranspose3x3().GetDeterminant3x3(), expected2, 1e-3f);
     }
+
+    // use of infinity with fast math is simply not supported
+#if !defined(O3DE_USING_FAST_MATH)
+    // Use of INFINITY in newer Windows SDKs trigger a math overflow warning because it redefines INFINITY
+    // as (huge number * huge number) instead of the previous definition of just (huge number).  The multiplication
+    // operation triggers the overflow warning.
+
+    // We still want that warning globally in the code but we don't want it in this test, specifically, which uses it
+    // to validate that we can detect infinite matrices that come about from runtime operations.
+    AZ_PUSH_DISABLE_WARNING(4756, "-Wunknown-warning-option")  //warning C4756: overflow in constant arithmetic
 
     TEST(MATH_Matrix3x4, IsFinite)
     {
@@ -1040,4 +1050,7 @@ namespace UnitTest
             }
         }
     }
+    AZ_POP_DISABLE_WARNING
+#endif
+
 } // namespace UnitTest

@@ -30,11 +30,7 @@
 #include "Settings.h"
 #include "O3deViewPaneNames.h"
 
-
-
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <Dialogs/ui_PythonScriptsDialog.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
 //////////////////////////////////////////////////////////////////////////
 namespace
@@ -140,4 +136,3 @@ void CPythonScriptsDialog::OnExecute()
     }
 }
 
-#include <Dialogs/moc_PythonScriptsDialog.cpp>

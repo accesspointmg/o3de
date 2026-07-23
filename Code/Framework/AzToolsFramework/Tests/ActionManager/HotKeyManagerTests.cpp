@@ -79,7 +79,7 @@ namespace UnitTest
         m_hotKeyManagerInterface->SetActionHotKey("o3de.action.test", "Ctrl+Z");
 
         // Make sure to set the active window and give our m_widget focus so that the events get propogated correctly
-        QApplication::setActiveWindow(m_defaultParentWidget);
+        m_defaultParentWidget->activateWindow();
         m_widget->setFocus();
 
         // Trigger a shortcut event to our widget, which should in turn trigger our action
@@ -87,8 +87,6 @@ namespace UnitTest
         QApplication::sendEvent(m_widget, &testEvent);
 
         EXPECT_TRUE(actionTriggered);
-
-        QApplication::setActiveWindow(nullptr);
     }
 
     TEST_F(ActionManagerFixture, VerifyAmbiguousShortcutsHandled)
@@ -124,8 +122,11 @@ namespace UnitTest
         m_hotKeyManagerInterface->SetActionHotKey("o3de.action.child", "Ctrl+Z");
 
         // Make sure to set the active window and give our childWidget focus so that the events get propogated correctly
-        QApplication::setActiveWindow(m_defaultParentWidget);
+        m_defaultParentWidget->activateWindow();
         childWidget->setFocus();
+
+        // setting Focus actually requires us to pump the event pump.
+        QCoreApplication::processEvents();
 
         // Trigger a shortcut event to our child widget, which should in turn only trigger our child action
         QShortcutEvent testEvent(QKeySequence("Ctrl+Z"), 0, true);
@@ -133,8 +134,6 @@ namespace UnitTest
 
         EXPECT_TRUE(childActionTriggered);
         EXPECT_FALSE(parentActionTriggered);
-
-        QApplication::setActiveWindow(nullptr);
     }
 
 } // namespace UnitTest

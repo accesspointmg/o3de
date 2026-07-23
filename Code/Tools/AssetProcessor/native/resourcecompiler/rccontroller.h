@@ -8,13 +8,11 @@
 #ifndef RCCONTROLLER_H
 #define RCCONTROLLER_H
 
-#if !defined(Q_MOC_RUN)
 #include "RCCommon.h"
 
 #include <QObject>
-#include <QProcess>
-#include <QDir>
 #include <QList>
+
 #include "native/utilities/AssetUtilEBusHelper.h"
 
 #include "rcjoblistmodel.h"
@@ -22,7 +20,6 @@
 
 #include <AzFramework/Asset/AssetProcessorMessages.h>
 #include <AzToolsFramework/API/EditorAssetSystemAPI.h>
-#endif
 
 class RCcontrollerUnitTests;
 
@@ -45,8 +42,7 @@ namespace AssetProcessor
             cmdExecute,
             cmdTerminate
         };
-        RCController() = default;
-        explicit RCController(int minJobs, int maxJobs, QObject* parent = 0);
+        explicit RCController(QObject* parent = 0);
         virtual ~RCController();
 
         AssetProcessor::RCJobListModel* GetQueueModel();
@@ -66,7 +62,7 @@ namespace AssetProcessor
         void ReadyToQuit(QObject* source); //After receiving QuitRequested, you must send this when its safe
 
         ///! JobStarted will notify with a path name relative to the watch folder it was found in (not the database sourcename column)
-        void JobStarted(QString inputFile, QString platform);
+        void JobStarted(QString inputFile, QString jobKey, QString platform);
         void JobStatusChanged(JobEntry entry, AzToolsFramework::AssetSystem::JobStatus status);
         void JobsInQueuePerPlatform(QString platform, int jobs);
         void ActiveJobsCountChanged(unsigned int jobs); // This is the count of jobs which are either queued or inflight
@@ -105,13 +101,21 @@ namespace AssetProcessor
         void OnJobComplete(JobEntry completeEntry, AzToolsFramework::AssetSystem::JobStatus status);
         void OnAddedToCatalog(JobEntry jobEntry);
 
+        //! The config about # of jobs and slots may have changed, recompute it.
+        void UpdateAndComputeJobSlots();
+
+        //! When a new source file appears in the intermediate source folder, we can potentially resolve job dependencies
+        //! That we could not resolve before.
+        void OnIntermediateSourceAppeared(QString sourceRef);
+
     protected:
         AssetProcessor::RCQueueSortModel m_RCQueueSortModel;
 
     private:
         void FinishJob(AssetProcessor::RCJob* rcJob);
 
-        unsigned int m_maxJobs;
+        unsigned int m_maxJobs = 0; //<! 0 means autocompute, read from registry key
+        bool m_alwaysUseMaxJobs = false; //<! normally, it only uses maxJobs cpu cores when critical or escalated work is present to save CPU usage
 
         bool m_dispatchingJobs = false;
         bool m_shuttingDown = false;

@@ -322,7 +322,7 @@
                     "productAssetType": "{B36FEB5C-41B6-4B58-A212-21EF5AEF523C}"
                 },
                 "RC png-entityicon": {
-                    "pattern": "(.*EntityIcons\\\\/).*\\\\.png",
+                    "pattern": "(.*(EntityIcons|Editor\\\\/Icons)\\\\/).*\\\\.(png|svg)",
                     "productAssetType": "{3436C30E-E2C5-4C3B-A7B9-66C94A28701B}",
                     "params": "skip",
                     "tools": "copy"
@@ -398,7 +398,7 @@
                     "params": "copy"
                 },
                 "RC txt": {
-                    "pattern": "^(?!.*PreloadLibs.txt).*\\\\.txt",
+                    "glob": "*.txt",
                     "params": "copy"
                 },
                 "RC cal": {
@@ -431,9 +431,8 @@
                     "glob": "*.ext",
                     "params": "copy"
                 },
-                // Copy all pak files except level.pak, level.pak has its own builder.
                 "RC pak": {
-                    "pattern": "^((?!\\\\/level\\\\.pak).)*\\\\.pak$",
+                    "glob": "*.pak",
                     "params": "copy"
                 },
                 "RC ctc": {

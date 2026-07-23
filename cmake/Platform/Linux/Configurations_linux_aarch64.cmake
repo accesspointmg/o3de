@@ -16,8 +16,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             LINUX
             __linux__
             LINUX64
+
         COMPILATION
             -ffp-contract=off
+
         LINK_NON_STATIC
             -Wl,--no-undefined
             -fpie
@@ -47,8 +49,10 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
             LINUX
             __linux__
             LINUX64
+
         COMPILATION
             -ffp-contract=off
+
         LINK_NON_STATIC
             ${O3DE_GCC_GCOV_LFLAGS}
             ${O3DE_GCC_GPROF_LFLAGS}

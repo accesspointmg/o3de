@@ -50,9 +50,10 @@ namespace GraphCanvas
 
     void GraphCanvasComboBoxFilterProxyModel::SetFilter(const QString& filter)
     {
+        beginFilterChange();
         m_filter = filter;
-        m_testRegex = QRegExp(m_filter, Qt::CaseInsensitive);
-        invalidateFilter();
+        m_testRegex = QRegularExpression(m_filter, QRegularExpression::PatternOption::CaseInsensitiveOption);
+        endFilterChange();
 
         if (m_filter.isEmpty())
         {
@@ -884,4 +885,3 @@ namespace GraphCanvas
     }
 }
 
-#include <Source/Widgets/moc_GraphCanvasComboBox.cpp>

@@ -8,16 +8,15 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 #include <AzToolsFramework/SourceControl/SourceControlAPI.h>
 
 #include <QString>
 #include <QObject>
-#endif
 
 namespace AzToolsFramework
 {
-    class QtSourceControlNotificationHandler
+    class AZTF_API QtSourceControlNotificationHandler
         : public QObject
         , private SourceControlNotificationBus::Handler
     {

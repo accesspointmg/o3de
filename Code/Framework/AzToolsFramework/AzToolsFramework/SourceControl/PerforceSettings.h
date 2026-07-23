@@ -9,11 +9,12 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+#include <AzToolsFramework/SourceControl/SourceControlAPI.h> // for SouceControlSettingInfo
+
 #include <QDialog>
 #include <QString>
-#include <AzToolsFramework/SourceControl/SourceControlAPI.h> // for SouceControlSettingInfo
-#endif
+
 
 class QLineEdit;
 
@@ -23,7 +24,7 @@ namespace Ui {
 
 namespace AzToolsFramework
 {
-    class PerforceSettings
+    class AZTF_API PerforceSettings
         : public QDialog
     {
         Q_OBJECT

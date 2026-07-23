@@ -9,9 +9,9 @@
 
 // Description : Render a glyph outline into a bitmap using FreeType 2
 
-#if !defined(USE_NULLFONT_ALWAYS)
-
 #pragma once
+
+#if !defined(USE_NULLFONT_ALWAYS)
 
 #include <AtomO3deIntegration/AtomFont/GlyphBitmap.h>
 #include <AtomO3deIntegration/AtomFont/FFont.h>

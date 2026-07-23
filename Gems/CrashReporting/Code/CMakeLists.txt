@@ -11,7 +11,7 @@ set(pal_common_code_path ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
 include(${pal_code_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)
 
-if(NOT O3DE_PAL_TRAIT_BUILD_CRASH_HANDLER_SUPPORTED)
+if(NOT O3DE_PAL_TRAIT_BUILD_EXTERNAL_CRASH_HANDLER_SUPPORTED)
     return()
 endif()
 

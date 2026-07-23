@@ -32,7 +32,7 @@ namespace AZ
         RPI::Ptr<DiffuseProbeGridRayTracingPass> DiffuseProbeGridRayTracingPass::Create(const RPI::PassDescriptor& descriptor)
         {
             RPI::Ptr<DiffuseProbeGridRayTracingPass> pass = aznew DiffuseProbeGridRayTracingPass(descriptor);
-            return AZStd::move(pass);
+            return pass;
         }
 
         DiffuseProbeGridRayTracingPass::DiffuseProbeGridRayTracingPass(const RPI::PassDescriptor& descriptor)
@@ -85,24 +85,20 @@ namespace AZ
 
             // build the ray tracing pipeline state descriptor
             RHI::RayTracingPipelineStateDescriptor descriptor;
-            descriptor.Build()
-                ->PipelineState(m_globalPipelineState.get())
-                ->MaxPayloadSize(96)
-                ->MaxAttributeSize(32)
-                ->MaxRecursionDepth(MaxRecursionDepth)
-                ->ShaderLibrary(rayGenerationShaderDescriptor)
-                    ->RayGenerationShaderName(AZ::Name("RayGen"))
-                ->ShaderLibrary(missShaderDescriptor)
-                    ->MissShaderName(AZ::Name("Miss"))
-                ->ShaderLibrary(closestHitShaderDescriptor)
-                    ->ClosestHitShaderName(AZ::Name("ClosestHit"))
-                ->HitGroup(AZ::Name("HitGroup"))
-                    ->ClosestHitShaderName(AZ::Name("ClosestHit"))
-            ;
+            descriptor.m_pipelineState = m_globalPipelineState.get();
+            descriptor.m_configuration.m_maxPayloadSize = 96;
+            descriptor.m_configuration.m_maxAttributeSize = 32;
+            descriptor.m_configuration.m_maxRecursionDepth = MaxRecursionDepth;
+
+            descriptor.AddRayGenerationShaderLibrary(rayGenerationShaderDescriptor, Name("RayGen"));
+            descriptor.AddMissShaderLibrary(missShaderDescriptor, Name("Miss"));
+            descriptor.AddClosestHitShaderLibrary(closestHitShaderDescriptor, Name("ClosestHit"));
+
+            descriptor.AddHitGroup(Name("HitGroup"), Name("ClosestHit"));
 
             // create the ray tracing pipeline state object
             m_rayTracingPipelineState = aznew RHI::RayTracingPipelineState;
-            m_rayTracingPipelineState->Init(RHI::MultiDevice::AllDevices, descriptor);
+            m_rayTracingPipelineState->Init(RHI::RHISystemInterface::Get()->GetRayTracingSupport(), descriptor);
 
             // Since the ray tracing pipeline state changed, we need to rebuilt the shader table
             m_rayTracingRevision = 0;
@@ -155,7 +151,7 @@ namespace AZ
                 RHI::RayTracingBufferPools& rayTracingBufferPools = rayTracingFeatureProcessor->GetBufferPools();
 
                 m_rayTracingShaderTable = aznew RHI::RayTracingShaderTable;
-                m_rayTracingShaderTable->Init(RHI::MultiDevice::AllDevices, rayTracingBufferPools);
+                m_rayTracingShaderTable->Init(RHI::RHISystemInterface::Get()->GetRayTracingSupport(), rayTracingBufferPools);
             }
 
             RenderPass::FrameBeginInternal(params);
@@ -270,11 +266,8 @@ namespace AZ
             RPI::Scene* scene = m_pipeline->GetScene();
             DiffuseProbeGridFeatureProcessor* diffuseProbeGridFeatureProcessor = scene->GetFeatureProcessor<DiffuseProbeGridFeatureProcessor>();
             auto* rayTracingFeatureProcessor = scene->GetFeatureProcessor<RayTracingFeatureProcessorInterface>();
-            const Data::Instance<RPI::Buffer> meshInfoBuffer = rayTracingFeatureProcessor->GetMeshInfoGpuBuffer();
 
-            if (meshInfoBuffer &&
-                rayTracingFeatureProcessor->GetTlas()->GetTlasBuffer() &&
-                rayTracingFeatureProcessor->GetSubMeshCount())
+            if (rayTracingFeatureProcessor->GetTlas()->GetTlasBuffer() && rayTracingFeatureProcessor->GetSubMeshCount())
             {
                 for (auto& diffuseProbeGrid : diffuseProbeGridFeatureProcessor->GetVisibleRealTimeProbeGrids())
                 {
@@ -301,17 +294,17 @@ namespace AZ
                 if (rayTracingFeatureProcessor->GetSubMeshCount())
                 {
                     // build the ray tracing shader table descriptor
-                    descriptor->Build(AZ::Name("RayTracingShaderTable"), m_rayTracingPipelineState)
-                        ->RayGenerationRecord(AZ::Name("RayGen"))
-                        ->MissRecord(AZ::Name("Miss"))
-                        ->HitGroupRecord(AZ::Name("HitGroup"))
-                    ;
+                    descriptor->m_name = Name("RayTracingShaderTable");
+                    descriptor->m_rayTracingPipelineState = m_rayTracingPipelineState;
+                    descriptor->m_rayGenerationRecord.emplace_back(Name("RayGen"));
+                    descriptor->m_missRecords.emplace_back(Name("Miss"));
+                    descriptor->m_hitGroupRecords.emplace_back(Name("HitGroup"));
                 }
 
                 m_rayTracingShaderTable->Build(descriptor);
             }
         }
-    
+
         void DiffuseProbeGridRayTracingPass::BuildCommandListInternal([[maybe_unused]] const RHI::FrameGraphExecuteContext& context)
         {
             RPI::Scene* scene = m_pipeline->GetScene();
@@ -324,6 +317,7 @@ namespace AZ
                 rayTracingFeatureProcessor->GetSubMeshCount() &&
                 m_rayTracingShaderTable)
             {
+                const RHI::ShaderResourceGroup* sceneSrg = m_pipeline->GetScene()->GetRHIShaderResourceGroup();
                 // submit the DispatchRaysItems for each DiffuseProbeGrid in this range
                 for (uint32_t index = context.GetSubmitRange().m_startIndex; index < context.GetSubmitRange().m_endIndex; ++index)
                 {
@@ -332,7 +326,7 @@ namespace AZ
                     const RHI::DeviceShaderResourceGroup* shaderResourceGroups[] = {
                         diffuseProbeGrid->GetRayTraceSrg()->GetRHIShaderResourceGroup()->GetDeviceShaderResourceGroup(context.GetDeviceIndex()).get(),
                         rayTracingFeatureProcessor->GetRayTracingSceneSrg()->GetRHIShaderResourceGroup()->GetDeviceShaderResourceGroup(context.GetDeviceIndex()).get(),
-                        rayTracingFeatureProcessor->GetRayTracingMaterialSrg()->GetRHIShaderResourceGroup()->GetDeviceShaderResourceGroup(context.GetDeviceIndex()).get()
+                        sceneSrg->GetDeviceShaderResourceGroup(context.GetDeviceIndex()).get()
                     };
 
                     RHI::DeviceDispatchRaysItem dispatchRaysItem;

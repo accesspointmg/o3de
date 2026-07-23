@@ -30,10 +30,7 @@
 // Editor
 #include "ScriptHelpDialog.h"
 
-
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <AzToolsFramework/PythonTerminal/ui_ScriptTermDialog.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
 namespace AzToolsFramework
 {
@@ -259,7 +256,3 @@ namespace AzToolsFramework
         return QObject::eventFilter(obj, e);
     }
 } // namespace AzToolsFramework
-
-
-
-#include <moc_ScriptTermDialog.cpp>

@@ -50,4 +50,7 @@ slider->updateGradient();
     ui->exampleText->setHtml(exampleText);
 }
 
-#include "Gallery/moc_GradientSliderPage.cpp"
+GradientSliderPage::~GradientSliderPage()
+{
+}
+

@@ -14,6 +14,8 @@
 #include <AzCore/Utils/Utils.h>
 #include <AzToolsFramework/AssetBrowser/Entries/ProductAssetBrowserEntry.h>
 
+#include <AzFramework/API/ApplicationAPI.h>
+
 AZ_PUSH_DISABLE_WARNING(4251, "-Wunknown-warning-option") // 'QTextFormat::d': class 'QSharedDataPointer<QTextFormatPrivate>' needs to have dll-interface to be used by clients of class 'QTextFormat'
 #include <QLineEdit>
 #include <QToolButton>
@@ -35,6 +37,18 @@ namespace AzToolsFramework
                 // Group "Other" should be in the end of the list, and "Hidden" should not be on the list at all
                 for (const QString& group : groups.values)
                 {
+                    if (group == "Slice")
+                    {
+                        bool isPrefabSystemEnabled = false;
+                        AzFramework::ApplicationRequests::Bus::BroadcastResult(
+                            isPrefabSystemEnabled, &AzFramework::ApplicationRequests::IsPrefabSystemEnabled);
+
+                        if (isPrefabSystemEnabled)
+                        {
+                            continue;
+                        }
+                    }
+
                     if (group != "Hidden")
                     {
                         EBusAggregateAssetTypesIfBelongsToGroup types(group);
@@ -46,7 +60,19 @@ namespace AzToolsFramework
                             groupFilter->SetAssetGroup(group);
 
                             AzQtComponents::SearchTypeFilter stFilter;
-                            stFilter.displayName = group;
+
+                            // Split "GS/Core" into category="GS", displayName="Core"
+                            int lastSlash = aznumeric_cast<int>(group.lastIndexOf('/'));
+                            if (lastSlash >= 0)
+                            {
+                                stFilter.category = group.left(lastSlash);
+                                stFilter.displayName = group.mid(lastSlash + 1);
+                            }
+                            else
+                            {
+                                stFilter.displayName = group;
+                            }
+
                             stFilter.metadata = QVariant::fromValue(FilterConstType(groupFilter));
 
                             filters.push_back(stFilter);
@@ -341,4 +367,3 @@ namespace AzToolsFramework
     } // namespace AssetBrowser
 } // namespace AzToolsFramework
 
-#include "AssetBrowser/Search/moc_SearchWidget.cpp"

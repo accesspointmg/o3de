@@ -5,8 +5,9 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
-#ifndef UNDO_SYSTEM_H
-#define UNDO_SYSTEM_H
+ #pragma once
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 
 #include <AzCore/base.h>
 #include <AzCore/Memory/SystemAllocator.h>
@@ -15,7 +16,6 @@
 #include <AzCore/std/containers/vector.h>
 #include <AzCore/std/string/string.h>
 
-#pragma once
 
 namespace AzToolsFramework
 {
@@ -33,7 +33,7 @@ namespace AzToolsFramework
             virtual void OnUndoStackChanged() = 0;
         };
 
-        class URSequencePoint
+        class AZTF_API URSequencePoint
         {
         public:
             AZ_RTTI(URSequencePoint, "{D6A52DA5-DF44-43BE-B42C-B6E88BDF476A}")
@@ -81,6 +81,11 @@ namespace AzToolsFramework
             */
             URSequencePoint* Find(URCommandID id, const AZ::Uuid& typeOfCommand);
 
+            /*!
+            * Finds the given command in parent-child tree with the matching handle.
+            */
+            URSequencePoint* Find(URSequencePoint* expected);
+
             void SetName(const AZStd::string& friendlyName);
             AZStd::string& GetName();
 
@@ -122,7 +127,7 @@ namespace AzToolsFramework
          * Used by batch undo commands for dummy/batch/parent nodes where we 
          * know nothing will have changed.
          */
-        class BatchCommand
+        class AZTF_API BatchCommand
             : public URSequencePoint
         {
         public:
@@ -140,7 +145,7 @@ namespace AzToolsFramework
 
         //--------------------------------------------------------------------
 
-        class UndoStack
+        class AZTF_API UndoStack
         {
         public:
 
@@ -204,5 +209,3 @@ namespace AzToolsFramework
         };
     }
 } // namespace AzToolsFramework
-
-#endif

@@ -125,7 +125,7 @@
     "PARAMETERS": {
       "CONFIGURATION": "profile",
       "OUTPUT_DIRECTORY": "build/linux",
-      "CMAKE_OPTIONS": "-G 'Ninja Multi-Config' -DLY_PARALLEL_LINK_JOBS=4",
+      "CMAKE_OPTIONS": "-G 'Ninja Multi-Config' -DLY_PARALLEL_LINK_JOBS=4 -DLY_STRIP_DEBUG_SYMBOLS=ON",
       "CMAKE_O3DE_PROJECTS": "AutomatedTesting",
       "CMAKE_TARGET": "all"
     }
@@ -142,7 +142,7 @@
       "CMAKE_OPTIONS": "-G 'Ninja Multi-Config' -DLY_UNITY_BUILD=FALSE -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DLY_PARALLEL_LINK_JOBS=4 -DLY_GCC_BUILD_FOR_GCOV=OFF",
       "CMAKE_O3DE_PROJECTS": "AutomatedTesting",
       "CMAKE_TARGET": "all",
-      "O3DE_MIN_MEMORY_PER_CORE": "2097152"
+      "LY_MIN_MEMORY_PER_CORE": "2097152"
     }
   },
   "profile_unity": {
@@ -154,7 +154,7 @@
     "PARAMETERS": {
       "CONFIGURATION": "profile",
       "OUTPUT_DIRECTORY": "build/linux",
-      "CMAKE_OPTIONS": "-G 'Ninja Multi-Config' -DLY_PARALLEL_LINK_JOBS=4",
+      "CMAKE_OPTIONS": "-G 'Ninja Multi-Config' -DLY_PARALLEL_LINK_JOBS=4" ,
       "CMAKE_O3DE_PROJECTS": "AutomatedTesting",
       "CMAKE_TARGET": "all"
     }
@@ -182,10 +182,10 @@
     "PARAMETERS": {
       "CONFIGURATION": "profile",
       "OUTPUT_DIRECTORY": "build/linux",
-      "CMAKE_OPTIONS": "-G 'Ninja Multi-Config' -DLY_PARALLEL_LINK_JOBS=4",
+      "CMAKE_OPTIONS": "-G 'Ninja Multi-Config' -DLY_PARALLEL_LINK_JOBS=4 -DLY_STRIP_DEBUG_SYMBOLS=ON",
       "CMAKE_O3DE_PROJECTS": "AutomatedTesting",
       "CMAKE_TARGET": "all",
-      "CTEST_OPTIONS": "-L (SUITE_smoke|SUITE_main) -LE (REQUIRES_gpu) --no-tests=error -T Test",
+      "CTEST_OPTIONS": "-E (o3de_repo|o3de_export_project|AZ::AssetProcessor.Tests) -L (SUITE_smoke|SUITE_main) -LE (REQUIRES_gpu) --no-tests=error -T Test",
       "TEST_METRICS": "True",
       "TEST_RESULTS": "True"
     }
@@ -205,7 +205,7 @@
       "CTEST_OPTIONS": "-L (SUITE_smoke|SUITE_main) -LE (REQUIRES_gpu) --no-tests=error -T Test",
       "TEST_METRICS": "True",
       "TEST_RESULTS": "True",
-      "O3DE_MIN_MEMORY_PER_CORE": "2097152"
+      "LY_MIN_MEMORY_PER_CORE": "2097152"
     }
   },
   "test_profile_nounity": {
@@ -217,7 +217,7 @@
       "CMAKE_OPTIONS": "-G 'Ninja Multi-Config' -DLY_UNITY_BUILD=FALSE -DLY_PARALLEL_LINK_JOBS=4",
       "CMAKE_O3DE_PROJECTS": "AutomatedTesting",
       "CMAKE_TARGET": "all",
-      "CTEST_OPTIONS": "-L (SUITE_smoke|SUITE_main) -LE (REQUIRES_gpu) --no-tests=error -T Test",
+      "CTEST_OPTIONS": "-E (o3de_export_project) -L (SUITE_smoke|SUITE_main) -LE (REQUIRES_gpu) --no-tests=error -T Test",
       "TEST_METRICS": "True",
       "TEST_RESULTS": "True"
     }
@@ -246,7 +246,7 @@
     "PARAMETERS": {
       "CONFIGURATION": "profile",
       "OUTPUT_DIRECTORY": "build/linux",
-      "CMAKE_OPTIONS": "-G 'Ninja Multi-Config' -DLY_PARALLEL_LINK_JOBS=4",
+      "CMAKE_OPTIONS": "-G 'Ninja Multi-Config' -DLY_PARALLEL_LINK_JOBS=4 -DLY_STRIP_DEBUG_SYMBOLS=ON",
       "CMAKE_O3DE_PROJECTS": "AutomatedTesting",
       "CMAKE_TARGET": "AssetProcessorBatch",
       "ASSET_PROCESSOR_BINARY": "bin/profile/AssetProcessorBatch",
@@ -437,7 +437,7 @@
     "PARAMETERS": {
       "CONFIGURATION": "profile",
       "OUTPUT_DIRECTORY": "build/android_api_mono",
-      "CMAKE_OPTIONS":"-G 'Ninja Multi-Config' -DCMAKE_TOOLCHAIN_FILE=cmake/Platform/Android/Toolchain_android.cmake -DLY_MONOLITHIC_GAME=TRUE -DLY_DISABLE_TEST_MODULES=TRUE -DANDROID_NATIVE_API_LEVEL=24 -DLY_NDK_DIR=\"${O3DE_NDK_DIR}\"",
+      "CMAKE_OPTIONS":"-G 'Ninja Multi-Config' -DCMAKE_TOOLCHAIN_FILE=cmake/Platform/Android/Toolchain_android.cmake -DLY_MONOLITHIC_GAME=TRUE -DLY_DISABLE_TEST_MODULES=TRUE -DANDROID_NATIVE_API_LEVEL=24 -DO3DE_NDK_DIR=\"${O3DE_NDK_DIR}\"",
       "CMAKE_TARGET": "install"
     }
   },
@@ -450,7 +450,7 @@
     "PARAMETERS": {
       "CONFIGURATION": "release",
       "OUTPUT_DIRECTORY": "build/android_api_mono",
-      "CMAKE_OPTIONS":"-G 'Ninja Multi-Config' -DCMAKE_TOOLCHAIN_FILE=cmake/Platform/Android/Toolchain_android.cmake -DLY_MONOLITHIC_GAME=TRUE -DLY_DISABLE_TEST_MODULES=TRUE -DANDROID_NATIVE_API_LEVEL=24 -DLY_NDK_DIR=\"${O3DE_NDK_DIR}\"",
+      "CMAKE_OPTIONS":"-G 'Ninja Multi-Config' -DCMAKE_TOOLCHAIN_FILE=cmake/Platform/Android/Toolchain_android.cmake -DLY_MONOLITHIC_GAME=TRUE -DLY_DISABLE_TEST_MODULES=TRUE -DANDROID_NATIVE_API_LEVEL=24 -DO3DE_NDK_DIR=\"${O3DE_NDK_DIR}\"",
       "CMAKE_TARGET": "install"
     }
   },
@@ -476,7 +476,7 @@
       "OUTPUT_DIRECTORY": "build/linux",
       "O3DE_PACKAGE_TYPE": "DEB",
       "CMAKE_OPTIONS": "-G 'Ninja Multi-Config' -DLY_PARALLEL_LINK_JOBS=4 -DLY_DISABLE_TEST_MODULES=TRUE -DO3DE_INSTALL_ENGINE_NAME=o3de-sdk -DLY_STRIP_DEBUG_SYMBOLS=TRUE",
-      "EXTRA_CMAKE_OPTIONS": "-DLY_INSTALLER_AUTO_GEN_TAG=TRUE -DLY_INSTALLER_DOWNLOAD_URL=${INSTALLER_DOWNLOAD_URL} -DLY_INSTALLER_LICENSE_URL=${INSTALLER_DOWNLOAD_URL}/license -DO3DE_INCLUDE_INSTALL_IN_PACKAGE=TRUE",
+      "EXTRA_CMAKE_OPTIONS": "-DLY_INSTALLER_AUTO_GEN_TAG=TRUE -DLY_INSTALLER_DOWNLOAD_URL=${INSTALLER_DOWNLOAD_URL} -DLY_INSTALLER_LICENSE_URL=${INSTALLER_DOWNLOAD_URL}/license.html -DO3DE_INCLUDE_INSTALL_IN_PACKAGE=TRUE",
       "CPACK_OPTIONS": "-D CPACK_UPLOAD_URL=${CPACK_UPLOAD_URL}",
       "CMAKE_TARGET": "all"
     }

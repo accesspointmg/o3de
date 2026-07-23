@@ -24,9 +24,6 @@
 
 #include <Tests.Builders/BuilderTestFixture.h>
 
-extern "C" void CleanUpRpiPublicGenericClassInfo();
-extern "C" void CleanUpRpiEditGenericClassInfo();
-
 namespace UnitTest
 {
     using namespace AZ;
@@ -86,6 +83,9 @@ namespace UnitTest
         Reflect(m_context.get());
         Reflect(m_jsonRegistrationContext.get());
 
+        m_taskExecutor = AZStd::make_unique<AZ::TaskExecutor>();
+        AZ::TaskExecutor::SetInstance(m_taskExecutor.get());
+
         m_streamer = AZStd::make_unique<AZ::IO::Streamer>(AZStd::thread_desc{}, AZ::StreamerComponent::CreateStreamerStack());
         Interface<AZ::IO::IStreamer>::Register(m_streamer.get());
 
@@ -102,6 +102,9 @@ namespace UnitTest
 
         Interface<AZ::IO::IStreamer>::Unregister(m_streamer.get());
         m_streamer.reset();
+
+        AZ::TaskExecutor::SetInstance(nullptr);
+        m_taskExecutor.reset();
 
         delete IO::FileIOBase::GetInstance();
         IO::FileIOBase::SetInstance(nullptr);
@@ -121,8 +124,7 @@ namespace UnitTest
 
         m_context.reset();
 
-        CleanUpRpiPublicGenericClassInfo();
-        CleanUpRpiEditGenericClassInfo();
+        AZ::GetGlobalSerializeContextModule().Cleanup();
 
         LeakDetectionFixture::TearDown();
     }

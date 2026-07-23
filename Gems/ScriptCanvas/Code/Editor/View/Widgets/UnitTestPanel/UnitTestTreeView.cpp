@@ -6,11 +6,11 @@
  *
  */
 
-#include <qaction.h>
-#include <qevent.h>
-#include <qheaderview.h>
-#include <qitemselectionmodel.h>
-#include <qscrollbar.h>
+#include <QAction>
+#include <QEvent>
+#include <QHeaderView>
+#include <QItemSelectionModel>
+#include <QScrollBar>
 
 #include <AzCore/Component/ComponentApplicationBus.h>
 #include <AzCore/Serialization/Utils.h>
@@ -24,7 +24,6 @@
 
 #include <Editor/GraphCanvas/GraphCanvasEditorNotificationBusId.h>
 #include <Editor/View/Widgets/UnitTestPanel/UnitTestTreeView.h>
-#include <Editor/View/Widgets/UnitTestPanel/moc_UnitTestTreeView.cpp>
 
 #include <Editor/View/Dialogs/ContainerWizard/ContainerWizard.h>
 

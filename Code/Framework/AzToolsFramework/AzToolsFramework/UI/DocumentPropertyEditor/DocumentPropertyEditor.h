@@ -8,7 +8,8 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/Instance/InstancePool.h>
 #include <AzCore/std/containers/unordered_set.h>
 #include <AzFramework/DocumentPropertyEditor/DocumentAdapter.h>
@@ -20,8 +21,6 @@
 
 #include <QHBoxLayout>
 #include <QScrollArea>
-
-#endif // Q_MOC_RUN
 
 class QCheckBox;
 
@@ -35,7 +34,7 @@ namespace AzToolsFramework
     class DocumentPropertyEditor;
     class DPERowWidget;
 
-    class DPELayout : public QHBoxLayout
+    class AZTF_API DPELayout : public QHBoxLayout
     {
         Q_OBJECT
 
@@ -95,7 +94,7 @@ namespace AzToolsFramework
         mutable QSize m_cachedMinLayoutSize;
     };
 
-    class DPERowWidget : public QFrame
+    class AZTF_API DPERowWidget : public QFrame
     {
         Q_OBJECT
         Q_PROPERTY(bool hasChildRows READ HasChildRows);
@@ -180,7 +179,7 @@ namespace AzToolsFramework
         AZStd::optional<bool> m_expandByDefault;
     };
 
-    class DocumentPropertyEditor
+    class AZTF_API DocumentPropertyEditor
         : public QScrollArea
         , public IPropertyEditor
     {
@@ -203,8 +202,6 @@ namespace AzToolsFramework
          *  to make the DPE arbitrarily narrow. */
         void SetEnforceMinWidth(bool enforceMinWidth);
 
-        virtual QSize sizeHint() const override;
-
         auto GetAdapter()
         {
             return m_adapter;
@@ -225,9 +222,16 @@ namespace AzToolsFramework
         void ExpandAll();
         void CollapseAll();
 
+        // QScrollArea overrides
+        virtual QSize sizeHint() const override;
+        bool focusNextPrevChild(bool next) override;
+        // ~QScrollArea overrides
+
         // IPropertyEditor overrides
         void SetSavedStateKey(AZ::u32 key, AZStd::string propertyEditorName = {}) override;
         void ClearInstances() override;
+        void SetFilterString(AZStd::string str) override; // Only used for linting, filtering is handled by the DocumentAdapter
+        // ~IPropertyEditor overrides
 
         AZ::Dom::Value GetDomValueForRow(DPERowWidget* row) const;
 
@@ -272,6 +276,8 @@ namespace AzToolsFramework
             }
         };
         static HandlerInfo GetInfoFromWidget(const QWidget* widget);
+        void AddDirtyHandler(PropertyHandlerWidgetInterface* dirtyWidget);
+        void ClearDirtyHandler(PropertyHandlerWidgetInterface* toClear);
 
     signals:
         void ExpanderChangedByUser();
@@ -290,11 +296,16 @@ namespace AzToolsFramework
         void HandleReset();
         void HandleDomChange(const AZ::Dom::Patch& patch);
         void HandleDomMessage(const AZ::DocumentPropertyEditor::AdapterMessage& message, AZ::Dom::Value& value);
+        void RequestExecuteQueuedReset();
+        void UpdateDirtyHandlers();
+        bool m_executeQueuedResetAlreadyQueued = false;
 
         AZ::DocumentPropertyEditor::DocumentAdapterPtr m_adapter;
         AZ::DocumentPropertyEditor::DocumentAdapter::ResetEvent::Handler m_resetHandler;
+        AZ::DocumentPropertyEditor::DocumentAdapter::ResetQueuedEvent::Handler m_resetQueuedHandler;
         AZ::DocumentPropertyEditor::DocumentAdapter::ChangedEvent::Handler m_changedHandler;
         AZ::DocumentPropertyEditor::DocumentAdapter::MessageEvent::Handler m_domMessageHandler;
+        AZ::DocumentPropertyEditor::DocumentAdapter::FilterEvent::Handler m_filterHandler;
 
         QVBoxLayout* m_layout = nullptr;
         bool m_allowVerticalScroll = true;
@@ -319,6 +330,9 @@ namespace AzToolsFramework
 
         // Co-owns the handler pool that is needed in DPE and the ownership would be released when the DPE is deleted
         AZStd::unordered_map<AZ::Name, AZStd::shared_ptr<AZ::InstancePoolBase>> m_handlerPools;
+
+        // Widgets that exist and need to requery their attributes.
+        AZStd::unordered_set<PropertyHandlerWidgetInterface*> m_dirtyHandlers;
     };
 } // namespace AzToolsFramework
 

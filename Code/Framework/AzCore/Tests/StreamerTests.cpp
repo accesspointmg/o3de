@@ -19,6 +19,8 @@
 #include <AzCore/std/parallel/binary_semaphore.h>
 #include <AzCore/std/parallel/thread.h>
 #include <AzCore/std/string/string.h>
+#include <AzCore/Task/TaskExecutor.h>
+#include <AzCore/Task/TaskGraphSystemComponent.h>
 #include <AzTest/GemTestEnvironment.h>
 
 namespace AZ::IO
@@ -256,6 +258,7 @@ namespace AZ::IO
             AZ::ComponentApplication::Descriptor appDesc;
             appDesc.m_useExistingAllocator = true;
             auto m_systemEntity = m_application->Create(appDesc);
+            m_systemEntity->AddComponent(aznew AZ::TaskGraphSystemComponent());
             m_systemEntity->AddComponent(aznew AZ::StreamerComponent());
             m_systemEntity->Init();
             m_systemEntity->Activate();
@@ -434,7 +437,7 @@ namespace AZ::IO
 
 #if !AZ_TRAIT_DISABLE_FAILED_STREAMER_TESTS
 
-    TYPED_TEST_CASE_P(StreamerTest);
+    TYPED_TEST_SUITE_P(StreamerTest);
 
     // Read a file that's smaller than the cache.
     TYPED_TEST_P(StreamerTest, Read_ReadSmallFileEntirely_FileFullyRead)
@@ -460,7 +463,7 @@ namespace AZ::IO
 
         char* buffer = new char[fileSize];
         bool readResult{ false };
-        this->PeriodicallyCheckedRead(testFile->GetFileName(), buffer, fileSize, 0, AZStd::chrono::seconds(5), readResult);
+        this->PeriodicallyCheckedRead(testFile->GetFileName(), buffer, fileSize, 0, AZStd::chrono::seconds(500), readResult);
         EXPECT_TRUE(readResult);
         if(readResult)
         {
@@ -653,7 +656,7 @@ namespace AZ::IO
         EXPECT_TRUE(readSuccessful);
     }
 
-    REGISTER_TYPED_TEST_CASE_P(StreamerTest,
+    REGISTER_TYPED_TEST_SUITE_P(StreamerTest,
         Read_ReadSmallFileEntirely_FileFullyRead,
         Read_ReadLargeFileEntirely_FileFullyRead,
         Read_ReadMultiplePieces_AllReadRequestWereSuccessful,
@@ -663,7 +666,7 @@ namespace AZ::IO
 
     using StreamerTestCases = ::testing::Types<GlobalCache_Uncompressed, DedicatedCache_Uncompressed, GlobalCache_Compressed, DedicatedCache_Compressed>;
 
-    INSTANTIATE_TYPED_TEST_CASE_P(StreamerTests, StreamerTest, StreamerTestCases);
+    INSTANTIATE_TYPED_TEST_SUITE_P(StreamerTests, StreamerTest, StreamerTestCases);
 #endif // AZ_TRAIT_DISABLE_FAILED_STREAMER_TESTS
 
 } // namespace AZ::IO

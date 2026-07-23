@@ -16,6 +16,7 @@
 #include <AzCore/Settings/SettingsRegistryVisitorUtils.h>
 #include <AzCore/Serialization/Json/JsonUtils.h>
 #include <AzCore/Utils/Utils.h>
+#include <AzCore/std/string/wildcard.h>
 #include <AzFramework/API/ApplicationAPI.h>
 #include <AzFramework/Gem/GemInfo.h>
 #include <AzToolsFramework/Asset/AssetUtils.h>
@@ -627,8 +628,6 @@ namespace AssetProcessor
 
     PlatformConfiguration::PlatformConfiguration(QObject* pParent)
         : QObject(pParent)
-        , m_minJobs(1)
-        , m_maxJobs(8)
     {
     }
 
@@ -1132,19 +1131,7 @@ namespace AssetProcessor
         AZ::IO::FixedMaxPath engineRoot(AZ::IO::PosixPathSeparator);
         settingsRegistry->Get(engineRoot.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
         engineRoot = engineRoot.LexicallyNormal(); // Normalize the path to use posix slashes
-
-        AZ::s64 jobCount = m_minJobs;
-        if (settingsRegistry->Get(jobCount, AZ::SettingsRegistryInterface::FixedValueString(AssetProcessorSettingsKey) + "/Jobs/minJobs"))
-        {
-            m_minJobs = aznumeric_cast<int>(jobCount);
-        }
-
-        jobCount = m_maxJobs;
-        if (settingsRegistry->Get(jobCount, AZ::SettingsRegistryInterface::FixedValueString(AssetProcessorSettingsKey) + "/Jobs/maxJobs"))
-        {
-            m_maxJobs = aznumeric_cast<int>(jobCount);
-        }
-
+       
         if (!skipScanFolders)
         {
             AZStd::unordered_map<AZStd::string, AZ::IO::Path> gemNameToPathMap;
@@ -1189,8 +1176,8 @@ namespace AssetProcessor
                 auto scanFolderMatch = [watchFolderQt = QString::fromUtf8(scanFolderEntry.m_watchPath.c_str(),
                     aznumeric_cast<int>(scanFolderEntry.m_watchPath.Native().size()))](const QString& scanFolderPattern)
                 {
-                    QRegExp nameMatch(scanFolderPattern, Qt::CaseInsensitive, QRegExp::Wildcard);
-                    return nameMatch.exactMatch(watchFolderQt);
+                    const bool match = AZStd::wildcard_match(qUtf8Printable(scanFolderPattern), qUtf8Printable(watchFolderQt));
+                    return match;
                 };
                 if (!scanFolderPatterns.empty() && AZStd::none_of(scanFolderPatterns.begin(), scanFolderPatterns.end(), scanFolderMatch))
                 {
@@ -1702,7 +1689,7 @@ namespace AssetProcessor
         QString posixRelativeName = QDir::fromNativeSeparators(relativeName);
 
         QStringList returnList;
-        QRegExp nameMatch{ posixRelativeName, Qt::CaseInsensitive, QRegExp::Wildcard };
+
         QDirIterator dirIterator(
             sourceFolderDir.path(), QDir::AllEntries | QDir::NoSymLinks | QDir::NoDotAndDotDot,
             recursiveSearch ? QDirIterator::Subdirectories : QDirIterator::NoIteratorFlags);
@@ -1715,7 +1702,7 @@ namespace AssetProcessor
                 continue;
             }
             QString pathMatch{ sourceFolderDir.relativeFilePath(dirIterator.filePath()) };
-            if (nameMatch.exactMatch(pathMatch))
+            if (AZStd::wildcard_match(qUtf8Printable(posixRelativeName), qUtf8Printable(pathMatch)))
             {
                 returnList.append(QDir::fromNativeSeparators(dirIterator.filePath()));
             }
@@ -1740,7 +1727,7 @@ namespace AssetProcessor
         QString posixRelativeName = QDir::fromNativeSeparators(relativeName);
 
         QStringList returnList;
-        QRegExp nameMatch{ posixRelativeName, Qt::CaseInsensitive, QRegExp::Wildcard };
+
         AZStd::stack<QString> dirs;
         dirs.push(sourceFolderDir.absolutePath());
 
@@ -1774,7 +1761,7 @@ namespace AssetProcessor
                 }
 
                 QString pathMatch{ sourceFolderDir.relativeFilePath(dirIterator.filePath()) };
-                if (nameMatch.exactMatch(pathMatch))
+                if (AZStd::wildcard_match(qUtf8Printable(posixRelativeName), qUtf8Printable(pathMatch)))
                 {
                     returnList.append(QDir::fromNativeSeparators(dirIterator.filePath()));
                 }
@@ -1840,16 +1827,6 @@ namespace AssetProcessor
             {
                 return scanFolder.ScanPath() == scanFolderPath;
             });
-    }
-
-    int PlatformConfiguration::GetMinJobs() const
-    {
-        return m_minJobs;
-    }
-
-    int PlatformConfiguration::GetMaxJobs() const
-    {
-        return m_maxJobs;
     }
 
     void PlatformConfiguration::EnableCommonPlatform()

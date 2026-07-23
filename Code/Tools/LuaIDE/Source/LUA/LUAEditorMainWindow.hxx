@@ -8,12 +8,13 @@
 
 #ifndef LUAEDITOR_LUAEDITORMAINWINDOW_H
 #define LUAEDITOR_LUAEDITORMAINWINDOW_H
+#pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/base.h>
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/std/containers/map.h>
 
+#include <AzFramework/Network/IRemoteTools.h>
 #include <AzToolsFramework/AssetBrowser/Search/Filter.h>
 #include <AzToolsFramework/UI/LegacyFramework/UIFrameworkAPI.h>
 #include <AzToolsFramework/UI/LegacyFramework/MainWindowSavedState.h>
@@ -26,7 +27,7 @@
 #include "LUAEditorView.hxx"
 #include "LUAEditorFindDialog.hxx"
 
-#pragma once
+#include <QMainWindow>
 
 class QMenu;
 class QAction;
@@ -56,8 +57,6 @@ namespace LUA
 }
 class ClassReferenceFilterModel;
 
-#include <QtWidgets/QMainWindow>
-#endif
 
 namespace LUAEditor
 {
@@ -101,6 +100,8 @@ namespace LUAEditor
         DebugAttachmentButtonAction* m_pDebugAttachmentButton;
         bool m_bAutocompleteEnabled;
         int m_SkinChoice;
+        AzFramework::RemoteToolsEndpointStatusEvent::Handler m_remoteToolsEndpointJoinedHandler;
+        AzFramework::RemoteToolsEndpointStatusEvent::Handler m_remoteToolsEndpointLeftHandler;
 
     Q_SIGNALS:
         void OnReferenceDataChanged();
@@ -169,6 +170,7 @@ namespace LUAEditor
         // help menu
         void OnLuaDocumentation();
 
+        void OnRemoteToolsEndpointListChanged();
         void OnDebugExecute();
         void OnDebugExecuteOnTarget();
 

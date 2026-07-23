@@ -23,9 +23,9 @@
 #include "MainWindowSavedState.h"
 
 AZ_PUSH_DISABLE_WARNING(4251, "-Wunknown-warning-option") // '...' needs to have dll-interface to be used by clients of class '...'
-#include <QtWidgets/QApplication>
-#include <QtCore/QTimer>
-#include <QtCore/QDir>
+#include <QApplication>
+#include <QTimer>
+#include <QDir>
 #include <QThread>
 #include <QAction>
 #include <QMenu>
@@ -221,7 +221,8 @@ namespace AzToolsFramework
                     if (cssFile.exists())
                     {
                         enableStyleSheet = false; // dont use the built-in style sheet!
-                        cssFile.open(QFile::ReadOnly);
+                        [[maybe_unused]] const bool res = cssFile.open(QFile::ReadOnly);
+                        AZ_Assert(res, "Failed to open css file at %s", switchValue.c_str());
                         QString styleSheet = QLatin1String(cssFile.readAll());
                         pApplication->setStyleSheet(styleSheet);
                     }
@@ -387,7 +388,7 @@ namespace AzToolsFramework
     void Framework::RegisterHotkey(const HotkeyDescription& desc)
     {
         // it is acceptable to multi-register the same hotkey.
-        HotkeyDescriptorContainerType::pair_iter_bool newInsertion = m_hotkeyDescriptors.insert(desc.m_HotKeyIDCRC);
+        HotkeyDescriptorContainerType::pair_iter_bool newInsertion = m_hotkeyDescriptors.try_emplace(desc.m_HotKeyIDCRC);
         if (newInsertion.second)
         {
             newInsertion.first->second = HotkeyData(desc);
@@ -638,4 +639,3 @@ namespace AzToolsFramework
     }
 }   // END namespace AzToolsFramework
 
-#include "UI/LegacyFramework/moc_UIFramework.cpp"

@@ -38,11 +38,9 @@ struct S3DConnexionMessage
 };
 
 #if defined(AZ_PLATFORM_WINDOWS)
-AZ_PUSH_DISABLE_DLL_EXPORT_BASECLASS_WARNING
 class SANDBOX_API C3DConnexionDriver
     : public IPlugin
 {
-AZ_POP_DISABLE_DLL_EXPORT_BASECLASS_WARNING
 public:
     C3DConnexionDriver();
     ~C3DConnexionDriver();
@@ -53,7 +51,7 @@ public:
     void Release() { delete this; };
     void ShowAbout() {};
     const char* GetPluginGUID() { return "{AD109901-9128-4ffd-8E67-137CB2B1C41B}"; };
-    DWORD GetPluginVersion() { return 1; };
+    AZ::u32 GetPluginVersion() { return 1; };
     const char* GetPluginName() { return "3DConnexionDriver"; };
     bool CanExitNow() { return true; };
     void OnEditorNotify([[maybe_unused]] EEditorNotifyEvent aEventId){}

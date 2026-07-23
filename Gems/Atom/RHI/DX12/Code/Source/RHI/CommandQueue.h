@@ -69,6 +69,7 @@ namespace AZ
             //////////////////////////////////////////////////////////////////////////
 
             void CalibrateClock();
+            AZStd::pair<uint64_t, uint64_t> GetClockCalibration();
 
             ID3D12CommandQueue* GetPlatformQueue() const;
 
@@ -89,9 +90,6 @@ namespace AZ
             void ShutdownInternal() override;
             void* GetNativeQueue() override;
             //////////////////////////////////////////////////////////////////////////
-
-            void ProcessQueue();
-
             
             void UpdateTileMappings(CommandList& commandList);
 

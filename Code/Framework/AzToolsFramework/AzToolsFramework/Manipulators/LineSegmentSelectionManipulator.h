@@ -11,13 +11,14 @@
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzToolsFramework/Manipulators/BaseManipulator.h>
 #include <AzToolsFramework/Viewport/ViewportTypes.h>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 
 namespace AzToolsFramework
 {
     class ManipulatorView;
 
     //! A manipulator to expose where on a line a user is moving their mouse.
-    class LineSegmentSelectionManipulator
+    class AZTF_API LineSegmentSelectionManipulator
         : public BaseManipulator
         , public ManipulatorSpace
     {
@@ -91,10 +92,10 @@ namespace AzToolsFramework
         ViewportInteraction::KeyboardModifiers
             m_keyboardModifiers; //!< What modifier keys are pressed when interacting with this manipulator.
 
-        AZStd::unique_ptr<ManipulatorView> m_manipulatorView = nullptr; //!< Look of manipulator.
+        AZStd::unique_ptr<ManipulatorView> m_manipulatorView; //!< Look of manipulator.
     };
 
-    LineSegmentSelectionManipulator::Action CalculateManipulationDataAction(
+    AZTF_API LineSegmentSelectionManipulator::Action CalculateManipulationDataAction(
         const AZ::Transform& worldFromLocal,
         const AZ::Vector3& nonUniformScale,
         const AZ::Vector3& rayOrigin,

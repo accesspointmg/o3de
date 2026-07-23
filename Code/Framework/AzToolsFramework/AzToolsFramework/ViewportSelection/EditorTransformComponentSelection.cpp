@@ -1591,7 +1591,7 @@ namespace AzToolsFramework
                 EndRecordManipulatorCommand();
             });
 
-        rotationManipulators->Register(g_mainManipulatorManagerId);
+        rotationManipulators->Register(GetMainManipulatorManagerId());
 
         // transfer ownership
         m_entityIdManipulators.m_manipulators = AZStd::move(rotationManipulators);
@@ -1724,7 +1724,7 @@ namespace AzToolsFramework
 
     void EditorTransformComponentSelection::InitializeManipulators(Manipulators& manipulators)
     {
-        manipulators.Register(g_mainManipulatorManagerId);
+        manipulators.Register(GetMainManipulatorManagerId());
 
         // camera editor component might have been set
         if (m_editorCameraComponentEntityId.IsValid())
@@ -1850,6 +1850,13 @@ namespace AzToolsFramework
             !UndoRedoOperationInProgress(),
             "ChangeSelectedEntity called from undo/redo operation - this is unexpected and not currently supported");
 
+        if (IsEntitySelectedInternal(entityId, m_selectedEntityIds))
+        {
+            if (m_selectedEntityIds.size() == 1)
+            {
+                return;
+            }
+        }
         // ensure deselect/select is tracked as an atomic undo/redo operation
         ScopedUndoBatch undoBatch(ChangeEntitySelectionUndoRedoDesc);
 
@@ -3254,7 +3261,7 @@ namespace AzToolsFramework
 
         if (m_entityIdManipulators.m_manipulators && !m_entityIdManipulators.m_manipulators->Registered())
         {
-            m_entityIdManipulators.m_manipulators->Register(g_mainManipulatorManagerId);
+            m_entityIdManipulators.m_manipulators->Register(GetMainManipulatorManagerId());
         }
     }
 
@@ -4678,8 +4685,8 @@ namespace AzToolsFramework
     } // namespace Etcs
 
     // explicit instantiations
-    template Etcs::PivotOrientationResult Etcs::CalculatePivotOrientationForEntityIds<EntityIdManipulatorLookups>(
+    template AZ_DLL_EXPORT Etcs::PivotOrientationResult Etcs::CalculatePivotOrientationForEntityIds<EntityIdManipulatorLookups>(
         const EntityIdManipulatorLookups&, ReferenceFrame);
-    template Etcs::PivotOrientationResult Etcs::CalculateSelectionPivotOrientation<EntityIdManipulatorLookups>(
+    template AZ_DLL_EXPORT Etcs::PivotOrientationResult Etcs::CalculateSelectionPivotOrientation<EntityIdManipulatorLookups>(
         const EntityIdManipulatorLookups&, const OptionalFrame&, const ReferenceFrame referenceFrame);
 } // namespace AzToolsFramework

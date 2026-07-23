@@ -8,14 +8,12 @@
  *
  */
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/Math/Crc.h>
 #include <AzCore/std/string/string.h>
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzToolsFramework/UI/PropertyEditor/PropertyEditorAPI.h>
 #include <SceneAPI/SceneUI/RowWidgets/NodeTreeSelectionWidget.h>
 #include <SceneAPI/SceneCore/DataTypes/ManifestBase/ISceneNodeSelectionList.h>
-#endif
 
 class QWidget;
 
@@ -45,12 +43,10 @@ namespace AZ
     {
         namespace UI
         {
-            AZ_PUSH_DISABLE_DLL_EXPORT_BASECLASS_WARNING
             class SCENE_UI_API NodeTreeSelectionHandler
                 : public QObject
                 , public AzToolsFramework::PropertyHandler<DataTypes::ISceneNodeSelectionList, NodeTreeSelectionWidget>
             {
-            AZ_POP_DISABLE_DLL_EXPORT_BASECLASS_WARNING
                 Q_OBJECT
             public:
                 AZ_CLASS_ALLOCATOR_DECL

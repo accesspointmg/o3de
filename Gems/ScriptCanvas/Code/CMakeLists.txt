@@ -6,15 +6,30 @@
 #
 #
 
+# Script Canvas may be built and executed as a standalone tool, it is disabled
+# by default due to quality and performance issues that need to be fixed
+# before making this change
+option(SCRIPTCANVAS_BUILD_STANDALONE_APPLICATION "Build ScriptCanvas as a standalone tool" OFF)
 
 set(SCRIPT_CANVAS_COMMON_DEFINES 
     SCRIPTCANVAS
     ENABLE_EXTENDED_MATH_SUPPORT=0
 )
 
+if (SCRIPTCANVAS_BUILD_STANDALONE_APPLICATION)
+    message(STATUS "Building ScriptCanvas Standalone...")
+    set(SCRIPTCANVAS_STANDALONE_APPLICATION_DEFINE SCRIPTCANVAS_STANDALONE_APPLICATION=1)
+else()
+    set(SCRIPTCANVAS_STANDALONE_APPLICATION_DEFINE SCRIPTCANVAS_STANDALONE_APPLICATION=0)
+endif()
+
 set(SCRIPT_CANVAS_EXECUTION_NOTIFICATION_DEFINES
     $<$<NOT:$<CONFIG:Release>>:SC_EXECUTION_TRACE_ENABLED> # this is REQUIRED for debugging/execution logging
 )
+
+# note that the above define controls whether the debug static library has member variables in its classes, in its API,
+# and thus must be transmitted to all users of the static library or else the sizeof the structs will mismatch.
+# It must thus be an INTERFACE or PUBLIC compile definition
 
 set(SCRIPT_CANVAS_DEBUG_DEBUGGER_DEFINES
 $<$<NOT:$<CONFIG:Release>>:
@@ -36,10 +51,10 @@ o3de_add_target(
     COMPILE_DEFINITIONS
         PUBLIC
             SCRIPTCANVAS_ERRORS_ENABLED
+            ${SCRIPT_CANVAS_EXECUTION_NOTIFICATION_DEFINES}
         PRIVATE
             ${SCRIPT_CANVAS_COMMON_DEFINES}
             ${SCRIPT_CANVAS_DEBUG_DEBUGGER_DEFINES}
-            ${SCRIPT_CANVAS_EXECUTION_NOTIFICATION_DEFINES}
     BUILD_DEPENDENCIES
         PRIVATE
             AZ::AzCore
@@ -86,10 +101,10 @@ o3de_add_target(
     COMPILE_DEFINITIONS
         PUBLIC
             SCRIPTCANVAS_ERRORS_ENABLED
+            ${SCRIPT_CANVAS_EXECUTION_NOTIFICATION_DEFINES}
         PRIVATE
             ${SCRIPT_CANVAS_COMMON_DEFINES}
             ${SCRIPT_CANVAS_DEBUG_DEBUGGER_DEFINES}
-            ${SCRIPT_CANVAS_EXECUTION_NOTIFICATION_DEFINES}
     BUILD_DEPENDENCIES
         PUBLIC
             Gem::ScriptEvents.Static
@@ -153,6 +168,7 @@ o3de_create_alias(NAME ${gem_name}.Servers  NAMESPACE Gem TARGETS Gem::${gem_nam
 o3de_create_alias(NAME ${gem_name}.Unified  NAMESPACE Gem TARGETS Gem::${gem_name})
 
 if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+
     o3de_add_target(
         NAME ${gem_name}.Editor.Static STATIC
         NAMESPACE Gem
@@ -170,6 +186,7 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
                 SCRIPTCANVAS_ERRORS_ENABLED
             PRIVATE
                 ${SCRIPT_CANVAS_COMMON_DEFINES}
+                ${SCRIPTCANVAS_STANDALONE_APPLICATION_DEFINE}
         INCLUDE_DIRECTORIES
             PUBLIC
                 Editor/Include
@@ -190,6 +207,7 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::ExpressionEvaluation.Static
             PRIVATE
                 Legacy::EditorCore
+                Gem::AtomToolsFramework.Static
         RUNTIME_DEPENDENCIES
             Gem::${gem_name}
     )
@@ -227,6 +245,55 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
             Gem::ExpressionEvaluation
     )
 
+if(SCRIPTCANVAS_BUILD_STANDALONE_APPLICATION)
+
+    o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Application/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+
+    o3de_add_target(
+        NAME ${gem_name}Application APPLICATION
+        NAMESPACE Gem
+        AUTORCC
+        FILES_CMAKE
+            scriptcanvasgem_application_files.cmake
+            ${pal_code_source_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
+        COMPILE_DEFINITIONS
+            PUBLIC
+                SCRIPTCANVAS_ERRORS_ENABLED
+            PRIVATE
+                SCRIPTCANVAS_EDITOR
+                ${SCRIPT_CANVAS_COMMON_DEFINES}
+        INCLUDE_DIRECTORIES
+            PRIVATE
+                Application
+                Editor
+                ${pal_code_source_path}
+        BUILD_DEPENDENCIES
+            PRIVATE
+                AZ::AzCore
+                AZ::AzToolsFramework
+                AZ::AzQtComponents
+                Legacy::EditorCore
+                Gem::${gem_name}.Editor
+                Gem::${gem_name}.Editor.Static
+                Gem::AtomToolsFramework.Static
+        RUNTIME_DEPENDENCIES
+            Gem::${gem_name}.Editor
+    )
+
+    # Inject target name for dependency resolution
+    o3de_add_source_properties(
+        SOURCES
+            Application/ScriptCanvasApplication.cpp
+        PROPERTY COMPILE_DEFINITIONS
+            VALUES
+                LY_CMAKE_TARGET="${gem_name}Application")
+
+    if(O3DE_PAL_TRAIT_BUILD_EXTERNAL_CRASH_HANDLER_SUPPORTED)
+        ly_target_link_libraries(${gem_name}Application PRIVATE AZ::ToolsCrashHandler)
+    endif()
+
+endif()
+
     # Inject the gem name into the Module source file
     o3de_add_source_properties(
         SOURCES
@@ -240,6 +307,21 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
     o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 
+if(SCRIPTCANVAS_BUILD_STANDALONE_APPLICATION)
+    
+    o3de_set_gem_variant_to_load(TARGETS ${gem_name}Application VARIANTS Tools)
+    
+    # Add build dependency to Editor for the ScriptCanvas application since
+    # Editor opens up the ScriptCanvas
+    o3de_add_dependencies(Editor Gem::${gem_name}Application)
+
+    # Inject the project path into the ScriptCanvas VS debugger command arguments if the build system being invoked
+    # in a project centric view
+    if(NOT PROJECT_NAME STREQUAL "O3DE")
+        set_property(TARGET ${gem_name}Application APPEND PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS "--project-path=\"${CMAKE_SOURCE_DIR}\"")
+    endif()
+
+endif()
 
 endif()
 

@@ -6,12 +6,10 @@
  *
  */
 
-#ifndef ENTITY_PROPERTY_EDITOR_H
-#define ENTITY_PROPERTY_EDITOR_H
-
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/base.h>
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/std/containers/vector.h>
@@ -41,9 +39,8 @@
 #include <AzQtComponents/Components/O3DEStylesheet.h>
 
 #include <QComboBox>
-#include <QtGui/QIcon>
-#include <QtWidgets/QWidget>
-#endif
+#include <QIcon>
+#include <QWidget>
 
 class QLabel;
 class QMenu;
@@ -94,18 +91,6 @@ namespace AzToolsFramework
 
     using ComponentEditorVector = AZStd::vector<ComponentEditor*>;
 
-    struct OrderedSortComponentEntry
-    {
-        AZ::Component* m_component;
-        int m_originalOrder;
-
-        OrderedSortComponentEntry(AZ::Component* component, int originalOrder)
-        {
-            m_component = component;
-            m_originalOrder = originalOrder;
-        }
-    };
-
     /**
      * the entity property editor shows all components for a given entity or set of entities.
      * it displays their values and lets you edit them.  The editing actually happens through the sub editor parts, though.
@@ -115,7 +100,7 @@ namespace AzToolsFramework
      * so this widget is actually only interested in specifically what entities are selected, what their components are,
      * and what is in common.
      */
-    class EntityPropertyEditor
+    class AZTF_API EntityPropertyEditor
         : public QWidget
         , private ToolsApplicationEvents::Bus::Handler
         , public IPropertyEditorNotify
@@ -185,8 +170,6 @@ namespace AzToolsFramework
         void SetOverrideEntityIds(const AzToolsFramework::EntityIdSet& entities);
 
         void SetSystemEntityEditor(bool isSystemEntityEditor);
-
-        static void SortComponentsByPriority(AZ::Entity::ComponentArrayType& componentsOnEntity);
 
         bool IsLockedToSpecificEntities() const { return !m_overrideSelectedEntityIds.empty(); }
 
@@ -306,10 +289,7 @@ namespace AzToolsFramework
         void UpdateEntityIcon();
         void UpdateEntityDisplay();
         static bool DoesComponentPassFilter(const AZ::Component* component, const ComponentFilter& filter);
-        static bool IsComponentRemovable(const AZ::Component* component);
         bool AreComponentsRemovable(AZStd::span<AZ::Component* const> components) const;
-        static AZStd::optional<int> GetFixedComponentListIndex(const AZ::Component* component);
-        static bool IsComponentDraggable(const AZ::Component* component);
         bool AllowAnyComponentModification() const;
         bool AreComponentsDraggable(AZStd::span<AZ::Component* const> components) const;
         bool AreComponentsCopyable(AZStd::span<AZ::Component* const> components) const;
@@ -401,12 +381,14 @@ namespace AzToolsFramework
         QAction* m_actionToCutComponents = nullptr;
         QAction* m_actionToCopyComponents = nullptr;
         QAction* m_actionToPasteComponents = nullptr;
+        QAction* m_actionToDuplicateComponents = nullptr;
         QAction* m_actionToEnableComponents = nullptr;
         QAction* m_actionToDisableComponents = nullptr;
         QAction* m_actionToMoveComponentsUp = nullptr;
         QAction* m_actionToMoveComponentsDown = nullptr;
         QAction* m_actionToMoveComponentsTop = nullptr;
         QAction* m_actionToMoveComponentsBottom = nullptr;
+        QAction* m_actionToCollapseAll = nullptr;
 
         AzToolsFramework::MenuManagerInterface* m_menuManagerInterface = nullptr;
 
@@ -414,6 +396,7 @@ namespace AzToolsFramework
         void UpdateActions();
 
         bool CanPasteComponentsOnSelectedEntities() const;
+        bool CanPasteComponentsOnSelectedEntitiesFromMimeData(const QMimeData* mimeData) const;
         bool CanPasteComponentsOnEntity(const ComponentTypeMimeData::ClassDataContainer& classDataForComponentsToPaste, const AZ::Entity* entity) const;
 
         AZ::Entity::ComponentArrayType GetCopyableComponents() const;
@@ -421,7 +404,9 @@ namespace AzToolsFramework
         void DeleteComponents();
         void CutComponents();
         void CopyComponents();
+        void DuplicateComponents();
         void PasteComponents();
+        void PasteComponentsFromMimeData(const QMimeData* mimeData);
         void EnableComponents(AZStd::span<AZ::Component* const> components);
         void EnableComponents();
         void DisableComponents(AZStd::span<AZ::Component* const> components);
@@ -701,18 +686,18 @@ namespace AzToolsFramework
         void ClearSearchFilter();
 
         void OpenPinnedInspector();
+        void OnCollapseAll();
 
         void DragStopped();
 
         AZ::Entity* GetSelectedEntityById(AZ::EntityId& entityId) const;
     };
 
-    void SortComponentsByOrder(AZ::EntityId entityId, AZ::Entity::ComponentArrayType& componentsOnEntity);
     void SaveComponentOrder(AZ::EntityId entityId, AZStd::span<AZ::Component* const> componentsInOrder);
 
 } // namespace AzToolsFramework
 
-class StatusComboBox : public QComboBox
+class AZTF_API StatusComboBox : public QComboBox
 {
     Q_OBJECT
 public:
@@ -729,5 +714,3 @@ protected:
     QString m_headerOverride = "";
     bool m_italic = false;
 };
-
-#endif

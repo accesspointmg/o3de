@@ -6,17 +6,17 @@
  *
  */
 
-#ifndef SAVECHANGESDIALOG_HXX
-#define SAVECHANGESDIALOG_HXX
+ #pragma once
 
-#if !defined(Q_MOC_RUN)
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <QDialog>
 #include <QObject>
 
 #include <AzCore/base.h>
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzToolsFramework/UI/LegacyFramework/UIFrameworkAPI.h>
-#endif
 
 namespace Ui
 {
@@ -27,7 +27,7 @@ namespace Ui
 
 namespace AzToolsFramework
 {
-    class SaveChangesDialog
+    class AZTF_API SaveChangesDialog
         : public QDialog
     {
         Q_OBJECT;
@@ -47,5 +47,3 @@ namespace AzToolsFramework
         Ui::SaveChangesDialog* guiConstructor;
     };
 }
-
-#endif//SAVECHANGESDIALOG_HXX

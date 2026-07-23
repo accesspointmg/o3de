@@ -11,15 +11,12 @@
 #define CRYINCLUDE_EDITOR_CRYEDIT_H
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/Outcome/Outcome.h>
 #include <AzFramework/Asset/AssetSystemBus.h>
 #include "CryEditDoc.h"
 #include "ViewPane.h"
 
 #include <QSettings>
-
-#endif
 
 class CCryDocManager;
 class CCryEditDoc;
@@ -29,6 +26,11 @@ class CConsoleDialog;
 class QAction;
 class MainWindow;
 class QSharedMemory;
+
+namespace AzToolsFramework
+{
+    class ProgressShield;
+}
 
 class SANDBOX_API RecentFileList
 {
@@ -48,9 +50,8 @@ public:
     void WriteList();
 
     static const int Max = 12;
-    AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
+
     QStringList m_arrNames;
-    AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
     QSettings m_settings;
 };
 
@@ -82,16 +83,12 @@ enum class COpenSameLevelOptions
     NotReopenIfSame
 };
 
-AZ_PUSH_DISABLE_DLL_EXPORT_BASECLASS_WARNING
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 class SANDBOX_API CCryEditApp
     : public QObject
     , protected AzFramework::AssetSystemInfoBus::Handler
     , protected EditorIdleProcessingBus::Handler
     , protected AzFramework::AssetSystemStatusBus::Handler
 {
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
-AZ_POP_DISABLE_DLL_EXPORT_BASECLASS_WARNING
     friend MainWindow;
     Q_OBJECT
 public:
@@ -115,8 +112,6 @@ public:
     void KeepEditorActive(bool bActive) { m_bKeepEditorActive = bActive; };
     bool IsInTestMode() const { return m_bTestMode; };
     bool IsInPreviewMode() const { return m_bPreviewMode; };
-    bool IsInExportMode() const { return m_bExportMode; };
-    bool IsExportingLegacyData() const { return m_bIsExportingLegacyData; }
     bool IsInConsoleMode() const { return m_bConsoleMode; };
     bool IsInAutotestMode() const { return m_bAutotestMode; };
     bool IsInLevelLoadTestMode() const { return m_bLevelLoadTestMode; }
@@ -125,12 +120,16 @@ public:
     void EnableAccelerator(bool bEnable);
     void SaveAutoBackup();
     void SaveAutoRemind();
-    void ExportToGame(bool bNoMsgBox = true);
     //! \param sTitleStr overwrites the default title of the Editor
     void SetEditorWindowTitle(QString sTitleStr = QString(), QString sPreTitleStr = QString(), QString sPostTitleStr = QString());
     RecentFileList* GetRecentFileList();
     virtual void AddToRecentFileList(const QString& lpszPathName);
-    ECreateLevelResult CreateLevel(const QString& templateName, const QString& levelName, QString& fullyQualifiedLevelName);
+    // levelsRootAbsolutePath: absolute path of the "Levels" container the
+    // new level should live inside. Empty (default) means the project's
+    // own "Levels" folder, preserving legacy behaviour for all existing
+    // callers (including Python). The New Level dialog passes a gem root
+    // through this parameter when the user picks a non-project root.
+    ECreateLevelResult CreateLevel(const QString& templateName, const QString& levelName, QString& fullyQualifiedLevelName, const QString& levelsRootAbsolutePath = QString());
     bool FirstInstance(bool bForceNewInstance = false);
     void InitFromCommandLine(CEditCommandLineInfo& cmdInfo);
     bool CheckIfAlreadyRunning();
@@ -183,7 +182,6 @@ public:
     void OnDocumentationForums();
     void OnEditHold();
     void OnEditFetch();
-    void OnFileExportToGameNoSurfaceTexture();
     void OnViewSwitchToGame();
     void OnViewSwitchToGameFullScreen();
     void OnMoveObject();
@@ -233,7 +231,6 @@ private:
 
     CMainFrame* GetMainFrame() const;
     void WriteConfig();
-    bool UserExportToGame(bool bNoMsgBox = true);
     static void ShowSplashScreen(CCryEditApp* app);
     static void CloseSplashScreen();
     static void OutputStartupMessage(QString str);
@@ -254,14 +251,6 @@ private:
     //! Test mode is a special mode enabled when Editor ran with /test command line.
     //! In this mode editor starts up, but exit immediately after all initialization.
     bool m_bTestMode = false;
-    //! In this mode editor will load specified cry file, export t, and then close.
-    bool m_bExportMode = false;
-    QString m_exportFile;
-    //! This flag is set to true every time any of the "Export" commands is being executed.
-    //! Once exporting is finished the flag is set back to false.
-    //! UI events like "New Level" or "Open Level", should not be allowed while m_bIsExportingLegacyData==true.
-    //! Otherwise it could trigger crashes trying to export while exporting.
-    bool m_bIsExportingLegacyData = false;
     //! If application exiting.
     bool m_bExiting = false;
     //! True if editor is in preview mode.
@@ -320,9 +309,7 @@ private:
     CCryDocManager* m_pDocManager = nullptr;
 
 // Disable warning for dll export since this member won't be used outside this class
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
     AZ::IO::FileDescriptorRedirector m_stdoutRedirection = AZ::IO::FileDescriptorRedirector(1); // < 1 for STDOUT
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
 private:
     // Optional Uri to start an external lua debugger. If not specified,
@@ -340,9 +327,7 @@ private:
     static constexpr AZStd::string_view LuaDebuggerUriRegistryKey = "/O3DE/Lua/Debugger/Uri";
 
     struct PythonOutputHandler;
-    AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
     AZStd::shared_ptr<PythonOutputHandler> m_pythonOutputHandler;
-    AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
     friend struct PythonTestOutputHandler;
 
     void OpenProjectManager(const AZStd::string& screen);
@@ -365,13 +350,14 @@ private:
     void OnOpenTrackView();
     void OnOpenAudioControlsEditor();
     void OnOpenUICanvasEditor();
+    void OnNewComponent();
 
     // @param files: A list of file paths, separated by '|';
     void OpenExternalLuaDebugger(AZStd::string_view luaDebuggerUri, AZStd::string_view enginePath, AZStd::string_view projectPath, const char * files);
 
-public:
-    void ExportLevel(bool bExportToGame, bool bExportTexture, bool bAutoExport);
-    static bool Command_ExportToEngine();
+    // Generic progress indicator for socket connection blocks.
+    static AzToolsFramework::ProgressShield* s_progressShield;
+    static void SocketConnectionKeepAliveCallback(bool operationComplete);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -412,7 +398,6 @@ private:
     const QMetaObject* m_documentClass = nullptr;
 };
 
-class CDocTemplate;
 class CCryDocManager
 {
     CCrySingleDocTemplate* m_pDefTemplate = nullptr;
@@ -422,8 +407,7 @@ public:
     CCrySingleDocTemplate* SetDefaultTemplate(CCrySingleDocTemplate* pNew);
     // Copied from MFC to get rid of the silly ugly unoverridable doc-type pick dialog
     virtual void OnFileNew();
-    virtual bool DoPromptFileName(QString& fileName, UINT nIDSTitle,
-        DWORD lFlags, bool bOpenFileDialog, CDocTemplate* pTemplate);
+    virtual bool DoPromptFileName(QString& fileName, bool bOpenFileDialog);
     virtual CCryEditDoc* OpenDocumentFile(const char* filename, bool addToMostRecentFileList, COpenSameLevelOptions openSameLevelOptions = COpenSameLevelOptions::NotReopenIfSame);
 
     QVector<CCrySingleDocTemplate*> m_templateList;

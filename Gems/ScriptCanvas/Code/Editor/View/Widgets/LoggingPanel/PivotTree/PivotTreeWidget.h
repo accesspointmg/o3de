@@ -7,7 +7,6 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/PlatformDef.h>
 // qbrush.h(118): warning C4251: 'QBrush::d': class 'QScopedPointer<QBrushData,QBrushDataPointerDeleter>' needs to have dll-interface to be used by clients of class 'QBrush'
 // qwidget.h(858): warning C4800: 'uint': forcing value to bool 'true' or 'false' (performance warning)
@@ -15,6 +14,7 @@ AZ_PUSH_DISABLE_WARNING(4251 4800, "-Wunknown-warning-option")
 #include <QTimer>
 #include <QTreeView>
 #include <QSortFilterProxyModel>
+#include <QRegularExpression>
 AZ_POP_DISABLE_WARNING
 
 #include <AzCore/std/smart_ptr/unique_ptr.h>
@@ -23,7 +23,6 @@ AZ_POP_DISABLE_WARNING
 #include <GraphCanvas/Widgets/GraphCanvasTreeModel.h>
 
 #include <Editor/View/Widgets/LoggingPanel/LoggingWindowSession.h>
-#endif
 
 namespace Ui
 {
@@ -163,7 +162,7 @@ namespace ScriptCanvasEditor
     private:
 
         QString m_filter;
-        QRegExp m_filterRegex;
+        QRegularExpression m_filterRegex;
     };
 
     class PivotTreeWidget

@@ -8,7 +8,9 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/base.h>
 #include <AzCore/Memory/SystemAllocator.h>
 #include <QWidget>
@@ -33,7 +35,6 @@ AZ_PUSH_DISABLE_WARNING(4244 4251, "-Wunknown-warning-option")
 #include <QLineEdit>
 #include <QToolButton>
 AZ_POP_DISABLE_WARNING
-#endif
 
 class QPushButton;
 class QDragEnterEvent;
@@ -53,7 +54,7 @@ namespace AzToolsFramework
     //! Defines a property control for picking base assets.
     //! We can specialize individual asset types (texture) to show previews and such by making specialized handlers, but
     //! at the very least we need a base editor for asset properties in general.
-    class PropertyAssetCtrl
+    class AZTF_API PropertyAssetCtrl
         : public QWidget
         , private AssetSystemBus::Handler
         , private AzFramework::AssetCatalogEventBus::Handler
@@ -280,9 +281,9 @@ namespace AzToolsFramework
     };
 
     // Shared function that processes all attributes for any handler using PropertyAssetCtrl
-    void ConsumeAttributeForPropertyAssetCtrl(PropertyAssetCtrl* GUI, AZ::u32 attrib, PropertyAttributeReader* attrValue, const char* debugName);
+    AZTF_API void ConsumeAttributeForPropertyAssetCtrl(PropertyAssetCtrl* GUI, AZ::u32 attrib, PropertyAttributeReader* attrValue, const char* debugName);
 
-    class AssetPropertyHandlerDefault
+    class AZTF_API AssetPropertyHandlerDefault
         : QObject
         , public PropertyHandler<AZ::Data::Asset<AZ::Data::AssetData>, PropertyAssetCtrl>
     {
@@ -310,7 +311,7 @@ namespace AzToolsFramework
         AZ::Data::Asset<AZ::Data::AssetData>* CastTo(void* instance, const InstanceDataNode* node, const AZ::Uuid& fromId, const AZ::Uuid& toId) const override;
     };
 
-    class AssetIdPropertyHandlerDefault
+    class AZTF_API AssetIdPropertyHandlerDefault
         : QObject
         , public PropertyHandler<AZ::Data::AssetId, PropertyAssetCtrl>
     {
@@ -331,7 +332,7 @@ namespace AzToolsFramework
         virtual bool ReadValuesIntoGUI(size_t index, PropertyAssetCtrl* GUI, const property_t& instance, InstanceDataNode* node)  override;
     };
 
-    class SimpleAssetPropertyHandlerDefault
+    class AZTF_API SimpleAssetPropertyHandlerDefault
         : QObject
         , public PropertyHandler<AzFramework::SimpleAssetReferenceBase, PropertyAssetCtrl>
     {
@@ -355,5 +356,5 @@ namespace AzToolsFramework
         virtual bool ReadValuesIntoGUI(size_t index, PropertyAssetCtrl* GUI, const property_t& instance, InstanceDataNode* node)  override;
     };
 
-    void RegisterAssetPropertyHandler();
+    AZTF_API void RegisterAssetPropertyHandler();
 } // namespace AzToolsFramework

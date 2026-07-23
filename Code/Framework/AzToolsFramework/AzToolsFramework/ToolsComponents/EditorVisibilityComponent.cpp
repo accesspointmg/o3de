@@ -12,7 +12,7 @@
 #include <AzToolsFramework/Entity/EditorEntityHelpers.h>
 #include <AzToolsFramework/Viewport/ViewportMessages.h>
 
-DECLARE_EBUS_INSTANTIATION(AzToolsFramework::EditorEntityVisibilityNotifications);
+#include <AzFramework/Translation/TranslationDef.h>
 
 namespace AzToolsFramework
 {
@@ -28,7 +28,9 @@ namespace AzToolsFramework
 
                 if (AZ::EditContext* editContext = serializeContext->GetEditContext())
                 {
-                    editContext->Class<EditorVisibilityComponent>("Visibility", "Edit-time entity visibility")
+                    editContext->Class<EditorVisibilityComponent>(
+                        QT_TRANSLATE_NOOP("AzToolsFramework", "Visibility"),
+                        QT_TRANSLATE_NOOP("AzToolsFramework", "Edit-time entity visibility"))
                         ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                             ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::Hide)
                             ->Attribute(AZ::Edit::Attributes::SliceFlags, AZ::Edit::SliceFlags::NotPushable)

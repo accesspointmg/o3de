@@ -22,11 +22,7 @@
 #include "TrackViewSequenceManager.h"
 #include "AnimationContext.h"
 
-
-
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <TrackView/ui_TVSequenceProps.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
 CTVSequenceProps::CTVSequenceProps(CTrackViewSequence* pSequence, float fps, QWidget* pParent)
     : QDialog(pParent)
@@ -36,7 +32,8 @@ CTVSequenceProps::CTVSequenceProps(CTrackViewSequence* pSequence, float fps, QWi
     , ui(new Ui::CTVSequenceProps)
 {
     ui->setupUi(this);
-    assert(pSequence);
+
+    AZ_Assert(pSequence, "pSequence is null");
     m_pSequence = pSequence;
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &CTVSequenceProps::OnOK);
     connect(ui->CUT_SCENE, &QCheckBox::toggled, this, &CTVSequenceProps::ToggleCutsceneOptions);
@@ -256,12 +253,13 @@ void CTVSequenceProps::OnOK()
     QString name = ui->NAME->text();
     if (name.isEmpty())
     {
-        QMessageBox::warning(this, "Sequence Properties", "A sequence name cannot be empty!");
+        QMessageBox::warning(this, tr("Sequence Properties"), tr("A sequence name cannot be empty!"));
         return;
     }
-    else if (name.contains('/'))
+
+    if (name.contains('/'))
     {
-        QMessageBox::warning(this, "Sequence Properties", "A sequence name cannot contain a '/' character!");
+        QMessageBox::warning(this, tr("Sequence Properties"), tr("A sequence name cannot contain a '/' character!"));
         return;
     }
 
@@ -299,8 +297,8 @@ void CTVSequenceProps::OnBnClickedToFrames(bool v)
     ui->START_TIME->setSingleStep(1.0f);
     ui->END_TIME->setSingleStep(1.0f);
 
-    ui->START_TIME->setValue(std::round(ui->START_TIME->value() * static_cast<double>(m_FPS)));
-    ui->END_TIME->setValue(std::round(ui->END_TIME->value() * static_cast<double>(m_FPS)));
+    ui->START_TIME->setValue(AZStd::round(ui->START_TIME->value() * static_cast<double>(m_FPS)));
+    ui->END_TIME->setValue(AZStd::round(ui->END_TIME->value() * static_cast<double>(m_FPS)));
 
     m_timeUnit = Frames;
 }
@@ -323,5 +321,3 @@ void CTVSequenceProps::OnBnClickedToSeconds(bool v)
 
     m_timeUnit = Seconds;
 }
-
-#include <TrackView/moc_TVSequenceProps.cpp>

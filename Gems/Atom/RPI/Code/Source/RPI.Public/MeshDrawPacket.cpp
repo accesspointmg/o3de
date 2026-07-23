@@ -6,21 +6,25 @@
  *
  */
 
-#include <Atom/RPI.Public/MeshDrawPacket.h>
-#include <Atom/RPI.Public/RPIUtils.h>
-#include <Atom/RPI.Public/Shader/ShaderResourceGroup.h>
-#include <Atom/RPI.Public/Shader/ShaderSystemInterface.h>
-#include <Atom/RPI.Public/Scene.h>
-#include <Atom/RPI.Reflect/Material/MaterialFunctor.h>
 #include <Atom/RHI/DrawPacketBuilder.h>
 #include <Atom/RHI/RHISystemInterface.h>
-#include <AzCore/Console/Console.h>
+#include <Atom/RPI.Public/MeshDrawPacket.h>
+#include <Atom/RPI.Public/RPIUtils.h>
+#include <Atom/RPI.Public/Scene.h>
 #include <Atom/RPI.Public/Shader/ShaderReloadDebugTracker.h>
+#include <Atom/RPI.Public/Shader/ShaderResourceGroup.h>
+#include <Atom/RPI.Public/Shader/ShaderSystemInterface.h>
+#include <Atom/RPI.Reflect/Material/MaterialFunctor.h>
+#include <AzCore/Console/Console.h>
+#include <AzCore/Name/NameDictionary.h>
+
 
 namespace AZ
 {
     namespace RPI
     {
+        Data::Instance<RPI::ShaderResourceGroup> MeshDrawPacket::InvalidSrg;
+
         AZ_CVAR(bool,
             r_forceRootShaderVariantUsage,
             false,
@@ -32,12 +36,13 @@ namespace AZ
         MeshDrawPacket::MeshDrawPacket(
             ModelLod& modelLod,
             size_t modelLodMeshIndex,
+            int32_t meshInfoIndex,
             Data::Instance<Material> materialOverride,
             Data::Instance<ShaderResourceGroup> objectSrg,
-            const MaterialModelUvOverrideMap& materialModelUvMap
-        )
+            const MaterialModelUvOverrideMap& materialModelUvMap)
             : m_modelLod(&modelLod)
             , m_modelLodMeshIndex(modelLodMeshIndex)
+            , m_meshInfoIndex(meshInfoIndex)
             , m_objectSrg(objectSrg)
             , m_material(materialOverride)
             , m_materialModelUvMap(materialModelUvMap)
@@ -245,6 +250,15 @@ namespace AZ
 #endif
         }
 
+        const Data::Instance<RPI::ShaderResourceGroup>& MeshDrawPacket::GetDrawSrg(uint32_t drawItemIndex) const
+        {
+            if (drawItemIndex >= aznumeric_cast<uint32_t>(m_perDrawSrgs.size()))
+            {
+                return InvalidSrg;
+            }
+            return m_perDrawSrgs[drawItemIndex];
+        }
+
         bool MeshDrawPacket::DoUpdate(const Scene& parentScene)
         {
             auto meshes = m_modelLod->GetMeshes();
@@ -315,8 +329,17 @@ namespace AZ
                 {
                     return false;
                 }
-
-                const bool isRasterShader = (shaderItem.GetShaderAsset()->GetPipelineStateType() == RHI::PipelineStateType::Draw);
+                bool isRasterShader = true;
+                if (shaderItem.GetDrawItemType() == RPI::ShaderCollection::Item::DrawItemType::Raster)
+                {
+                    // backwards compatability: DrawItemType::Raster is the fallback type if none is provided, and we supported
+                    // dispatch-items before the DrawItemType, using the piplineState-Type to determine if we need a dispatch item.
+                    isRasterShader = (shaderItem.GetShaderAsset()->GetPipelineStateType() == RHI::PipelineStateType::Draw);
+                }
+                else if (shaderItem.GetDrawItemType() == RPI::ShaderCollection::Item::DrawItemType::Dispatch)
+                {
+                    isRasterShader = false;
+                }
                 if (isRasterShader && !parentScene.HasOutputForPipelineState(drawListTag))
                 {
                     // drawListTag not found in this scene, so don't render this item
@@ -412,16 +435,32 @@ namespace AZ
                 Data::Instance<ShaderResourceGroup> drawSrg = shader->CreateDrawSrgForShaderVariant(shaderOptions, false);
                 if (drawSrg)
                 {
-                    // Pass UvStreamTangentBitmask to the shader if the draw SRG has it.
-
-                    AZ::Name shaderUvStreamTangentBitmask = AZ::Name(UvStreamTangentBitmask::SrgName);
-                    auto index = drawSrg->FindShaderInputConstantIndex(shaderUvStreamTangentBitmask);
-
-                    if (index.IsValid())
+                    // Note: ShaderInputNameIndex as a local variable isn't all that useful, since it can't actually cache the index across
+                    // multiple calls. But it does save us from having the "index = FindConstantIndex(..); if (index.IsValid()) {}"
+                    // construct everywhere
                     {
-                        drawSrg->SetConstant(index, uvStreamTangentBitmask.GetFullTangentBitmask());
+                        // Pass UvStreamTangentBitmask to the shader if the draw SRG has it.
+                        RHI::ShaderInputNameIndex nameIndex(UvStreamTangentBitmask::SrgName);
+                        drawSrg->SetConstant(nameIndex, uvStreamTangentBitmask.GetFullTangentBitmask());
+                    }
+                    {
+                        // To enable this shader constant in DrawSrg, a shader must:
+                        // #define USE_DRAWSRG_MESHLOD_MESHINDEX 1
+                        // By default it is NOT defined.
+                        // When defined, the value of @m_modelLodMeshIndex (aka subMesh index) is written
+                        // to the shader constant.
+                        RHI::ShaderInputNameIndex nameIndex(AZ_NAME_LITERAL("m_modelLodMeshIndex"));
+                        drawSrg->SetConstant(nameIndex, aznumeric_cast<uint32_t>(m_modelLodMeshIndex));
+                    }
+                    {
+                        // Pass MeshInfoIndex to the shader if the draw SRG has it.
+                        RHI::ShaderInputNameIndex nameIndex("m_meshInfoIndex");
+                        drawSrg->SetConstant(nameIndex, m_meshInfoIndex);
                     }
 
+                    // TODO: Does it make sense to call Compile() in the case where both SetConstant() calls above fail?
+                    // Leaving it as always calling Compile() as precaution that there's code somewhere else that assumes
+                    // Compile() was already called on DrawSrg.
                     drawSrg->Compile();
                 };
 
@@ -450,7 +489,7 @@ namespace AZ
                     AZ_Error(
                         "MeshDrawPacket",
                         (!m_rootConstantsLayout && !HasRootConstants(rootConstantsLayout)) ||
-                        (m_rootConstantsLayout && rootConstantsLayout && m_rootConstantsLayout->GetHash() == rootConstantsLayout->GetHash()),
+                            (m_rootConstantsLayout && rootConstantsLayout && m_rootConstantsLayout->GetHash() == rootConstantsLayout->GetHash()),
                         "Shader %s has mis-matched root constant layout in material %s. "
                         "All draw items in a draw packet need to share the same root constants layout. This means that each pass "
                         "(e.g. Depth, Shadows, Forward, MotionVectors) for a given materialtype should use the same layout.",
@@ -501,7 +540,9 @@ namespace AZ
             m_material->ForAllShaderItems(
                 [&](const Name& materialPipelineName, const ShaderCollection::Item& shaderItem)
                 {
-                    if (shaderItem.IsEnabled())
+                    if (shaderItem.IsEnabled() &&
+                        (shaderItem.GetDrawItemType() == RPI::ShaderCollection::Item::DrawItemType::Raster ||
+                         shaderItem.GetDrawItemType() == RPI::ShaderCollection::Item::DrawItemType::Dispatch))
                     {
                         if (shaderList.size() == RHI::DrawPacketBuilder::DrawItemCountMax)
                         {

@@ -9,6 +9,8 @@
 #include "EditorHelpers.h"
 
 #include <AzCore/Console/Console.h>
+#include <AzCore/std/smart_ptr/shared_ptr.h>
+#include <AzCore/std/smart_ptr/make_shared.h>
 #include <AzFramework/Entity/EntityDebugDisplayBus.h>
 #include <AzFramework/Viewport/CameraState.h>
 #include <AzFramework/Viewport/ViewportScreen.h>
@@ -372,11 +374,13 @@ namespace AzToolsFramework
                     EditorEntityIconComponentRequestBus::EventResult(
                         iconTextureId, entityId, &EditorEntityIconComponentRequestBus::Events::GetEntityIconTextureId);
 
-                    editorViewportIconDisplay->DrawIcon(EditorViewportIconDisplayInterface::DrawParameters{
+                    editorViewportIconDisplay->AddIcon(EditorViewportIconDisplayInterface::DrawParameters{
                         viewportInfo.m_viewportId, iconTextureId, iconHighlight, entityPosition,
                         EditorViewportIconDisplayInterface::CoordinateSpace::WorldSpace, AZ::Vector2(GetIconSize(distanceFromCamera)) });
                 }
             }
+
+            editorViewportIconDisplay->DrawIcons();
         }
     }
 

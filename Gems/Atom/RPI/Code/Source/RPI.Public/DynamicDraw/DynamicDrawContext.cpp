@@ -528,7 +528,7 @@ namespace AZ
 
             // --- Geometry View ---
 
-            RHI::GeometryView newGeometryView;
+            RHI::GeometryView newGeometryView{ RHI::MultiDevice::AllDevices };
 
             RHI::DrawIndexed drawIndexed;
             drawIndexed.m_indexCount = indexCount;
@@ -626,7 +626,7 @@ namespace AZ
 
             // --- Geometry View ---
 
-            RHI::GeometryView newGeometryView;
+            RHI::GeometryView newGeometryView{ RHI::MultiDevice::AllDevices };
             newGeometryView.SetDrawArguments(RHI::DrawLinear(vertexCount, 0));
 
             // Write data to vertex buffer and set up stream buffer views for DrawItem
@@ -634,6 +634,7 @@ namespace AZ
             vertexBuffer->Write(vertexData, vertexDataSize);
             newGeometryView.AddStreamBufferView(vertexBuffer->GetStreamBufferView(m_perVertexDataSize));
 
+            drawItem.SetStreamIndices(newGeometryView.GetFullStreamBufferIndices());
             drawItemInfo.m_cachedIndex = static_cast<u32>(m_cachedGeometryViews.size());
             m_cachedGeometryViews.emplace_back(AZStd::move(newGeometryView));
 

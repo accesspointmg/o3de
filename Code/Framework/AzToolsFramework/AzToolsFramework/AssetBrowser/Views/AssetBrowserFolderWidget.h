@@ -7,9 +7,9 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <QWidget>
-#endif
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 
 class QAbstractItemModel;
 
@@ -26,7 +26,7 @@ namespace AzToolsFramework
 {
     namespace AssetBrowser
     {
-        class AssetBrowserFolderWidget
+        class AZTF_API AssetBrowserFolderWidget
             : public QWidget
         {
             Q_OBJECT

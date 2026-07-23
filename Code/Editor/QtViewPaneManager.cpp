@@ -21,12 +21,13 @@
 #include <QLayout>
 #include <QApplication>
 #include <QRect>
-#include <QDesktopWidget>
 #include <QMessageBox>
 #include <QRubberBand>
 #include <QCursor>
 #include <QTimer>
 #include <QGraphicsOpacityEffect>
+#include <QRegularExpression>
+
 #include "MainWindow.h"
 
 #include <algorithm>
@@ -222,7 +223,7 @@ bool QtViewPane::CloseInstance(QDockWidget* dockWidget, CloseModes closeModes)
         // are often constructed on stack and will not finish properly when the view
         // pane is destroyed.
         QWidgetList topLevelWidgets = QApplication::topLevelWidgets();
-        const int numTopLevel = topLevelWidgets.size();
+        const int numTopLevel = static_cast<int>(topLevelWidgets.size());
         for (size_t i = 0; i < numTopLevel; ++i)
         {
             QWidget* widget = topLevelWidgets[static_cast<int>(i)];
@@ -278,13 +279,8 @@ bool QtViewPane::CloseInstance(QDockWidget* dockWidget, CloseModes closeModes)
     return canClose;
 }
 
-static bool SkipTitleBarOverdraw(QtViewPane* pane)
-{
-    return !pane->m_options.isDockable;
-}
-
 DockWidget::DockWidget(QWidget* widget, QtViewPane* pane, [[maybe_unused]] QSettings* settings, QMainWindow* parent, AzQtComponents::FancyDocking* advancedDockManager)
-    : AzQtComponents::StyledDockWidget(pane->m_name, SkipTitleBarOverdraw(pane),
+    : AzQtComponents::StyledDockWidget(pane->m_name,
 #if AZ_TRAIT_OS_PLATFORM_APPLE
           pane->m_options.detachedWindow ? nullptr : parent)
 #else
@@ -555,8 +551,7 @@ QtViewPaneManager::QtViewPaneManager(QObject* parent)
     , m_advancedDockManager(nullptr)
     , m_componentModeNotifications(AZStd::make_unique<ViewportEditorModeNotificationsBusImpl>())
 {
-    qRegisterMetaTypeStreamOperators<ViewLayoutState>("ViewLayoutState");
-    qRegisterMetaTypeStreamOperators<QVector<QString> >("QVector<QString>");
+    qRegisterMetaType<ViewLayoutState>("ViewLayoutState");
 
     // view pane manager is interested when we enter/exit ComponentMode
     m_componentModeNotifications->BusConnect(AzToolsFramework::GetEntityContextId());
@@ -784,7 +779,7 @@ const QtViewPane* QtViewPaneManager::OpenPane(const QString& name, QtViewPane::O
 
     // If the dock widget is off screen (e.g. second monitor was disconnected),
     // restore its default state
-    if (QApplication::desktop()->screenNumber(newDockWidget) == -1)
+    if (QApplication::screens().indexOf(newDockWidget->screen()))
     {
         const bool forceToDefault = true;
         newDockWidget->RestoreState(forceToDefault);
@@ -1110,7 +1105,7 @@ void QtViewPaneManager::RestoreDefaultLayout(bool resetSettings)
     // This class does all kinds of behind the scenes magic to make docking / restore work, especially with groups
     // so instead of doing our special default layout attach / docking right now, we want to make it happen
     // after all of the other events have been processed.
-    QTimer::singleShot(0, [=]
+    QTimer::singleShot(0, [this, consoleViewPane, assetBrowserViewPane, InspectorViewPane, levelInspectorPane, entityOutlinerViewPane, resetSettings, selectedEntityIds]
     {
         // If we are using the new docking, set the right dock area to be absolute
         // so that the inspector will be to the right of the viewport and console
@@ -1122,8 +1117,8 @@ void QtViewPaneManager::RestoreDefaultLayout(bool resetSettings)
         // before doing anything else, its height and width won't update until after this has all
         // been processed, so we need to resize the panes based on what the main window
         // height and width WILL be after maximized
-        int screenWidth = QApplication::desktop()->screenGeometry(m_mainWindow).width();
-        int screenHeight = QApplication::desktop()->screenGeometry(m_mainWindow).height();
+        int screenWidth = QApplication::primaryScreen()->size().width();
+        int screenHeight = QApplication::primaryScreen()->size().height();
 
         // Add the console view pane first
         m_mainWindow->addDockWidget(Qt::BottomDockWidgetArea, consoleViewPane->m_dockWidget);
@@ -1218,7 +1213,7 @@ void QtViewPaneManager::SaveLayout(QString layoutName)
     layoutName = layoutName.trimmed();
 
     ViewLayoutState state;
-    foreach(const QtViewPane &pane, m_registeredPanes)
+    for (const QtViewPane& pane : m_registeredPanes)
     {
         // Include all visible and tabbed panes in our layout, since tabbed panes
         // won't be visible if they aren't the active tab, but still need to be
@@ -1269,7 +1264,7 @@ QDockWidget* QtViewPaneManager::ShowFakeNonDockableDockWidget(AzQtComponents::St
     dockWidget->customTitleBar()->setButtons({});
     dockWidget->customTitleBar()->setContextMenuPolicy(Qt::NoContextMenu);
     dockWidget->customTitleBar()->installEventFilter(new MouseEatingEventFilter(dockWidget));
-    auto fakeDockWidget = new AzQtComponents::StyledDockWidget(QString(), false, nullptr);
+    auto fakeDockWidget = new AzQtComponents::StyledDockWidget(QString(), nullptr);
     connect(dockWidget, &QObject::destroyed, fakeDockWidget, &QObject::deleteLater);
     fakeDockWidget->setAllowedAreas(Qt::NoDockWidgetArea);
     auto titleBar = fakeDockWidget->customTitleBar();
@@ -1340,7 +1335,7 @@ ViewLayoutState QtViewPaneManager::GetLayout() const
 {
     ViewLayoutState state;
 
-    foreach(const QtViewPane &pane, m_registeredPanes)
+    for (const QtViewPane& pane : m_registeredPanes)
     {
         // Include all visible and tabbed panes in our layout, since tabbed panes
         // won't be visible if they aren't the active tab, but still need to be
@@ -1608,7 +1603,13 @@ QtViewPane* QtViewPaneManager::GetPane(int id)
     auto it = std::find_if(m_registeredPanes.begin(), m_registeredPanes.end(),
             [id](const QtViewPane& pane) { return id == pane.m_id; });
 
-    return it == m_registeredPanes.end() ? nullptr : it;
+    if (it == m_registeredPanes.end())
+        return nullptr;
+    else
+    {
+        QtViewPane& res = *it;
+        return &res;
+    }
 }
 
 QtViewPane* QtViewPaneManager::GetPane(const QString& name)
@@ -1616,7 +1617,7 @@ QtViewPane* QtViewPaneManager::GetPane(const QString& name)
     auto it = std::find_if(m_registeredPanes.begin(), m_registeredPanes.end(),
             [name](const QtViewPane& pane) { return name == pane.m_name; });
 
-    QtViewPane* foundPane = ((it == m_registeredPanes.end()) ? nullptr : it);
+    QtViewPane* foundPane = ((it == m_registeredPanes.end()) ? nullptr : &(*it));
 
     if (foundPane == nullptr)
     {
@@ -1624,7 +1625,7 @@ QtViewPane* QtViewPaneManager::GetPane(const QString& name)
         it = std::find_if(m_registeredPanes.begin(), m_registeredPanes.end(),
             [name](const QtViewPane& pane) { return name == pane.m_options.saveKeyName; });
 
-        foundPane = ((it == m_registeredPanes.end()) ? nullptr : it);
+        foundPane = ((it == m_registeredPanes.end()) ? nullptr : &(*it));
     }
 
     return foundPane;
@@ -1635,29 +1636,33 @@ QtViewPane* QtViewPaneManager::GetFirstVisiblePaneMatching(const QString& name)
     QString baseName = name;
 
     // Strip away any enumeration.
-    baseName = baseName.remove(QRegExp("\\([0-9]+\\)$"));
+    baseName = baseName.remove(QRegularExpression("\\([0-9]+\\)$"));
 
     // Build a regexp which will match just the name, or the name followed by a number in parentheses.
-    QRegExp pattern(name + "([ ]*\\([0-9]+\\))*");
+    QRegularExpression pattern(name + "([ ]*\\([0-9]+\\))*");
 
     auto it = std::find_if(m_registeredPanes.begin(), m_registeredPanes.end(),
             [pattern](const QtViewPane& pane)
         {
-            return pattern.exactMatch(pane.m_name) && pane.IsVisible();
+            QRegularExpressionMatch match = pattern.match(pane.m_name);
+            return match.hasMatch() && match.capturedLength() == pane.m_name.length() && pane.IsVisible();
         });
 
-    QtViewPane* foundPane = ((it == m_registeredPanes.end()) ? nullptr : it);
+    QtViewPane* foundPane = ((it == m_registeredPanes.end()) ? nullptr : &(*it));
 
     if (foundPane == nullptr)
     {
         // if we couldn't find the pane based on the name (which will be the title), look it up by saveKeyName next
-        auto optionsIt = std::find_if(m_registeredPanes.begin(), m_registeredPanes.end(),
+        auto optionsIt = std::find_if(
+            m_registeredPanes.begin(),
+            m_registeredPanes.end(),
             [pattern](const QtViewPane& pane)
-        {
-            return pattern.exactMatch(pane.m_options.saveKeyName) && pane.IsVisible();
-        });
+            {
+                QRegularExpressionMatch match = pattern.match(pane.m_options.saveKeyName);
+                return match.hasMatch() && match.capturedLength() == pane.m_name.length() && pane.IsVisible();
+            });
 
-        foundPane = ((optionsIt == m_registeredPanes.end()) ? nullptr : optionsIt);
+        foundPane = ((optionsIt == m_registeredPanes.end()) ? nullptr : &(*optionsIt));
     }
 
     return foundPane;
@@ -1668,7 +1673,7 @@ QtViewPane* QtViewPaneManager::GetViewportPane(int viewportType)
     auto it = std::find_if(m_registeredPanes.begin(), m_registeredPanes.end(),
             [viewportType](const QtViewPane& pane) { return viewportType == pane.m_options.viewportType; });
 
-    return it == m_registeredPanes.end() ? nullptr : it;
+    return it == m_registeredPanes.end() ? nullptr : &(*it);
 }
 
 QDockWidget* QtViewPaneManager::GetView(const QString& name)
@@ -1697,4 +1702,3 @@ bool QtViewPaneManager::IsPaneRegistered(const QString& name) const
     return it != m_registeredPanes.end();
 }
 
-#include <moc_QtViewPaneManager.cpp>

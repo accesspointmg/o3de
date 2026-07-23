@@ -16,6 +16,7 @@
 #include <AzCore/Module/DynamicModuleHandle.h>
 #include <AzCore/Module/ModuleManagerBus.h>
 #include <AzCore/Slice/SliceSystemComponent.h>
+#include <AzCore/Settings/SettingsRegistry.h>
 #include <AzCore/std/string/conversions.h>
 #include <AzCore/StringFunc/StringFunc.h>
 #include <AzCore/UserSettings/UserSettingsComponent.h>
@@ -23,6 +24,7 @@
 
 #include <AzFramework/Asset/AssetCatalogComponent.h>
 #include <AzFramework/Entity/GameEntityContextComponent.h>
+#include <AzFramework/FileFunc/FileFunc.h>
 #include <AzFramework/FileTag/FileTagComponent.h>
 #include <AzFramework/Input/System/InputSystemComponent.h>
 #include <AzFramework/Platform/PlatformDefaults.h>
@@ -714,7 +716,10 @@ namespace AssetBundler
             return AZ::Failure(AZStd::string::format("Invalid command: \"--%s\" must have exactly one value.", IntersectionCountArg));
         }
 
-        params.m_intersectionCount = AZStd::stoi(parser->GetSwitchValue(IntersectionCountArg, 0));
+        if (parser->HasSwitch(IntersectionCountArg))
+        {
+            params.m_intersectionCount = AZStd::stoi(parser->GetSwitchValue(IntersectionCountArg, 0));
+        }
 
         size_t numTokenNames = parser->GetNumSwitchValues(ComparisonTokenNameArg);
 
@@ -1021,7 +1026,11 @@ namespace AssetBundler
                 FilePath path = FilePath(value);
                 value = path.AbsolutePath();
             }
-            params.m_printComparisons.emplace_back(AZStd::move(value));
+
+            if (!value.empty())
+            {
+                params.m_printComparisons.emplace_back(AZStd::move(value));
+            }
         }
 
         params.m_printLast = parser->HasSwitch(ComparePrintArg) && params.m_printComparisons.empty();
@@ -1487,9 +1496,45 @@ namespace AssetBundler
         {
             // Add Seeds
             PlatformFlags platformFlag = AzFramework::PlatformHelper::GetPlatformFlagFromPlatformIndex(platformId);
+
+            auto cacheFolderPath = AssetBundler::GetProjectCacheFolderPath();
+            AZ::IO::Path cachePath;
+            if (cacheFolderPath.IsSuccess())
+            {
+                cachePath = cacheFolderPath.GetValue() / AZ::PlatformDefaults::PlatformHelper::GetPlatformName(platformId);
+            }
+
             for (const AZStd::string& assetPath : params.m_addSeedList)
             {
-                m_assetSeedManager->AddSeedAsset(assetPath, platformFlag);
+                if (AZ::StringFunc::Contains(assetPath, '*'))
+                {
+                    auto filter = cachePath / assetPath;
+                    AZStd::string path = filter.ParentPath().Native();
+                    AZStd::string ext = filter.Filename().Native();
+
+                    bool bRecursive = AZ::StringFunc::Contains(filter.Filename().Native(), "**");
+
+                    // we search all files and filter by extension later
+                    // because recursive is not working with extension
+                    auto result = AzFramework::FileFunc::FindFilesInPath(path, "*", bRecursive);
+                    if (result.IsSuccess())
+                    {
+                        auto list = result.GetValue();
+                        for (auto& file : list)
+                        {
+                            if (AZStd::wildcard_match(ext, file))
+                            {
+                                AZ::IO::Path filepath(file);
+                                filepath = filepath.LexicallyRelative(cachePath);
+                                m_assetSeedManager->AddSeedAsset(filepath.Native(), platformFlag);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    m_assetSeedManager->AddSeedAsset(assetPath, platformFlag);
+                }
             }
 
             // Remove Seeds
@@ -1891,6 +1936,12 @@ namespace AssetBundler
                     {
                         comparisonOperations.SetFirstInput(idx, params.m_firstCompareFile.at(idx));
                     }
+                    else
+                    {
+                        // if its not the "default token" then make sure to update the actual entry to have the `_platname` wart at the end
+                        FilePath updatedPath(comparisonOperations.GetComparisonList().at(idx).m_firstInput, platformName);
+                        comparisonOperations.SetFirstInput(idx, updatedPath.AbsolutePath());
+                    }
 
                     // Set the second input (if needed)
                     if (comparisonOperations.GetComparisonList().at(idx).m_comparisonType != AssetFileInfoListComparison::ComparisonType::FilePattern)
@@ -1906,6 +1957,12 @@ namespace AssetBundler
                         if (!IsDefaultToken(params.m_secondCompareFile.at(secondInputIdx)))
                         {
                             comparisonOperations.SetSecondInput(idx, params.m_secondCompareFile.at(secondInputIdx));
+                        }
+                        else
+                        {
+                            // if its not the "default token" then make sure to update the actual entry to have the `_platname` wart at the
+                            FilePath updatedPath(comparisonOperations.GetComparisonList().at(idx).m_secondInput, platformName);
+                            comparisonOperations.SetSecondInput(idx, updatedPath.AbsolutePath());
                         }
 
                         ++secondInputIdx;
@@ -1923,6 +1980,12 @@ namespace AssetBundler
                     if (!IsDefaultToken(params.m_outputs.at(idx)))
                     {
                         comparisonOperations.SetOutput(idx, params.m_outputs.at(idx));
+                    }
+                    else
+                    {
+                        // if its not the "default token" then make sure to update the actual entry to have the `_platname` wart at the
+                        FilePath updatedPath(comparisonOperations.GetComparisonList().at(idx).m_output, platformName);
+                        comparisonOperations.SetOutput(idx, updatedPath.AbsolutePath());
                     }
                 }
             }
@@ -2226,7 +2289,7 @@ namespace AssetBundler
                 {
                     // Metric event has already been sent
                     AZ_Error(AppWindowName, false, overrideOutcome.GetError().c_str());
-                    failureCount.fetch_add(1, AZStd::memory_order::memory_order_relaxed);
+                    failureCount.fetch_add(1, AZStd::memory_order_relaxed);
                     return;
                 }
 
@@ -2237,7 +2300,7 @@ namespace AssetBundler
                 {
                     AZ_Error(AssetBundler::AppWindowName, false, "Bundle ( %s ) already exists, running this command would perform a destructive overwrite.\n\n"
                         "Run your command again with the ( --%s ) arg if you want to save over the existing file.", bundleFilePath.AbsolutePath().c_str(), AllowOverwritesFlag);
-                    failureCount.fetch_add(1, AZStd::memory_order::memory_order_relaxed);
+                    failureCount.fetch_add(1, AZStd::memory_order_relaxed);
                     return;
                 }
 
@@ -2247,7 +2310,7 @@ namespace AssetBundler
                 if (!result)
                 {
                     AZ_Error(AssetBundler::AppWindowName, false, "Unable to create bundle, target Bundle file path is ( %s ).", bundleFilePath.AbsolutePath().c_str());
-                    failureCount.fetch_add(1, AZStd::memory_order::memory_order_relaxed);
+                    failureCount.fetch_add(1, AZStd::memory_order_relaxed);
                     return;
                 }
                 AZ_TracePrintf(AssetBundler::AppWindowName, "Bundle ( %s ) created successfully!\n", bundleFilePath.AbsolutePath().c_str());
@@ -2519,7 +2582,7 @@ namespace AssetBundler
             {
                 AZ_Error(AssetBundler::AppWindowName, false, "Asset List file ( %s ) already exists, running this command would perform a destructive overwrite.\n\n"
                     "Run your command again with the ( --%s ) arg if you want to save over the existing file.\n", assetListFileAbsolutePath.c_str(), AllowOverwritesFlag);
-                failureCount.fetch_add(1, AZStd::memory_order::memory_order_relaxed);
+                failureCount.fetch_add(1, AZStd::memory_order_relaxed);
                 return;
             }
 
@@ -2535,7 +2598,7 @@ namespace AssetBundler
             if (!m_assetSeedManager->SaveAssetFileInfo(assetListFileAbsolutePath, platformFlag, exclusionList, debugListFileAbsolutePath, wildcardPatternExclusionList))
             {
                 AZ_Error(AssetBundler::AppWindowName, false, "Unable to save Asset List file to ( %s ).\n", assetListFileAbsolutePath.c_str());
-                failureCount.fetch_add(1, AZStd::memory_order::memory_order_relaxed);
+                failureCount.fetch_add(1, AZStd::memory_order_relaxed);
                 return;
             }
 
@@ -2934,4 +2997,3 @@ namespace AssetBundler
         return !m_showVerboseOutput;
     }
 } // namespace AssetBundler
-#include <source/utils/moc_applicationManager.cpp>

@@ -5,20 +5,21 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
-#include <Tests/Factory.h>
 #include <Atom/RHI/DeviceDispatchRaysIndirectBuffer.h>
 #include <Atom/RHI/DeviceFence.h>
 #include <Atom/RHI/DeviceRayTracingAccelerationStructure.h>
+#include <Atom/RHI/DeviceRayTracingBufferPools.h>
+#include <Atom/RHI/DeviceRayTracingCompactionQueryPool.h>
 #include <Atom/RHI/DeviceRayTracingPipelineState.h>
 #include <Atom/RHI/DeviceRayTracingShaderTable.h>
-#include <Atom/RHI/DeviceRayTracingBufferPools.h>
 #include <Atom/RHI/DeviceStreamingImagePool.h>
 #include <Atom/RHI/DeviceSwapChain.h>
 #include <Tests/Device.h>
-#include <Tests/ShaderResourceGroup.h>
+#include <Tests/Factory.h>
+#include <Tests/IndirectBuffer.h>
 #include <Tests/PipelineState.h>
 #include <Tests/Query.h>
-#include <Tests/IndirectBuffer.h>
+#include <Tests/ShaderResourceGroup.h>
 
 namespace UnitTest
 {
@@ -184,6 +185,12 @@ namespace UnitTest
         return nullptr;
     }
 
+    AZ::RHI::Ptr<AZ::RHI::DeviceRayTracingClusterBlas> Factory::CreateRayTracingClusterBlas()
+    {
+        AZ_Assert(false, "Not implemented");
+        return nullptr;
+    }
+
     AZ::RHI::Ptr<AZ::RHI::DeviceRayTracingTlas> Factory::CreateRayTracingTlas()
     {
         AZ_Assert(false, "Not implemented");
@@ -203,6 +210,18 @@ namespace UnitTest
     }
 
     RHI::Ptr<RHI::DeviceDispatchRaysIndirectBuffer> Factory::CreateDispatchRaysIndirectBuffer()
+    {
+        AZ_Assert(false, "Not implemented");
+        return nullptr;
+    }
+
+    AZ::RHI::Ptr<AZ::RHI::DeviceRayTracingCompactionQueryPool> Factory::CreateRayTracingCompactionQueryPool()
+    {
+        AZ_Assert(false, "Not implemented");
+        return nullptr;
+    }
+
+    AZ::RHI::Ptr<AZ::RHI::DeviceRayTracingCompactionQuery> Factory::CreateRayTracingCompactionQuery()
     {
         AZ_Assert(false, "Not implemented");
         return nullptr;

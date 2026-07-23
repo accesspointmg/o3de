@@ -6,10 +6,13 @@
  *
  */
 
+#include <AzCore/Component/TickBus.h>
 #include <AzFramework/Physics/Configuration/StaticRigidBodyConfiguration.h>
 #include <AzFramework/Physics/Utils.h>
+#include <AzFramework/Translation/TranslationDef.h>
 #include <AzToolsFramework/API/EditorAssetSystemAPI.h>
 #include <AzToolsFramework/API/EntityPropertyEditorRequestsBus.h>
+#include <AzToolsFramework/Prefab/Instance/InstanceUpdateExecutorInterface.h>
 #include <AzToolsFramework/UI/PropertyEditor/PropertyEditorAPI.h>
 
 #include <Editor/ColliderComponentMode.h>
@@ -34,22 +37,22 @@ namespace PhysX
 
             if (auto* editContext = serializeContext->GetEditContext())
             {
-                editContext->Class<EditorProxyPhysicsAsset>("EditorProxyPhysicsAsset", "PhysX Asset.")
+                editContext->Class<EditorProxyPhysicsAsset>(QT_TRANSLATE_NOOP("PhysX", "EditorProxyPhysicsAsset"), QT_TRANSLATE_NOOP("PhysX", "PhysX Asset."))
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &EditorProxyPhysicsAsset::m_pxAsset,
-                        "PhysX Mesh",
-                        "Specifies the PhysX mesh collider asset for this PhysX collider component.")
+                        QT_TRANSLATE_NOOP("PhysX", "PhysX Mesh"),
+                        QT_TRANSLATE_NOOP("PhysX", "Specifies the PhysX mesh collider asset for this PhysX collider component."))
                     ->Attribute(AZ_CRC_CE("EditButton"), "")
-                    ->Attribute(AZ_CRC_CE("EditDescription"), "Open in Scene Settings")
+                    ->Attribute(AZ_CRC_CE("EditDescription"), QT_TRANSLATE_NOOP("PhysX", "Open in Scene Settings"))
                     ->Attribute(AZ_CRC_CE("DisableEditButtonWhenNoAssetSelected"), true)
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &EditorProxyPhysicsAsset::m_configuration,
-                        "Configuration",
-                        "PhysX mesh asset collider configuration.")
+                        QT_TRANSLATE_NOOP("PhysX", "Configuration"),
+                        QT_TRANSLATE_NOOP("PhysX", "PhysX mesh asset collider configuration."))
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly);
             }
         }
@@ -69,21 +72,21 @@ namespace PhysX
 
             if (auto* editContext = serializeContext->GetEditContext())
             {
-                editContext->Class<EditorProxyAssetShapeConfig>("EditorProxyAssetShapeConfig", "PhysX asset collider.")
+                editContext->Class<EditorProxyAssetShapeConfig>(QT_TRANSLATE_NOOP("PhysX", "EditorProxyAssetShapeConfig"), QT_TRANSLATE_NOOP("PhysX", "PhysX asset collider."))
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &EditorProxyAssetShapeConfig::m_physicsAsset,
-                        "Asset",
-                        "Configuration of asset shape.")
+                        QT_TRANSLATE_NOOP("PhysX", "Asset"),
+                        QT_TRANSLATE_NOOP("PhysX", "Configuration of asset shape."))
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, &EditorProxyAssetShapeConfig::OnConfigurationChanged)
                     ->Attribute(AZ::Edit::Attributes::NameLabelOverride, &EditorProxyAssetShapeConfig::PhysXMeshAssetShapeTypeName)
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &EditorProxyAssetShapeConfig::m_subdivisionLevel,
-                        "Subdivision level",
-                        "The level of subdivision if a primitive shape is replaced with a convex mesh due to scaling.")
+                        QT_TRANSLATE_NOOP("PhysX", "Subdivision level"),
+                        QT_TRANSLATE_NOOP("PhysX", "The level of subdivision if a primitive shape is replaced with a convex mesh due to scaling."))
                     ->Attribute(AZ::Edit::Attributes::Min, Utils::MinCapsuleSubdivisionLevel)
                     ->Attribute(AZ::Edit::Attributes::Max, Utils::MaxCapsuleSubdivisionLevel)
                     ->Attribute(AZ::Edit::Attributes::Visibility, &EditorProxyAssetShapeConfig::ShowingSubdivisionLevel)
@@ -237,35 +240,35 @@ namespace PhysX
             {
                 editContext
                     ->Class<EditorMeshColliderComponent>(
-                    "PhysX Mesh Collider", "Creates geometry in the PhysX simulation using geometry from an asset.")
+                    QT_TRANSLATE_NOOP("PhysX", "PhysX Mesh Collider"), QT_TRANSLATE_NOOP("PhysX", "Creates geometry in the PhysX simulation using geometry from an asset."))
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Category, "PhysX")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/PhysXMeshCollider.svg")
                     ->Attribute(AZ::Edit::Attributes::ViewportIcon, "Icons/Components/Viewport/PhysXMeshCollider.svg")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
-                    ->Attribute(AZ::Edit::Attributes::HelpPageURL, "https://o3de.org/docs/user-guide/components/reference/physx/mesh-collider/")
+                    ->Attribute(AZ::Edit::Attributes::HelpPageURL, "https://www.o3de.org/docs/user-guide/components/reference/physx/mesh-collider/")
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &EditorMeshColliderComponent::m_configuration, "Collider Configuration", "Configuration of the collider.")
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &EditorMeshColliderComponent::m_configuration, QT_TRANSLATE_NOOP("PhysX", "Collider Configuration"), QT_TRANSLATE_NOOP("PhysX", "Configuration of the collider."))
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, &EditorMeshColliderComponent::OnConfigurationChanged)
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &EditorMeshColliderComponent::m_proxyShapeConfiguration,
-                        "Shape Configuration",
-                        "Configuration of physics asset shape.")
+                        QT_TRANSLATE_NOOP("PhysX", "Shape Configuration"),
+                        QT_TRANSLATE_NOOP("PhysX", "Configuration of physics asset shape."))
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, &EditorMeshColliderComponent::OnConfigurationChanged)
                     ->Attribute(AZ::Edit::Attributes::RemoveNotify, &EditorMeshColliderComponent::ValidateRigidBodyMeshGeometryType)
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &EditorMeshColliderComponent::m_componentModeDelegate,
-                        "Component Mode",
-                        "Collider Component Mode.")
+                        QT_TRANSLATE_NOOP("PhysX", "Component Mode"),
+                        QT_TRANSLATE_NOOP("PhysX", "Collider Component Mode."))
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &EditorMeshColliderComponent::m_colliderDebugDraw,
-                        "Debug draw settings", "Debug draw settings.")
+                        QT_TRANSLATE_NOOP("PhysX", "Debug draw settings"), QT_TRANSLATE_NOOP("PhysX", "Debug draw settings."))
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ;
             }
@@ -476,8 +479,6 @@ namespace PhysX
             m_proxyShapeConfiguration.m_physicsAsset.m_configuration.m_asset = m_proxyShapeConfiguration.m_physicsAsset.m_pxAsset;
             m_colliderDebugDraw.ClearCachedGeometry();
         }
-
-        UpdateMaterialSlotsFromMeshAsset();
     }
 
     void EditorMeshColliderComponent::UpdateCollider()
@@ -555,6 +556,31 @@ namespace PhysX
 
     void EditorMeshColliderComponent::UpdateMaterialSlotsFromMeshAsset()
     {
+        if (!m_proxyShapeConfiguration.m_physicsAsset.m_pxAsset.IsReady())
+        {
+            if (m_proxyShapeConfiguration.m_physicsAsset.m_pxAsset.GetStatus() == AZ::Data::AssetData::AssetStatus::NotLoaded)
+            {
+                m_proxyShapeConfiguration.m_physicsAsset.m_pxAsset.QueueLoad();
+            }
+            return; // don't do anything until we are actually finished loading the asset and it is valid!
+        }
+
+        // if we're busy spawning instances in the level, do not touch any data!
+        const auto instanceUpdateExecutorInterface = AZ::Interface<AzToolsFramework::Prefab::InstanceUpdateExecutorInterface>::Get();
+        if (instanceUpdateExecutorInterface && instanceUpdateExecutorInterface->IsUpdatingTemplateInstancesInQueue())
+        {
+            // InstanceUpdateExecutor is currently Updating Template Instances In Queue, it removes Entities while cleaning-up
+            // in-memory DOM template, and thus marking deleted Entity as dirty breaks Undo/Redo stack.
+            // Try again on next tick:
+            auto callNextTick = [this]()
+            {
+                this->UpdateMaterialSlotsFromMeshAsset();
+            };
+
+            AZ::SystemTickBus::QueueFunction(callNextTick);
+            return;
+        }
+
         Utils::SetMaterialsFromPhysicsAssetShape(m_proxyShapeConfiguration.m_physicsAsset.m_configuration, m_configuration.m_materialSlots);
 
         m_configuration.m_materialSlots.SetSlotsReadOnly(m_proxyShapeConfiguration.m_physicsAsset.m_configuration.m_useMaterialsFromAsset);
@@ -679,7 +705,7 @@ namespace PhysX
                     "The physics asset \"%s\" was exported using triangle mesh geometry, which is not compatible with non-kinematic "
                     "dynamic rigid bodies. To make the collider compatible, you can export the asset using primitive or convex mesh "
                     "geometry, use mesh decomposition when exporting the asset, or set the rigid body to kinematic. Learn more about "
-                    "<a href=\"https://o3de.org/docs/user-guide/components/reference/physx/mesh-collider/\">colliders</a>.",
+                    "<a href=\"https://www.o3de.org/docs/user-guide/components/reference/physx/mesh-collider/\">colliders</a>.",
                     assetPath.c_str()));
 
                 // make sure the entity inspector scrolls so the warning is visible by marking this component as having

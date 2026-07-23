@@ -8,7 +8,6 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include "Include/EditorCoreAPI.h"
 #include "Resource.h"
 #include <AzToolsFramework/API/ViewPaneOptions.h>
@@ -29,7 +28,6 @@
 #include <O3deViewPaneNames.h>
 
 #include <AzCore/std/functional.h>
-#endif
 
 class QMainWindow;
 class ViewportEditorModeNotificationsBusImpl;
@@ -236,7 +234,6 @@ private:
 
     bool ClosePane(QtViewPane* pane, QtViewPane::CloseModes closeModes = QtViewPane::CloseMode::None);
     int NextAvailableId();
-    AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
     QtViewPanes m_registeredPanes;
     QByteArray m_defaultMainWindowState;
     QByteArray m_loadedMainWindowState;
@@ -255,7 +252,6 @@ private:
     using EditorWindowRequestBusImpl = AzToolsFramework::EditorWindowRequestBusImpl;
     EditorWindowRequestBusImpl m_windowRequest;                         //!< Helper for EditorWindowRequestBus so
                                                                         //!< QtViewPaneManager does not need to inherit directly from it. */
-    AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 };
 
 template<class TWidget>

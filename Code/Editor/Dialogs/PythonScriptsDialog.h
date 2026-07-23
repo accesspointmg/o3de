@@ -7,12 +7,12 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/std/containers/vector.h>
+#include <AzCore/Math/Guid.h>
 
 #include <QWidget>
+#include <QString>
 #include <QScopedPointer>
-#endif
 
 namespace Ui {
     class CPythonScriptsDialog;
@@ -24,7 +24,7 @@ class CPythonScriptsDialog
     Q_OBJECT
 public:
     explicit CPythonScriptsDialog(QWidget* parent = nullptr);
-    ~CPythonScriptsDialog();
+    ~CPythonScriptsDialog() override;
 
     static const GUID& GetClassID()
     {

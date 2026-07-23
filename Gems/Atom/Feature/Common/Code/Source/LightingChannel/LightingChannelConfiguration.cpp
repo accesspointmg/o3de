@@ -7,9 +7,11 @@
  */
 
 #include <Atom/Feature/LightingChannel/LightingChannelConfiguration.h>
+#include <Atom/RHI.Reflect/Bits.h>
 
 #include <AzCore/Serialization/SerializeContext.h>
 #include <AzCore/Serialization/EditContext.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 namespace AZ
 {
@@ -26,12 +28,12 @@ namespace AZ
                 
                 if (auto* editContext = serializeContext->GetEditContext())
                 {
-                    editContext->Class<AZ::Render::LightingChannelConfiguration>("Lighting Channel Config", "")
+                    editContext->Class<AZ::Render::LightingChannelConfiguration>(QT_TRANSLATE_NOOP("Atom::Feature", "Lighting Channel Config"), "")
                         ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                             ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                             ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                         ->DataElement(AZ::Edit::UIHandlers::Default, &AZ::Render::LightingChannelConfiguration::m_lightingChannelFlags,
-                            "Lighting Channels", "Lights can only shine the objects in the same lighting channel with the light.")
+                            QT_TRANSLATE_NOOP("Atom::Feature", "Lighting Channels"), QT_TRANSLATE_NOOP("Atom::Feature", "Lights can only shine the objects in the same lighting channel with the light."))
                             ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::AttributesAndValues)
                             ->Attribute(AZ::Edit::Attributes::ContainerCanBeModified, false)
                             ->Attribute(AZ::Edit::Attributes::ContainerReorderAllow, false)
@@ -45,17 +47,20 @@ namespace AZ
         void LightingChannelConfiguration::SetLightingChannelMask(const uint32_t mask)
         {
             for (uint32_t index = 0; index < m_lightingChannelFlags.size(); ++index)
-            {
-                m_lightingChannelFlags[index] = (static_cast<bool>(mask >> index) & 0x01);
+            {                
+                m_lightingChannelFlags[index] = RHI::CheckBit(mask, index);
             }
         }
 
         uint32_t LightingChannelConfiguration::GetLightingChannelMask() const
         {
-            uint32_t mask = 0;
+            uint32_t mask(0);
             for (uint32_t index = 0; index < m_lightingChannelFlags.size(); ++index)
             {
-                mask |= (static_cast<uint32_t>(m_lightingChannelFlags[index]) << (index));
+                if (m_lightingChannelFlags[index])
+                {
+                    mask = RHI::SetBit(mask, index);                    
+                }
             }
             return mask;
         }

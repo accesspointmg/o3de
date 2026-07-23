@@ -9,7 +9,7 @@
 #include "PropertyDoubleSliderCtrl.hxx"
 #include "PropertyQTConstants.h"
 AZ_PUSH_DISABLE_WARNING(4251, "-Wunknown-warning-option") // 4251: 'QLayoutItem::align': class 'QFlags<Qt::AlignmentFlag>' needs to have dll-interface to be used by clients of class 'QLayoutItem'
-#include <QtWidgets/QHBoxLayout>
+#include <QHBoxLayout>
 AZ_POP_DISABLE_WARNING
 #include <AzCore/Math/MathUtils.h>
 #include <AzQtComponents/Components/Widgets/SpinBox.h>
@@ -23,6 +23,7 @@ namespace AzToolsFramework
         QHBoxLayout* pLayout = new QHBoxLayout(this);
         pLayout->setContentsMargins(0,0,0,0);
         m_sliderCombo = new AzQtComponents::SliderDoubleCombo(this);
+        m_sliderCombo->spinbox()->setStepType(QAbstractSpinBox::AdaptiveDecimalStepType);
         pLayout->addWidget(m_sliderCombo);
         setFocusProxy(m_sliderCombo);
 
@@ -288,7 +289,8 @@ namespace AzToolsFramework
             });
         connect(newCtrl, &PropertyDoubleSliderCtrl::editingFinished, this, [newCtrl]()
         {
-            AzToolsFramework::PropertyEditorGUIMessages::Bus::Broadcast(&PropertyEditorGUIMessages::Bus::Handler::OnEditingFinished, newCtrl);
+            PropertyEditorGUIMessages::Bus::Broadcast(&PropertyEditorGUIMessages::Bus::Events::RequestWrite, newCtrl);
+            PropertyEditorGUIMessages::Bus::Broadcast(&PropertyEditorGUIMessages::Bus::Handler::OnEditingFinished, newCtrl);
         });
         // note:  Qt automatically disconnects objects from each other when either end is destroyed, no need to worry about delete.
 
@@ -307,7 +309,8 @@ namespace AzToolsFramework
             });
         connect(newCtrl, &PropertyDoubleSliderCtrl::editingFinished, this, [newCtrl]()
         {
-            AzToolsFramework::PropertyEditorGUIMessages::Bus::Broadcast(&PropertyEditorGUIMessages::Bus::Handler::OnEditingFinished, newCtrl);
+            PropertyEditorGUIMessages::Bus::Broadcast(&PropertyEditorGUIMessages::Bus::Events::RequestWrite, newCtrl);
+            PropertyEditorGUIMessages::Bus::Broadcast(&PropertyEditorGUIMessages::Bus::Handler::OnEditingFinished, newCtrl);
         });
         // note:  Qt automatically disconnects objects from each other when either end is destroyed, no need to worry about delete.
 
@@ -441,4 +444,3 @@ namespace AzToolsFramework
 
 }
 
-#include "UI/PropertyEditor/moc_PropertyDoubleSliderCtrl.cpp"

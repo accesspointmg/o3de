@@ -13,7 +13,7 @@
 # example:
 # cmake -DPAL_PLATFORM_NAME:string=Windows -DLY_3RDPARTY_PATH:string=%CMD_DIR% -P get_python.cmake
 
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.24)
 
 if(O3DE_3RDPARTY_PATH)
     file(TO_CMAKE_PATH ${O3DE_3RDPARTY_PATH} O3DE_3RDPARTY_PATH)

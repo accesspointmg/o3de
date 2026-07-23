@@ -54,7 +54,7 @@ namespace ImageProcessingAtomEditor
         m_presetList = BuilderSettingManager::Instance()->GetFullPresetList();
 
         QStringList stringList;
-        foreach (const auto& presetName, m_presetList)
+        for (const auto& presetName : m_presetList)
         {
             stringList.append(QString(presetName.GetCStr()));
         }
@@ -210,4 +210,3 @@ namespace ImageProcessingAtomEditor
         checkBox->setEnabled(!readOnly);
     }
 }//namespace ImageProcessingAtomEditor
-#include <Source/Editor/moc_TexturePresetSelectionWidget.cpp>

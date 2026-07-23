@@ -8,19 +8,19 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include "StyledLogPanel.h"
 #include "LogLine.h"
 
 #include <AzCore/std/containers/queue.h>
 #include <AzCore/Debug/TraceMessageBus.h>
-#endif
 
 namespace AzToolsFramework
 {
     namespace LogPanel
     {
-        class StyledTracePrintFLogPanel
+        class AZTF_API StyledTracePrintFLogPanel
             : public StyledLogPanel
         {
             Q_OBJECT;
@@ -33,7 +33,7 @@ namespace AzToolsFramework
             QWidget* CreateTab(const TabSettings& settings) override;
         };
 
-        class StyledTracePrintFLogTab
+        class AZTF_API StyledTracePrintFLogTab
             : public StyledLogTab
             , protected AZ::Debug::TraceMessageBus::Handler
         {

@@ -52,7 +52,7 @@ namespace EMStudio
         m_characterIcon  = new QIcon(iconFilename("Character.svg"));
 
         QVBoxLayout* layout = new QVBoxLayout();
-        layout->setMargin(0);
+        layout->setContentsMargins(0, 0, 0, 0);
 
         m_searchWidget = new AzQtComponents::FilteredSearchWidget(this);
         m_searchWidget->setEnabledFiltersVisible(false);
@@ -697,4 +697,3 @@ namespace EMStudio
 
 } // namespace EMStudio
 
-#include <EMotionFX/Tools/EMotionStudio/EMStudioSDK/Source/moc_NodeHierarchyWidget.cpp>

@@ -7,10 +7,8 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <QDialog>
 #include <QScopedPointer>
-#endif
 
 namespace Ui {
     class SendReportDialog;
@@ -24,13 +22,15 @@ namespace CrashUploader
         Q_OBJECT // AUTOMOC
 
     public:
-        explicit SendReportDialog(QWidget* parent = nullptr);
+        SendReportDialog(bool manualReport, QWidget* parent = nullptr);
         ~SendReportDialog() override;
 
-        void SetReportText(const char* reportPath);
+        void SetReportText(const QString& reportPath);
         void SetApplicationName(const char* appName);
+
     private:
         QScopedPointer<Ui::SendReportDialog> ui;
+        bool m_manualReport = false;
     };
 
 }

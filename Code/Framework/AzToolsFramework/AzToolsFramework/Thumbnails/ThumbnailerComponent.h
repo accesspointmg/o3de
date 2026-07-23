@@ -7,7 +7,8 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/Component/Component.h>
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/std/containers/set.h>
@@ -15,7 +16,6 @@
 #include <AzToolsFramework/Thumbnails/ThumbnailerBus.h>
 
 #include <QObject>
-#endif
 
 class QString;
 class QPixmap;
@@ -24,7 +24,7 @@ namespace AzToolsFramework
 {
     namespace Thumbnailer
     {
-        class ThumbnailerComponent
+        class AZTF_API ThumbnailerComponent
             : public AZ::Component
             , public ThumbnailerRequestBus::Handler
         {

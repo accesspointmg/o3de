@@ -35,7 +35,6 @@
 #include <SceneAPI/SceneCore/DataTypes/GraphData/IBoneData.h>
 #include <SceneAPI/SceneCore/DataTypes/GraphData/IBlendShapeData.h>
 #include <SceneAPI/SceneCore/DataTypes/Rules/ICoordinateSystemRule.h>
-#include <SceneAPI/SceneCore/DataTypes/Rules/ILodRule.h>
 #include <SceneAPI/SceneCore/DataTypes/Rules/ISkinRule.h>
 #include <SceneAPI/SceneCore/DataTypes/Rules/IClothRule.h>
 #include <SceneAPI/SceneCore/DataTypes/Rules/ITagRule.h>
@@ -43,11 +42,14 @@
 #include <SceneAPI/SceneCore/Utilities/SceneGraphSelector.h>
 #include <SceneAPI/SceneCore/Utilities/Reporting.h>
 #include <SceneAPI/SceneData/Groups/MeshGroup.h>
+#include <SceneAPI/SceneData/Rules/LodRule.h>
 #include <SceneAPI/SceneData/Rules/StaticMeshAdvancedRule.h>
 #include <SceneAPI/SceneCore/Containers/Utilities/SceneUtilities.h>
 #include <SceneAPI/SceneCore/Containers/Utilities/Filters.h>
+#include <meshoptimizer.h>
 
 static constexpr AZStd::string_view MismatchedVertexLayoutsAreErrorsKey{ "/O3DE/SceneAPI/ModelBuilder/MismatchedVertexLayoutsAreErrors" };
+static constexpr AZStd::string_view ModelCompressionIsEnabledKey{ "/O3DE/SceneAPI/ModelBuilder/ModelCompressionIsEnabled" };
  /**
   * DEBUG DEFINES!
   * These are useful for debugging bad behavior from the builder.
@@ -70,6 +72,16 @@ namespace AZ
     {
         static const uint64_t s_invalidMaterialUid = 0;
 
+        static void* MeshOptimizerAllocate(size_t size)
+        {
+            return azmalloc(size);
+        }
+
+        static void MeshOptimizerFree(void* ptr)
+        {
+            azfree(ptr);
+        }
+
         static bool MismatchedVertexLayoutsAreErrors()
         {
             bool mismatchedVertexStreamsAreErrors = false;
@@ -85,10 +97,12 @@ namespace AZ
             if (auto* serialize = azrtti_cast<SerializeContext*>(context))
             {
                 serialize->Class<ModelAssetBuilderComponent, SceneAPI::SceneCore::ExportingComponent>()
-                    ->Version(39);
+                    ->Version(40);
 
                 // v38 - Pad Skinning mesh buffers to respect appropriate alignment
                 // v39 - Automatically generate missing skinning data when skinned and unskinned data is mixed
+                // v40 - Add support for generating missing lods.
+                // v41 - Compress index and vertex buffers
             }
         }
 
@@ -134,9 +148,63 @@ namespace AZ
             return -1;
         }
 
+        static void GenerateNextLod(ModelAssetBuilderComponent::ProductMeshContentList& lodMeshes, const     SceneAPI::SceneData::LodRule::AutoLodGenerationSettings& settings)
+        {
+            for (ModelAssetBuilderComponent::ProductMeshContent& mesh : lodMeshes)
+            {
+                AZStd::vector<uint32_t> newIndices;
+                newIndices.resize(mesh.m_indices.size());
+
+                float targetSimplifyThreshold = settings.m_indexThreshold;
+
+                float targetError = FLT_MAX;
+                if (settings.m_limitError)
+                {
+                    targetError = settings.m_targetError;
+                }
+
+                AZ::u32 simplifyOption = 0;
+
+                if (settings.m_prune)
+                {
+                    simplifyOption |= meshopt_SimplifyPrune;
+                }
+                size_t targetIndexSize = size_t(mesh.m_indices.size() * targetSimplifyThreshold * 3) / 3;
+                float resultError = 0.0f;
+
+                size_t newIndicesSize;
+                if (settings.m_preserveTopology)
+                {
+                    newIndicesSize = meshopt_simplify(newIndices.data(), mesh.m_indices.data(), mesh.m_indices.size(), mesh.m_positions.data(), mesh.m_vertexCount, sizeof(float) * PositionFloatsPerVert, targetIndexSize, targetError, simplifyOption, &resultError);
+                }
+                else
+                {
+                    newIndicesSize = meshopt_simplifySloppy(newIndices.data(), mesh.m_indices.data(), mesh.m_indices.size(), mesh.m_positions.data(), mesh.m_vertexCount, sizeof(float) * PositionFloatsPerVert, targetIndexSize, targetError, &resultError);
+                }
+
+                newIndices.resize(newIndicesSize);
+                if (AZ::SceneAPI::Utilities::IsDebugEnabled())
+                {
+                    AZ_Info(ModelAssetBuilderComponent::s_builderName, "      meshopt_simplify result: indices %d, result error %f\n", 
+                    newIndicesSize, resultError);
+                }
+                mesh.m_indices = AZStd::move(newIndices);
+                // TODO: maybe this optimization can be applied for existing lods as well.
+                meshopt_optimizeVertexCache(mesh.m_indices.data(), mesh.m_indices.data(), newIndicesSize, mesh.m_vertexCount);
+                meshopt_optimizeOverdraw(mesh.m_indices.data(), mesh.m_indices.data(), newIndicesSize, mesh.m_positions.data(), mesh.m_vertexCount, sizeof(float) * PositionFloatsPerVert, 1.0f); 
+            }
+        }
+
         SceneAPI::Events::ProcessingResult ModelAssetBuilderComponent::BuildModel(ModelAssetBuilderContext& context)
         {
+            meshopt_setAllocator(MeshOptimizerAllocate, MeshOptimizerFree);
+
             {
+                if (auto settingsRegistry = AZ::SettingsRegistry::Get(); settingsRegistry != nullptr)
+                {
+                    settingsRegistry->Get(m_modelCompressionEnabled, ModelCompressionIsEnabledKey);
+                }
+
                 auto assetIdOutcome = RPI::AssetUtils::MakeAssetId(s_defaultVertexBufferPoolSourcePath, 0);
                 if (!assetIdOutcome.IsSuccess())
                 {
@@ -144,6 +212,8 @@ namespace AZ
                 }
                 m_systemInputAssemblyBufferPoolId = assetIdOutcome.GetValue();
             }
+
+            bool autoLodGenerationEnabled = false;
 
             m_modelName = context.m_group.GetName();
 
@@ -163,7 +233,7 @@ namespace AZ
 
             AZStd::vector<SourceMeshContentList> sourceMeshContentListsByLod;
 
-            AZStd::shared_ptr<const SceneAPI::DataTypes::ILodRule> lodRule = context.m_group.GetRuleContainerConst().FindFirstByType<SceneAPI::DataTypes::ILodRule>();
+            AZStd::shared_ptr<const SceneAPI::SceneData::LodRule> lodRule = context.m_group.GetRuleContainerConst().FindFirstByType<SceneAPI::SceneData::LodRule>();
             AZStd::vector<AZStd::vector<AZStd::string>> selectedMeshPathsByLod;
 
             // The Atom Model builder uses the optimized versions of meshes that are
@@ -182,6 +252,7 @@ namespace AZ
             if (lodRule)
             {
                 selectedMeshPathsByLod.resize(lodRule->GetLodCount());
+                autoLodGenerationEnabled = lodRule->IsAutoLodGenerationEnabled();
                 for (size_t lod = 0; lod < lodRule->GetLodCount(); ++lod)
                 {
                     selectedMeshPathsByLod[lod] = SceneAPI::Utilities::SceneGraphSelector::GenerateTargetNodes(
@@ -344,7 +415,14 @@ namespace AZ
             // Then in each Lod we need to group all faces by material id.
             // All sub meshes with the same material id get merged
             AZStd::vector<Data::Asset<ModelLodAsset>> lodAssets;
-            lodAssets.resize(sourceMeshContentListsByLod.size());
+            if (autoLodGenerationEnabled)
+            {
+                lodAssets.resize(SceneAPI::SceneData::LodRule::m_maxLods);
+            }
+            else
+            {
+                lodAssets.resize(sourceMeshContentListsByLod.size());
+            }
 
             // in debug mode, start by outputting the lods we intend to actually export
             // do not do so if AZ_ENABLE_TRACING is not defined, since this would be creating variables and loops
@@ -391,9 +469,19 @@ namespace AZ
                 }
             }
 
-            uint32_t lodIndex = 0;
-            for (const SourceMeshContentList& sourceMeshContentList : sourceMeshContentListsByLod)
+            uint32_t lodIndex;
+            ProductMeshContentList lodMeshes;
+            
+            for (lodIndex = 0; lodIndex < SceneAPI::SceneData::LodRule::m_maxLods; lodIndex++)
             {
+                if (lodIndex >= sourceMeshContentListsByLod.size() && !autoLodGenerationEnabled)
+                {
+                    break;
+                }
+                
+                // By default, we merge meshes that share the same material
+                bool canMergeMeshes = true;
+
                 ModelLodAssetCreator lodAssetCreator;
                 m_lodName = AZStd::string::format("lod%d", lodIndex);
                 AZStd::string lodAssetName = GetAssetFullName(ModelLodAsset::TYPEINFO_Uuid());
@@ -405,40 +493,50 @@ namespace AZ
                 }
 
                 {
-                    AZ::Outcome<ProductMeshContentList> productMeshListOutcome =
-                        SourceMeshListToProductMeshList(context, sourceMeshContentList, jointNameToIndexMap, morphTargetMetaCreator);
-
-                    if (!productMeshListOutcome.IsSuccess())
+                    AZ::Outcome<ProductMeshContentList> productMeshListOutcome;
+                    if (lodIndex >= sourceMeshContentListsByLod.size())
                     {
-                        return AZ::SceneAPI::Events::ProcessingResult::Failure;
-                    }
-                    ProductMeshContentList lodMeshes = productMeshListOutcome.GetValue();
-
-                    PadVerticesForSkinning(lodMeshes);
-
-                    // By default, we merge meshes that share the same material
-                    bool canMergeMeshes = true;
-
-                    AZStd::shared_ptr<const SceneAPI::SceneData::StaticMeshAdvancedRule> staticMeshAdvancedRule = context.m_group.GetRuleContainerConst().FindFirstByType<SceneAPI::SceneData::StaticMeshAdvancedRule>();
-                    if (staticMeshAdvancedRule && !staticMeshAdvancedRule->MergeMeshes())
-                    {
-                        AZ_Info(s_builderName, "        Merging meshes disabled by advanced mesh rule.\n");
-                        // If the merge meshes option is disabled in the advanced mesh rule, don't merge meshes
+                        // reuse lodMeshes from last available lod meshes, call meshopt_simplify to simplify the index buffer.
+                        GenerateNextLod(lodMeshes, lodRule->GetAutoLodGenerationSettings());
+                        AZ_Info(s_builderName, "        Merging meshes disabled for automatically generated lods.\n");
                         canMergeMeshes = false;
                     }
                     else
                     {
-                        for (const SourceMeshContent& sourceMesh : sourceMeshContentList)
+                        const SourceMeshContentList& sourceMeshContentList = sourceMeshContentListsByLod[lodIndex];
+
+                        productMeshListOutcome =
+                            SourceMeshListToProductMeshList(context, sourceMeshContentList, jointNameToIndexMap, morphTargetMetaCreator);
+
+                        if (!productMeshListOutcome.IsSuccess())
                         {
-                            if (sourceMesh.m_isMorphed)
+                            return AZ::SceneAPI::Events::ProcessingResult::Failure;
+                        }
+                        lodMeshes = productMeshListOutcome.GetValue();
+
+                        PadVerticesForSkinning(lodMeshes);
+
+                        AZStd::shared_ptr<const SceneAPI::SceneData::StaticMeshAdvancedRule> staticMeshAdvancedRule = context.m_group.GetRuleContainerConst().FindFirstByType<SceneAPI::SceneData::StaticMeshAdvancedRule>();
+                        if (staticMeshAdvancedRule && !staticMeshAdvancedRule->MergeMeshes())
+                        {
+                            AZ_Info(s_builderName, "        Merging meshes disabled by advanced mesh rule.\n");
+                            // If the merge meshes option is disabled in the advanced mesh rule, don't merge meshes
+                            canMergeMeshes = false;
+                        }
+                        else
+                        {
+                            for (const SourceMeshContent& sourceMesh : sourceMeshContentList)
                             {
-                                // Merging meshes shuffles around the order of the vertices, but morph targets rely on having an index that tell them which vertices to morph
-                                // We do not merge morphed meshes so that this index is preserved and correct.
-                                // If we keep track of the ordering changes in MergeMeshesByMaterialUid and then re-mapped the MORPHTARGET_VERTEXINDICES buffer
-                                // we could potentially enable merging meshes that are morphed. But for now, disable merging.
-                                canMergeMeshes = false;
-                                AZ_Info(s_builderName, "   Scene contains morph data, disabling mesh merge.\n");
-                                break;
+                                if (sourceMesh.m_isMorphed)
+                                {
+                                    // Merging meshes shuffles around the order of the vertices, but morph targets rely on having an index that tell them which vertices to morph
+                                    // We do not merge morphed meshes so that this index is preserved and correct.
+                                    // If we keep track of the ordering changes in MergeMeshesByMaterialUid and then re-mapped the MORPHTARGET_VERTEXINDICES buffer
+                                    // we could potentially enable merging meshes that are morphed. But for now, disable merging.
+                                    canMergeMeshes = false;
+                                    AZ_Info(s_builderName, "   Scene contains morph data, disabling mesh merge.\n");
+                                    break;
+                                }
                             }
                         }
                     }
@@ -518,15 +616,16 @@ namespace AZ
 
                     BufferAssetView indexBuffer;
                     AZStd::vector<ModelLodAsset::Mesh::StreamBufferInfo> streamBuffers;
+                    AZ::Aabb subMeshAabb = AZ::Aabb::CreateNull();
 
-                    if (!CreateModelLodBuffers(mergedMesh, indexBuffer, streamBuffers, lodAssetCreator))
+                    if (!CreateModelLodBuffers(mergedMesh, indexBuffer, streamBuffers, lodAssetCreator, subMeshAabb))
                     {
                         return AZ::SceneAPI::Events::ProcessingResult::Failure;
                     }
 
                     for (const ProductMeshView& meshView : lodMeshViews)
                     {
-                        if (!CreateMesh(meshView, indexBuffer, streamBuffers, modelAssetCreator, lodAssetCreator, context.m_materialsByUid))
+                        if (!CreateMesh(meshView, indexBuffer, streamBuffers, modelAssetCreator, lodAssetCreator, context.m_materialsByUid, subMeshAabb))
                         {
                             return AZ::SceneAPI::Events::ProcessingResult::Failure;
                         }
@@ -539,16 +638,17 @@ namespace AZ
 
                         BufferAssetView indexBuffer;
                         AZStd::vector<ModelLodAsset::Mesh::StreamBufferInfo> streamBuffers;
+                        AZ::Aabb subMeshAabb = AZ::Aabb::CreateNull();
 
                         // Mesh name in ProductMeshContent could be duplicated so generate unique mesh name using index 
                         m_meshName = AZStd::string::format("mesh%d", meshIndex++);
 
-                        if (!CreateModelLodBuffers(mesh, indexBuffer, streamBuffers, lodAssetCreator))
+                        if (!CreateModelLodBuffers(mesh, indexBuffer, streamBuffers, lodAssetCreator, subMeshAabb))
                         {
                             return AZ::SceneAPI::Events::ProcessingResult::Failure;
                         }
 
-                        if (!CreateMesh(meshView, indexBuffer, streamBuffers, modelAssetCreator, lodAssetCreator, context.m_materialsByUid))
+                        if (!CreateMesh(meshView, indexBuffer, streamBuffers, modelAssetCreator, lodAssetCreator, context.m_materialsByUid, subMeshAabb))
                         {
                             return AZ::SceneAPI::Events::ProcessingResult::Failure;
                         }
@@ -561,8 +661,6 @@ namespace AZ
                     return AZ::SceneAPI::Events::ProcessingResult::Failure;
                 }
                 lodAssets[lodIndex].SetHint(lodAssetName); // name will be used for file name when export asset
-
-                lodIndex++;
             }
             sourceMeshContentListsByLod.clear();
 
@@ -2098,7 +2196,22 @@ namespace AZ
         {
             AZStd::string bufferName = semantic.ToString();
             size_t floatsPerElement = RHI::GetFormatSize(format) / sizeof(T);
-            Outcome<Data::Asset<BufferAsset>> bufferOutcome = CreateTypedBufferAsset(bufferData.data(), bufferData.size() / floatsPerElement, format, bufferName);
+            Outcome<Data::Asset<BufferAsset>> bufferOutcome;
+            size_t originalSize = bufferData.size() * sizeof(T);
+            if (m_modelCompressionEnabled)
+            {
+                AZStd::vector<AZ::u8> compressedBuffer(meshopt_encodeVertexBufferBound(bufferData.size() / floatsPerElement, RHI::GetFormatSize(format)));
+                compressedBuffer.resize_no_construct(meshopt_encodeVertexBuffer(compressedBuffer.data(), compressedBuffer.size(), bufferData.data(), bufferData.size() / floatsPerElement, RHI::GetFormatSize(format)));
+                AZ_Info(s_builderName, "Vertex buffer %s: original %zu, compressed %zu", bufferName.c_str(), originalSize, compressedBuffer.size());
+
+                bufferOutcome = compressedBuffer.size() < originalSize ?
+                    CreateTypedBufferAsset(compressedBuffer.data(), compressedBuffer.size(), bufferData.size() / floatsPerElement, format, bufferName, BufferAsset::CompressionFormat::Vertex) :
+                    CreateTypedBufferAsset(bufferData.data(), originalSize, bufferData.size() / floatsPerElement, format, bufferName);
+            }
+            else
+            {
+                bufferOutcome = CreateTypedBufferAsset(bufferData.data(), originalSize, bufferData.size() / floatsPerElement, format, bufferName);
+            }
 
             if (!bufferOutcome.IsSuccess())
             {
@@ -2126,7 +2239,7 @@ namespace AZ
             }
 
             AZStd::string bufferName = semantic.ToString();
-            Outcome<Data::Asset<BufferAsset>> bufferOutcome = CreateTypedBufferAsset(bufferData.data(), vertexCount, format, bufferName);
+            Outcome<Data::Asset<BufferAsset>> bufferOutcome = CreateTypedBufferAsset(bufferData.data(), bufferData.size() * sizeof(T), vertexCount, format, bufferName);
             if (!bufferOutcome.IsSuccess())
             {
                 AZ_Error(s_builderName, false, "Failed to build %s stream", semantic.ToString().data());
@@ -2141,7 +2254,8 @@ namespace AZ
             const ProductMeshContent& lodBufferContent,
             BufferAssetView& outIndexBuffer,
             AZStd::vector<ModelLodAsset::Mesh::StreamBufferInfo>& outStreamBuffers,
-            ModelLodAssetCreator& lodAssetCreator)
+            ModelLodAssetCreator& lodAssetCreator,
+            AZ::Aabb& subMeshAabb)
         {
             const AZStd::vector<uint32_t>& indices = lodBufferContent.m_indices;
             const AZStd::vector<float>& positions = lodBufferContent.m_positions;
@@ -2156,7 +2270,21 @@ namespace AZ
 
             // Build Index Buffer ...
             {
-                Outcome<Data::Asset<BufferAsset>> indexBufferOutcome = CreateTypedBufferAsset(indices.data(), indices.size(), IndicesFormat, "index");
+                Outcome<Data::Asset<BufferAsset>> indexBufferOutcome;
+                size_t originalSize = indices.size() * sizeof(uint32_t);
+                if (m_modelCompressionEnabled)
+                {
+                    AZStd::vector<AZ::u8> compressedIndices(meshopt_encodeIndexBufferBound(indices.size(), positions.size() / RHI::GetFormatComponentCount(PositionFormat)));
+                    compressedIndices.resize_no_construct(meshopt_encodeIndexBuffer(compressedIndices.data(), compressedIndices.size(), indices.data(), indices.size()));
+                    AZ_Info(s_builderName, "Index buffer: original %zu, compressed %zu", originalSize, compressedIndices.size());
+                    indexBufferOutcome = compressedIndices.size() < originalSize ?
+                        CreateTypedBufferAsset(compressedIndices.data(), compressedIndices.size(), indices.size(), IndicesFormat, "index", BufferAsset::CompressionFormat::Index) :
+                        CreateTypedBufferAsset(indices.data(), originalSize, indices.size(), IndicesFormat, "index");
+                }
+                else
+                {
+                    indexBufferOutcome = CreateTypedBufferAsset(indices.data(), originalSize, indices.size(), IndicesFormat, "index");
+                }
                 if (!indexBufferOutcome.IsSuccess())
                 {
                     AZ_Error(s_builderName, false, "Failed to build index stream");
@@ -2251,6 +2379,12 @@ namespace AZ
                 lodAssetCreator.AddLodStreamBuffer(streamBufferInfo.m_bufferAssetView.GetBufferAsset());
             }
 
+            // Calculate SubMesh's AABB from position stream
+            if (!CalculateAABB(positions, subMeshAabb))
+            {
+                AZ_Warning(s_builderName, false, "Failed to calculate AABB for Mesh");
+            }
+
             return true;
         }
 
@@ -2260,7 +2394,8 @@ namespace AZ
             const AZStd::vector<ModelLodAsset::Mesh::StreamBufferInfo>& lodStreamBuffers,
             ModelAssetCreator& modelAssetCreator,
             ModelLodAssetCreator& lodAssetCreator,
-            const MaterialAssetsByUid& materialAssetsByUid)
+            const MaterialAssetsByUid& materialAssetsByUid,
+            const AZ::Aabb& subMeshAabb)
         {
             lodAssetCreator.BeginMesh();
             
@@ -2295,18 +2430,7 @@ namespace AZ
                     return false;
                 }
 
-                const RHI::BufferViewDescriptor& positionBufferViewDescriptor = meshView.m_positionView;
-
-                // Calculate SubMesh's AABB from position stream
-                AZ::Aabb subMeshAabb = AZ::Aabb::CreateNull();
-                if (CalculateAABB(positionBufferViewDescriptor, *positionStreamBufferInfo.m_bufferAssetView.GetBufferAsset().Get(), subMeshAabb))
-                {
-                    lodAssetCreator.SetMeshAabb(subMeshAabb);
-                }
-                else
-                {
-                    AZ_Warning(s_builderName, false, "Failed to calculate AABB for Mesh");
-                }
+                lodAssetCreator.SetMeshAabb(subMeshAabb);
 
                 // Set position buffer
                 BufferAssetView meshPositionBufferAssetView(
@@ -2398,12 +2522,12 @@ namespace AZ
         }
 
         Outcome<Data::Asset<BufferAsset>> ModelAssetBuilderComponent::CreateTypedBufferAsset(
-            const void* data, const size_t elementCount, RHI::Format format, const AZStd::string& bufferName)
+            const void* data, const size_t size, const size_t elementCount, RHI::Format format, const AZStd::string& bufferName, const BufferAsset::CompressionFormat compressionFormat)
         {
             RHI::BufferViewDescriptor bufferViewDescriptor =
                 RHI::BufferViewDescriptor::CreateTyped(0, static_cast<uint32_t>(elementCount), format);
 
-            return CreateBufferAsset(data, bufferViewDescriptor, bufferName);
+            return CreateBufferAsset(data, size, bufferViewDescriptor, bufferName, compressionFormat);
         }
 
         Outcome<Data::Asset<BufferAsset>> ModelAssetBuilderComponent::CreateStructuredBufferAsset(
@@ -2412,7 +2536,7 @@ namespace AZ
             RHI::BufferViewDescriptor bufferViewDescriptor =
                 RHI::BufferViewDescriptor::CreateStructured(0, static_cast<uint32_t>(elementCount), static_cast<uint32_t>(elementSize));
 
-            return CreateBufferAsset(data, bufferViewDescriptor, bufferName);
+            return CreateBufferAsset(data, elementCount * elementSize, bufferViewDescriptor, bufferName);
         }
 
         Outcome<Data::Asset<BufferAsset>> ModelAssetBuilderComponent::CreateRawBufferAsset(
@@ -2421,11 +2545,12 @@ namespace AZ
             RHI::BufferViewDescriptor bufferViewDescriptor =
                 RHI::BufferViewDescriptor::CreateRaw(0, static_cast<uint32_t>(totalSizeInBytes));
 
-            return CreateBufferAsset(data, bufferViewDescriptor, bufferName);
+            return CreateBufferAsset(data, totalSizeInBytes, bufferViewDescriptor, bufferName);
         }
 
         Outcome<Data::Asset<BufferAsset>> ModelAssetBuilderComponent::CreateBufferAsset(
-            const void* data, const RHI::BufferViewDescriptor& bufferViewDescriptor, const AZStd::string& bufferName)
+            const void* data, const size_t size, const RHI::BufferViewDescriptor& bufferViewDescriptor, const AZStd::string& bufferName,
+            const BufferAsset::CompressionFormat compressionFormat)
         {
             BufferAssetCreator creator;
             AZStd::string bufferAssetName = GetAssetFullName(BufferAsset::TYPEINFO_Uuid(), bufferName);
@@ -2435,7 +2560,10 @@ namespace AZ
             bufferDescriptor.m_bindFlags = RHI::BufferBindFlags::InputAssembly | RHI::BufferBindFlags::ShaderRead;
             bufferDescriptor.m_byteCount = static_cast<uint64_t>(bufferViewDescriptor.m_elementSize) * static_cast<uint64_t>(bufferViewDescriptor.m_elementCount);
 
-            creator.SetBuffer(data, bufferDescriptor.m_byteCount, bufferDescriptor);
+            creator.SetCompressionFormat(compressionFormat);
+
+            AZ_Assert(size <= bufferDescriptor.m_byteCount, "bufferViewDescriptor is out of range of bufferAsset");
+            creator.SetBuffer(data, size, bufferDescriptor);
 
             creator.SetBufferViewDescriptor(bufferViewDescriptor);
 
@@ -2525,47 +2653,24 @@ namespace AZ
             return assetId;
         }
 
-        bool ModelAssetBuilderComponent::CalculateAABB(const RHI::BufferViewDescriptor& bufferViewDesc, const BufferAsset& bufferAsset, AZ::Aabb& aabb)
+        bool ModelAssetBuilderComponent::CalculateAABB(const AZStd::vector<float>& positions, AZ::Aabb& aabb)
         {
-            const uint32_t elementSize = bufferViewDesc.m_elementSize;
-            const uint32_t elementCount = bufferViewDesc.m_elementCount;
-            const uint32_t elementOffset = bufferViewDesc.m_elementOffset;
-            AZ_Assert(elementOffset + elementCount <= bufferAsset.GetBufferViewDescriptor().m_elementCount, "bufferViewDesc is out of range of bufferAsset");
+            size_t elementCount = positions.size() / 3;
 
-            // Position is 3 floats
-            if (elementSize == sizeof(float) * 3)
+            if (elementCount <= 0)
             {
-                AZ_Assert(bufferViewDesc.m_elementFormat == RHI::Format::R32G32B32_FLOAT, "position buffer format does not match element size");
-                
-                struct Position { float x,y,z; };
-                const Position* buffer = reinterpret_cast<const Position*>(&bufferAsset.GetBuffer()[0]) + elementOffset;
-
-                AZ::Vector3 vpos;    //note: it seems to be fastest to reuse a local Vector3 rather than constructing new ones each loop iteration
-                for (uint32_t i = 0; i < elementCount; ++i)
-                {
-                    vpos.Set(reinterpret_cast<const float*>(&buffer[i]));
-                    aabb.AddPoint(vpos);
-                }
-            }
-            // Position is 4 halfs
-            else if (elementSize == sizeof(uint16_t) * 4)
-            {
-                // Can't handle this yet since we have no way to do math on
-                // halfs
-                AZ_Error(
-                    s_builderName, false,
-                    "Can't calculate AABB for SubMesh; positions stored "
-                    "in halfs not supported.");
+                AZ_Error(s_builderName, false, "Positions are empty!");
                 return false;
             }
-            else
+
+            struct Position { float x,y,z; };
+            const Position* buffer = reinterpret_cast<const Position*>(positions.data());
+
+            AZ::Vector3 vpos;    //note: it seems to be fastest to reuse a local Vector3 rather than constructing new ones each loop iteration
+            for (uint32_t i = 0; i < elementCount; ++i)
             {
-                // No idea what type of position stream this is
-                AZ_Error(
-                    s_builderName, false,
-                    "Can't calculate AABB for SubMesh; can't determine "
-                    "element type of stream.");
-                return false;
+                vpos.Set(reinterpret_cast<const float*>(&buffer[i]));
+                aabb.AddPoint(vpos);
             }
 
             return true;

@@ -41,7 +41,7 @@ namespace UnitTest
         EXPECT_THAT(transform.TransformPoint(vector), IsClose(vector + translation));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Transform, TransformCreateFixture, ::testing::ValuesIn(MathTestData::Vector3s));
+    INSTANTIATE_TEST_SUITE_P(MATH_Transform, TransformCreateFixture, ::testing::ValuesIn(MathTestData::Vector3s));
 
     using TransformCreateRotationFixture = ::testing::TestWithParam<float>;
 
@@ -108,7 +108,7 @@ namespace UnitTest
         EXPECT_NEAR(projectedDotProduct, projectedMagnitudeSq * cosf(angle), 1e-2f * projectedMagnitudeSq);
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Transform, TransformCreateRotationFixture, ::testing::ValuesIn(MathTestData::Angles));
+    INSTANTIATE_TEST_SUITE_P(MATH_Transform, TransformCreateRotationFixture, ::testing::ValuesIn(MathTestData::Angles));
 
     TEST(MATH_Transform, GetSetTranslation)
     {
@@ -130,7 +130,7 @@ namespace UnitTest
         const AZ::Quaternion quaternion = GetParam();
         const AZ::Transform transform = AZ::Transform::CreateFromQuaternion(quaternion);
         EXPECT_THAT(transform.GetTranslation(), IsClose(AZ::Vector3::CreateZero()));
-        const AZ::Vector3 vector(2.3f, -0.6, 1.8f);
+        const AZ::Vector3 vector(2.3f, -0.6f, 1.8f);
         EXPECT_THAT(transform.TransformPoint(vector), IsClose(quaternion.TransformVector(vector)));
     }
 
@@ -140,7 +140,7 @@ namespace UnitTest
         const AZ::Vector3 translation(-2.6f, 1.7f, 0.8f);
         const AZ::Transform transform = AZ::Transform::CreateFromQuaternionAndTranslation(quaternion, translation);
         EXPECT_THAT(transform.GetTranslation(), IsClose(translation));
-        const AZ::Vector3 vector(2.3f, -0.6, 1.8f);
+        const AZ::Vector3 vector(2.3f, -0.6f, 1.8f);
         EXPECT_THAT(transform.TransformPoint(vector), IsClose(quaternion.TransformVector(vector) + translation));
     }
 
@@ -149,11 +149,11 @@ namespace UnitTest
         const AZ::Quaternion quaternion = GetParam();
         AZ::Transform transform = AZ::Transform::CreateIdentity();
         transform.SetRotation(quaternion);
-        const AZ::Vector3 vector(2.3f, -0.6, 1.8f);
+        const AZ::Vector3 vector(2.3f, -0.6f, 1.8f);
         EXPECT_THAT(transform.TransformPoint(vector), IsClose(quaternion.TransformVector(vector)));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Transform, TransformCreateFromQuaternionFixture, ::testing::ValuesIn(MathTestData::UnitQuaternions));
+    INSTANTIATE_TEST_SUITE_P(MATH_Transform, TransformCreateFromQuaternionFixture, ::testing::ValuesIn(MathTestData::UnitQuaternions));
 
     TEST(MATH_Transform, CreateUniformScale)
     {
@@ -164,6 +164,37 @@ namespace UnitTest
         const AZ::Vector3 transformedVector = transform.TransformPoint(vector);
         const AZ::Vector3 expected(0.34f, -2.72f, 0.68f);
         EXPECT_THAT(transformedVector, IsClose(expected));
+    }
+
+    TEST(MATH_Transform, PackedLane_SetTranslationPreservesScale)
+    {
+        AZ::Transform transform = AZ::Transform::CreateUniformScale(2.5f);
+        transform.SetTranslation(AZ::Vector3(1.0f, 2.0f, 3.0f));
+        EXPECT_FLOAT_EQ(transform.GetUniformScale(), 2.5f);
+        EXPECT_THAT(transform.GetTranslation(), IsClose(AZ::Vector3(1.0f, 2.0f, 3.0f)));
+        transform.SetTranslation(4.0f, 5.0f, 6.0f);
+        EXPECT_FLOAT_EQ(transform.GetUniformScale(), 2.5f);
+        EXPECT_THAT(transform.GetTranslation(), IsClose(AZ::Vector3(4.0f, 5.0f, 6.0f)));
+    }
+
+    TEST(MATH_Transform, PackedLane_SetUniformScalePreservesTranslation)
+    {
+        AZ::Transform transform = AZ::Transform::CreateTranslation(AZ::Vector3(1.0f, 2.0f, 3.0f));
+        transform.SetUniformScale(7.5f);
+        EXPECT_FLOAT_EQ(transform.GetUniformScale(), 7.5f);
+        EXPECT_THAT(transform.GetTranslation(), IsClose(AZ::Vector3(1.0f, 2.0f, 3.0f)));
+        transform.MultiplyByUniformScale(2.0f);
+        EXPECT_FLOAT_EQ(transform.GetUniformScale(), 15.0f);
+        EXPECT_THAT(transform.GetTranslation(), IsClose(AZ::Vector3(1.0f, 2.0f, 3.0f)));
+    }
+
+    TEST(MATH_Transform, PackedLane_ExtractScaleLeavesIdentityWAndPreservesTranslation)
+    {
+        AZ::Transform transform = AZ::Transform(AZ::Vector3(1.0f, 2.0f, 3.0f), AZ::Quaternion::CreateIdentity(), 5.0f);
+        const float extracted = transform.ExtractUniformScale();
+        EXPECT_FLOAT_EQ(extracted, 5.0f);
+        EXPECT_FLOAT_EQ(transform.GetUniformScale(), 1.0f);
+        EXPECT_THAT(transform.GetTranslation(), IsClose(AZ::Vector3(1.0f, 2.0f, 3.0f)));
     }
 
     using TransformCreateLookAtFixture = ::testing::TestWithParam<MathTestData::AxisPair>;
@@ -184,7 +215,7 @@ namespace UnitTest
         EXPECT_THAT(forward, IsClose(expectedForward.GetNormalized()));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Transform, TransformCreateLookAtFixture, ::testing::ValuesIn(MathTestData::Axes));
+    INSTANTIATE_TEST_SUITE_P(MATH_Transform, TransformCreateLookAtFixture, ::testing::ValuesIn(MathTestData::Axes));
 
     using TransformFromMatrixFixture = ::testing::TestWithParam<AZ::Matrix3x4>;
 
@@ -201,7 +232,7 @@ namespace UnitTest
         EXPECT_THAT(matrix, IsClose(reconstructedMatrix));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Transform, TransformFromMatrixFixture, ::testing::ValuesIn(MathTestData::NonOrthogonalMatrix3x4s));
+    INSTANTIATE_TEST_SUITE_P(MATH_Transform, TransformFromMatrixFixture, ::testing::ValuesIn(MathTestData::NonOrthogonalMatrix3x4s));
 
     TEST(MATH_Transform, CreateLookAtDegenerateCases)
     {
@@ -320,7 +351,7 @@ namespace UnitTest
         EXPECT_THAT((inverse * transform), IsClose(AZ::Transform::Identity()));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Transform, TransformInvertFixture, ::testing::ValuesIn(MathTestData::OrthogonalTransforms));
+    INSTANTIATE_TEST_SUITE_P(MATH_Transform, TransformInvertFixture, ::testing::ValuesIn(MathTestData::OrthogonalTransforms));
 
     using TransformScaleFixture = ::testing::TestWithParam<AZ::Transform>;
 
@@ -337,7 +368,7 @@ namespace UnitTest
         EXPECT_NEAR(scaledTransform.GetUniformScale(), scale, AZ::Constants::Tolerance);
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Transform, TransformScaleFixture, ::testing::ValuesIn(MathTestData::OrthogonalTransforms));
+    INSTANTIATE_TEST_SUITE_P(MATH_Transform, TransformScaleFixture, ::testing::ValuesIn(MathTestData::OrthogonalTransforms));
 
     TEST(MATH_Transform, IsOrthogonal)
     {
@@ -366,7 +397,7 @@ namespace UnitTest
         EXPECT_THAT(transform, IsClose(rotX * rotY * rotZ));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Transform, TransformSetFromEulerDegreesFixture, ::testing::ValuesIn(MathTestData::EulerAnglesDegrees));
+    INSTANTIATE_TEST_SUITE_P(MATH_Transform, TransformSetFromEulerDegreesFixture, ::testing::ValuesIn(MathTestData::EulerAnglesDegrees));
 
     using TransformSetFromEulerRadiansFixture = ::testing::TestWithParam<AZ::Vector3>;
 
@@ -381,7 +412,7 @@ namespace UnitTest
         EXPECT_THAT(transform, IsClose(rotX * rotY * rotZ));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Transform, TransformSetFromEulerRadiansFixture, ::testing::ValuesIn(MathTestData::EulerAnglesRadians));
+    INSTANTIATE_TEST_SUITE_P(MATH_Transform, TransformSetFromEulerRadiansFixture, ::testing::ValuesIn(MathTestData::EulerAnglesRadians));
 
     using TransformGetEulerFixture = ::testing::TestWithParam<AZ::Transform>;
 
@@ -402,7 +433,7 @@ namespace UnitTest
         EXPECT_THAT(eulerTransform, IsClose(transform));
     }
 
-    INSTANTIATE_TEST_CASE_P(MATH_Transform, TransformGetEulerFixture, ::testing::ValuesIn(MathTestData::OrthogonalTransforms));
+    INSTANTIATE_TEST_SUITE_P(MATH_Transform, TransformGetEulerFixture, ::testing::ValuesIn(MathTestData::OrthogonalTransforms));
 
     class MATH_TransformApplicationFixture
         : public LeakDetectionFixture

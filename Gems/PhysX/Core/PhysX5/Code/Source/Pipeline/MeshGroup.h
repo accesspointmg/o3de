@@ -132,38 +132,53 @@ namespace PhysX
         friend MeshGroup;
 
         public:
+            enum class FillMode
+                : AZ::u8
+            {
+                FloodFill, // This is the default behavior, after the voxelization step it uses a flood fill to determine 'inside'
+                            // from 'outside'. However, meshes with holes can fail and create hollow results.
+                SurfaceOnly, // Only consider the 'surface', will create 'skins' with hollow centers.
+                RaycastFill, // Uses raycasting to determine inside from outside.
+            };
+
             AZ_TYPE_INFO(ConvexDecompositionParams, "{E076A8BC-5409-4125-B2B7-35500AF33BC2}");
 
             ConvexDecompositionParams() = default;
 
             static void Reflect(AZ::ReflectContext* context);
 
-            float GetConcavity() const;
-            float GetAlpha() const;
-            float GetBeta() const;
-            float GetMinVolumePerConvexHull() const;
-            AZ::u32 GetResolution() const;
-            AZ::u32 GetMaxNumVerticesPerConvexHull() const;
-            AZ::u32 GetPlaneDownsampling() const;
-            AZ::u32 GetConvexHullDownsampling() const;
             AZ::u32 GetMaxConvexHulls() const;
-            bool GetPca() const;
-            AZ::u32 GetMode() const;
-            bool GetProjectHullVertices() const;
+
+            AZ::u32 GetResolution() const;
+
+            float GetMinVolumePercentError() const;
+
+            AZ::u32 GetMaxRecursionDepth() const;
+
+            bool GetShrinkWrap() const;
+
+            FillMode GetFillMode() const;
+
+            AZ::u32 GetMaxNumVerticesPerConvexHull() const;
+
+            AZ::u32 GetMinEdgeLength() const;
 
         private:
-            AZ::u32 m_maxConvexHulls = 1024;
-            AZ::u32 m_maxNumVerticesPerConvexHull = 64;
-            float m_concavity = 0.001f;
-            AZ::u32 m_resolution = 100000;
-            AZ::u32 m_mode = 0;
-            float m_alpha = 0.05f;
-            float m_beta = 0.05f;
-            float m_minVolumePerConvexHull = 0.0001f;
-            AZ::u32 m_planeDownsampling = 4;
-            AZ::u32 m_convexHullDownsampling = 4;
-            bool m_pca = 0;
-            bool m_projectHullVertices = true;
+            // Note that the new version of VHACD was updated.  The "meaning" of this maxConvexHulls parameter changed.
+            // Previously it would try to minimize the number of convex hulls and this provided an escape hatch for the
+            // algorithm to stop trying in case you gave it some insane model that would cause it to process forever.
+            // But in the new version, its going to try to create as many convex hulls as you specify, and then try to minimize
+            // the error of those convex hulls.  If you give it 1024 hulls, its going to use 1024 hulls, where previously it may
+            // have only used 4-5.   8 Should be enough for almost all "props" you place in the level (chairs, tables, vases,
+            // pillars, stalegtites, etc).  You can tweak this in the Mesh Export settings if you need more, for a specific mesh.
+            AZ::u32 m_maxConvexHulls = 8;
+            AZ::u32 m_resolution = 400000;               // default from vhacd.h
+            float m_minVolumePercentError = 1.0f;        // default from vhacd.h
+            AZ::u32 m_maxRecursionDepth = 10;            // default from vhacd.h
+            bool m_shrinkWrap = true;                    // default from vhacd.h
+            FillMode m_fillMode = FillMode::FloodFill;   // default from vhacd.h
+            AZ::u32 m_maxNumVerticesPerConvexHull = 64;  // default from vhacd.h
+            AZ::u32 m_minEdgeLength = 2;                 // default from vhacd.h
         };
 
         class MeshGroup

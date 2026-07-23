@@ -70,7 +70,7 @@ bool ColumnGroupHeaderView::event(QEvent* event)
         auto groups = m_groupModel->Groups();
 
         m_groups.clear();
-        foreach(int column, groups)
+        for (int column : groups)
         {
             const int width = sectionSize(column);
             const QRect r(xOffset, yOffset, width == 0 ? defaultSectionSize() : width, QHeaderView::sizeHint().height());
@@ -93,7 +93,7 @@ bool ColumnGroupHeaderView::event(QEvent* event)
         auto mouseEvent = static_cast<QMouseEvent*>(event);
         if (m_showGroups && m_groupModel)
         {
-            foreach(const Group &group, m_groups)
+            for (const Group& group : m_groups)
             {
                 if (group.rect.contains(mouseEvent->pos()))
                 {
@@ -132,9 +132,7 @@ int ColumnGroupHeaderView::GroupViewHeight() const
     {
         return 0;
     }
-    int groupCount = m_groupModel->Groups().size();
+    int groupCount = static_cast<int>(m_groupModel->Groups().size());
     return QHeaderView::sizeHint().height() + qMax(0, groupCount - 1) * 10 + 20;
 }
 
-
-#include <Util/moc_ColumnGroupHeaderView.cpp>

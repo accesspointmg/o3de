@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
+
 #pragma once
 
 #include <AzCore/std/concepts/concepts.h>
@@ -208,11 +209,10 @@ namespace AZStd::Internal
     * - trivial copy ctor.
     * - all iterators satisfy the C++20 are contiguous iterator concept
     */
-    template<class Out, class = void>
-    constexpr bool indirectly_trivially_copyable = false;
     template<class Out>
-    constexpr bool indirectly_trivially_copyable<Out,
-        enable_if_t<indirectly_readable<Out>>> = is_trivially_copyable_v<iter_value_t<Out>>;
+    concept indirectly_trivially_copyable =
+        indirectly_readable<Out>
+        && is_trivially_copyable_v<iter_value_t<Out>>;
 
     template<class InputIterator, class ResultIterator>
     using is_fast_copy = bool_constant<indirectly_trivially_copyable<ResultIterator>
@@ -224,7 +224,7 @@ namespace AZStd::Internal
     constexpr bool is_fast_copy_v = is_fast_copy<InputIterator, ResultIterator>::value;
 
 
-    // is_fast_copy argument is no longer used.
+    // The bool dispatch argument is retained for existing call sites.
     template <class InputIterator, class ForwardIterator>
     constexpr ForwardIterator copy(InputIterator first, InputIterator last, ForwardIterator result, bool)
     {
@@ -277,6 +277,7 @@ namespace AZStd::Internal
     {
         if constexpr (is_fast_copy_v<BidirectionalIterator1, BidirectionalIterator2>)
         {
+            AZ_Assert((&*result <= &*first) || (&*result > &*last), "AZStd::copy_backward memory overlaps use AZStd::copy!");
             // Specialized copy for contiguous iterators which are trivially copyable
             size_t numElements = last - first;
             if (numElements > 0)
@@ -299,7 +300,6 @@ namespace AZStd::Internal
                 {
                     static_assert(sizeof(iter_value_t<BidirectionalIterator1>) == sizeof(iter_value_t<BidirectionalIterator2>), "Size of value types must match for a trivial copy");
                     result -= numElements;
-                    AZ_Assert(((&*result + numElements) <= &*first) || ((&*result + numElements) > (&*first + numElements)), "AZStd::copy_backward memory overlaps use AZStd::copy!");
                     ::memmove(&*result, &*first, numElements * sizeof(iter_value_t<BidirectionalIterator1>));
                 }
 #endif
@@ -352,7 +352,7 @@ namespace AZStd
                 {
                     for (; first != last; ++result, ++first)
                     {
-                        construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(result)), *first);
+                        AZStd::construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(result)), *first);
                     }
 
                     return result;
@@ -370,7 +370,7 @@ namespace AZStd
         {
             for (; first != last; ++result, ++first)
             {
-                construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(result)), *first);
+                AZStd::construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(result)), *first);
             }
 
             return result;
@@ -515,7 +515,7 @@ namespace AZStd::Internal
                 {
                     for (; first != last; ++result, ++first)
                     {
-                        construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(result)), ::AZStd::move(*first));
+                        AZStd::construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(result)), ::AZStd::move(*first));
                     }
 
                     return result;
@@ -533,7 +533,7 @@ namespace AZStd::Internal
         {
             for (; first != last; ++result, ++first)
             {
-                construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(result)), ::AZStd::move(*first));
+                AZStd::construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(result)), ::AZStd::move(*first));
             }
 
             return result;
@@ -554,12 +554,8 @@ namespace AZStd
     {
         return AZStd::Internal::uninitialized_move(first, last, result, {});
     }
-    // 25.3.2 Move
-    template<class InputIterator, class OutputIterator>
-    OutputIterator move(InputIterator first, InputIterator last, OutputIterator result)
-    {
-        return AZStd::Internal::move(first, last, result, {});
-    }
+
+    using std::move;
 
     template<class BidirectionalIterator1, class BidirectionalIterator2>
     BidirectionalIterator2 move_backward(BidirectionalIterator1 first, BidirectionalIterator1 last, BidirectionalIterator2 result)
@@ -578,19 +574,18 @@ namespace AZStd::Internal
     * - size of type == 1 (chars) to use memset
     * - contiguous iterators
     */
-    template<class Out, class = void>
-    constexpr bool indirectly_copy_assignable = false;
     template<class Out>
-    constexpr bool indirectly_copy_assignable<Out, enable_if_t<indirectly_readable<Out>>> =
-        is_trivially_copy_assignable_v<iter_value_t<Out>> && sizeof(iter_value_t<Out>) == 1;
+    concept indirectly_copy_assignable =
+        indirectly_readable<Out>
+        && is_trivially_copy_assignable_v<iter_value_t<Out>>
+        && sizeof(iter_value_t<Out>) == 1;
 
     template<class Iterator>
     using is_fast_fill = bool_constant<indirectly_copy_assignable<Iterator> && contiguous_iterator<Iterator>>;
     template<class Iterator>
     constexpr bool is_fast_fill_v = is_fast_fill<Iterator>::value;
 
-    // The fast fill trait is no longer used
-    // It is detected using C++20 concepts now
+    // The bool dispatch argument is retained for existing call sites.
     template <class ForwardIterator, class T>
     constexpr void fill(ForwardIterator first, ForwardIterator last, const T& value, bool)
     {
@@ -677,7 +672,7 @@ namespace AZStd
                 {
                     for (; first != last; ++first)
                     {
-                        construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(first)), value);
+                        AZStd::construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(first)), value);
                     }
                 }
                 else
@@ -690,7 +685,7 @@ namespace AZStd
         {
             for (; first != last; ++first)
             {
-                construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(first)), value);
+                AZStd::construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(first)), value);
             }
         }
     }
@@ -712,7 +707,7 @@ namespace AZStd
                 {
                     for (; numElements--; ++first)
                     {
-                        construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(first)), value);
+                        AZStd::construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(first)), value);
                     }
                 }
                 else
@@ -725,7 +720,7 @@ namespace AZStd
         {
             for (; numElements--; ++first)
             {
-                construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(first)), value);
+                AZStd::construct_at(static_cast<iter_value_t<ForwardIterator>*>(to_address(first)), value);
             }
         }
     }

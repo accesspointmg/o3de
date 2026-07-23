@@ -856,7 +856,7 @@ namespace AZ
 
             AZ_PROFILE_FUNCTION(RHI);
             const auto& viewports = m_state.m_viewportState.m_states;
-            MTLViewport metalViewports[viewports.size()];
+            AZStd::vector<MTLViewport> metalViewports(viewports.size());
 
             for (uint32_t i = 0; i < viewports.size(); ++i)
             {
@@ -869,7 +869,7 @@ namespace AZ
             }
 
             id<MTLRenderCommandEncoder> renderEncoder = GetEncoder<id<MTLRenderCommandEncoder>>();
-            [renderEncoder setViewports: metalViewports
+            [renderEncoder setViewports: metalViewports.data()
                                   count: viewports.size()];
             m_state.m_viewportState.m_isDirty = false;
         }
@@ -911,8 +911,36 @@ namespace AZ
             AZ_Assert(false, "Not implemented");
         }
 
+        void CommandList::BuildClusterAccelerationStructures(const RHI::DeviceRayTracingClusterBlas& rayTracingClusterBlas)
+        {
+            // [GFX TODO][ATOM-5268] Implement Metal Ray Tracing
+            AZ_Assert(false, "Not implemented");
+        }
+
+        void CommandList::BuildClusterBottomLevelAccelerationStructures(const AZStd::vector<const RHI::DeviceRayTracingClusterBlas*>& clusterBlasList)
+        {
+            // [GFX TODO][ATOM-5268] Implement Metal Ray Tracing
+            AZ_Assert(false, "Not implemented");
+        }
+
+        void CommandList::QueryBlasCompactionSizes(
+            const AZStd::vector<AZStd::pair<RHI::DeviceRayTracingBlas*, RHI::DeviceRayTracingCompactionQuery*>>& blasToQuery)
+        {
+            // [GFX TODO][ATOM-5268] Implement Metal Ray Tracing
+            AZ_Assert(false, "Not implemented");
+        }
+
+        void CommandList::CompactBottomLevelAccelerationStructure(
+            const RHI::DeviceRayTracingBlas& sourceBlas, const RHI::DeviceRayTracingBlas& compactBlas)
+        {
+            // [GFX TODO][ATOM-5268] Implement Metal Ray Tracing
+            AZ_Assert(false, "Not implemented");
+        }
+
         void CommandList::BuildTopLevelAccelerationStructure(
-            const RHI::DeviceRayTracingTlas& rayTracingTlas, const AZStd::vector<const RHI::DeviceRayTracingBlas*>& changedBlasList)
+            const RHI::DeviceRayTracingTlas& rayTracingTlas,
+            const AZStd::vector<const RHI::DeviceRayTracingBlas*>& changedBlasList,
+            const AZStd::vector<const RHI::DeviceRayTracingClusterBlas*>& changedClusterBlasList)
         {
             // [GFX TODO][ATOM-5268] Implement Metal Ray Tracing
             AZ_Assert(false, "Not implemented");

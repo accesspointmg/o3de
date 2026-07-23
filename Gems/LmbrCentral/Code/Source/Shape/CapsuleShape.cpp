@@ -13,7 +13,7 @@
 #include <AzCore/Math/Transform.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
-#include <CryCommon/Cry_GeoDistance.h>
+#include <AzFramework/Translation/TranslationDef.h>
 #include <MathConversion.h>
 
 namespace LmbrCentral
@@ -34,9 +34,13 @@ namespace LmbrCentral
 
             if (AZ::EditContext* editContext = serializeContext->GetEditContext())
             {
-                editContext->Class<CapsuleShape>("Capsule Shape", "Capsule shape configuration parameters")
+                editContext->Class<CapsuleShape>(
+                    QT_TRANSLATE_NOOP("LmbrCentral", "Capsule Shape"),
+                    QT_TRANSLATE_NOOP("LmbrCentral", "Capsule shape configuration parameters"))
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &CapsuleShape::m_capsuleShapeConfig, "Capsule Configuration", "Capsule shape configuration")
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &CapsuleShape::m_capsuleShapeConfig,
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Capsule Configuration"),
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Capsule shape configuration"))
                         ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                         ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                         ;
@@ -183,12 +187,8 @@ namespace LmbrCentral
         AZStd::shared_lock lock(m_mutex);
         m_intersectionDataCache.UpdateIntersectionParams(m_currentTransform, m_capsuleShapeConfig, &m_mutex);
 
-        const Lineseg lineSeg(
-            AZVec3ToLYVec3(m_intersectionDataCache.m_basePlaneCenterPoint),
-            AZVec3ToLYVec3(m_intersectionDataCache.m_topPlaneCenterPoint));
-
-        float t = 0.0f;
-        float distance = Distance::Point_Lineseg(AZVec3ToLYVec3(point), lineSeg, t);
+        float distanceSq = AZ::Intersect::PointSegmentDistanceSq(point, m_intersectionDataCache.m_basePlaneCenterPoint, m_intersectionDataCache.m_topPlaneCenterPoint);
+        float distance = AZ::Sqrt(distanceSq);
         distance -= m_intersectionDataCache.m_radius;
         const float clampedDistance = AZStd::max(distance, 0.0f);
         return clampedDistance * clampedDistance;

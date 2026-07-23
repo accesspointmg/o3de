@@ -20,7 +20,7 @@ namespace O3DE::ProjectManager
     {
         auto layout = new QVBoxLayout();
         layout->setAlignment(Qt::AlignTop);
-        layout->setMargin(0);
+        layout->setContentsMargins(0, 0, 0, 0);
         setLayout(layout);
 
         m_titleLabel = new QLabel();
@@ -33,7 +33,7 @@ namespace O3DE::ProjectManager
         layout->addWidget(m_textLabel);
 
         m_tagWidget = new TagContainerWidget();
-        connect(m_tagWidget, &TagContainerWidget::TagClicked, this, [=](const Tag& tag){ emit TagClicked(tag); });
+        connect(m_tagWidget, &TagContainerWidget::TagClicked, this, [this](const Tag& tag){ emit TagClicked(tag); });
         layout->addWidget(m_tagWidget);
     }
 

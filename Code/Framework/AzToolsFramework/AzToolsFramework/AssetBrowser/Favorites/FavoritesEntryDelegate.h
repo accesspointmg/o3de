@@ -8,11 +8,10 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <QStyledItemDelegate>
 
 #include <AzToolsFramework/AssetBrowser/Views/EntryDelegate.h>
-#endif
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 
 
 class QWidget;
@@ -25,7 +24,7 @@ namespace AzToolsFramework
     {
 
         //! EntryDelegate draws a single item in AssetBrowser.
-        class FavoritesEntryDelegate
+        class AZTF_API FavoritesEntryDelegate
             : public EntryDelegate
         {
             Q_OBJECT

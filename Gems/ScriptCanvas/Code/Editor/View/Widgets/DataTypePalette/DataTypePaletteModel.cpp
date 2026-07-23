@@ -6,11 +6,11 @@
  *
  */
 
-#include <qaction.h>
-#include <qevent.h>
-#include <qheaderview.h>
-#include <qitemselectionmodel.h>
-#include <qscrollbar.h>
+#include <QAction>
+#include <QEvent>
+#include <QHeaderView>
+#include <QItemSelectionModel>
+#include <QScrollBar>
 
 #include <AzCore/Component/ComponentApplicationBus.h>
 #include <AzCore/Serialization/Utils.h>
@@ -392,10 +392,10 @@ namespace ScriptCanvasEditor
     
     void DataTypePaletteSortFilterProxyModel::SetFilter(const QString& filter)
     {
+        beginFilterChange();
         m_filter = filter;
-        m_testRegex = QRegExp(m_filter, Qt::CaseInsensitive);
-        invalidateFilter();
-    }   
+        m_testRegex = QRegularExpression(m_filter, QRegularExpression::PatternOption::CaseInsensitiveOption);
+        endFilterChange();
+    }
 }
 
-#include <Editor/View/Widgets/DataTypePalette/moc_DataTypePaletteModel.cpp>

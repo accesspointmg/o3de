@@ -43,6 +43,7 @@ o3de_add_target(
         PUBLIC
             3rdParty::Qt::Widgets
             3rdParty::Qt::Svg
+            3rdParty::Qt::SvgWidgets
             3rdParty::Qt::Xml
             AZ::AzCore
 )

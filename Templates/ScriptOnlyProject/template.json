@@ -23,6 +23,10 @@
             "isTemplated": false
         },
         {
+            "file": ".command_settings",
+            "isTemplated": false
+        },
+        {
             "file": "CMakeLists.txt",
             "isTemplated": true
         },
@@ -33,10 +37,6 @@
         {
             "file": "cmake/EngineFinder.cmake",
             "isTemplated": true
-        },
-        {
-            "file": "Config/default_aws_resource_mappings.json",
-            "isTemplated": false
         },
         {
             "file": "Config/shader_global_build_options.json",
@@ -91,7 +91,7 @@
             "isTemplated": true
         },
         {
-            "file": "Registry/awscoreconfiguration.setreg",
+            "file": "Registry/assimp_settings.setreg",
             "isTemplated": false
         },
         {

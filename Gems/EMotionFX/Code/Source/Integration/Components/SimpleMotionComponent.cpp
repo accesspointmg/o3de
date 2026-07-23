@@ -12,6 +12,7 @@
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/RTTI/BehaviorContext.h>
 #include <AzCore/Script/ScriptContext.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 #include <Integration/Components/SimpleMotionComponent.h>
 #include <MCore/Source/AttributeString.h>
@@ -47,29 +48,29 @@ namespace EMotionFX
                 AZ::EditContext* editContext = serializeContext->GetEditContext();
                 if (editContext)
                 {
-                    editContext->Class<Configuration>( "Configuration", "Settings for this Simple Motion")
+                    editContext->Class<Configuration>( QT_TRANSLATE_NOOP("EMotionFX", "Configuration"), QT_TRANSLATE_NOOP("EMotionFX", "Settings for this Simple Motion"))
                         ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_motionAsset, "Motion", "EMotion FX motion to be loaded for this actor")
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_loop, "Loop motion", "Toggles looping of the animation")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_motionAsset, QT_TRANSLATE_NOOP("EMotionFX", "Motion"), QT_TRANSLATE_NOOP("EMotionFX", "EMotion FX motion to be loaded for this actor"))
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_loop, QT_TRANSLATE_NOOP("EMotionFX", "Loop motion"), QT_TRANSLATE_NOOP("EMotionFX", "Toggles looping of the animation"))
                             ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::EntireTree)
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_retarget, "Retarget motion", "Toggles retargeting of the animation")
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_reverse, "Reverse motion", "Toggles reversing of the animation")
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_mirror, "Mirror motion", "Toggles mirroring of the animation")
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_playspeed, "Play speed", "Determines the rate at which the motion is played")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_retarget, QT_TRANSLATE_NOOP("EMotionFX", "Retarget motion"), QT_TRANSLATE_NOOP("EMotionFX", "Toggles retargeting of the animation"))
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_reverse, QT_TRANSLATE_NOOP("EMotionFX", "Reverse motion"), QT_TRANSLATE_NOOP("EMotionFX", "Toggles reversing of the animation"))
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_mirror, QT_TRANSLATE_NOOP("EMotionFX", "Mirror motion"), QT_TRANSLATE_NOOP("EMotionFX", "Toggles mirroring of the animation"))
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_playspeed, QT_TRANSLATE_NOOP("EMotionFX", "Play speed"), QT_TRANSLATE_NOOP("EMotionFX", "Determines the rate at which the motion is played"))
+                            ->Attribute(AZ::Edit::Attributes::Min, 0.1f)
+                            ->Attribute(AZ::Edit::Attributes::Max, 10.0f)
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_blendInTime, QT_TRANSLATE_NOOP("EMotionFX", "Blend In Time"), QT_TRANSLATE_NOOP("EMotionFX", "Determines the blend in time in seconds"))
                             ->Attribute(AZ::Edit::Attributes::Min, 0.0f)
                             ->Attribute(AZ::Edit::Attributes::Max, 100.0f)
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_blendInTime, "Blend In Time", "Determines the blend in time in seconds")
-                            ->Attribute(AZ::Edit::Attributes::Min, 0.0f)
-                            ->Attribute(AZ::Edit::Attributes::Max, 100.0f)
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_blendOutTime, "Blend Out Time", "Determines the blend out time in seconds")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_blendOutTime, QT_TRANSLATE_NOOP("EMotionFX", "Blend Out Time"), QT_TRANSLATE_NOOP("EMotionFX", "Determines the blend out time in seconds"))
                             ->Attribute(AZ::Edit::Attributes::Visibility, &Configuration::GetBlendOutTimeVisibility)
                             ->Attribute(AZ::Edit::Attributes::Min, 0.0f)
                             ->Attribute(AZ::Edit::Attributes::Max, 100.0f)
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_playOnActivation, "Play on active", "Playing animation immediately after activation.")
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_inPlace, "In-place",
-                            "Plays the animation in-place and removes any positional and rotational changes from root joints.")
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_freezeAtLastFrame, "Freeze At Last Frame",
-                            "Go back to bind pose after finishing the motion or freeze at the last frame. This only applies for non-looping motions.")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_playOnActivation, QT_TRANSLATE_NOOP("EMotionFX", "Play on active"), QT_TRANSLATE_NOOP("EMotionFX", "Playing animation immediately after activation."))
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_inPlace, QT_TRANSLATE_NOOP("EMotionFX", "In-place"),
+                            QT_TRANSLATE_NOOP("EMotionFX", "Plays the animation in-place and removes any positional and rotational changes from root joints."))
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &Configuration::m_freezeAtLastFrame, QT_TRANSLATE_NOOP("EMotionFX", "Freeze At Last Frame"),
+                            QT_TRANSLATE_NOOP("EMotionFX", "Go back to bind pose after finishing the motion or freeze at the last frame. This only applies for non-looping motions."))
                             ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::EntireTree)
                             ->Attribute(AZ::Edit::Attributes::Visibility, &Configuration::GetFreezeAtLastFrameVisibility)
                         ;
@@ -204,6 +205,7 @@ namespace EMotionFX
             m_motionInstance = nullptr;
             RemoveMotionInstanceFromActor(m_lastMotionInstance);
             m_lastMotionInstance = nullptr;
+
             m_configuration.m_motionAsset.Release();
             m_lastMotionAsset.Release();
             m_actorInstance.reset();
@@ -211,7 +213,7 @@ namespace EMotionFX
 
         const MotionInstance* SimpleMotionComponent::GetMotionInstance()
         {
-            return m_motionInstance;
+            return CheckMotionInstance(m_motionInstance);
         }
 
         void SimpleMotionComponent::SetMotionAssetId(const AZ::Data::AssetId& assetId)
@@ -247,9 +249,8 @@ namespace EMotionFX
             }
         }
 
-        void SimpleMotionComponent::OnActorInstanceDestroyed(EMotionFX::ActorInstance* actorInstance)
+        void SimpleMotionComponent::OnActorInstanceDestroyed([[maybe_unused]] EMotionFX::ActorInstance* actorInstance)
         {
-            AZ_UNUSED(actorInstance);
             RemoveMotionInstanceFromActor(m_motionInstance);
             m_motionInstance = nullptr;
             RemoveMotionInstanceFromActor(m_lastMotionInstance);
@@ -260,12 +261,34 @@ namespace EMotionFX
 
         void SimpleMotionComponent::PlayMotion()
         {
-            m_motionInstance = PlayMotionInternal(m_actorInstance.get(), m_configuration, /*deleteOnZeroWeight*/true);
+            if (CheckMotionInstance(m_lastMotionInstance))
+            {
+                RemoveMotionInstanceFromActor(m_lastMotionInstance);
+                m_lastMotionInstance = nullptr;
+            }
+
+            if (CheckMotionInstance(m_motionInstance))
+            {
+                if (m_configuration.m_blendOutTime > 0.0f)
+                {
+                    m_lastMotionInstance = m_motionInstance;
+                    m_lastMotionInstance->Stop(m_configuration.m_blendOutTime);
+                }
+                else
+                {
+                    RemoveMotionInstanceFromActor(m_motionInstance);
+                }
+
+                m_motionInstance = nullptr;
+            }
+
+            constexpr const bool deleteOnZeroWeight = false;  // was true
+            m_motionInstance = PlayMotionInternal(m_actorInstance.get(), m_configuration, deleteOnZeroWeight);
         }
 
         void SimpleMotionComponent::RemoveMotionInstanceFromActor(EMotionFX::MotionInstance* motionInstance)
         {
-            if (motionInstance)
+            if (CheckMotionInstance(motionInstance))
             {
                 if (m_actorInstance && m_actorInstance->GetMotionSystem())
                 {
@@ -277,7 +300,7 @@ namespace EMotionFX
         void SimpleMotionComponent::LoopMotion(bool enable)
         {
             m_configuration.m_loop = enable;
-            if (m_motionInstance)
+            if (CheckMotionInstance(m_motionInstance))
             {
                 m_motionInstance->SetMaxLoops(enable ? EMFX_LOOPFOREVER : 1);
             }
@@ -291,7 +314,7 @@ namespace EMotionFX
         void SimpleMotionComponent::RetargetMotion(bool enable)
         {
             m_configuration.m_retarget = enable;
-            if (m_motionInstance)
+            if (CheckMotionInstance(m_motionInstance))
             {
                 m_motionInstance->SetRetargetingEnabled(enable);
             }
@@ -300,7 +323,7 @@ namespace EMotionFX
         void SimpleMotionComponent::ReverseMotion(bool enable)
         {
             m_configuration.m_reverse = enable;
-            if (m_motionInstance)
+            if (CheckMotionInstance(m_motionInstance))
             {
                 m_motionInstance->SetPlayMode(enable ? EMotionFX::EPlayMode::PLAYMODE_BACKWARD : EMotionFX::EPlayMode::PLAYMODE_FORWARD);
             }
@@ -309,7 +332,7 @@ namespace EMotionFX
         void SimpleMotionComponent::MirrorMotion(bool enable)
         {
             m_configuration.m_mirror = enable;
-            if (m_motionInstance)
+            if (CheckMotionInstance(m_motionInstance))
             {
                 m_motionInstance->SetMirrorMotion(enable);
             }
@@ -318,7 +341,7 @@ namespace EMotionFX
         void SimpleMotionComponent::SetPlaySpeed(float speed)
         {
             m_configuration.m_playspeed = speed;
-            if (m_motionInstance)
+            if (CheckMotionInstance(m_motionInstance))
             {
                 m_motionInstance->SetPlaySpeed(speed);
             }
@@ -331,11 +354,15 @@ namespace EMotionFX
 
         void SimpleMotionComponent::PlayTime(float time)
         {
-            if (m_motionInstance)
+            if (CheckMotionInstance(m_motionInstance))
             {
                 float delta = time - m_motionInstance->GetLastCurrentTime();
                 m_motionInstance->SetCurrentTime(time, false);
 
+                if (!SimpleMotionComponent::CheckMotionInstance(m_lastMotionInstance))
+                {
+                    m_lastMotionInstance = nullptr;
+                }
                 // Apply the same time step to the last animation
                 // so blend out will be good. Otherwise we are just blending
                 // from the last frame played of the last animation.
@@ -349,16 +376,16 @@ namespace EMotionFX
         float SimpleMotionComponent::GetPlayTime() const
         {
             float result = 0.0f;
-            if (m_motionInstance)
+            if (CheckMotionInstance(m_motionInstance))
             {
-                result = m_motionInstance->GetCurrentTimeNormalized();
+                result = m_motionInstance->GetCurrentTime();
             }
             return result;
         }
 
         float SimpleMotionComponent::GetDuration() const
         {
-            return m_motionInstance ? m_motionInstance->GetDuration() : 0.0f;
+            return CheckMotionInstance(m_motionInstance) ? m_motionInstance->GetDuration() : 0.0f;
         }
 
         void SimpleMotionComponent::Motion(AZ::Data::AssetId assetId)
@@ -374,7 +401,7 @@ namespace EMotionFX
                 // Save the motion asset that we are about to be remove in case it can be reused.
                 AZ::Data::Asset<MotionAsset> oldLastMotionAsset = m_lastMotionAsset;
 
-                if (m_lastMotionInstance)
+                if (CheckMotionInstance(m_lastMotionInstance))
                 {
                     RemoveMotionInstanceFromActor(m_lastMotionInstance);
                 }
@@ -389,7 +416,7 @@ namespace EMotionFX
 
                 // Set the current motion instance as the last motion instance. The new current motion
                 // instance will then be set when the load is complete.
-                m_lastMotionInstance = m_motionInstance;
+                m_lastMotionInstance = CheckMotionInstance(m_motionInstance);
                 m_motionInstance = nullptr;
 
                 // Start the fade out if there is a blend out time. Otherwise just leave the
@@ -421,7 +448,7 @@ namespace EMotionFX
                     }
                 }
 
-                // Connect the bus if the asset is is valid.
+                // Connect the bus if the asset is valid.
                 if (m_configuration.m_motionAsset.GetId().IsValid())
                 {
                     AZ::Data::AssetBus::MultiHandler::BusConnect(m_configuration.m_motionAsset.GetId());
@@ -455,7 +482,7 @@ namespace EMotionFX
             return m_configuration.m_blendOutTime;
         }
 
-        EMotionFX::MotionInstance* SimpleMotionComponent::PlayMotionInternal(const EMotionFX::ActorInstance* actorInstance, const SimpleMotionComponent::Configuration& cfg, bool deleteOnZeroWeight)
+        /*static*/ EMotionFX::MotionInstance* SimpleMotionComponent::PlayMotionInternal(const EMotionFX::ActorInstance* actorInstance, const SimpleMotionComponent::Configuration& cfg, bool deleteOnZeroWeight)
         {
             if (!actorInstance || !cfg.m_motionAsset.IsReady())
             {
@@ -474,12 +501,11 @@ namespace EMotionFX
                 AZ_Error("EMotionFX", motionAsset, "Motion asset is not valid.");
                 return nullptr;
             }
-            //init the PlaybackInfo based on our config
+            // initialize the PlaybackInfo based on the got config
             EMotionFX::PlayBackInfo info;
             info.m_numLoops = cfg.m_loop ? EMFX_LOOPFOREVER : 1;
             info.m_retarget = cfg.m_retarget;
             info.m_playMode = cfg.m_reverse ? EMotionFX::EPlayMode::PLAYMODE_BACKWARD : EMotionFX::EPlayMode::PLAYMODE_FORWARD;
-            info.m_freezeAtLastFrame = info.m_numLoops == 1;
             info.m_mirrorMotion = cfg.m_mirror;
             info.m_playSpeed = cfg.m_playspeed;
             info.m_playNow = true;
@@ -492,6 +518,58 @@ namespace EMotionFX
             return actorInstance->GetMotionSystem()->PlayMotion(motionAsset->m_emfxMotion.get(), &info);
         }
 
+        /*static*/ EMotionFX::MotionInstance* SimpleMotionComponent::StartMotionInternal(EMotionFX::MotionInstance* motionInstance, const SimpleMotionComponent::Configuration& cfg)
+        {
+            if (!CheckMotionInstance(motionInstance) || !cfg.m_motionAsset.IsReady())
+            {
+                return nullptr;
+            }
+
+            auto* actorInstance = motionInstance->GetActorInstance();
+            if (!actorInstance->GetMotionSystem())
+            {
+                return nullptr;
+            }
+
+            if (auto* motionAsset = cfg.m_motionAsset.GetAs<MotionAsset>())
+            {
+                if (motionAsset->m_emfxMotion.get() != motionInstance->GetMotion())
+                {
+                    constexpr const bool deleteOnZeroWeight = false;
+                    return PlayMotionInternal(actorInstance, cfg, deleteOnZeroWeight);
+                }
+            }
+
+            // initialize the PlaybackInfo based on the got config
+            EMotionFX::PlayBackInfo info;
+            info.m_numLoops = cfg.m_loop ? EMFX_LOOPFOREVER : 1;
+            info.m_retarget = cfg.m_retarget;
+            info.m_playMode = cfg.m_reverse ? EMotionFX::EPlayMode::PLAYMODE_BACKWARD : EMotionFX::EPlayMode::PLAYMODE_FORWARD;
+            info.m_mirrorMotion = cfg.m_mirror;
+            info.m_playSpeed = cfg.m_playspeed;
+            info.m_playNow = true;
+            info.m_deleteOnZeroWeight = false;
+            info.m_canOverwrite = false;
+            info.m_blendInTime = cfg.m_blendInTime;
+            info.m_blendOutTime = cfg.m_blendOutTime;
+            info.m_inPlace = cfg.m_inPlace;
+            info.m_freezeAtLastFrame = cfg.m_freezeAtLastFrame;
+
+            // Replaying an existing motion instance must clear its previous playback state.
+            motionInstance->InitFromPlayBackInfo(info, false);
+            motionInstance->ResetTimes();
+            return actorInstance->GetMotionSystem()->PlayMotion(motionInstance, &info);
+        }
+
+        /*static*/ EMotionFX::MotionInstance* SimpleMotionComponent::CheckMotionInstance(EMotionFX::MotionInstance* motionInstance)
+        {
+            if (!motionInstance || (motionInstance->GetReferenceCount() < 1) || !motionInstance->GetMotion() || !motionInstance->GetActorInstance())
+            {
+                return nullptr;
+            }
+
+            return motionInstance;
+        }
+
     } // namespace integration
 } // namespace EMotionFX
-

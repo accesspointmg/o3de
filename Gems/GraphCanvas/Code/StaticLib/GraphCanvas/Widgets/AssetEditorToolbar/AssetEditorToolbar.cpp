@@ -92,6 +92,10 @@ namespace GraphCanvas
         }
     }
 
+    AssetEditorToolbar::~AssetEditorToolbar()
+    {
+    }
+
     void AssetEditorToolbar::AddCustomAction(QToolButton* action)
     {
         m_ui->customizationPanel->setVisible(true);
@@ -399,4 +403,3 @@ namespace GraphCanvas
     }
 }
 
-#include <StaticLib/GraphCanvas/Widgets/AssetEditorToolbar/moc_AssetEditorToolbar.cpp>

@@ -26,6 +26,7 @@
 #include <Atom/RPI.Public/RenderPipeline.h>
 #include <Atom/RPI.Public/View.h>
 #include <Atom/RPI.Public/Pass/PassFactory.h>
+#include <Atom/RPI.Public/PerformanceCollectionNotificationBus.h>
 
 #include <Atom/RHI/Factory.h>
 #include <Atom/RHI/Device.h>
@@ -76,6 +77,8 @@ namespace AZ
             GpuQuerySystemDescriptor::Reflect(context);
 
             PipelineStatisticsResult::Reflect(context);
+
+            PerformaceCollectionNotification::Reflect(context);
         }
 
         void RPISystem::Initialize(const RPISystemDescriptor& rpiSystemDescriptor)
@@ -94,7 +97,6 @@ namespace AZ
             m_assetHandlers.emplace_back(MakeAssetHandler<ResourcePoolAssetHandler>());
             m_assetHandlers.emplace_back(MakeAssetHandler<AnyAssetHandler>());
 
-            m_materialSystem.Init();
             m_modelSystem.Init();
             m_shaderSystem.Init();
             m_passSystem.Init();
@@ -128,10 +130,10 @@ namespace AZ
             m_featureProcessorFactory.Shutdown();
             m_passSystem.Shutdown();
             m_dynamicDraw.Shutdown();
-            m_bufferSystem.Shutdown();
             m_materialSystem.Shutdown();
             m_modelSystem.Shutdown();
             m_shaderSystem.Shutdown();
+            m_bufferSystem.Shutdown();
             m_imageSystem.Shutdown();
             m_querySystem.Shutdown();
             m_rhiSystem.Shutdown();
@@ -356,6 +358,7 @@ namespace AZ
                     {
                         scenePtr->UpdateSrgs();
                     }
+                    m_materialSystem.Compile();
                 });
 
             {
@@ -449,6 +452,8 @@ namespace AZ
 
             m_passSystem.InitPassTemplates();
 
+            m_materialSystem.Init();
+
             m_systemAssetsInitialized = true;
             AZ_TracePrintf("RPI system", "System assets initialized\n");
 
@@ -479,6 +484,7 @@ namespace AZ
             m_rhiSystem.Init();
             m_imageSystem.Init(m_descriptor.m_imageSystemDescriptor);
             m_bufferSystem.Init();
+            m_materialSystem.Init();
 
             // Assets aren't actually available or needed for tests, but the m_systemAssetsInitialized flag still needs to be flipped.
             m_systemAssetsInitialized = true;

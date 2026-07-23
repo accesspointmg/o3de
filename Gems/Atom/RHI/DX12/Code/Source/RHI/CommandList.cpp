@@ -5,29 +5,30 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
-#include <RHI/CommandList.h>
-#include <RHI/Conversions.h>
+#include <Atom/RHI/DeviceDispatchRaysItem.h>
+#include <Atom/RHI/DeviceIndirectArguments.h>
+#include <Atom/RHI/Factory.h>
+#include <Atom/RHI/RHISystemInterface.h>
 #include <RHI/Buffer.h>
+#include <RHI/BufferPool.h>
 #include <RHI/BufferView.h>
+#include <RHI/CommandList.h>
+#include <RHI/CommandQueue.h>
+#include <RHI/Conversions.h>
+#include <RHI/DescriptorContext.h>
 #include <RHI/Device.h>
 #include <RHI/Image.h>
 #include <RHI/ImageView.h>
 #include <RHI/IndirectBufferSignature.h>
-#include <RHI/ShaderResourceGroup.h>
-#include <RHI/DescriptorContext.h>
 #include <RHI/PipelineState.h>
-#include <RHI/SwapChain.h>
-#include <RHI/CommandQueue.h>
 #include <RHI/QueryPool.h>
 #include <RHI/RayTracingBlas.h>
-#include <RHI/RayTracingTlas.h>
+#include <RHI/RayTracingCompactionQueryPool.h>
 #include <RHI/RayTracingPipelineState.h>
 #include <RHI/RayTracingShaderTable.h>
-#include <RHI/BufferPool.h>
-#include <Atom/RHI/DeviceDispatchRaysItem.h>
-#include <Atom/RHI/Factory.h>
-#include <Atom/RHI/DeviceIndirectArguments.h>
-#include <Atom/RHI/RHISystemInterface.h>
+#include <RHI/RayTracingTlas.h>
+#include <RHI/ShaderResourceGroup.h>
+#include <RHI/SwapChain.h>
 
 #include <RHI/DispatchRaysIndirectBuffer.h>
 
@@ -704,6 +705,94 @@ namespace AZ
 #endif
         }
 
+        void CommandList::BuildClusterAccelerationStructures(const RHI::DeviceRayTracingClusterBlas& rayTracingClusterBlas)
+        {
+            // TODO(CLAS): Implement this
+            AZ_UNUSED(rayTracingClusterBlas);
+        }
+
+        void CommandList::BuildClusterBottomLevelAccelerationStructures(const AZStd::vector<const RHI::DeviceRayTracingClusterBlas*>& clusterBlasList)
+        {
+            // TODO(CLAS): Implement this
+            AZ_UNUSED(clusterBlasList);
+        }
+
+        void CommandList::QueryBlasCompactionSizes(
+            const AZStd::vector<AZStd::pair<RHI::DeviceRayTracingBlas*, RHI::DeviceRayTracingCompactionQuery*>>& blasToQuery)
+        {
+#ifdef AZ_DX12_DXR_SUPPORT
+            ID3D12GraphicsCommandList4* commandList = static_cast<ID3D12GraphicsCommandList4*>(GetCommandList());
+
+            // Query compaction sizes for all given Blas
+            AZStd::unordered_set<RayTracingCompactionQueryPool*> usedQueryPools;
+            for (auto& [blas, query] : blasToQuery)
+            {
+                const auto& dx12RayTracingBlas = static_cast<const RayTracingBlas*>(blas);
+                const RayTracingBlas::BlasBuffers& blasBuffers = dx12RayTracingBlas->GetBuffers();
+
+                auto* dx12CompactionQuery = static_cast<RayTracingCompactionQuery*>(query);
+                int index = dx12CompactionQuery->Allocate();
+                auto pool = static_cast<RayTracingCompactionQueryPool*>(dx12CompactionQuery->GetPool());
+
+                auto queryPoolBufferAddress = static_cast<Buffer*>(pool->GetCurrentGPUBuffer())->GetMemoryView().GetGpuAddress();
+
+                D3D12_RESOURCE_BARRIER barrier;
+                barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+                barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+                barrier.UAV.pResource = static_cast<Buffer*>(blasBuffers.m_blasBuffer.get())->GetMemoryView().GetMemory();
+                commandList->ResourceBarrier(1, &barrier);
+
+                D3D12_RAYTRACING_ACCELERATION_STRUCTURE_POSTBUILD_INFO_DESC desc;
+                desc.InfoType = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_POSTBUILD_INFO_COMPACTED_SIZE;
+                desc.DestBuffer = queryPoolBufferAddress + index * sizeof(uint64_t);
+                auto blasVirtualAddress = static_cast<Buffer*>(blasBuffers.m_blasBuffer.get())->GetMemoryView().GetGpuAddress();
+                commandList->EmitRaytracingAccelerationStructurePostbuildInfo(&desc, 1, &blasVirtualAddress);
+                usedQueryPools.insert(pool);
+            }
+
+            // Copy the gathered compaction sizes to the CPU buffer
+            for (auto pool : usedQueryPools)
+            {
+                auto gpuBuffer = static_cast<Buffer*>(pool->GetCurrentGPUBuffer());
+                auto cpuBuffer = static_cast<Buffer*>(pool->GetCurrentCPUBuffer());
+                D3D12_RESOURCE_TRANSITION_BARRIER transitionDesc;
+                transitionDesc.pResource = gpuBuffer->GetMemoryView().GetMemory();
+                transitionDesc.Subresource = 0;
+                transitionDesc.StateBefore = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+                transitionDesc.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
+
+                D3D12_RESOURCE_BARRIER barrierDesc;
+                barrierDesc.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+                barrierDesc.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+                barrierDesc.Transition = transitionDesc;
+                commandList->ResourceBarrier(1, &barrierDesc);
+
+                commandList->CopyBufferRegion(
+                    cpuBuffer->GetMemoryView().GetMemory(),
+                    cpuBuffer->GetMemoryView().GetOffset(),
+                    gpuBuffer->GetMemoryView().GetMemory(),
+                    gpuBuffer->GetMemoryView().GetOffset(),
+                    pool->GetDescriptor().m_budget * sizeof(uint64_t));
+            }
+#endif
+        }
+
+        void CommandList::CompactBottomLevelAccelerationStructure(
+            const RHI::DeviceRayTracingBlas& sourceBlas, const RHI::DeviceRayTracingBlas& compactBlas)
+        {
+#ifdef AZ_DX12_DXR_SUPPORT
+            ID3D12GraphicsCommandList4* commandList = static_cast<ID3D12GraphicsCommandList4*>(GetCommandList());
+            auto& dx12SourceBlas = static_cast<const RayTracingBlas&>(sourceBlas);
+            auto sourceBlasVirtualAddress =
+                static_cast<Buffer*>(dx12SourceBlas.GetBuffers().m_blasBuffer.get())->GetMemoryView().GetGpuAddress();
+            auto& dx12CompactBlas = static_cast<const RayTracingBlas&>(compactBlas);
+            auto compactBlasVirtualAddress =
+                static_cast<Buffer*>(dx12CompactBlas.GetBuffers().m_blasBuffer.get())->GetMemoryView().GetGpuAddress();
+            commandList->CopyRaytracingAccelerationStructure(
+                compactBlasVirtualAddress, sourceBlasVirtualAddress, D3D12_RAYTRACING_ACCELERATION_STRUCTURE_COPY_MODE_COMPACT);
+#endif
+        }
+
         void CommandList::SetFragmentShadingRate(
             RHI::ShadingRate rate, const RHI::ShadingRateCombinators& combinators)
         {
@@ -717,7 +806,9 @@ namespace AZ
         }
 
         void CommandList::BuildTopLevelAccelerationStructure(
-            const RHI::DeviceRayTracingTlas& rayTracingTlas, const AZStd::vector<const RHI::DeviceRayTracingBlas*>& changedBlasList)
+            const RHI::DeviceRayTracingTlas& rayTracingTlas,
+            const AZStd::vector<const RHI::DeviceRayTracingBlas*>& changedBlasList,
+            const AZStd::vector<const RHI::DeviceRayTracingClusterBlas*>& changedClusterBlasList)
         {
 #ifdef AZ_DX12_DXR_SUPPORT
             ID3D12GraphicsCommandList4* commandList = static_cast<ID3D12GraphicsCommandList4*>(GetCommandList());
@@ -739,6 +830,10 @@ namespace AZ
                     barriers.push_back(barrier);
                 }
                 commandList->ResourceBarrier(static_cast<UINT>(barriers.size()), barriers.data());
+            }
+            if (!changedClusterBlasList.empty())
+            {
+                // TODO(CLAS): Add barriers for cluster BLAS
             }
             const RayTracingTlas& dx12RayTracingTlas = static_cast<const RayTracingTlas&>(rayTracingTlas);
             const RayTracingTlas::TlasBuffers& tlasBuffers = dx12RayTracingTlas.GetBuffers();
@@ -831,7 +926,7 @@ namespace AZ
                 RHI::CheckBitsAll(GetDevice().GetFeatures().m_shadingRateTypeMask, RHI::ShadingRateTypeFlags::PerDraw),
                 "PerDraw shading rate is not supported on this platform");
 
-            AZStd::array<D3D12_SHADING_RATE_COMBINER, RHI::ShadingRateCombinators::array_size> d3d12Combinators;
+            AZStd::array<D3D12_SHADING_RATE_COMBINER, AZStd::tuple_size_v<RHI::ShadingRateCombinators>> d3d12Combinators;
             for (int i = 0; i < m_state.m_shadingRateState.m_shadingRateCombinators.size(); ++i)
             {
                 d3d12Combinators[i] = ConvertShadingRateCombiner(m_state.m_shadingRateState.m_shadingRateCombinators[i]);
@@ -1083,6 +1178,269 @@ namespace AZ
         RHI::CommandListValidator& CommandList::GetValidator()
         {
             return m_validator;
+        }
+
+        template <RHI::PipelineStateType pipelineType, typename Item>
+        bool CommandList::CommitShaderResources(const Item& item)
+        {
+            ShaderResourceBindings& bindings = GetShaderResourceBindingsByPipelineType(pipelineType);
+
+            const PipelineState* pipelineState = static_cast<const PipelineState*>(item.m_pipelineState);
+            if(!pipelineState)
+            {
+                AZ_Assert(false, "Pipeline state not provided");
+                return false;
+            }
+
+            const PipelineLayout* pipelineLayout = pipelineState->GetPipelineLayout();
+            if (!pipelineLayout)
+            {
+                AZ_Assert(false, "Pipeline layout is null.");
+                return false;
+            }
+
+            bool updatePipelineState = m_state.m_pipelineState != pipelineState;
+            // The pipeline state gets set first.
+            if (updatePipelineState)
+            {
+                if (!pipelineState->IsInitialized())
+                {
+                    AZ_Warning("CommandList", false, "Pipeline State is not initialized.");
+                    return false;
+                }
+
+                GetCommandList()->SetPipelineState(pipelineState->Get());
+
+                // Check if we need to set custom sample positions
+                if constexpr (pipelineType == RHI::PipelineStateType::Draw)
+                {
+                    const auto& pipelineData = pipelineState->GetPipelineStateData();
+                    auto& multisampleState = pipelineData.m_drawData.m_multisampleState;
+                    SetSamplePositions(multisampleState);
+                    SetTopology(pipelineData.m_drawData.m_primitiveTopology);
+                }
+
+                // Pipeline layouts change when pipeline states do, just not as often. If the root
+                // signature changes all shader bindings are invalidated.
+                if (bindings.m_pipelineLayout != pipelineLayout)
+                {
+                    switch (pipelineType)
+                    {
+                    case RHI::PipelineStateType::Draw:
+                        GetCommandList()->SetGraphicsRootSignature(pipelineLayout->Get());
+                        break;
+
+                    case RHI::PipelineStateType::Dispatch:
+                        GetCommandList()->SetComputeRootSignature(pipelineLayout->Get());
+                        break;
+
+                    default:
+                        AZ_Assert(false, "Invalid PipelineType");
+                        return false;
+                    }
+
+                    bindings.m_pipelineLayout = pipelineLayout;
+                    bindings.m_hasRootConstants = pipelineLayout->HasRootConstants();
+
+                    // We need to zero these out, since the command list root parameters are invalid.
+                    for (size_t i = 0; i < bindings.m_srgsByIndex.size(); ++i)
+                    {
+                        bindings.m_srgsByIndex[i] = nullptr;
+                    }
+                    bindings.m_bindlessHeapLastIndex = -1;
+                }
+
+                m_state.m_pipelineState = pipelineState;
+            }
+
+            // Assign shader resource groups from the item to slot bindings.
+            for (uint32_t srgIndex = 0; srgIndex < item.m_shaderResourceGroupCount; ++srgIndex)
+            {
+                SetShaderResourceGroup<pipelineType>(static_cast<const ShaderResourceGroup*>(item.m_shaderResourceGroups[srgIndex]));
+            }
+
+            if (item.m_uniqueShaderResourceGroup)
+            {
+                SetShaderResourceGroup<pipelineType>(static_cast<const ShaderResourceGroup*>(item.m_uniqueShaderResourceGroup));
+            }
+
+            // Bind the inline constants from the item, if present.
+            if (bindings.m_hasRootConstants && item.m_rootConstantSize)
+            {
+                AZ_Assert((item.m_rootConstantSize % 4) == 0, "Invalid inline constant data size. It must be a multiple of 32 bit.");
+                switch (pipelineType)
+                {
+                case RHI::PipelineStateType::Draw:
+                    GetCommandList()->SetGraphicsRoot32BitConstants(0, item.m_rootConstantSize / 4, item.m_rootConstants, 0);
+                    break;
+
+                case RHI::PipelineStateType::Dispatch:
+                    GetCommandList()->SetComputeRoot32BitConstants(0, item.m_rootConstantSize / 4, item.m_rootConstants, 0);
+                    break;
+
+                default:
+                    AZ_Assert(false, "Invalid PipelineType");
+                    return false;
+                }
+            }
+
+            // Pull from slot bindings dictated by the pipeline layout. Re-bind anything that has changed
+            // at the flat index level.
+            for (size_t srgIndex = 0; srgIndex < pipelineLayout->GetRootParameterBindingCount(); ++srgIndex)
+            {
+                const size_t srgSlot = pipelineLayout->GetSlotByIndex(srgIndex);
+                const ShaderResourceGroup* shaderResourceGroup = bindings.m_srgsBySlot[srgSlot];
+                RootParameterBinding binding = pipelineLayout->GetRootParameterBindingByIndex(srgIndex);
+
+                //Check if we are iterating over the bindless srg slot
+                const auto& device = static_cast<Device&>(GetDevice());
+                if (srgSlot == device.GetBindlessSrgSlot() && shaderResourceGroup == nullptr)
+                {
+                    // Skip in case the global static heap is already bound
+                    if (bindings.m_bindlessHeapLastIndex == binding.m_bindlessTable.GetIndex())
+                    {
+                        continue;
+                    }
+                    AZ_Assert(binding.m_bindlessTable.IsValid(), "BindlessSRG handles is not valid.");
+
+                    switch (pipelineType)
+                    {
+                    case RHI::PipelineStateType::Draw:
+                        {
+                            GetCommandList()->SetGraphicsRootDescriptorTable(
+                                binding.m_bindlessTable.GetIndex(), m_descriptorContext->GetBindlessGpuPlatformHandle());
+                            break;
+                        }
+                    case RHI::PipelineStateType::Dispatch:
+                        {
+                            GetCommandList()->SetComputeRootDescriptorTable(
+                                binding.m_bindlessTable.GetIndex(), m_descriptorContext->GetBindlessGpuPlatformHandle());
+                            break;
+                        }
+                    default:
+                        AZ_Assert(false, "Invalid PipelineType");
+                        break;
+                    }
+                    bindings.m_bindlessHeapLastIndex = binding.m_bindlessTable.GetIndex();
+                    continue;
+                }
+
+                if (AZ::RHI::Validation::IsEnabled())
+                {
+                    if (!shaderResourceGroup)
+                    {
+                        AZStd::string slotSrgString;
+                        for (size_t slot = 0; slot < RHI::Limits::Pipeline::ShaderResourceGroupCountMax; ++slot)
+                        {
+                            if (bindings.m_srgsBySlot[slot])
+                            {
+                                if (!slotSrgString.empty())
+                                {
+                                    slotSrgString += ", ";
+                                }
+
+                                slotSrgString += AZStd::string::format("Slot #%zu = '%s'", slot, bindings.m_srgsBySlot[slot]->GetName().GetCStr());
+                            }
+                        }
+
+                        // this assert typically happens when a shader needs a particular Srg (e.g., the ViewSrg) but the code did not bind it,
+                        // check the pass code in this callstack to determine why it was not bound
+                        AZ_Assert(false, "The DrawItem being submitted doesn't provide an SRG for slot '%zu', which the shader is expecting. If this slot is for a Pass, View or Scene SRG, this likely means "
+                            "the pass didn't collect it (for the view SRG, check if your pass provides a PipelineViewTag). The SRGs currently provided by the DrawItem are: %s",
+                            srgSlot,
+                            slotSrgString.c_str());
+
+                        return false;
+                    }
+                }
+
+                bool updateSRG = bindings.m_srgsByIndex[srgIndex] != shaderResourceGroup;
+
+                if (updateSRG)
+                {
+                    bindings.m_srgsByIndex[srgIndex] = shaderResourceGroup;
+
+                    const ShaderResourceGroupCompiledData& compiledData = shaderResourceGroup->GetCompiledData();
+
+                    switch (pipelineType)
+                    {
+                    case RHI::PipelineStateType::Draw:
+                        if (binding.m_resourceTable.IsValid() && compiledData.m_gpuViewsDescriptorHandle.ptr)
+                        {
+                            GetCommandList()->SetGraphicsRootDescriptorTable(binding.m_resourceTable.GetIndex(), compiledData.m_gpuViewsDescriptorHandle);
+                        }
+
+                        if (binding.m_constantBuffer.IsValid())
+                        {
+                            GetCommandList()->SetGraphicsRootConstantBufferView(binding.m_constantBuffer.GetIndex(), compiledData.m_gpuConstantAddress);
+                        }
+
+                        if (binding.m_samplerTable.IsValid() && compiledData.m_gpuSamplersDescriptorHandle.ptr)
+                        {
+                            GetCommandList()->SetGraphicsRootDescriptorTable(binding.m_samplerTable.GetIndex(), compiledData.m_gpuSamplersDescriptorHandle);
+                        }
+
+
+                        for (uint32_t unboundedArrayIndex = 0; unboundedArrayIndex < ShaderResourceGroupCompiledData::MaxUnboundedArrays;
+                             ++unboundedArrayIndex)
+                        {
+                            if (binding.m_bindlessTable.IsValid() &&
+                                compiledData.m_gpuUnboundedArraysDescriptorHandles[unboundedArrayIndex].ptr)
+                            {
+                                GetCommandList()->SetGraphicsRootDescriptorTable(
+                                    binding.m_bindlessTable.GetIndex(),
+                                    compiledData.m_gpuUnboundedArraysDescriptorHandles[unboundedArrayIndex]);
+                            }
+                        }
+
+                        break;
+
+                    case RHI::PipelineStateType::Dispatch:
+                        if (binding.m_resourceTable.IsValid() && compiledData.m_gpuViewsDescriptorHandle.ptr)
+                        {
+                            GetCommandList()->SetComputeRootDescriptorTable(binding.m_resourceTable.GetIndex(), compiledData.m_gpuViewsDescriptorHandle);
+                        }
+
+                        if (binding.m_constantBuffer.IsValid())
+                        {
+                            GetCommandList()->SetComputeRootConstantBufferView(binding.m_constantBuffer.GetIndex(), compiledData.m_gpuConstantAddress);
+                        }
+
+                        if (binding.m_samplerTable.IsValid() && compiledData.m_gpuSamplersDescriptorHandle.ptr)
+                        {
+                            GetCommandList()->SetComputeRootDescriptorTable(binding.m_samplerTable.GetIndex(), compiledData.m_gpuSamplersDescriptorHandle);
+                        }
+
+                        for (uint32_t unboundedArrayIndex = 0; unboundedArrayIndex < ShaderResourceGroupCompiledData::MaxUnboundedArrays;
+                             ++unboundedArrayIndex)
+                        {
+                            if (binding.m_bindlessTable.IsValid() &&
+                                compiledData.m_gpuUnboundedArraysDescriptorHandles[unboundedArrayIndex].ptr)
+                            {
+                                GetCommandList()->SetComputeRootDescriptorTable(
+                                    binding.m_bindlessTable.GetIndex(),
+                                    compiledData.m_gpuUnboundedArraysDescriptorHandles[unboundedArrayIndex]);
+                            }
+                        }
+                        break;
+
+                    default:
+                        AZ_Assert(false, "Invalid PipelineType");
+                        return false;
+                    }
+                }
+
+#if defined (AZ_RHI_ENABLE_VALIDATION)
+                if (updatePipelineState || updateSRG)
+                {
+                    const RHI::PipelineLayoutDescriptor& pipelineLayoutDescriptor = pipelineLayout->GetPipelineLayoutDescriptor();
+                    m_validator.ValidateShaderResourceGroup(
+                        *shaderResourceGroup,
+                        pipelineLayoutDescriptor.GetShaderResourceGroupBindingInfo(srgIndex));
+                }
+#endif
+            }
+            return true;
         }
     }
 }

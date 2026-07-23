@@ -124,6 +124,13 @@ namespace AZ
             }
         }
 
+        AZStd::pair<uint64_t, uint64_t> CommandQueue::GetClockCalibration()
+        {
+            AZStd::pair<uint64_t, uint64_t> calibratedTimestamp{ 0ull, 0ull };
+            m_queue->GetClockCalibration(&calibratedTimestamp.first, &calibratedTimestamp.second);
+            return calibratedTimestamp;
+        }
+
         uint64_t CommandQueue::GetGpuTimestampFrequency() const
         {
             return m_calibratedGpuTimestampFrequency;
@@ -136,7 +143,7 @@ namespace AZ
             CommandQueueContext& context = device.GetCommandQueueContext();
             const FenceSet &compiledFences = context.GetCompiledFences();
 
-            QueueCommand([=](void* commandQueue)
+            QueueCommand([this, request, compiledFences](void* commandQueue)
             {
                 AZ_PROFILE_SCOPE(RHI, "ExecuteWork");
                 AZ::Debug::ScopedTimer executionTimer(m_lastExecuteDuration);

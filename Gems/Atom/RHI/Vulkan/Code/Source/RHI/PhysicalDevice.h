@@ -7,9 +7,9 @@
  */
 #pragma once
 
+#include <Atom/RHI.Reflect/Format.h>
 #include <Atom/RHI/PhysicalDevice.h>
 #include <AzCore/std/containers/bitset.h>
-#include <Atom/RHI.Reflect/Format.h>
 #include <RHI/Vulkan.h>
 
 namespace AZ
@@ -40,6 +40,7 @@ namespace AZ
             Count // Must be last
         };
 
+        // If you change this enum, you also have to update OptionalDeviceExtensionNames in the cpp file!
         enum class OptionalDeviceExtension : uint32_t
         {
             SampleLocation = 0,
@@ -56,6 +57,7 @@ namespace AZ
             AccelerationStructure,
             RayTracingPipeline,
             RayQuery,
+            ClusterAccelerationStructure,
             BufferDeviceAddress,
             DeferredHostOperations,
             DescriptorIndexing,
@@ -67,11 +69,14 @@ namespace AZ
             TimelineSempahore,
             LoadStoreOpNone,
             SubpassMergeFeedback,
+            CalibratedTimestamps,
+            ExternalMemoryHost,
+            ExternalSemaphore,
+            SeparateDepthStencilLayouts,
             Count
         };
 
-        class PhysicalDevice final
-            : public RHI::PhysicalDevice
+        class PhysicalDevice final : public RHI::PhysicalDevice
         {
             using Base = RHI::PhysicalDevice;
         public:
@@ -92,7 +97,7 @@ namespace AZ
             const VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() const;
             const VkPhysicalDeviceConservativeRasterizationPropertiesEXT& GetPhysicalDeviceConservativeRasterProperties() const;
             const VkPhysicalDeviceDepthClipEnableFeaturesEXT& GetPhysicalDeviceDepthClipEnableFeatures() const;
-            const VkPhysicalDeviceRobustness2FeaturesEXT& GetPhysicalDeviceRobutness2Features() const;
+            const VkPhysicalDeviceRobustness2FeaturesEXT& GetPhysicalDeviceRobustness2Features() const;
             const VkPhysicalDeviceShaderFloat16Int8FeaturesKHR& GetPhysicalDeviceFloat16Int8Features() const;
             const VkPhysicalDeviceDescriptorIndexingFeaturesEXT& GetPhysicalDeviceDescriptorIndexingFeatures() const;
             const VkPhysicalDeviceBufferDeviceAddressFeaturesEXT& GetPhysicalDeviceBufferDeviceAddressFeatures() const;
@@ -102,6 +107,8 @@ namespace AZ
             const VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT& GetShaderImageAtomicInt64Features() const;
             const VkPhysicalDeviceAccelerationStructurePropertiesKHR& GetPhysicalDeviceAccelerationStructureProperties() const;
             const VkPhysicalDeviceAccelerationStructureFeaturesKHR& GetPhysicalDeviceAccelerationStructureFeatures() const;
+            const VkPhysicalDeviceClusterAccelerationStructurePropertiesNV& GetPhysicalDeviceClusterAccelerationStructureProperties() const;
+            const VkPhysicalDeviceClusterAccelerationStructureFeaturesNV& GetPhysicalDeviceClusterAccelerationStructureFeatures() const;
             const VkPhysicalDeviceRayTracingPipelinePropertiesKHR& GetPhysicalDeviceRayTracingPipelineProperties() const;
             const VkPhysicalDeviceRayTracingPipelineFeaturesKHR& GetPhysicalDeviceRayTracingPipelineFeatures() const;
             const VkPhysicalDeviceRayQueryFeaturesKHR& GetRayQueryFeatures() const;
@@ -111,6 +118,7 @@ namespace AZ
             const VkPhysicalDeviceFragmentShadingRatePropertiesKHR& GetPhysicalDeviceFragmentShadingRateProperties() const;
             const VkPhysicalDeviceTimelineSemaphoreFeatures& GetPhysicalDeviceTimelineSemaphoreFeatures() const;
             const VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT& GetPhysicalSubpassMergeFeedbackFeatures() const;
+            const VkPhysicalDeviceExternalMemoryHostPropertiesEXT& GetExternalMemoryHostProperties() const;
 
             VkFormatProperties GetFormatProperties(RHI::Format format, bool raiseAsserts = true) const;
             StringList GetDeviceLayerNames() const;
@@ -118,9 +126,11 @@ namespace AZ
             bool IsFormatSupported(RHI::Format format, VkImageTiling tiling, VkFormatFeatureFlags features) const;
             void LoadSupportedFeatures(const GladVulkanContext& context);
             //! Filter optional extensions based on what the physics device support.
-            RawStringList FilterSupportedOptionalExtensions();
+            RawStringList GetEnabledOptionalExtensions();
             //! Returns the supported vulkan version of the physical device.
             uint32_t GetVulkanVersion() const;
+            //! Query the set of available time domains for timestamp calibration
+            AZStd::vector<VkTimeDomainEXT> GetCalibratedTimeDomains(const GladVulkanContext& context) const;
 
         private:
             
@@ -130,6 +140,8 @@ namespace AZ
             void Shutdown() override;
            ///////////////////////////////////////////////////////////////////
 
+            void EnableSupportedOptionalExtensions();
+
             VkPhysicalDevice m_vkPhysicalDevice = VK_NULL_HANDLE;
             VkPhysicalDeviceMemoryProperties m_memoryProperty{};
 
@@ -138,26 +150,29 @@ namespace AZ
             VkPhysicalDeviceFeatures m_deviceFeatures{};
             VkPhysicalDeviceProperties m_deviceProperties{};
             VkPhysicalDeviceConservativeRasterizationPropertiesEXT m_conservativeRasterProperties{};
-            VkPhysicalDeviceDepthClipEnableFeaturesEXT m_dephClipEnableFeatures{};
-            VkPhysicalDeviceRobustness2FeaturesEXT m_robutness2Features{};
-            VkPhysicalDeviceShaderFloat16Int8FeaturesKHR m_float16Int8Features{};
+            VkPhysicalDeviceDepthClipEnableFeaturesEXT m_depthClipEnableFeatures{};
+            VkPhysicalDeviceRobustness2FeaturesEXT m_robustness2Features{};
+            VkPhysicalDeviceShaderFloat16Int8FeaturesKHR m_shaderFloat16Int8Features{};
             VkPhysicalDeviceDescriptorIndexingFeaturesEXT m_descriptorIndexingFeatures{};
             VkPhysicalDeviceBufferDeviceAddressFeaturesEXT m_bufferDeviceAddressFeatures{};
-            VkPhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR m_separateDepthStencilFeatures{};
+            VkPhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR m_separateDepthStencilLayoutsFeatures{};
             VkPhysicalDeviceShaderAtomicInt64Features m_shaderAtomicInt64Features{};
             VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT m_shaderImageAtomicInt64Features{};
             VkPhysicalDeviceAccelerationStructurePropertiesKHR m_accelerationStructureProperties{};
             VkPhysicalDeviceAccelerationStructureFeaturesKHR m_accelerationStructureFeatures{};
+            VkPhysicalDeviceClusterAccelerationStructureFeaturesNV m_clusterAccelerationStructureFeatures{};
+            VkPhysicalDeviceClusterAccelerationStructurePropertiesNV m_clusterAccelerationStructureProperties{};
             VkPhysicalDeviceRayTracingPipelinePropertiesKHR m_rayTracingPipelineProperties{};
             VkPhysicalDeviceRayTracingPipelineFeaturesKHR m_rayTracingPipelineFeatures{};
             VkPhysicalDeviceRayQueryFeaturesKHR m_rayQueryFeatures{};
             VkPhysicalDeviceVulkan12Features m_vulkan12Features{};
-            VkPhysicalDeviceFragmentShadingRateFeaturesKHR m_shadingRateFeatures{};
+            VkPhysicalDeviceFragmentShadingRateFeaturesKHR m_fragmentShadingRateFeatures{};
             VkPhysicalDeviceFragmentDensityMapFeaturesEXT m_fragmentDensityMapFeatures{};
             VkPhysicalDeviceFragmentDensityMapPropertiesEXT m_fragmentDensityMapProperties{};
             VkPhysicalDeviceFragmentShadingRatePropertiesKHR m_fragmentShadingRateProperties{};
             VkPhysicalDeviceTimelineSemaphoreFeatures m_timelineSemaphoreFeatures{};
             VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT m_subpassMergeFeedbackFeatures{};
+            VkPhysicalDeviceExternalMemoryHostPropertiesEXT m_externalMemoryHostProperties{};
             uint32_t m_vulkanVersion = 0;
         };
     }

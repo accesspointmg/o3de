@@ -8,28 +8,21 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+#include <AzFramework/DocumentPropertyEditor/DocumentAdapter.h>
+
 #include <QMainWindow>
-#endif // Q_MOC_RUN
 
 namespace Ui
 {
     class DPEDebugWindow;
 }
 
-namespace AZ
-{
-    namespace DocumentPropertyEditor
-    {
-        class DocumentAdapter;
-    }
-}
-
 namespace AzToolsFramework
 {
     class DPEDebugModel;
 
-    class DPEDebugWindow
+    class AZTF_API DPEDebugWindow
         : public QMainWindow
     {
         Q_OBJECT

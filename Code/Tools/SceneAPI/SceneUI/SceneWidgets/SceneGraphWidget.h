@@ -8,9 +8,10 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <string>
+
 #include <QWidget>
+
 #include <AzCore/Math/Uuid.h>
 #include <AzCore/std/smart_ptr/unique_ptr.h>
 #include <AzCore/std/smart_ptr/shared_ptr.h>
@@ -19,7 +20,6 @@
 #include <AzCore/Memory/SystemAllocator.h>
 #include <SceneAPI/SceneCore/Containers/SceneGraph.h>
 #include <SceneAPI/SceneUI/SceneUIConfiguration.h>
-#endif
 
 class QStandardItem; 
 class QStandardItemModel;
@@ -119,14 +119,12 @@ namespace AZ
                 QCheckBox* GetQCheckBox();
                 QTreeView* GetQTreeView();
 
-                AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
                 AZStd::vector<QStandardItem*> m_treeItems;
                 AZStd::set<Uuid> m_filterTypes;
                 AZStd::set<Crc32> m_filterVirtualTypes;
                 QScopedPointer<Ui::SceneGraphWidget> ui;
                 QScopedPointer<QStandardItemModel> m_treeModel;
                 AZStd::unique_ptr<DataTypes::ISceneNodeSelectionList> m_targetList;
-                AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
                 const Containers::Scene& m_scene;
 
                 size_t m_selectedCount;

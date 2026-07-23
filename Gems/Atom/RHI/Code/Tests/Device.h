@@ -59,6 +59,11 @@ namespace UnitTest
             return AZStd::chrono::microseconds();
         }
 
+        AZStd::pair<uint64_t, uint64_t> GetCalibratedTimestamp([[maybe_unused]] AZ::RHI::HardwareQueueClass queueClass) override
+        {
+            return { 0ull, AZStd::chrono::microseconds().count() };
+        }
+
         void FillFormatsCapabilitiesInternal([[maybe_unused]] FormatCapabilitiesList& formatsCapabilities) override {}
 
         AZ::RHI::ResultCode InitializeLimits() override { return AZ::RHI::ResultCode::Success; }
@@ -69,7 +74,7 @@ namespace UnitTest
 
         AZ::RHI::ResourceMemoryRequirements GetResourceMemoryRequirements([[maybe_unused]] const AZ::RHI::BufferDescriptor& descriptor) { return AZ::RHI::ResourceMemoryRequirements{}; };
 
-        void ObjectCollectionNotify(AZ::RHI::ObjectCollectorNotifyFunction notifyFunction) override {}
+        void ObjectCollectionNotify([[maybe_unused]] AZ::RHI::ObjectCollectorNotifyFunction notifyFunction) override {}
 
         AZ::RHI::ShadingRateImageValue ConvertShadingRate([[maybe_unused]] AZ::RHI::ShadingRate rate) const override
         {

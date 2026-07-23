@@ -14,6 +14,7 @@
 #include <Atom/RHI/ScopeProducerFunction.h>
 #include <Atom/RPI.Public/Buffer/Buffer.h>
 #include <Atom/RPI.Public/Buffer/BufferSystemInterface.h>
+#include <Atom/RPI.Public/GpuQuery/QueryPool.h>
 #include <Atom/RPI.Public/RenderPipeline.h>
 #include <Atom/RPI.Public/Scene.h>
 #include <Mesh/MeshFeatureProcessor.h>
@@ -26,8 +27,9 @@ namespace AZ
     {
         RPI::Ptr<RayTracingAccelerationStructurePass> RayTracingAccelerationStructurePass::Create(const RPI::PassDescriptor& descriptor)
         {
-            RPI::Ptr<RayTracingAccelerationStructurePass> rayTracingAccelerationStructurePass = aznew RayTracingAccelerationStructurePass(descriptor);
-            return AZStd::move(rayTracingAccelerationStructurePass);
+            RPI::Ptr<RayTracingAccelerationStructurePass> rayTracingAccelerationStructurePass =
+                aznew RayTracingAccelerationStructurePass(descriptor);
+            return rayTracingAccelerationStructurePass;
         }
 
         RayTracingAccelerationStructurePass::RayTracingAccelerationStructurePass(const RPI::PassDescriptor& descriptor)
@@ -57,7 +59,7 @@ namespace AZ
                 m_timestampResult = AZ::RPI::TimestampResult();
             }
 
-            if (GetScopeId().IsEmpty())
+            if (GetScopeId().IsEmpty() || (ScopeProducer::GetDeviceIndex() != Pass::GetDeviceIndex()))
             {
                 InitScope(RHI::ScopeId(GetPathName()), RHI::HardwareQueueClass::Graphics, Pass::GetDeviceIndex());
             }
@@ -69,14 +71,22 @@ namespace AZ
 
             if (rayTracingFeatureProcessor)
             {
-                auto revision = rayTracingFeatureProcessor->BeginFrame();
-                m_rayTracingRevisionOutDated = revision != m_rayTracingRevision;
-                if (m_rayTracingRevisionOutDated)
+                rayTracingFeatureProcessor->BeginFrame(static_cast<RHI::ScopeProducer*>(this)->GetDeviceIndex());
+                if (RaytracingRevisionOutdated())
                 {
-                    m_rayTracingRevision = revision;
                     ReadbackScopeQueryResults();
                 }
             }
+        }
+
+        bool RayTracingAccelerationStructurePass::RaytracingRevisionOutdated() const
+        {
+            auto rayTracingFeatureProcessor = GetScene()->GetFeatureProcessor<RayTracingFeatureProcessor>();
+            if (rayTracingFeatureProcessor)
+            {
+                return rayTracingFeatureProcessor->GetRevision() != rayTracingFeatureProcessor->GetBuiltRevision(RHI::ScopeProducer::GetDeviceIndex()) || rayTracingFeatureProcessor->GetSkinnedMeshCount() != 0;
+            }
+            return false;
         }
 
         RHI::Ptr<RPI::Query> RayTracingAccelerationStructurePass::GetQuery(RPI::ScopeQueryType queryType)
@@ -93,8 +103,7 @@ namespace AZ
                     break;
                 case RPI::ScopeQueryType::PipelineStatistics:
                     query = RPI::GpuQuerySystemInterface::Get()->CreateQuery(
-                        RHI::QueryType::PipelineStatistics, RHI::QueryPoolScopeAttachmentType::Global,
-                        RHI::ScopeAttachmentAccess::Write);
+                        RHI::QueryType::PipelineStatistics, RHI::QueryPoolScopeAttachmentType::Global, RHI::ScopeAttachmentAccess::Write);
                     break;
                 }
 
@@ -147,7 +156,7 @@ namespace AZ
 
             if (rayTracingFeatureProcessor)
             {
-                if (m_rayTracingRevisionOutDated)
+                if (RaytracingRevisionOutdated())
                 {
                     // create the TLAS buffers based on the descriptor
                     RHI::Ptr<RHI::RayTracingTlas>& rayTracingTlas = rayTracingFeatureProcessor->GetTlas();
@@ -159,19 +168,22 @@ namespace AZ
                         AZ::RHI::AttachmentId tlasAttachmentId = rayTracingFeatureProcessor->GetTlasAttachmentId();
                         if (frameGraph.GetAttachmentDatabase().IsAttachmentValid(tlasAttachmentId) == false)
                         {
-                            [[maybe_unused]] RHI::ResultCode result = frameGraph.GetAttachmentDatabase().ImportBuffer(tlasAttachmentId, rayTracingTlasBuffer);
+                            [[maybe_unused]] RHI::ResultCode result =
+                                frameGraph.GetAttachmentDatabase().ImportBuffer(tlasAttachmentId, rayTracingTlasBuffer);
                             AZ_Assert(result == RHI::ResultCode::Success, "Failed to import ray tracing TLAS buffer with error %d", result);
                         }
 
                         uint32_t tlasBufferByteCount = aznumeric_cast<uint32_t>(rayTracingTlasBuffer->GetDescriptor().m_byteCount);
-                        RHI::BufferViewDescriptor tlasBufferViewDescriptor = RHI::BufferViewDescriptor::CreateRayTracingTLAS(tlasBufferByteCount);
+                        RHI::BufferViewDescriptor tlasBufferViewDescriptor =
+                            RHI::BufferViewDescriptor::CreateRayTracingTLAS(tlasBufferByteCount);
 
                         RHI::BufferScopeAttachmentDescriptor desc;
                         desc.m_attachmentId = tlasAttachmentId;
                         desc.m_bufferViewDescriptor = tlasBufferViewDescriptor;
                         desc.m_loadStoreAction.m_loadAction = AZ::RHI::AttachmentLoadAction::DontCare;
 
-                        frameGraph.UseShaderAttachment(desc, RHI::ScopeAttachmentAccess::Write, RHI::ScopeAttachmentStage::RayTracingShader);
+                        frameGraph.UseShaderAttachment(
+                            desc, RHI::ScopeAttachmentAccess::Write, RHI::ScopeAttachmentStage::RayTracingShader);
                     }
                 }
 
@@ -179,10 +191,24 @@ namespace AZ
                 // the skinning pass has finished. We assume that the pipeline has a skinning pass with this output available.
                 if (rayTracingFeatureProcessor->GetSkinnedMeshCount() > 0)
                 {
-                    auto skinningPassPtr = FindAdjacentPass(AZ::Name("SkinningPass"));
+                    RHI::Ptr<RPI::Pass> skinningPassPtr;
+                    for (const auto& sibling : m_parent->GetChildren())
+                    {
+                        if (sibling->GetPassTemplate() && sibling->GetPassTemplate()->m_name == AZ::Name{ "SkinningPassTemplate" } &&
+                            sibling->GetDeviceIndex() == Pass::GetDeviceIndex())
+                        {
+                            skinningPassPtr = sibling;
+                            break;
+                        }
+                    }
+                    AZ_Assert(skinningPassPtr, "Failed to find SkinningPass");
                     auto skinnedMeshOutputStreamBindingPtr = skinningPassPtr->FindAttachmentBinding(AZ::Name("SkinnedMeshOutputStream"));
-                    [[maybe_unused]] auto result = frameGraph.UseShaderAttachment(skinnedMeshOutputStreamBindingPtr->m_unifiedScopeDesc.GetAsBuffer(), RHI::ScopeAttachmentAccess::Read, RHI::ScopeAttachmentStage::RayTracingShader);
-                    AZ_Assert(result == AZ::RHI::ResultCode::Success, "Failed to attach SkinnedMeshOutputStream buffer with error %d", result);
+                    [[maybe_unused]] auto result = frameGraph.UseShaderAttachment(
+                        skinnedMeshOutputStreamBindingPtr->m_unifiedScopeDesc.GetAsBuffer(),
+                        RHI::ScopeAttachmentAccess::Read,
+                        RHI::ScopeAttachmentStage::RayTracingShader);
+                    AZ_Assert(
+                        result == AZ::RHI::ResultCode::Success, "Failed to attach SkinnedMeshOutputStream buffer with error %d", result);
                 }
 
                 AddScopeQueryToFrameGraph(frameGraph);
@@ -204,7 +230,7 @@ namespace AZ
                 return;
             }
 
-            if (!m_rayTracingRevisionOutDated && rayTracingFeatureProcessor->GetSkinnedMeshCount() == 0)
+            if (!RaytracingRevisionOutdated())
             {
                 // TLAS is up to date
                 return;
@@ -216,35 +242,96 @@ namespace AZ
                 return;
             }
 
+            rayTracingFeatureProcessor->SetBuiltRevision(context.GetDeviceIndex(), rayTracingFeatureProcessor->GetRevision());
+
             BeginScopeQuery(context);
 
-            // build newly added or skinned BLAS objects
             AZStd::vector<const AZ::RHI::DeviceRayTracingBlas*> changedBlasList;
+            AZStd::vector<const AZ::RHI::DeviceRayTracingClusterBlas*> changedClusterBlasList;
+            AZStd::vector<AZStd::pair<RHI::DeviceRayTracingBlas*, RHI::DeviceRayTracingCompactionQuery*>> compactionQueries;
             RayTracingFeatureProcessor::BlasInstanceMap& blasInstances = rayTracingFeatureProcessor->GetBlasInstances();
-            for (auto& blasInstance : blasInstances)
-            {
-                const bool isSkinnedMesh = blasInstance.second.m_isSkinnedMesh;
-                const bool buildBlas = (blasInstance.second.m_blasBuilt & RHI::MultiDevice::DeviceMask(1 << context.GetDeviceIndex())) ==
-                    RHI::MultiDevice::NoDevices;
-                if (buildBlas || isSkinnedMesh)
-                {
-                    for (auto submeshIndex = 0; submeshIndex < blasInstance.second.m_subMeshes.size(); ++submeshIndex)
-                    {
-                        auto& submeshBlasInstance = blasInstance.second.m_subMeshes[submeshIndex];
-                        changedBlasList.push_back(submeshBlasInstance.m_blas->GetDeviceRayTracingBlas(context.GetDeviceIndex()).get());
-                        if (buildBlas)
-                        {
-                            // Always build the BLAS, if it has not previously been built
-                            context.GetCommandList()->BuildBottomLevelAccelerationStructure(*submeshBlasInstance.m_blas->GetDeviceRayTracingBlas(context.GetDeviceIndex()));
-                            continue;
-                        }
 
-                        // Determine if a skinned mesh BLAS needs to be updated or completely rebuilt. For now, we want to rebuild a BLAS every
-                        // SKINNED_BLAS_REBUILD_FRAME_INTERVAL frames, while updating it all other frames. This is based on the assumption that
-                        // by adding together the asset ID hash, submesh index, and frame count, we get a value that allows us to uniformly
-                        // distribute rebuilding all skinned mesh BLASs over all frames.
-                        auto assetGuid = blasInstance.first.m_guid.GetHash();
-                        if (isSkinnedMesh && (assetGuid + submeshIndex + m_frameCount) % SKINNED_BLAS_REBUILD_FRAME_INTERVAL != 0)
+            // Build newly added Blas instances
+            auto& toBuildList = rayTracingFeatureProcessor->GetBlasBuildList(context.GetDeviceIndex());
+            for (auto assetId : toBuildList)
+            {
+                auto it = blasInstances.find(assetId);
+                if (it == blasInstances.end())
+                {
+                    continue;
+                }
+
+                bool enqueuedForCompaction = false;
+                auto& blasInstance = it->second;
+                for (auto& submeshBlasInstance : blasInstance.m_subMeshes)
+                {
+                    if (submeshBlasInstance.IsClusterMesh())
+                    {
+                        auto clusterBlas = submeshBlasInstance.m_clusterBlas->GetDeviceRayTracingClusterBlas(context.GetDeviceIndex());
+                        context.GetCommandList()->BuildClusterAccelerationStructures(*clusterBlas);
+                        changedClusterBlasList.push_back(clusterBlas.get());
+                    }
+                    else
+                    {
+                        changedBlasList.push_back(submeshBlasInstance.m_blas->GetDeviceRayTracingBlas(context.GetDeviceIndex()).get());
+
+                        context.GetCommandList()->BuildBottomLevelAccelerationStructure(
+                            *submeshBlasInstance.m_blas->GetDeviceRayTracingBlas(context.GetDeviceIndex()));
+                        auto query = submeshBlasInstance.m_compactionSizeQuery;
+                        if (query)
+                        {
+                            auto deviceQuery = query->GetDeviceRayTracingCompactionQuery(context.GetDeviceIndex());
+                            compactionQueries.push_back(
+                                { submeshBlasInstance.m_blas->GetDeviceRayTracingBlas(context.GetDeviceIndex()).get(), deviceQuery.get() });
+                            enqueuedForCompaction = true;
+                        }
+                        else
+                        {
+                            AZ_Assert(!enqueuedForCompaction, "All or none Blas of an asset need to be compacted");
+                        }
+                    }
+                }
+                if (enqueuedForCompaction)
+                {
+                    rayTracingFeatureProcessor->MarkBlasInstanceForCompaction(context.GetDeviceIndex(), assetId);
+                }
+                {
+                    // Lock is needed because multiple RayTracingAccelerationPasses for multiple devices may be built simultaneously
+                    AZStd::lock_guard lock(rayTracingFeatureProcessor->GetBlasBuiltMutex());
+                    blasInstance.m_blasBuilt |= RHI::MultiDevice::DeviceMask(1 << context.GetDeviceIndex());
+                }
+            }
+            toBuildList.clear();
+
+            // Build, update, or rebuild skinned mesh Blas instances
+            for (auto assetId : rayTracingFeatureProcessor->GetSkinnedMeshBlasList())
+            {
+                auto it = blasInstances.find(assetId);
+                if (it == blasInstances.end())
+                {
+                    continue;
+                }
+                auto& blasInstance = it->second;
+                const bool buildBlas =
+                    (blasInstance.m_blasBuilt & RHI::MultiDevice::DeviceMask(1 << context.GetDeviceIndex())) == RHI::MultiDevice::NoDevices;
+                for (auto submeshIndex = 0; submeshIndex < blasInstance.m_subMeshes.size(); ++submeshIndex)
+                {
+                    auto& submeshBlasInstance = blasInstance.m_subMeshes[submeshIndex];
+
+                    if (submeshBlasInstance.IsClusterMesh())
+                    {
+                        auto clusterBlas = submeshBlasInstance.m_clusterBlas->GetDeviceRayTracingClusterBlas(context.GetDeviceIndex());
+                        context.GetCommandList()->BuildClusterAccelerationStructures(*clusterBlas);
+                        changedClusterBlasList.push_back(clusterBlas.get());
+                    }
+                    else
+                    {
+                        // Determine if a skinned mesh BLAS needs to be updated or completely rebuilt. For now, we want to rebuild a BLAS
+                        // every SKINNED_BLAS_REBUILD_FRAME_INTERVAL frames, while updating it all other frames. This is based on the
+                        // assumption that by adding together the asset ID hash, submesh index, and frame count, we get a value that allows
+                        // us to uniformly distribute rebuilding all skinned mesh BLASs over all frames.
+                        auto assetGuid = it->first.m_guid.GetHash();
+                        if (!buildBlas && ((assetGuid + submeshIndex + m_frameCount) % SKINNED_BLAS_REBUILD_FRAME_INTERVAL != 0))
                         {
                             // Skinned mesh that simply needs an update
                             context.GetCommandList()->UpdateBottomLevelAccelerationStructure(
@@ -256,15 +343,51 @@ namespace AZ
                             context.GetCommandList()->BuildBottomLevelAccelerationStructure(
                                 *submeshBlasInstance.m_blas->GetDeviceRayTracingBlas(context.GetDeviceIndex()));
                         }
+                        changedBlasList.push_back(submeshBlasInstance.m_blas->GetDeviceRayTracingBlas(context.GetDeviceIndex()).get());
                     }
-
+                }
+                {
+                    // Lock is needed because multiple RayTracingAccelerationPasses for multiple devices may be built simultaneously
                     AZStd::lock_guard lock(rayTracingFeatureProcessor->GetBlasBuiltMutex());
-                    blasInstance.second.m_blasBuilt |= RHI::MultiDevice::DeviceMask(1 << context.GetDeviceIndex());
+                    blasInstance.m_blasBuilt |= RHI::MultiDevice::DeviceMask(1 << context.GetDeviceIndex());
                 }
             }
 
+            context.GetCommandList()->BuildClusterBottomLevelAccelerationStructures(changedClusterBlasList);
+
+            // Compact Blas instances
+            auto& toCompactList = rayTracingFeatureProcessor->GetBlasCompactionList(context.GetDeviceIndex());
+            for (auto assetId : toCompactList)
+            {
+                auto it = blasInstances.find(assetId);
+                if (it == blasInstances.end())
+                {
+                    continue;
+                }
+
+                auto& blasInstance = it->second;
+                for (auto& submeshBlasInstance : blasInstance.m_subMeshes)
+                {
+                    auto query = submeshBlasInstance.m_compactionSizeQuery;
+                    context.GetCommandList()->CompactBottomLevelAccelerationStructure(
+                        *submeshBlasInstance.m_blas->GetDeviceRayTracingBlas(context.GetDeviceIndex()),
+                        *submeshBlasInstance.m_compactBlas->GetDeviceRayTracingBlas(context.GetDeviceIndex()));
+                    changedBlasList.push_back(submeshBlasInstance.m_compactBlas->GetDeviceRayTracingBlas(context.GetDeviceIndex()).get());
+                }
+                AZStd::lock_guard lock(rayTracingFeatureProcessor->GetBlasBuiltMutex());
+                rayTracingFeatureProcessor->MarkBlasInstanceAsCompactionEnqueued(context.GetDeviceIndex(), assetId);
+            }
+            toCompactList.clear();
+
             // build the TLAS object
-            context.GetCommandList()->BuildTopLevelAccelerationStructure(*rayTracingFeatureProcessor->GetTlas()->GetDeviceRayTracingTlas(context.GetDeviceIndex()), changedBlasList);
+            context.GetCommandList()->BuildTopLevelAccelerationStructure(
+                *rayTracingFeatureProcessor->GetTlas()->GetDeviceRayTracingTlas(context.GetDeviceIndex()),
+                changedBlasList,
+                changedClusterBlasList);
+            if (!compactionQueries.empty())
+            {
+                context.GetCommandList()->QueryBlasCompactionSizes(compactionQueries);
+            }
 
             ++m_frameCount;
 
@@ -275,7 +398,7 @@ namespace AZ
         {
             const auto addToFrameGraph = [&frameGraph](RHI::Ptr<RPI::Query> query)
             {
-              query->AddToFrameGraph(frameGraph);
+                query->AddToFrameGraph(frameGraph);
             };
 
             ExecuteOnTimestampQuery(addToFrameGraph);
@@ -286,15 +409,16 @@ namespace AZ
         {
             const auto beginQuery = [&context, this](RHI::Ptr<RPI::Query> query)
             {
-              if (query->BeginQuery(context) == RPI::QueryResultCode::Fail)
-              {
-                  AZ_UNUSED(this); // Prevent unused warning in release builds
-                  AZ_WarningOnce(
-                      "RayTracingAccelerationStructurePass", false,
-                      "BeginScopeQuery failed. Make sure AddScopeQueryToFrameGraph was called in SetupFrameGraphDependencies"
-                      " for this pass: %s",
-                      this->RTTI_GetTypeName());
-              }
+                if (query->BeginQuery(context) == RPI::QueryResultCode::Fail)
+                {
+                    AZ_UNUSED(this); // Prevent unused warning in release builds
+                    AZ_WarningOnce(
+                        "RayTracingAccelerationStructurePass",
+                        false,
+                        "BeginScopeQuery failed. Make sure AddScopeQueryToFrameGraph was called in SetupFrameGraphDependencies"
+                        " for this pass: %s",
+                        this->RTTI_GetTypeName());
+                }
             };
 
             ExecuteOnTimestampQuery(beginQuery);
@@ -305,7 +429,7 @@ namespace AZ
         {
             const auto endQuery = [&context](const RHI::Ptr<RPI::Query>& query)
             {
-              query->EndQuery(context);
+                query->EndQuery(context);
             };
 
             // This scope query implementation should be replaced by the feature linked below on GitHub:
@@ -333,5 +457,5 @@ namespace AZ
                     query->GetLatestResult(&m_statisticsResult, sizeof(RPI::PipelineStatisticsResult), m_lastDeviceIndex);
                 });
         }
-    }   // namespace RPI
-}   // namespace AZ
+    } // namespace Render
+} // namespace AZ

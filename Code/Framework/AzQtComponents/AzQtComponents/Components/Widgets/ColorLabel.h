@@ -7,11 +7,9 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzQtComponents/AzQtComponentsAPI.h>
 #include <AzCore/Math/Color.h>
 #include <QWidget>
-#endif
 
 namespace AzQtComponents
 {
@@ -52,9 +50,6 @@ namespace AzQtComponents
     private:
         Swatch* m_swatch;
         ColorHexEdit* m_hexEdit;
-
-        AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
         AZ::Color m_color;
-        AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
     };
 } // namespace AzQtComponents

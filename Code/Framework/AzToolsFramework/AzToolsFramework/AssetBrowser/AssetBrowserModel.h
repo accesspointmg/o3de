@@ -7,7 +7,6 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/PlatformDef.h>
 
 AZ_PUSH_DISABLE_WARNING(4127 4251, "-Wunknown-warning-option") // conditional expression is constant
@@ -26,8 +25,9 @@ AZ_PUSH_DISABLE_WARNING(4127 4251 4800, "-Wunknown-warning-option") // 4127: con
 #include <QAbstractTableModel>
 #include <QVariant>
 #include <QMimeData>
-#endif
 AZ_POP_DISABLE_WARNING
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 
 namespace AzToolsFramework
 {
@@ -38,7 +38,7 @@ namespace AzToolsFramework
         class AssetEntryChangeset;
         class AssetBrowserFilterModel;
 
-        class AssetBrowserModel
+        class AZTF_API AssetBrowserModel
             : public QAbstractItemModel
             , public AssetBrowserModelRequestBus::Handler
             , public AZ::TickBus::Handler

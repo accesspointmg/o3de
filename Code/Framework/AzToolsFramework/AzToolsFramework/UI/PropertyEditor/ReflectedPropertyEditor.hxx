@@ -6,19 +6,18 @@
  *
  */
 
-#ifndef REFLECTEDPROPERTYEDITOR_H
-#define REFLECTEDPROPERTYEDITOR_H
-
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 #include <AzCore/base.h>
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzToolsFramework/UI/DocumentPropertyEditor/IPropertyEditor.h>
+
 #include "PropertyEditorAPI.h"
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QFrame>
-#endif
+
+#include <QWidget>
+#include <QFrame>
 
 class QScrollArea;
 class QLayout;
@@ -46,7 +45,7 @@ namespace AzToolsFramework
      * in the Reflected Property editor control, with the GUI arrangement specified in the edit reflection for
      * those objects.
      */
-    class ReflectedPropertyEditor
+    class AZTF_API ReflectedPropertyEditor
         : public QFrame
         , public IPropertyEditor
     {
@@ -180,6 +179,7 @@ namespace AzToolsFramework
         
         AZStd::string m_currentFilterString;
 
+        bool focusNextPrevChild(bool next) override;
         virtual void paintEvent(QPaintEvent* event) override;
         int m_updateDepth = 0;
     signals:
@@ -193,5 +193,3 @@ namespace AzToolsFramework
         void OnPropertyRowRequestContainerAddItem(PropertyRowWidget* widget, InstanceDataNode* node);
     };
 }
-
-#endif

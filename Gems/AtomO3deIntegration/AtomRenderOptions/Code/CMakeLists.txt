@@ -10,7 +10,6 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     o3de_add_target(
         NAME ${gem_name}.Editor ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
         NAMESPACE Gem
-        AUTORCC
         FILES_CMAKE
             atomrenderoptions_files.cmake
         INCLUDE_DIRECTORIES

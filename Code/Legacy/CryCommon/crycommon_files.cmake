@@ -35,7 +35,6 @@ set(FILES
     LCGRandom.h
     BaseTypes.h
     AnimKey.h
-    CryAssert.h
     CryFile.h
     CryListenerSet.h
     CryPath.h
@@ -61,9 +60,6 @@ set(FILES
     Cry_Matrix44.h
     Cry_Vector4.h
     Cry_Color.h
-    Cry_Geo.h
-    Cry_GeoDistance.h
-    Cry_GeoIntersect.h
     Cry_Math.h
     Cry_Quat.h
     Cry_ValidNumber.h

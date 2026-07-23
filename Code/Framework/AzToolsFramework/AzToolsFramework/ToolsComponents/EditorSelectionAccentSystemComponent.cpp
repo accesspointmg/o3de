@@ -8,14 +8,13 @@
 #include "EditorSelectionAccentSystemComponent.h"
 
 #include <AzCore/Debug/Profiler.h>
+#include <AzFramework/Translation/TranslationDef.h>
 #include <AzCore/Debug/Trace.h>
 #include <AzCore/Component/TickBus.h>
 #include <AzCore/Component/TransformBus.h>
 #include <AzToolsFramework/API/ComponentEntityObjectBus.h>
 #include <AzFramework/Entity/EntityContextBus.h>
 #include <AzCore/Slice/SliceComponent.h>
-
-DECLARE_EBUS_INSTANTIATION(AzToolsFramework::Components::EditorSelectionAccentingRequests);
 
 namespace AzToolsFramework
 {
@@ -31,7 +30,9 @@ namespace AzToolsFramework
 
                 if (AZ::EditContext* ec = serialize->GetEditContext())
                 {
-                    ec->Class<EditorSelectionAccentSystemComponent>("EditorSelectionAccenting", "Used for selection accenting behavior in the viewport")
+                    ec->Class<EditorSelectionAccentSystemComponent>(
+                        QT_TRANSLATE_NOOP("AzToolsFramework", "EditorSelectionAccenting"),
+                        QT_TRANSLATE_NOOP("AzToolsFramework", "Used for selection accenting behavior in the viewport"))
                         ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                         ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                         ;

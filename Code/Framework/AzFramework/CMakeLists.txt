@@ -8,27 +8,30 @@
 
 include(AzFramework/feature_options.cmake)
 
-o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Framework/AzFramework/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_framework_azframework_path)
-set(common_code_framework_azframework_path ${O3DE_ENGINE_PATH}/Code/Framework/AzFramework/Platform/Common)
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
+set(common_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
 if(O3DE_PIX_ENABLED)
     set(AZ_FRAMEWORK_NATIVEUI_PIX_BUILD_DEPENDENCIES 3rdParty::pix)
 endif()
 
 o3de_add_target(
-    NAME AzFramework STATIC
+    NAME AzFramework ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_LIBRARY_TYPE}
     NAMESPACE AZ
     FILES_CMAKE
         AzFramework/azframework_files.cmake
-        ${pal_code_framework_azframework_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
+        ${pal_code_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${pal_code_framework_azframework_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
+        ${pal_code_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
+    COMPILE_DEFINITIONS
+        PRIVATE
+            AZF_EXPORTS
     INCLUDE_DIRECTORIES
         PUBLIC
             .
-            ${pal_code_framework_azframework_path}
+            ${pal_code_path}
         PRIVATE
-            ${common_code_framework_azframework_path}
+            ${common_dir}
     BUILD_DEPENDENCIES
         PRIVATE
             AZ::AzCore
@@ -39,19 +42,22 @@ o3de_add_target(
 )
 
 o3de_add_target(
-    NAME AzFramework.NativeUI STATIC
+    NAME AzFramework.NativeUI ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_LIBRARY_TYPE}
     NAMESPACE AZ
     FILES_CMAKE
         AzFramework/azframework_nativeui_files.cmake
-        ${pal_code_framework_azframework_path}/platform_nativeui_${O3DE_PAL_PLATFORM_WART}_files.cmake
+        ${pal_code_path}/platform_nativeui_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${pal_code_framework_azframework_path}/platform_nativeui_${O3DE_PAL_PLATFORM_WART}.cmake
+        ${pal_code_path}/platform_nativeui_${O3DE_PAL_PLATFORM_WART}.cmake
+    COMPILE_DEFINITIONS
+        PRIVATE
+            AZF_EXPORTS
     INCLUDE_DIRECTORIES
         PUBLIC
             .
-            ${pal_code_framework_azframework_path}
+            ${pal_code_path}
         PRIVATE
-            ${common_code_framework_azframework_path}
+            ${common_dir}
     BUILD_DEPENDENCIES
         PRIVATE
             AZ::AzCore
@@ -69,7 +75,7 @@ o3de_add_source_properties(
 
 if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-    o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Framework/AzFramework/Tests/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_framework_azframework_tests_path)
+    o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Tests/Platform/${O3DE_PAL_PLATFORM_NAME} test_pal_dir)
 
     o3de_add_target(
         NAME AzFrameworkTestShared STATIC
@@ -111,11 +117,11 @@ if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             NAMESPACE AZ
             FILES_CMAKE
                 Tests/frameworktests_files.cmake
-                ${pal_code_framework_azframework_tests_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
+                ${test_pal_dir}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
             INCLUDE_DIRECTORIES
                 PRIVATE
                     Tests
-                    ${pal_code_framework_azframework_tests_path}
+                    ${test_pal_dir}
             BUILD_DEPENDENCIES
                 PRIVATE
                     AZ::AzFramework
@@ -138,7 +144,7 @@ if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             INCLUDE_DIRECTORIES
                 PRIVATE
                     Tests
-                    ${pal_code_framework_azframework_tests_path}
+                    ${test_pal_dir}
             BUILD_DEPENDENCIES
                 PRIVATE
                     AZ::AzFramework
@@ -153,7 +159,8 @@ if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             NAME AZ::AzFramework.NativeUI.Tests
         )
 
-        include(${pal_code_framework_azframework_tests_path}/platform_specific_test_targets.cmake)
+
+        include(${test_pal_dir}/platform_specific_test_targets.cmake)
 
     endif()
 

@@ -8,18 +8,17 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <QPlainTextEdit>
 #include <QPointer>
 #include <QScopedPointer>
-
-#endif
 
 class QMenu;
 
 namespace AzToolsFramework
 {
-    class ConsoleTextEdit : public QPlainTextEdit
+    class AZTF_API ConsoleTextEdit : public QPlainTextEdit
     {
         Q_OBJECT
         Q_PROPERTY(bool searchEnabled READ searchEnabled WRITE setSearchEnabled)

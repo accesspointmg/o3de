@@ -29,13 +29,14 @@ namespace AssetProcessor
         void SetJobDescriptor(QString jobDescriptor);
         bool operator==(const QueueElementID& other) const;
         bool operator<(const QueueElementID& other) const;
+        bool operator!=(const QueueElementID& other) const;
 
     protected:
         SourceAssetReference m_sourceAssetReference;
         QString m_platform;
         QString m_jobDescriptor;
     };
-    uint qHash(const AssetProcessor::QueueElementID& key, uint seed = 0);
+    size_t qHash(const AssetProcessor::QueueElementID& key, uint seed = 0);
 } // namespace AssetProcessor
 
 namespace AZStd {

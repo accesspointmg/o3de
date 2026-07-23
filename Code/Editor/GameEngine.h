@@ -10,19 +10,20 @@
 // Description : The game engine for editor
 #pragma once
 
-#if !defined(Q_MOC_RUN)
-#include <AzCore/Outcome/Outcome.h>
+#include "IEditor.h"
+#include "ISystem.h"
 #include "LogFile.h"
+#include "SandboxAPI.h"
 #include "Util/ModalWindowDismisser.h"
-#endif
+
+#include <AzCore/Interface/Interface.h>
+#include <AzCore/Math/Matrix3x4.h>
+#include <AzCore/Math/Vector3.h>
+#include <AzCore/Module/DynamicModuleHandle.h>
+#include <AzCore/Outcome/Outcome.h>
 
 class CStartupLogoDialog;
 struct IInitializeUIInfo;
-
-#include <AzCore/Interface/Interface.h>
-#include <AzCore/Math/Vector3.h>
-
-#include <AzCore/Module/DynamicModuleHandle.h>
 
 class ThreadedOnErrorHandler : public QObject
 {
@@ -38,12 +39,10 @@ private:
     ISystemUserCallback* m_userCallback;
 };
 
-AZ_PUSH_DISABLE_DLL_EXPORT_BASECLASS_WARNING
 //! This class serves as a high-level wrapper for CryEngine game.
 class SANDBOX_API CGameEngine
     : public IEditorNotifyListener
 {
-AZ_POP_DISABLE_DLL_EXPORT_BASECLASS_WARNING
 public:
     CGameEngine();
     ~CGameEngine(void);
@@ -94,7 +93,7 @@ public:
     ISystem* GetSystem() { return m_pISystem; };
     //! Set player position in game.
     //! @param bEyePos If set then given position is position of player eyes.
-    void SetPlayerViewMatrix(const Matrix34& tm, bool bEyePos = true);
+    void SetPlayerViewMatrix(const AZ::Matrix3x4& tm, bool bEyePos = true);
     //! When set, player in game will be every frame synchronized with editor camera.
     void SyncPlayerPosition(bool bEnable);
     bool IsSyncPlayerPosition() const { return m_bSyncPlayerPosition; };
@@ -105,7 +104,7 @@ public:
     //! Called every frame.
     void Update();
     virtual void OnEditorNotifyEvent(EEditorNotifyEvent event);
-    void OnAreaModified(const AABB& modifiedArea);
+    void OnAreaModified(const AZ::Aabb& modifiedArea);
 
     void ExecuteQueuedEvents();
 
@@ -137,8 +136,7 @@ private:
     bool m_bJustCreated;
     bool m_bIgnoreUpdates;
     ISystem* m_pISystem;
-    AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
-    Matrix34 m_playerViewTM;
+    AZ::Matrix3x4 m_playerViewTM;
     struct SSystemUserCallback* m_pSystemUserCallback;
     AZStd::unique_ptr<AZ::DynamicModuleHandle> m_hSystemHandle;
     enum EPendingGameMode
@@ -149,6 +147,5 @@ private:
     };
     EPendingGameMode m_ePendingGameMode;
     AZStd::unique_ptr<class ModalWindowDismisser> m_modalWindowDismisser;
-    AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 };
 

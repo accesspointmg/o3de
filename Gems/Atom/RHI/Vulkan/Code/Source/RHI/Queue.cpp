@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
+
+#include <Atom/RHI/Debug.h>
 #include <Atom/RHI.Reflect/Vulkan/Conversion.h>
 #include <Atom_RHI_Vulkan_Platform.h>
 #include <AzCore/std/algorithm.h>
@@ -156,7 +158,7 @@ namespace AZ
             const VkResult result = static_cast<Device&>(GetDevice())
                                         .GetContext()
                                         .QueueSubmit(m_nativeQueue, submitCount, submitCount ? &submitInfo : nullptr, nativeFence);
-            AssertSuccess(result);
+            VK_RESULT_ASSERT(result);
             RETURN_RESULT_IF_UNSUCCESSFUL(ConvertResult(result));
 
             // Signal all signaling semaphores that they can be used.
@@ -177,14 +179,17 @@ namespace AZ
             if (m_nativeQueue != VK_NULL_HANDLE)
             {
                 VkResult result = static_cast<Device&>(GetDevice()).GetContext().QueueWaitIdle(m_nativeQueue);
-#if defined(AZ_FORCE_CPU_GPU_INSYNC)
-                if (result == VK_ERROR_DEVICE_LOST)
+
+                if constexpr (RHI::ForceCpuGpuInSync)
                 {
-                    AZ_TracePrintf("Device", "The last executing pass before device removal was: %s\n", GetDevice().GetLastExecutingScope().data());
-                    GetDevice().SetDeviceRemoved();
+                    if (result == VK_ERROR_DEVICE_LOST)
+                    {
+                        AZ_TracePrintf("Device", "The last executing pass before device removal was: %s\n", GetDevice().GetLastExecutingScope().data());
+                        GetDevice().SetDeviceRemoved();
+                    }
                 }
-#endif
-                AssertSuccess(result);
+
+                VK_RESULT_ASSERT(result);
             }
         }
 

@@ -153,7 +153,6 @@ void CEditorImpl::Initialize()
 
     // Must be set before QApplication is initialized, so that we support HighDpi monitors, like the Retina displays
     // on Windows 10
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 
     // Prevents (native) sibling widgets from causing problems with docked QOpenGLWidgets on Windows
@@ -334,6 +333,15 @@ ISystem* CEditorImpl::GetSystem()
     return m_pSystem;
 }
 
+void CEditorImpl::WriteToConsole(const char* string)
+{
+    CLogFile::WriteLine(string);
+}
+
+void CEditorImpl::WriteToConsole(const QString& string)
+{
+    CLogFile::WriteLine(string);
+}
 
 CCryEditDoc* CEditorImpl::GetDocument() const
 {
@@ -539,9 +547,9 @@ void CEditorImpl::SetActiveView(CViewport* viewport)
     m_pViewManager->SelectViewport(viewport);
 }
 
-void CEditorImpl::UpdateViews(int flags, const AABB* updateRegion)
+void CEditorImpl::UpdateViews(int flags, const AZ::Aabb* updateRegion)
 {
-    AABB prevRegion = m_pViewManager->GetUpdateRegion();
+    AZ::Aabb prevRegion = m_pViewManager->GetUpdateRegion();
     if (updateRegion)
     {
         m_pViewManager->SetUpdateRegion(*updateRegion);
@@ -880,30 +888,6 @@ void CEditorImpl::CancelUndo()
     if (m_pUndoManager)
     {
         m_pUndoManager->Cancel();
-    }
-}
-
-void CEditorImpl::SuperBeginUndo()
-{
-    if (m_pUndoManager)
-    {
-        m_pUndoManager->SuperBegin();
-    }
-}
-
-void CEditorImpl::SuperAcceptUndo(const QString& name)
-{
-    if (m_pUndoManager)
-    {
-        m_pUndoManager->SuperAccept(name);
-    }
-}
-
-void CEditorImpl::SuperCancelUndo()
-{
-    if (m_pUndoManager)
-    {
-        m_pUndoManager->SuperCancel();
     }
 }
 

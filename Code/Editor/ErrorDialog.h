@@ -7,11 +7,15 @@
  */
 
 #pragma once
-#if !defined(Q_MOC_RUN)
-#include <QDialog>
 
 #include "Include/EditorCoreAPI.h"
-#endif
+
+#include <AzCore/std/containers/list.h>
+
+#include <QDialog>
+#include <QScopedPointer>
+#include <QSet>
+#include <QString>
 
 namespace Ui 
 {
@@ -63,9 +67,7 @@ namespace SandboxEditor
         //! @return the QString representation of that message type.
         QString GetMessageTypeString(MessageType messageType) const;
 
-        AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
         QScopedPointer<Ui::ErrorLogDialog> m_ui; ///< Tracks the Qt UI associated with this class.
         QSet<QString> m_uniqueStrings;
-        AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
     };
 }

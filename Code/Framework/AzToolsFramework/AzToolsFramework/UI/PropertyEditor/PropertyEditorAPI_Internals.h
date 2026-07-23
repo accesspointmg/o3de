@@ -5,9 +5,10 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
+#pragma once
 
-#ifndef PROPERTYEDITORAPI_INTERNALS_H
-#define PROPERTYEDITORAPI_INTERNALS_H
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 
 #include "InstanceDataHierarchy.h"
 
@@ -32,13 +33,16 @@
 #include <AzFramework/DocumentPropertyEditor/PropertyEditorSystemInterface.h>
 
 #include <QMessageBox>
+#include <QTimer>
+#include <QPointer>
+#include <QWidget>
 
 class QWidget;
 class QColor;
 class QString;
 class QPoint;
 
-AZ_DECLARE_BUDGET(AzToolsFramework);
+AZ_DECLARE_BUDGET_SHARED(AzToolsFramework);
 
 namespace AzToolsFramework
 {
@@ -103,7 +107,7 @@ namespace AzToolsFramework
     // this serves as the base class for all property managers.
     // you do not use this class directly.
     // derive from PropertyHandler instead.
-    class PropertyHandlerBase
+    class AZTF_API PropertyHandlerBase
     {
         friend class ReflectedPropertyEditor;
         friend PropertyRowWidget;
@@ -204,24 +208,17 @@ namespace AzToolsFramework
 
         ~RpePropertyHandlerWrapper()
         {
+            IndividualPropertyHandlerEditNotifications::Bus::Handler::BusDisconnect();
+
             if (m_widget)
             {
-                // Detect whether this is being run in the Editor or during a Unit Test.
-                AZ::ApplicationTypeQuery appType;
-                AZ::ComponentApplicationBus::Broadcast(&AZ::ComponentApplicationBus::Events::QueryApplicationType, appType);
-                if (appType.IsValid() && !appType.IsEditor())
-                {
-                    // In Unit Tests, immediately delete the widget to prevent triggering the leak detection mechanism.
-                    delete m_widget;
-                    m_widget = nullptr;
-                }
-                else
-                {
-                    // In the Editor, use deleteLater as it is more stable.
-                    m_widget->deleteLater();
-                }
+                // Its tempting to call deleteLater here, but the case where a handler is destroyed is
+                // when the DPE is either itself being destroyed, or, the DPE is re-pooling all of its handlers
+                // and this is a handler that cannot be pooled.  In that case, we don't want any widgets
+                // sitting around as hidden children for any amount of time, as the style manager will iterate over them
+                // and try to apply styles to them, which is a super heavy slow down.
+                delete m_widget;
             }
-            IndividualPropertyHandlerEditNotifications::Bus::Handler::BusDisconnect();
         }
 
         QWidget* GetWidget() override
@@ -233,6 +230,12 @@ namespace AzToolsFramework
             m_widget = m_rpeHandler.CreateGUI(nullptr);
             IndividualPropertyHandlerEditNotifications::Bus::Handler::BusConnect(m_widget);
             return m_widget;
+        }
+
+        void RefreshUI() override
+        {
+            m_rpeHandler.ConsumeAttributes_Internal(GetWidget(), &m_proxyNode);
+            m_rpeHandler.ReadValuesIntoGUI_Internal(GetWidget(), &m_proxyNode);
         }
 
         void SetValueFromDom(const AZ::Dom::Value& node)
@@ -249,6 +252,7 @@ namespace AzToolsFramework
             }
 
             m_proxyClassElement.m_attributes.clear();
+
             for (auto attributeIt = node.MemberBegin(); attributeIt != node.MemberEnd(); ++attributeIt)
             {
                 const AZ::Name& name = attributeIt->first;
@@ -260,6 +264,11 @@ namespace AzToolsFramework
                 }
                 else if (name == PropertyEditor::ParentValue.GetName())
                 {
+                    // the "ParentValue" attribute contains the entire parent data, so we need to replace it with
+                    // the new data.  Note that this may be an incremental update, so don't assume the existing data is good.
+
+                    m_proxyParentNode.m_instances.clear();
+
                     auto parentValue = PropertyEditor::ParentValue.ExtractFromDomNode(node);
                     if (parentValue.has_value())
                     {
@@ -279,14 +288,14 @@ namespace AzToolsFramework
                         AZ_Assert(parentValuePtr, "Parent instance was nullptr when attempting to add to instance list.");
 
                         // Only add parent instance if it has not been added previously
-                        if (auto foundParentIt = AZStd::find(m_proxyParentNode.m_instances.begin(), m_proxyParentNode.m_instances.end(), parentValuePtr);
-                            foundParentIt == m_proxyParentNode.m_instances.end())
-                        {
-                            m_proxyParentNode.m_instances.push_back(parentValuePtr);
-                        }
+                        m_proxyParentNode.m_instances.push_back(parentValuePtr);
 
                         // Set up the reference to parent node only if a parent value is available.
                         m_proxyNode.m_parent = &m_proxyParentNode;
+                    }
+                    else
+                    {
+                        m_proxyNode.m_parent = nullptr; // clear it out if unavailable.
                     }
                     continue;
                 }
@@ -449,9 +458,6 @@ namespace AzToolsFramework
                 m_proxyClassElement.m_genericClassInfo = serializeContext->FindGenericClassInfo(typeId);
             }
 
-            m_rpeHandler.ConsumeAttributes_Internal(GetWidget(), &m_proxyNode);
-            m_rpeHandler.ReadValuesIntoGUI_Internal(GetWidget(), &m_proxyNode);
-
             m_domNode = node;
         }
 
@@ -490,7 +496,7 @@ namespace AzToolsFramework
             {
                 return {};
             }
-            return propertyEditorSystem->LookupNameFromId(rpeHandler.GetHandlerName()).GetStringView();
+            return propertyEditorSystem->LookupNameFromId(AZ::Crc32(rpeHandler.GetHandlerName())).GetStringView();
         }
 
         void OnValueChanged(AZ::DocumentPropertyEditor::Nodes::ValueChangeType changeType) override
@@ -526,7 +532,13 @@ namespace AzToolsFramework
                     {
                         if (changeType == AZ::DocumentPropertyEditor::Nodes::ValueChangeType::InProgressEdit)
                         {
-                            QMessageBox::warning(AzToolsFramework::GetActiveWindow(), "Invalid Assignment", outcome.GetError().c_str(), QMessageBox::Ok);
+                            // do not show a message box inside this call stack - instead, queue it for later so that the property editor can finish reverting the value.
+                            auto MessageBoxFn = [outcome]()
+                            {
+                                QMessageBox::warning(AzToolsFramework::GetActiveWindow(), "Invalid Assignment", outcome.GetError().c_str(), QMessageBox::Ok);
+                            };
+
+                            QTimer::singleShot(0, AzToolsFramework::GetActiveWindow(), MessageBoxFn);
 
                             // Force the values to update so that they are correct since something just declined changes and
                             // we want the UI to display the current values and not the invalid ones
@@ -921,5 +933,3 @@ namespace AzToolsFramework
         PropertyEditorToolsSystemInterface::PropertyHandlerId m_registeredDpeHandlerId = PropertyEditorToolsSystemInterface::InvalidHandlerId;
     };
 }
-
-#endif

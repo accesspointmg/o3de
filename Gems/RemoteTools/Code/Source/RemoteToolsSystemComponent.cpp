@@ -13,6 +13,7 @@
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/EditContextConstants.inl>
 #include <AzCore/Serialization/ObjectStream.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 #include <AzNetworking/Framework/INetworking.h>
 #include <AzNetworking/Utilities/CidrAddress.h>
@@ -40,7 +41,9 @@ namespace RemoteTools
 
             if (AZ::EditContext* ec = serialize->GetEditContext())
             {
-                ec->Class<RemoteToolsSystemComponent>("RemoteTools", "[Description of functionality provided by this System Component]")
+                ec->Class<RemoteToolsSystemComponent>(
+                    QT_TRANSLATE_NOOP("RemoteTools", "RemoteTools"),
+                    QT_TRANSLATE_NOOP("RemoteTools", "[Description of functionality provided by this System Component]"))
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                         ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                     ;
@@ -413,11 +416,11 @@ namespace RemoteTools
         [[maybe_unused]] const AzNetworking::IPacketHeader& packetHeader,
         const RemoteToolsPackets::RemoteToolsConnect& packet)
     {
-        AZ::Crc32 key = packet.GetPersistentId();
+        AZ::Crc32 key(packet.GetPersistentId());
 
         if (m_entryRegistry.contains(key))
         {
-            const uint32_t persistentId = packet.GetPersistentId();
+            const AZ::Crc32 persistentId(packet.GetPersistentId());
             AzFramework::RemoteToolsEndpointContainer::pair_iter_bool ret =
                 m_entryRegistry[key].m_availableTargets.insert_key(persistentId);
             AzFramework::RemoteToolsEndpointInfo& ti = ret.first->second;
@@ -432,7 +435,7 @@ namespace RemoteTools
         [[maybe_unused]] const AzNetworking::IPacketHeader& packetHeader,
         [[maybe_unused]] const RemoteToolsPackets::RemoteToolsMessage& packet)
     {
-        const AZ::Crc32 key = packet.GetPersistentId();
+        const AZ::Crc32 key(packet.GetPersistentId());
 
         // Receive
         if (connection->GetConnectionRole() == AzNetworking::ConnectionRole::Acceptor
@@ -453,10 +456,10 @@ namespace RemoteTools
             if (GetEndpointInfo(key, packet.GetPersistentId()).GetPersistentId() == 0)
             {
                 AzFramework::RemoteToolsEndpointContainer::pair_iter_bool ret =
-                    m_entryRegistry[key].m_availableTargets.insert_key(packet.GetPersistentId());
+                    m_entryRegistry[key].m_availableTargets.insert_key(AZ::Crc32(packet.GetPersistentId()));
 
                 AzFramework::RemoteToolsEndpointInfo& ti = ret.first->second;
-                ti.SetInfo("Host", packet.GetPersistentId(), static_cast<uint32_t>(connection->GetConnectionId()));
+                ti.SetInfo("Host", AZ::Crc32(packet.GetPersistentId()), static_cast<uint32_t>(connection->GetConnectionId()));
                 m_entryRegistry[key].m_endpointJoinedEvent.Signal(ti);
             }
 
@@ -490,7 +493,7 @@ namespace RemoteTools
             if (msg)
             {
                 m_inboxMutex.lock();
-                m_inbox[msg->GetSenderTargetId()].push_back(msg);
+                m_inbox[AZ::Crc32(msg->GetSenderTargetId())].push_back(msg);
                 m_inboxMutex.unlock();
             }
         }

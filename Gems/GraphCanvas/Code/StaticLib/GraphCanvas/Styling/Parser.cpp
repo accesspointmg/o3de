@@ -643,7 +643,8 @@ namespace GraphCanvas
             QFile resource(QString::fromUtf8(json.c_str()));
             if (resource.exists())
             {
-                resource.open(QIODevice::ReadOnly);
+                [[maybe_unused]] const bool res = resource.open(QIODevice::ReadOnly);
+                AZ_Assert(res, "Failed to open resource file");
                 document.Parse(resource.readAll().data());
             }
             else
@@ -684,7 +685,7 @@ namespace GraphCanvas
                 return;
             }
 
-            QScopedPointer<Style> style(aznew Style(selectors));
+            AZStd::unique_ptr<Style> style = AZStd::make_unique<Style>(selectors);
 
             for (auto member = value.MemberBegin(); member != value.MemberEnd(); ++member)
             {
@@ -861,8 +862,7 @@ namespace GraphCanvas
                     else
                     {
                         // Check all available font families (from both the system and explicitly registered with the application)
-                        QFontDatabase fontDatabase;
-                        if (!fontDatabase.families().contains(valueStr))
+                        if (!QFontDatabase::families().contains(valueStr))
                         {
                             qWarning() << "Invalid font-family:" << valueStr;
                         }
@@ -986,7 +986,7 @@ namespace GraphCanvas
             }
             else
             {
-                styleManager.m_styles.push_back(style.take());
+                styleManager.m_styles.push_back(AZStd::move(style));
             }
         }
 

@@ -16,9 +16,11 @@
 #include <AzFramework/StringFunc/StringFunc.h>
 
 #include <QDialog>
-#include <QTimer>
 #include <QFutureWatcher>
+#include <QTimer>
 #include <QValidator>
+
+#include <AzCore/std/containers/vector.h>
 
 class QStringListModel;
 
@@ -94,7 +96,7 @@ protected:
             , pDirectorNode(nullptr)
             , disableDebugInfo(false)
             , bCreateVideo(false) {}
-        bool operator==(const SRenderItem& item)
+        bool operator==(const SRenderItem& item) const
         {
             if (pSequence == item.pSequence
                 && pDirectorNode == item.pDirectorNode
@@ -115,7 +117,7 @@ protected:
             return false;
         }
     };
-    std::vector<SRenderItem> m_renderItems;
+    AZStd::vector<SRenderItem> m_renderItems;
 
     // Capture States
     enum class CaptureState

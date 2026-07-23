@@ -7,7 +7,8 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <QWidget>
 #include <QPoint>
 #include <QPointF>
@@ -15,7 +16,6 @@
 #include <AzCore/std/containers/vector.h>
 #include <AzCore/std/containers/unordered_map.h>
 #include <AzToolsFramework/UI/Notifications/ToastBus.h>
-#endif
 
 namespace AzQtComponents
 {
@@ -31,7 +31,7 @@ namespace AzToolsFramework
     * or resized because toast notifications are displayed on top of the parent and are not part
     * of the layout, so they must be manually moved.
     */
-    class ToastNotificationsView final
+    class AZTF_API ToastNotificationsView final
         : public QWidget 
         , protected ToastRequestBus::Handler
     {

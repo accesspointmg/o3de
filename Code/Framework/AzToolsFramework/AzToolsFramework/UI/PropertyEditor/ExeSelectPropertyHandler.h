@@ -8,17 +8,17 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/Memory/SystemAllocator.h>
 
 #include <AzQtComponents/Components/Widgets/BrowseEdit.h>
 #include <AzToolsFramework/UI/PropertyEditor/PropertyEditorAPI.h>
 #include <QWidget>
-#endif
 
 namespace AzToolsFramework
 {
-    class ExeSelectPropertyCtrl : public QWidget
+    class AZTF_API ExeSelectPropertyCtrl : public QWidget
     {
         Q_OBJECT
 
@@ -45,7 +45,7 @@ namespace AzToolsFramework
         AzQtComponents::BrowseEdit* m_browseEdit = nullptr;
     };
 
-    class ExeSelectPropertyHandler
+    class AZTF_API ExeSelectPropertyHandler
         : QObject
         , public AzToolsFramework::PropertyHandler<AZStd::string, ExeSelectPropertyCtrl>
     {
@@ -64,5 +64,5 @@ namespace AzToolsFramework
             size_t index, ExeSelectPropertyCtrl* GUI, const property_t& instance, AzToolsFramework::InstanceDataNode* node) override;
     };
 
-    void RegisterExeSelectPropertyHandler();
+    AZTF_API void RegisterExeSelectPropertyHandler();
 } // namespace AzToolsFramework

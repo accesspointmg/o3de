@@ -8,8 +8,9 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
-#include <QtWidgets/QWidget>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
+#include <QWidget>
 
 #include <AzCore/Math/Uuid.h>
 
@@ -20,7 +21,6 @@
 #include <AzToolsFramework/UI/PropertyEditor/PropertyEditorAPI.h>
 #include <QPushButton>
 #include <QToolButton>
-#endif
 
 class QComboBox;
 class QLabel;
@@ -30,7 +30,7 @@ namespace AzToolsFramework
     template<typename T>
     class GenericComboBoxHandler;
 
-    class GenericComboBoxCtrlBase
+    class AZTF_API GenericComboBoxCtrlBase
         : public QWidget
     {
         Q_OBJECT

@@ -1,4 +1,4 @@
-#
+﻿#
 # Copyright (c) Contributors to the Open 3D Engine Project.
 # For complete copyright and license terms please see the LICENSE at the root of this distribution.
 #
@@ -9,8 +9,8 @@
 # TODO: would like to be able to build from this path, however, the whole setup is done at the workspace's root
 #       we also dont want to drop cmake output files everywhere.
 
-o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Framework/AzCore/Platform/${O3DE_PAL_PLATFORM_NAME} pal_path)
-set(common_dir ${O3DE_ENGINE_PATH}/Code/Framework/AzCore/Platform/Common)
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
+set(common_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
 if(O3DE_PAL_TRAIT_PROF_PIX_SUPPORTED)
     set(O3DE_PIX_ENABLED OFF CACHE BOOL "Enables PIX profiler integration.")
@@ -24,7 +24,7 @@ endif()
 # and will ignore all overrides in release builds.
 # This behavior can be overridden by passing -DALLOW_SETTINGS_REGISTRY_DEVELOPMENT_OVERRIDES=0, 1, 2, 3 or 4 when generating the build files.
 # The override can be removed by passing -UALLOW_SETTINGS_REGISTRY_DEVELOPMENT_OVERRIDES when generating the build files.
-set(ALLOW_SETTINGS_REGISTRY_DEVELOPMENT_OVERRIDES "" CACHE STRING 
+set(ALLOW_SETTINGS_REGISTRY_DEVELOPMENT_OVERRIDES "" CACHE STRING
 "Forces the Settings Registry development overrides to be used or ignored.
   If unset, development overrides are used in development builds and ignored in release builds.
   0 disables the development overrides in all builds.
@@ -59,35 +59,21 @@ set(STARTUP_CFG_FILE_CHECK_OVERRIDE_FLAG $<$<NOT:$<STREQUAL:"${O3DE_STARTUP_CFG_
 
 
 o3de_add_target(
-    NAME O3DEKernel ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_LIBRARY_TYPE}
-    NAMESPACE AZ
-    FILES_CMAKE
-        AzCore/o3dekernel_files.cmake
-    PLATFORM_INCLUDE_FILES
-        ${pal_path}/o3dekernel_${O3DE_PAL_PLATFORM_WART}.cmake
-    INCLUDE_DIRECTORIES
-        PUBLIC
-            .
-            ${pal_path}
-            ${common_dir}
-)
-
-o3de_add_target(
-    NAME AzCore.Static STATIC
+    NAME AzCore ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_LIBRARY_TYPE}
     NAMESPACE AZ
     FILES_CMAKE
         AzCore/azcore_files.cmake
         AzCore/std/azstd_files.cmake
-        ${pal_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
+        ${pal_code_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
+    PLATFORM_INCLUDE_FILES
+        ${pal_code_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
     COMPILE_DEFINITIONS
         PRIVATE
             AZCORE_EXPORTS
-    PLATFORM_INCLUDE_FILES
-        ${pal_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             .
-            ${pal_path}
+            ${pal_code_path}
             ${common_dir}
     BUILD_DEPENDENCIES
         PRIVATE
@@ -99,17 +85,6 @@ o3de_add_target(
             3rdParty::ZLIB
             3rdParty::zstd
             3rdParty::cityhash
-            AZ::O3DEKernel
-)
-
-o3de_add_target(
-    NAME AzCore ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_LIBRARY_TYPE}
-    NAMESPACE AZ
-    FILES_CMAKE
-        AzCore/azcoreshared_files.cmake
-    BUILD_DEPENDENCIES
-        PUBLIC
-            AZ::AzCore.Static
 )
 
 o3de_add_source_properties(
@@ -152,8 +127,7 @@ endif()
 ################################################################################
 # Tests
 ################################################################################
-if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-
+if(O3DE_O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     o3de_add_target(
         NAME AzCoreTestCommon STATIC
         NAMESPACE AZ
@@ -162,7 +136,7 @@ if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         INCLUDE_DIRECTORIES
             PRIVATE
                 .
-                ${pal_path}
+                ${pal_code_path}
                 ${common_dir}
         BUILD_DEPENDENCIES
             PRIVATE
@@ -197,52 +171,54 @@ if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzCore
     )
 
-    o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Framework/AzCore/Tests/Platform/${O3DE_PAL_PLATFORM_NAME} pal_tests_path)
-    o3de_add_target(
-        NAME AzCore.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
-        NAMESPACE AZ
-        FILES_CMAKE
-            Tests/azcoretests_files.cmake
-            ${pal_tests_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
-        PLATFORM_INCLUDE_FILES
-            ${pal_tests_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
-        INCLUDE_DIRECTORIES
-            PRIVATE
-                Tests
-        COMPILE_DEFINITIONS
-            PRIVATE
-                AZ_NUMERICCAST_ENABLED
-        BUILD_DEPENDENCIES
-            PRIVATE
-                AZ::AzCore
-                AZ::AzCoreTestCommon
-                AZ::AzTestShared
-                AZ::AzTest
-        RUNTIME_DEPENDENCIES
-            AZ::AzCoreTestDLL
-    )
-    o3de_add_googletest(
-        NAME AZ::AzCore.Tests
-        LABELS REQUIRES_tiaf
-    )
-    o3de_add_googletest(
-        NAME AZ::AzCore.Tests
-        TEST_SUITE sandbox
-    )
-    o3de_add_googlebenchmark(
-        NAME AZ::AzCore.Benchmarks
-        TARGET AZ::AzCore.Tests
-    )
-    o3de_add_source_properties(
-        SOURCES Tests/Debug.cpp
-        PROPERTY COMPILE_DEFINITIONS
-        VALUES AZCORETEST_DLL_NAME=\"$<TARGET_FILE_NAME:AzCore.Tests>\"
-    )
-    o3de_add_target_files(
-        TARGETS AzCore.Tests
-        FILES ${O3DE_ENGINE_PATH}/Code/Framework/AzCore/Tests/Memory/AllocatorBenchmarkRecordings.bin
-        OUTPUT_SUBDIRECTORY Tests/AzCore/Memory
-    )
+    if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+        o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Tests/Platform/${O3DE_PAL_PLATFORM_NAME} pal_tests_dir)
+        o3de_add_target(
+            NAME AzCore.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
+            NAMESPACE AZ
+            FILES_CMAKE
+                Tests/azcoretests_files.cmake
+                ${pal_tests_dir}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
+            PLATFORM_INCLUDE_FILES
+                ${pal_tests_dir}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
+            INCLUDE_DIRECTORIES
+                PRIVATE
+                    Tests
+            COMPILE_DEFINITIONS
+                PRIVATE
+                    AZ_NUMERICCAST_ENABLED
+            BUILD_DEPENDENCIES
+                PRIVATE
+                    AZ::AzCore
+                    AZ::AzCoreTestCommon
+                    AZ::AzTestShared
+                    AZ::AzTest
+            RUNTIME_DEPENDENCIES
+                AZ::AzCoreTestDLL
+        )
+        o3de_add_googletest(
+            NAME AZ::AzCore.Tests
+            LABELS REQUIRES_tiaf
+        )
+        o3de_add_googletest(
+            NAME AZ::AzCore.Tests
+            TEST_SUITE sandbox
+        )
+        o3de_add_googlebenchmark(
+            NAME AZ::AzCore.Benchmarks
+            TARGET AZ::AzCore.Tests
+        )
+        o3de_add_source_properties(
+            SOURCES Tests/Debug.cpp
+            PROPERTY COMPILE_DEFINITIONS
+            VALUES AZCORETEST_DLL_NAME=\"$<TARGET_FILE_NAME:AzCore.Tests>\"
+        )
+        o3de_add_target_files(
+            TARGETS AzCore.Tests
+            FILES ${CMAKE_CURRENT_SOURCE_DIR}/Tests/Memory/AllocatorBenchmarkRecordings.bin
+            OUTPUT_SUBDIRECTORY Tests/AzCore/Memory
+        )
+    endif()
 
 endif()
 

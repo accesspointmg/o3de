@@ -7,18 +7,16 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/Component/TickBus.h>
 #include <AzCore/UserSettings/UserSettings.h>
 #include <AzToolsFramework/UI/PropertyEditor/PropertyEditorAPI_Internals.h>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 
 #include <QWidget>
 #include <QToolButton>
-#endif
 
 namespace AZ
 {
-    class SerializeContext;
     namespace DocumentPropertyEditor
     {
         class ReflectionAdapter;
@@ -49,27 +47,34 @@ namespace AzToolsFramework
     {
         class AssetEditorTab;
 
-        class AssetEditorWidgetUserSettings : public AZ::UserSettings
+        //! Stores the recent used folder and file settings used by the Asset Editor
+        class AZTF_API AssetEditorWidgetUserSettings final
         {
         public:
-            AZ_RTTI(AssetEditorWidgetUserSettings, "{382FE424-4541-4D93-9BA4-DE17A6DF8676}", AZ::UserSettings);
+
+            AZ_RTTI(AssetEditorWidgetUserSettings, "{382FE424-4541-4D93-9BA4-DE17A6DF8676}");
             AZ_CLASS_ALLOCATOR(AssetEditorWidgetUserSettings, AZ::SystemAllocator);
 
             static void Reflect(AZ::ReflectContext* context);
 
             AssetEditorWidgetUserSettings();
-            ~AssetEditorWidgetUserSettings() override = default;
+            ~AssetEditorWidgetUserSettings() = default;
 
-            void AddRecentPath(const AZStd::string& recentPath);
+            void AddRecentPath(AZ::Data::AssetType, const AZStd::string& recentPath);
+            void Clear();
+            const AZStd::string GetRecentPathForAssetType(AZ::Data::AssetType assetType) const;
 
-            AZStd::string m_lastSavePath;
-            AZStd::vector<AZStd::string> m_recentPaths;
+            const AZStd::vector<AZStd::string>& GetRecentFiles() const { return m_recentFiles; }
+
+        private:
+
+            AZStd::unordered_map<AZ::Data::AssetType, AZStd::string> m_recentPathPerAssetType;
+            AZStd::vector<AZStd::string> m_recentFiles;
+
         };
 
-        /**
-         * Provides ability to create, edit, and save reflected assets.
-         */
-        class AssetEditorWidget
+         //! Provides ability to create, edit, and save reflected assets.
+        class AZTF_API AssetEditorWidget
             : public QWidget
         {
             Q_OBJECT
@@ -89,12 +94,15 @@ namespace AzToolsFramework
 
             void SetStatusText(const QString& assetStatus);
             void UpdateSaveMenuActionsStatus();
+            // Enable/disable the Edit > Undo / Redo actions based on the current tab's history.
+            void UpdateUndoRedoActionsStatus();
             void SetCurrentTab(AssetEditorTab* tab);
 
             void UpdateTabTitle(AssetEditorTab* tab);
-            void SetLastSavePath(const AZStd::string& savePath);
-            const QString GetLastSavePath() const;
-            void AddRecentPath(const AZStd::string& recentPath);
+
+            const QString GetRecentPathForAssetType(AZ::Data::AssetType) const;
+
+            void AddRecentPath(AZ::Data::AssetType, const AZStd::string& recentPath);
 
             void CloseTab(AssetEditorTab* tab);
             void CloseTabAndContainerIfEmpty(AssetEditorTab* tab);
@@ -103,6 +111,7 @@ namespace AzToolsFramework
             void CreateAsset(AZ::Data::AssetType assetType);
 
         public Q_SLOTS:
+
             void OpenAssetWithDialog();
             void OpenAssetFromPath(const AZStd::string& fullPath);
             void OnAssetSaveFailed(const AZStd::string& error);
@@ -113,14 +122,20 @@ namespace AzToolsFramework
             void ExpandAll();
             void CollapseAll();
 
+            // Route undo/redo to the current tab (each tab owns its own history).
+            void Undo();
+            void Redo();
+
             void currentTabChanged(int newCurrentIndex);
             void onTabCloseButtonPressed(int tabIndexToClose);
 
         Q_SIGNALS:
+
             void OnAssetSaveFailedSignal(const AZStd::string& error);
             void OnAssetOpenedSignal(const AZ::Data::Asset<AZ::Data::AssetData>& asset);
 
-        protected: // IPropertyEditorNotify
+        protected:
+
             void UpdateRecentFileListState();
 
         private:
@@ -129,6 +144,10 @@ namespace AzToolsFramework
             void ShowAddAssetMenu(const QToolButton* menuButton);
 
             void PopulateRecentMenu();
+
+            // Give the Asset Editor its own Action Manager context so its shortcuts (Ctrl+S / Ctrl+Shift+S /
+            // Ctrl+Z / Ctrl+Y) win over the main Editor's identical ones while focus is inside the pane.
+            void RegisterShortcutActionContext();
 
             void CloseOnNextTick();
 
@@ -159,18 +178,25 @@ namespace AzToolsFramework
             QAction* m_saveAsAssetAction;
             QAction* m_saveAllAssetsAction;
 
+            QAction* m_undoAction = nullptr;
+            QAction* m_redoAction = nullptr;
+
             QMenu* m_recentFileMenu;
             QMenu* m_newAssetMenu = nullptr;
 
             unsigned int m_nextNewAssetIndex = 1;
 
-            AZStd::intrusive_ptr<AssetEditorWidgetUserSettings> m_userSettings;
+            AssetEditorWidgetUserSettings m_userSettings;
+
             AZStd::unique_ptr<Ui::AssetEditorStatusBar> m_statusBar;
 
             AZ::DocumentPropertyEditor::ReflectionAdapter::PropertyChangeEvent::Handler m_propertyChangeHandler;
             AZ::Crc32 m_savedStateKey;
 
             void PopulateGenericAssetTypes();
+            void SaveSettings();
+
+            void CommitInProgressEdit();
         };
     } // namespace AssetEditor
 } // namespace AzToolsFramework

@@ -66,7 +66,7 @@ QString AssetRequestHandler::AssetRequestLine::GetDisplayString() const
 
 int AssetRequestHandler::GetNumOutstandingAssetRequests() const
 {
-    return m_pendingAssetRequests.size();
+    return static_cast<int>(m_pendingAssetRequests.size());
 }
 
 namespace
@@ -88,14 +88,14 @@ namespace
     }
 
     // generic version of BuildFailure, generally assumes that the failure type is a string.
-    template<typename T> 
+    template<typename T>
     void BuildFailure(const T& failure,  AZStd::vector<AZStd::string>& lines)
     {
        ParseToLines(lines, failure);
     }
 
     // specialized version of BuildFailure, for when the failure type is a MoveFailure, the string will be in m_reason
-    template<> 
+    template<>
     void BuildFailure(const MoveFailure& failure,  AZStd::vector<AZStd::string>& lines)
     {
         ParseToLines(lines, failure.m_reason);
@@ -290,7 +290,7 @@ namespace
         return response;
     }
 
-    GetScanFoldersResponse HandleGetScanFoldersRequest(MessageData<GetScanFoldersRequest> messageData)
+    GetScanFoldersResponse HandleGetScanFoldersRequest([[maybe_unused]] MessageData<GetScanFoldersRequest> messageData)
     {
         bool success = true;
         AZStd::vector<AZStd::string> scanFolders;
@@ -302,10 +302,10 @@ namespace
             AZ_TracePrintf(AssetProcessor::ConsoleChannel, "Could not acquire a list of scan folders from the database.");
         }
 
-        return GetScanFoldersResponse(move(scanFolders));
+        return GetScanFoldersResponse(AZStd::move(scanFolders));
     }
 
-    GetAssetSafeFoldersResponse HandleGetAssetSafeFoldersRequest(MessageData<GetAssetSafeFoldersRequest> messageData)
+    GetAssetSafeFoldersResponse HandleGetAssetSafeFoldersRequest([[maybe_unused]] MessageData<GetAssetSafeFoldersRequest> messageData)
     {
         bool success = true;
         AZStd::vector<AZStd::string> assetSafeFolders;
@@ -317,7 +317,7 @@ namespace
             AZ_TracePrintf(AssetProcessor::ConsoleChannel, "Could not acquire a list of asset safe folders from the database.");
         }
 
-        return GetAssetSafeFoldersResponse(move(assetSafeFolders));
+        return GetAssetSafeFoldersResponse(AZStd::move(assetSafeFolders));
     }
 
     void HandleRegisterSourceAssetRequest(MessageData<RegisterSourceAssetRequest> messageData)
@@ -506,7 +506,7 @@ void AssetRequestHandler::OnCompileGroupFinished(NetworkRequestID groupID, Asset
     }
     else
     {
-        AZ_TracePrintf(AssetProcessor::DebugChannel, "Compile Group finished: %s.\n", located.value().GetDisplayString().toUtf8().constData());
+        AZ_TracePrintf(AssetProcessor::DebugChannel, "Compile Group finished: %s - %s\n", located.value().GetDisplayString().toUtf8().constData(), status == AssetStatus_Compiled ? "compiled" : "failed");
         SendAssetStatus(groupID, RequestAssetStatus::MessageType, status);
         m_pendingAssetRequests.erase(located);
     }
@@ -611,7 +611,7 @@ void AssetRequestHandler::DeleteFenceFile_Retry(unsigned int fenceId, QString fe
         // add an entry in map
         // We have successfully created and deleted the fence file, insert an entry for it in the pendingFenceRequest map
         // and return, we will only process this request once the APM indicates that it has detected the fence file
-        m_pendingFenceRequestMap[fenceId] = AZStd::move(RequestInfo(key, AZStd::move(message), platform));
+        m_pendingFenceRequestMap[fenceId] = RequestInfo(key, AZStd::move(message), platform);
         return;
     }
 

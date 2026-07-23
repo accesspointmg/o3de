@@ -36,12 +36,12 @@
 #include <PostProcess/ShapeWeightModifier/ShapeWeightModifierComponent.h>
 #include <PostProcess/GradientWeightModifier/GradientWeightModifierComponent.h>
 #include <PostProcess/ChromaticAberration/ChromaticAberrationComponent.h>
+#include <PostProcess/MotionBlur/MotionBlurComponent.h>
 #include <PostProcess/PaniniProjection/PaniniProjectionComponent.h>
 #include <PostProcess/FilmGrain/FilmGrainComponent.h>
 #include <PostProcess/WhiteBalance/WhiteBalanceComponent.h>
 #include <PostProcess/Vignette/VignetteComponent.h>
 #include <ScreenSpace/DeferredFogComponent.h>
-#include <SkyAtmosphere/SkyAtmosphereComponent.h>
 #include <SkyBox/HDRiSkyboxComponent.h>
 #include <SkyBox/PhysicalSkyComponent.h>
 #include <Scripting/EntityReferenceComponent.h>
@@ -78,12 +78,12 @@
 #include <PostProcess/ShapeWeightModifier/EditorShapeWeightModifierComponent.h>
 #include <PostProcess/GradientWeightModifier/EditorGradientWeightModifierComponent.h>
 #include <PostProcess/ChromaticAberration/EditorChromaticAberrationComponent.h>
+#include <PostProcess/MotionBlur/EditorMotionBlurComponent.h>
 #include <PostProcess/PaniniProjection/EditorPaniniProjectionComponent.h>
 #include <PostProcess/FilmGrain/EditorFilmGrainComponent.h>
 #include <PostProcess/WhiteBalance/EditorWhiteBalanceComponent.h>
 #include <PostProcess/Vignette/EditorVignetteComponent.h>
 #include <ScreenSpace/EditorDeferredFogComponent.h>
-#include <SkyAtmosphere/EditorSkyAtmosphereComponent.h>
 #include <SkyBox/EditorHDRiSkyboxComponent.h>
 #include <SkyBox/EditorPhysicalSkyComponent.h>
 #include <Scripting/EditorEntityReferenceComponent.h>
@@ -119,7 +119,6 @@ namespace AZ
                         LookModificationComponent::CreateDescriptor(),
                         GridComponent::CreateDescriptor(),
                         HDRiSkyboxComponent::CreateDescriptor(),
-                        SkyAtmosphereComponent::CreateDescriptor(),
                         ImageBasedLightComponent::CreateDescriptor(),
                         MaterialComponent::CreateDescriptor(),
                         MeshComponent::CreateDescriptor(),
@@ -138,6 +137,7 @@ namespace AZ
                         AttachmentComponent::CreateDescriptor(),
                         OcclusionCullingPlaneComponent::CreateDescriptor(),
                         ChromaticAberrationComponent::CreateDescriptor(),
+                        MotionBlurComponent::CreateDescriptor(),
                         PaniniProjectionComponent::CreateDescriptor(),
                         FilmGrainComponent::CreateDescriptor(),
                         WhiteBalanceComponent::CreateDescriptor(),
@@ -159,7 +159,6 @@ namespace AZ
                         EditorLookModificationComponent::CreateDescriptor(),
                         EditorGridComponent::CreateDescriptor(),
                         EditorHDRiSkyboxComponent::CreateDescriptor(),
-                        EditorSkyAtmosphereComponent::CreateDescriptor(),
                         EditorImageBasedLightComponent::CreateDescriptor(),
                         EditorMaterialComponent::CreateDescriptor(),
                         EditorMaterialSystemComponent::CreateDescriptor(),
@@ -180,6 +179,7 @@ namespace AZ
                         EditorAttachmentComponent::CreateDescriptor(),
                         EditorOcclusionCullingPlaneComponent::CreateDescriptor(),
                         EditorChromaticAberrationComponent::CreateDescriptor(),
+                        EditorMotionBlurComponent::CreateDescriptor(),
                         EditorPaniniProjectionComponent::CreateDescriptor(),
                         EditorFilmGrainComponent::CreateDescriptor(),
                         EditorWhiteBalanceComponent::CreateDescriptor(),

@@ -14,9 +14,7 @@
 #include <QPushButton>
 #include <QStyle>
 
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <AssetImporter/UI/ui_FilesAlreadyExistDialog.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
 FilesAlreadyExistDialog::FilesAlreadyExistDialog(QString message ,int numberOfFiles, QWidget* parent)
     : QDialog(parent)
@@ -89,7 +87,7 @@ void FilesAlreadyExistDialog::DoApplyActionToAllFiles()
 void FilesAlreadyExistDialog::UpdateCheckBoxState(int numberOfFiles)
 {
     m_ui->applyToAllCheckBox->setVisible((numberOfFiles > 1));
-    connect(m_ui->applyToAllCheckBox, &QCheckBox::stateChanged, this, &FilesAlreadyExistDialog::DoApplyActionToAllFiles);
+    connect(m_ui->applyToAllCheckBox, &QCheckBox::checkStateChanged, this, &FilesAlreadyExistDialog::DoApplyActionToAllFiles);
 }
 
 void FilesAlreadyExistDialog::closeEvent([[maybe_unused]] QCloseEvent* ev)
@@ -97,5 +95,3 @@ void FilesAlreadyExistDialog::closeEvent([[maybe_unused]] QCloseEvent* ev)
     QDialog::reject();
     Q_EMIT CancelAllProcesses();
 }
-
-#include <AssetImporter/UI/moc_FilesAlreadyExistDialog.cpp>

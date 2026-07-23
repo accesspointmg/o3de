@@ -8,12 +8,11 @@
 #ifndef PLATFORMCONFIGURATION_H
 #define PLATFORMCONFIGURATION_H
 
-#if !defined(Q_MOC_RUN)
 #include <QList>
 #include <QString>
 #include <QObject>
 #include <QHash>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QPair>
 #include <QVector>
 #include <QSet>
@@ -25,7 +24,7 @@
 #include <native/AssetManager/assetScanFolderInfo.h>
 #include <AssetBuilderSDK/AssetBuilderSDK.h>
 #include <AzToolsFramework/Asset/AssetUtils.h>
-#endif
+
 #include "IPathConversion.h"
 
 
@@ -36,7 +35,6 @@ namespace AZ
 
 namespace AssetProcessor
 {
-    inline constexpr const char* AssetProcessorSettingsKey{ "/Amazon/AssetProcessor/Settings" };
     inline constexpr const char* AssetProcessorServerKey{ "/O3DE/AssetProcessor/Settings/Server" };
     class PlatformConfiguration;
     class ScanFolderInfo;
@@ -137,7 +135,7 @@ namespace AssetProcessor
     public:
         AZ_RTTI(PlatformConfiguration, "{9F0C465D-A3A6-417E-B69C-62CBD22FD950}", RecognizerConfiguration, IPathConversion);
 
-        typedef QPair<QRegExp, QString> RCSpec;
+        typedef QPair<QRegularExpression, QString> RCSpec;
         typedef QVector<RCSpec> RCSpecList;
 
     public:
@@ -164,7 +162,7 @@ namespace AssetProcessor
         //! Add AssetProcessor config files from platform specific folders
         bool AddPlatformConfigFilePaths(AZStd::vector<AZ::IO::Path>& configList);
 
-        int MetaDataFileTypesCount() const { return m_metaDataFileTypes.count(); }
+        int MetaDataFileTypesCount() const { return static_cast<int>(m_metaDataFileTypes.count()); }
         // Metadata file types are (meta file extension, original file extension - or blank if its tacked on the end instead of replacing).
         // so for example if its
         // blah.tif + blah.tif.metadata, then its ("metadata", "")
@@ -177,10 +175,6 @@ namespace AssetProcessor
         bool IsMetaDataTypeRealFile(QString relativeName) const;
 
         void EnablePlatform(const AssetBuilderSDK::PlatformInfo& platform, bool enable = true);
-
-        //! Gets the minumum jobs specified in the configuration file
-        int GetMinJobs() const;
-        int GetMaxJobs() const;
 
         void EnableCommonPlatform();
         void AddIntermediateScanFolder();
@@ -331,9 +325,6 @@ namespace AssetProcessor
         QSet<QString> m_metaDataRealFiles;
         AZStd::vector<AzFramework::GemInfo> m_gemInfoList;
         mutable AZ::s64 m_intermediateAssetScanFolderId = -1; // Cached ID for intermediate scanfolder, for quick lookups
-
-        int m_minJobs = 1;
-        int m_maxJobs = 3;
 
         // used only during file read, keeps the total running list of all the enabled platforms from all config files and command lines
         AZStd::vector<AZStd::string> m_tempEnabledPlatforms;

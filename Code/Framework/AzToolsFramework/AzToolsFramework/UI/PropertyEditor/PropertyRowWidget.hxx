@@ -8,25 +8,26 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/PlatformDef.h>
 AZ_PUSH_DISABLE_WARNING(4251, "-Wunknown-warning-option") // class '...' needs to have dll-interface to be used by clients of class '...'
 #include <AzCore/base.h>
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzQtComponents/Components/Widgets/ElidingLabel.h>
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QLayout>
-#include <QtWidgets/QToolButton>
-#include <QtWidgets/QCheckBox>
-#include <QtWidgets/QFrame>
-#include <QtCore/QPointer>
-#include <QtCore/QElapsedTimer>
+#include <QWidget>
+#include <QLabel>
+#include <QLayout>
+#include <QToolButton>
+#include <QCheckBox>
+#include <QFrame>
+#include <QPointer>
+#include <QElapsedTimer>
 AZ_POP_DISABLE_WARNING
 
 #include "PropertyEditorAPI.h"
-#endif
 
 namespace AzToolsFramework
 {
@@ -35,7 +36,7 @@ namespace AzToolsFramework
     // the purpose of a Property Row Widget is to house the user's property GUI
     // and serve as a conduit to talk to the system.  You should never need to do anything
     // with this guy, except tell him to expand, collapse, etc.
-    class PropertyRowWidget : public QFrame
+    class AZTF_API PropertyRowWidget : public QFrame
     {
         Q_OBJECT;
         Q_PROPERTY(bool hasChildRows READ HasChildRows);

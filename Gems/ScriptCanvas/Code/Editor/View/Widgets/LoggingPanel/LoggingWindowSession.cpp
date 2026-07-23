@@ -52,10 +52,10 @@ namespace ScriptCanvasEditor
 
     void LoggingWindowFilterModel::SetFilter(const QString& filter)
     {
+        beginFilterChange();
         m_filter = filter;
-        m_logFilter.m_filter = QRegExp(m_filter, Qt::CaseInsensitive);
-
-        invalidateFilter();
+        m_logFilter.m_filter = QRegularExpression(m_filter, QRegularExpression::PatternOption::CaseInsensitiveOption);
+        endFilterChange();
     }
 
     void LoggingWindowFilterModel::ClearFilter()
@@ -462,5 +462,4 @@ namespace ScriptCanvasEditor
         }
     }
 
-#include <Editor/View/Widgets/LoggingPanel/moc_LoggingWindowSession.cpp>
 }

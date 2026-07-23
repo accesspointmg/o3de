@@ -10,55 +10,57 @@
 
 #include "LUAEditorMainWindow.hxx"
 
-#include <AzCore/UserSettings/UserSettings.h>
+#include <AzCore/Component/TickBus.h>
 #include <AzCore/Debug/Trace.h>
+#include <AzCore/IO/Path/Path.h>
+#include <AzCore/Script/ScriptAsset.h>
+#include <AzCore/Settings/SettingsRegistryMergeUtils.h>
+#include <AzCore/UserSettings/UserSettings.h>
+#include <AzCore/Utils/Utils.h>
 #include <AzCore/std/containers/map.h>
 #include <AzCore/std/delegate/delegate.h>
-#include <AzCore/Script/ScriptAsset.h>
-#include <AzCore/Component/TickBus.h>
-#include <AzCore/IO/Path/Path.h>
-#include <AzCore/Settings/SettingsRegistryMergeUtils.h>
-#include <AzCore/Utils/Utils.h>
 #include <AzFramework/Script/ScriptRemoteDebuggingConstants.h>
 #include <AzFramework/StringFunc/StringFunc.h>
 #include <AzToolsFramework/AssetBrowser/AssetBrowserBus.h>
-#include <AzToolsFramework/AssetBrowser/AssetBrowserModel.h>
 #include <AzToolsFramework/AssetBrowser/AssetBrowserFilterModel.h>
+#include <AzToolsFramework/AssetBrowser/AssetBrowserModel.h>
 #include <AzToolsFramework/AssetBrowser/AssetSelectionModel.h>
 #include <AzToolsFramework/AssetBrowser/Entries/SourceAssetBrowserEntry.h>
 #include <AzToolsFramework/AssetBrowser/Views/AssetBrowserTreeView.h>
+#include <AzToolsFramework/UI/LegacyFramework/Core/EditorFrameworkAPI.h>
+#include <AzToolsFramework/UI/LegacyFramework/CustomMenus/CustomMenusAPI.h>
+#include <AzToolsFramework/UI/LegacyFramework/MainWindowSavedState.h>
 #include <AzToolsFramework/UI/UICore/ProgressShield.hxx>
 #include <AzToolsFramework/UI/UICore/SaveChangesDialog.hxx>
-#include <AzToolsFramework/UI/LegacyFramework/Core/EditorFrameworkAPI.h>
-#include <AzToolsFramework/UI/LegacyFramework/MainWindowSavedState.h>
 #include <AzToolsFramework/UI/UICore/TargetSelectorButton.hxx>
 #include <AzToolsFramework/UI/UICore/WidgetHelpers.h>
-#include <AzToolsFramework/UI/LegacyFramework/CustomMenus/CustomMenusAPI.h>
-#include <Source/LUA/TargetContextButton.hxx>
 #include <Source/LUA/LUAEditorDebuggerMessages.h>
+#include <Source/LUA/TargetContextButton.hxx>
 
-#include "DebugAttachmentButton.hxx"
 #include "ClassReferenceFilter.hxx"
-#include "WatchesPanel.hxx"
-#include "LUAEditorGoToLineDialog.hxx"
-#include "LUAEditorView.hxx"
-#include "LUAEditorContextMessages.h"
+#include "DebugAttachmentButton.hxx"
 #include "LUABreakpointTrackerMessages.h"
+#include "LUAEditorContextMessages.h"
+#include "LUAEditorGoToLineDialog.hxx"
 #include "LUAEditorSettingsDialog.hxx"
+#include "LUAEditorView.hxx"
 #include "RecentFiles.h"
+#include "WatchesPanel.hxx"
 
-#include <Source/AssetDatabaseLocationListener.h>
-#include <Source/LUA/ui_LUAEditorMainWindow.h>
 #include <AzCore/Component/ComponentApplicationBus.h>
 #include <AzQtComponents/Components/FilteredSearchWidget.h>
 #include <AzQtComponents/Components/StyleManager.h>
+#include <Source/AssetDatabaseLocationListener.h>
+#include <Source/LUA/ui_LUAEditorMainWindow.h>
 
-#include <QTimer>
+#include <QBoxLayout>
 #include <QDesktopServices>
-#include <QLabel>
 #include <QDir>
 #include <QFileDialog>
+#include <QLabel>
 #include <QMessageBox>
+#include <QString>
+#include <QTimer>
 
 void initSharedResources()
 {
@@ -103,10 +105,9 @@ namespace LUAEditor
 
         QMenu* theMenu = new QMenu(this);
         (void)theMenu->addAction(
-            "Close Lua Editor App",
+            "Close Lua Editor App", QKeySequence("Alt+F4"),
             this,
-            SLOT(OnMenuCloseCurrentWindow()),
-            QKeySequence("Alt+F4")
+            SLOT(OnMenuCloseCurrentWindow())
             );
 
         AzToolsFramework::FrameworkMessages::Bus::Broadcast(
@@ -159,6 +160,7 @@ namespace LUAEditor
         m_pContextButton = aznew LUA::TargetContextButtonAction(this);
         m_gui->debugToolbar->addAction(m_pContextButton);
         m_gui->menuDebug->addAction(m_pContextButton);
+        m_pContextButton->setEnabled(false);
 
         m_pDebugAttachmentButton = aznew LUAEditor::DebugAttachmentButtonAction(this);
         m_gui->debugToolbar->addAction(m_pDebugAttachmentButton);
@@ -173,6 +175,26 @@ namespace LUAEditor
         m_gui->localsDockWidget->hide();
         m_gui->breakpointsDockWidget->hide();
         m_gui->findResultsDockWidget->hide();
+
+        m_remoteToolsEndpointJoinedHandler = AzFramework::RemoteToolsEndpointStatusEvent::Handler(
+            [this]([[maybe_unused]] AzFramework::RemoteToolsEndpointInfo info)
+            {
+                OnRemoteToolsEndpointListChanged();
+            });
+
+        m_remoteToolsEndpointLeftHandler = AzFramework::RemoteToolsEndpointStatusEvent::Handler(
+            [this]([[maybe_unused]] AzFramework::RemoteToolsEndpointInfo info)
+            {
+                OnRemoteToolsEndpointListChanged();
+            });
+
+        if (auto* remoteToolsInterface = AzFramework::RemoteToolsInterface::Get())
+        {
+            remoteToolsInterface->RegisterRemoteToolsEndpointJoinedHandler(AzFramework::LuaToolsKey, m_remoteToolsEndpointJoinedHandler);
+            remoteToolsInterface->RegisterRemoteToolsEndpointLeftHandler(AzFramework::LuaToolsKey, m_remoteToolsEndpointLeftHandler);
+        }
+
+        OnRemoteToolsEndpointListChanged();
 
         QTimer::singleShot(0, this, SLOT(RestoreWindowState()));
 
@@ -304,7 +326,8 @@ namespace LUAEditor
 
         QList<QAction*> actions = m_gui->menuOpenRecent->actions();
 
-        for (int i = actions.size() - 1; i >= 0; i--)
+        const int size = aznumeric_cast<int>(actions.size());
+        for (int i = size - 1; i >= 0; i--)
         {
             m_gui->menuOpenRecent->removeAction(actions[i]);
         }
@@ -538,7 +561,7 @@ namespace LUAEditor
         luaViewWidget->installEventFilter(this);
 
         m_ptrPerforceStatusWidget = new QLabel(tr("Pending Status"), this);
-        m_ptrPerforceStatusWidget->setMargin(2);
+        m_ptrPerforceStatusWidget->setContentsMargins(2, 2, 2, 2);
         m_ptrPerforceStatusWidget->setStyleSheet(QString("background: rgba(192,192,192,255); color: black;  border-style: inset;\nborder-width: 1px;\nborder-color: rgba(100,100,100,255);\nborder-radius: 8px;"));
         m_ptrPerforceStatusWidget->setAutoFillBackground(true);
         m_ptrPerforceStatusWidget->setTextInteractionFlags(Qt::NoTextInteraction);
@@ -799,6 +822,19 @@ namespace LUAEditor
         }
     }
 
+
+    void LUAEditorMainWindow::OnRemoteToolsEndpointListChanged()
+    {
+        const bool hasTarget = m_pTargetButton->HasTarget();
+        m_gui->breakpointsWarning->setHidden(hasTarget);
+        m_gui->stackWarning->setHidden(hasTarget);
+        m_gui->watchWarning->setHidden(hasTarget);
+        m_gui->localsWarning->setHidden(hasTarget);
+        m_gui->classReferenceWarning->setHidden(hasTarget);
+
+        if (hasTarget)
+            m_pTargetButton->ConnectToFirstTargetIfNotConnected();
+    }
 
     void LUAEditorMainWindow::OnDebugExecute()
     {
@@ -1357,16 +1393,16 @@ namespace LUAEditor
 
         LUAEditorGoToLineDialog dlg(this);
 
-        int lineNumber = 0, cursorColumn = 0;
-        currentView->GetCursorPosition(lineNumber, cursorColumn);
-        dlg.setLineNumber(lineNumber + 1);
+        int lineNumber = 0, lineColumn = 0;
+        currentView->GetCursorPosition(lineNumber, lineColumn);
+        dlg.setLineNumber(lineNumber, lineColumn);
 
         if (dlg.exec() != QDialog::Rejected)
         {
-            // go to that line of the selected file.
             lineNumber = dlg.getLineNumber();
+            lineColumn = dlg.getColumnNumber();
 
-            currentView->SetCursorPosition(lineNumber, 0);
+            currentView->SetCursorPosition(lineNumber, lineColumn);
         }
     }
 
@@ -2122,6 +2158,7 @@ namespace LUAEditor
 
         if (!track.targetConnected)
         {
+            m_pContextButton->setEnabled(false);
             m_pDebugAttachmentButton->setEnabled(false);
             m_gui->action_continue->setEnabled(false);
             m_gui->action_ExecuteOnTarget->setEnabled(false);
@@ -2135,6 +2172,7 @@ namespace LUAEditor
 
         // TARGET CONNECTED TRUE IS ASSUMED BEYOND THIS POINT
 
+        m_pContextButton->setEnabled(true);
         m_pDebugAttachmentButton->setEnabled(true);
 
         if (!track.debuggerAttached)
@@ -2483,4 +2521,3 @@ namespace LUAEditor
     }
 }//namespace LUAEditor
 
-#include <Source/LUA/moc_LUAEditorMainWindow.cpp>

@@ -382,7 +382,7 @@ namespace ScriptCanvasEditor
             {
                 case ColumnIndex::Description:
                 {
-                    return QString("Description");
+                    return tr("Description");
                 }
                 break;
                 default:
@@ -542,14 +542,14 @@ namespace ScriptCanvasEditor
 
     void GraphValidationSortFilterProxyModel::SetFilter(const QString& filterString)
     {
-        QString escapedString = QRegExp::escape(filterString);
+        QString escapedString = QRegularExpression::escape(filterString);
 
         if (m_filter != escapedString)
         {
+            beginFilterChange();
             m_filter = escapedString;
-            m_regex = QRegExp(m_filter, Qt::CaseInsensitive);
-
-            invalidateFilter();
+            m_regex = QRegularExpression(m_filter, QRegularExpression::PatternOption::CaseInsensitiveOption);
+            endFilterChange();
         }
     }
 
@@ -557,9 +557,9 @@ namespace ScriptCanvasEditor
     {
         if (m_severityFilter != severityFilter)
         {
+            beginFilterChange();
             m_severityFilter = severityFilter;
-
-            invalidateFilter();
+            endFilterChange();
         }
     }
 
@@ -1244,8 +1244,8 @@ namespace ScriptCanvasEditor
             }
         }
 
-        ui->errorOnlyFilter->setText(QString("%1 Errors").arg(errorCount));
-        ui->warningOnlyFilter->setText(QString("%1 Warnings").arg(warningCount));
+        ui->errorOnlyFilter->setText(tr("%1 Errors").arg(errorCount));
+        ui->warningOnlyFilter->setText(tr("%1 Warnings").arg(warningCount));
 
     }
     void GraphValidationDockWidget::OnRowSelected(int row)
@@ -1474,6 +1474,5 @@ namespace ScriptCanvasEditor
         }
     }
 
-#include <Editor/View/Widgets/ValidationPanel/moc_GraphValidationDockWidget.cpp>
 
 }

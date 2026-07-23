@@ -23,21 +23,6 @@ namespace UnitTest
         }
     };
 
-    TEST_F(MixedAllocatorTestFixture, MixedStackHeapAllocator_GetNameSetNameWorks)
-    {
-        const int StackElements = 4;
-
-        // Setting the name via construction should work.
-        const char name[] = "Mixed allocator";
-        SurfaceData::mixed_stack_heap_allocator<float, StackElements> allocator(name);
-        EXPECT_EQ(strcmp(allocator.get_name(), name), 0);
-
-        // Setting the name via set_name should work.
-        const char newName[] = "Renamed allocator";
-        allocator.set_name(newName);
-        EXPECT_EQ(strcmp(allocator.get_name(), newName), 0);
-    }
-
     TEST_F(MixedAllocatorTestFixture, MixedStackHeapAllocator_SingleStackAllocationWorks)
     {
         const int StackElements = 4;
@@ -106,20 +91,24 @@ namespace UnitTest
         ASSERT_NE(data, nullptr);
 
         // Resize to something smaller than the allocated stack buffer. This should succeed.
-        auto reallocatedData = allocator.reallocate(data, allocResizeSmallerSize);
-        EXPECT_NE(reallocatedData, nullptr);
+        auto reallocatedDataSucceeds = allocator.reallocate(data, allocResizeSmallerSize);
+        EXPECT_NE(reallocatedDataSucceeds, nullptr);
 
         // Resize to something larger than the allocated stack buffer. This should return 0, as it isn't suported.
-        reallocatedData = allocator.reallocate(data, allocResizeLargerSize);
-        EXPECT_EQ(reallocatedData, nullptr);
+        auto reallocatedDataFails = allocator.reallocate(data, allocResizeLargerSize);
+        EXPECT_EQ(reallocatedDataFails, nullptr);
 
         auto numAllocatedBytesAfter = AZ::AllocatorInstance<AZ::SystemAllocator>::Get().NumAllocatedBytes();
 
         // Verify that all of the data came from the stack.
-        EXPECT_GE(numAllocatedBytesAfter - numAllocatedBytesBefore, 0);
+        EXPECT_EQ(numAllocatedBytesAfter, numAllocatedBytesBefore);
 
         // Verify that a deallocation is successful.
-        allocator.deallocate(reallocatedData, allocSize, allocAlignment);
+        allocator.deallocate(reallocatedDataSucceeds, allocSize, allocAlignment);
+
+        // verify that it came from the stack, not the heap
+        numAllocatedBytesAfter = AZ::AllocatorInstance<AZ::SystemAllocator>::Get().NumAllocatedBytes();
+        EXPECT_GE(numAllocatedBytesAfter,numAllocatedBytesBefore);
     }
 
 } // namespace UnitTest

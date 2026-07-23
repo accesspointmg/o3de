@@ -7,12 +7,10 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzQtComponents/AzQtComponentsAPI.h>
 #include <AzCore/Math/Color.h>
 #include <QWidget>
 #include <QString>
-#endif
 
 class QLabel;
 
@@ -53,11 +51,8 @@ namespace AzQtComponents
 
     private:
         Mode m_mode = Mode::Warning;
-        AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
         AZ::Color m_color;
-        AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
         QString m_message;
-
         QLabel* m_iconLabel;
         QLabel* m_messageLabel;
     };

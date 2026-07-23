@@ -61,6 +61,7 @@ namespace AssetProcessor
 
     void JobSortFilterProxyModel::OnJobStatusFilterChanged(const AzQtComponents::SearchTypeFilterList& activeTypeFilters)
     {
+        beginFilterChange();
         m_completedWithWarningsFilter = false;
         m_activeTypeFilters.clear();
 
@@ -76,7 +77,7 @@ namespace AssetProcessor
             }
         }
 
-        invalidateFilter();
+        endFilterChange();
     }
 
     bool JobSortFilterProxyModel::lessThan(const QModelIndex& left, const QModelIndex& right) const
@@ -88,7 +89,7 @@ namespace AssetProcessor
             QVariant leftTime = sourceModel()->data(left, JobsModel::SortRole);
             QVariant rightTime = sourceModel()->data(right, JobsModel::SortRole);
 
-            if (leftTime.type() != QVariant::DateTime || rightTime.type() != QVariant::DateTime)
+            if (!leftTime.canConvert<QDateTime>() || !rightTime.canConvert<QDateTime>())
             {
                 return QSortFilterProxyModel::lessThan(left, right);
             }
@@ -100,7 +101,7 @@ namespace AssetProcessor
             QVariant leftDuration = sourceModel()->data(left, JobsModel::SortRole);
             QVariant rightDuration = sourceModel()->data(right, JobsModel::SortRole);
 
-            if (leftDuration.type() != QVariant::Time || rightDuration.type() != QVariant::Time)
+            if (!leftDuration.canConvert<QTime>() || !rightDuration.canConvert<QTime>())
             {
                 return QSortFilterProxyModel::lessThan(left, right);
             }

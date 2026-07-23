@@ -8,8 +8,8 @@
  *
  */
 
-#if !defined(Q_MOC_RUN)
 #include <QWidget>
+
 #include <AzCore/Math/Uuid.h>
 #include <AzCore/std/string/string.h>
 #include <AzCore/std/smart_ptr/unique_ptr.h>
@@ -18,7 +18,6 @@
 #include <AzToolsFramework/UI/PropertyEditor/PropertyEditorAPI.h>
 #include <SceneAPI/SceneUI/SceneUIConfiguration.h>
 #include <SceneAPI/SceneUI/SceneWidgets/SceneGraphWidget.h>
-#endif
 
 namespace AZ
 {
@@ -68,14 +67,12 @@ namespace AZ
                 size_t CalculateSelectedCount();
                 size_t CalculateTotalCount();
 
-                AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
                 AZStd::set<Uuid> m_filterTypes;
                 AZStd::set<Crc32> m_filterVirtualTypes;
                 AZStd::string m_filterName;
                 QScopedPointer<Ui::NodeTreeSelectionWidget> ui;
                 AZStd::unique_ptr<SceneGraphWidget> m_treeWidget;
                 AZStd::unique_ptr<DataTypes::ISceneNodeSelectionList> m_list;
-                AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
                 bool m_narrowSelection;
             };
         } // UI

@@ -11,7 +11,7 @@ o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Tool
 
 include(${pal_code_tools_crashhandler_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)
 
-if(NOT O3DE_PAL_TRAIT_BUILD_CRASH_HANDLER_SUPPORTED)
+if(NOT O3DE_PAL_TRAIT_BUILD_EXTERNAL_CRASH_HANDLER_SUPPORTED)
     return()
 endif()
 
@@ -29,6 +29,9 @@ o3de_add_target(
             Shared
         PRIVATE
             ${pal_code_tools_crashhandler_path}
+    COMPILE_DEFINITIONS
+        PUBLIC
+            EXTERNAL_CRASH_REPORTING
     BUILD_DEPENDENCIES
         PUBLIC
             AZ::CrashSupport

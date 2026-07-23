@@ -20,11 +20,13 @@ set(FILES
     Asset/AssetManager.cpp
     Asset/AssetManager.h
     Asset/AssetManager_private.h
+    Asset/AssetManagerBus.cpp
     Asset/AssetManagerBus.h
     Asset/AssetManagerComponent.cpp
     Asset/AssetManagerComponent.h
     Asset/AssetSerializer.cpp
     Asset/AssetSerializer.h
+    Asset/AssetTypeInfoBus.cpp
     Asset/AssetTypeInfoBus.h
     Asset/AssetInternal/WeakAsset.h
     base.h
@@ -35,6 +37,7 @@ set(FILES
     Component/Component.h
     Component/ComponentApplication.cpp
     Component/ComponentApplication.h
+    Component/ComponentApplicationBus.cpp
     Component/ComponentApplicationBus.h
     Component/ComponentApplicationLifecycle.cpp
     Component/ComponentApplicationLifecycle.h
@@ -43,6 +46,10 @@ set(FILES
     Component/ComponentExport.h
     Component/Entity.cpp
     Component/Entity.h
+    Component/EntityActiveSystemBus.h
+    Component/EntityActiveSystemComponent.cpp
+    Component/EntityActiveSystemComponent.h
+    Component/EntityBus.cpp
     Component/EntityBus.h
     Component/EntityId.h
     Component/EntityIdSerializer.cpp
@@ -55,7 +62,9 @@ set(FILES
     Component/NamedEntityId.h
     Component/NonUniformScaleBus.cpp
     Component/NonUniformScaleBus.h
+    Component/TickBus.cpp
     Component/TickBus.h
+    Component/TransformBus.cpp
     Component/TransformBus.h
     Compression/compression.cpp
     Compression/Compression.h
@@ -81,6 +90,7 @@ set(FILES
     Debug/Budget.cpp
     Debug/BudgetTracker.h
     Debug/BudgetTracker.cpp
+    Debug/ITrace.cpp
     Debug/MemoryProfiler.h
     Debug/PerformanceCollector.h
     Debug/PerformanceCollector.cpp
@@ -93,6 +103,7 @@ set(FILES
     Debug/Timer.h
     Debug/Trace.cpp
     Debug/Trace.h
+    Debug/TraceMessageBus.cpp
     Debug/TraceMessageBus.h
     Debug/TraceReflection.cpp
     Debug/TraceReflection.h
@@ -198,6 +209,8 @@ set(FILES
     IO/Streamer/FullFileDecompressor.cpp
     IO/Streamer/ReadSplitter.h
     IO/Streamer/ReadSplitter.cpp
+    IO/Streamer/RecentlyUsedIndex.h
+    IO/Streamer/RecentlyUsedIndex.inl
     IO/Streamer/RequestPath.h
     IO/Streamer/RequestPath.cpp
     IO/Streamer/Scheduler.h
@@ -235,6 +248,7 @@ set(FILES
     Jobs/JobFunction.h
     Jobs/JobManager.cpp
     Jobs/JobManager.h
+    Jobs/JobManagerBus.cpp
     Jobs/JobManagerBus.h
     Jobs/JobManagerComponent.cpp
     Jobs/JobManagerComponent.h
@@ -274,11 +288,16 @@ set(FILES
     Math/Color.cpp
     Math/Color.h
     Math/Color.inl
+    Math/ColorGradient.cpp
+    Math/ColorGradient.h
     Math/ColorSerializer.h
     Math/ColorSerializer.cpp
     Math/Crc.cpp
     Math/Crc.inl
     Math/Crc.h
+    Math/CrcInternal.h
+    Math/CrcSerializer.h
+    Math/CrcSerializer.cpp
     Math/DocsMath.h
     Math/Frustum.cpp
     Math/Frustum.h
@@ -404,6 +423,8 @@ set(FILES
     Math/PackedVector4.h
     Math/Color.h
     Math/Color.cpp
+    Math/ColorGradient.h
+    Math/ColorGradient.cpp
     Math/ColorSerializer.h
     Math/ColorSerializer.cpp
     Memory/AllocationRecords.cpp
@@ -446,10 +467,14 @@ set(FILES
     Metrics/IEventLogger.cpp
     Metrics/IEventLogger.inl
     Metrics/IEventLoggerFactory.h
+    Module/AZStdInstantiations.cpp
     Module/DynamicModuleHandle.cpp
     Module/DynamicModuleHandle.h
+    Module/EBusInstantiations.cpp
+    Module/Environment.cpp
     Module/Module.cpp
     Module/Module.h
+    Module/ModuleManagerBus.cpp
     Module/ModuleManagerBus.h
     Module/ModuleManager.cpp
     Module/ModuleManager.h
@@ -467,7 +492,9 @@ set(FILES
     Name/Internal/NameData.cpp
     NativeUI/NativeUISystemComponent.cpp
     NativeUI/NativeUISystemComponent.h
+    NativeUI/NativeUIRequests.cpp
     NativeUI/NativeUIRequests.h
+    i18n/TranslationMacros.h
     Outcome/Outcome.h
     Outcome/Internal/OutcomeImpl.h
     Platform.cpp
@@ -524,6 +551,7 @@ set(FILES
     Script/ScriptContextAttributes.h
     Script/ScriptContextDebug.cpp
     Script/ScriptContextDebug.h
+    Script/ScriptSystemBus.cpp
     Script/ScriptSystemBus.h
     Script/ScriptSystemComponent.cpp
     Script/ScriptSystemComponent.h
@@ -535,6 +563,7 @@ set(FILES
     Script/ScriptPropertySerializer.cpp
     Script/ScriptPropertyTable.h
     Script/ScriptPropertyTable.cpp
+    Script/ScriptPropertyWatcherBus.cpp
     Script/ScriptPropertyWatcherBus.h
     Script/ScriptDebug.cpp
     Script/ScriptDebug.h
@@ -661,11 +690,13 @@ set(FILES
     Slice/SliceAsset.h
     Slice/SliceAssetHandler.cpp
     Slice/SliceAssetHandler.h
+    Slice/SliceBus.cpp
     Slice/SliceBus.h
     Slice/SliceComponent.cpp
     Slice/SliceComponent.h
     Slice/SliceSystemComponent.h
     Slice/SliceSystemComponent.cpp
+    Slice/SliceMetadataInfoBus.cpp
     Slice/SliceMetadataInfoBus.h
     Slice/SliceMetadataInfoComponent.h
     Slice/SliceMetadataInfoComponent.cpp

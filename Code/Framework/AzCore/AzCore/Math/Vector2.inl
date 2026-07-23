@@ -303,6 +303,18 @@ namespace AZ
         return Lerp(dest, t).GetNormalizedSafe(Constants::Tolerance);
     }
 
+    AZ_MATH_INLINE Vector2 Vector2::SmoothCriticallyDamped(Vector2& valueRate, float timeDelta, const Vector2& target, float smoothTime) const
+    {
+        Vector2 result = *this;
+        AZ::SmoothCriticallyDamped(result, valueRate, timeDelta, target, smoothTime);
+        return result;
+    }
+
+    AZ_MATH_INLINE Vector2 Vector2::SmoothStep(const Vector2& dest, float t) const
+    {
+        return AZ::SmoothStep(*this, dest, t);
+    }
+
     AZ_MATH_INLINE Vector2 Vector2::GetPerpendicular() const
     {
         return Vector2(-m_y, m_x);
@@ -477,6 +489,18 @@ namespace AZ
     AZ_MATH_INLINE Vector2 Vector2::operator/(const Vector2& rhs) const
     {
         return Vector2(Simd::Vec2::Div(m_value, rhs.m_value));
+    }
+
+    AZ_MATH_INLINE float& Vector2::operator[](const size_t i)
+    {
+        AZ_MATH_ASSERT(i < 2, "Accessing index out of bound!");
+        return m_values[i];
+    }
+
+    AZ_MATH_INLINE const float& Vector2::operator[](const size_t i) const
+    {
+        AZ_MATH_ASSERT(i < 2, "Accessing index out of bound!");
+        return m_values[i];
     }
 
     AZ_MATH_INLINE Vector2 Vector2::GetSin() const

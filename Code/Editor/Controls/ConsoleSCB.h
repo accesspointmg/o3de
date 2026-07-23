@@ -11,9 +11,10 @@
 #define CRYINCLUDE_EDITOR_CONTROLS_CONSOLESCB_H
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 
 #include "Settings.h"
+#include "IConsole.h"
+#include "IEditor.h"
 #include <AzToolsFramework/Editor/EditorSettingsAPIBus.h>
 
 #include <QLineEdit>
@@ -26,7 +27,6 @@
 #include <QPushButton>
 #include <QScopedPointer>
 #include <QStyledItemDelegate>
-#endif
 
 class QMenu;
 class ConsoleWidget;

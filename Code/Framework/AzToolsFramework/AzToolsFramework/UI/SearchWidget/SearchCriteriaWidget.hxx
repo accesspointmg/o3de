@@ -7,8 +7,10 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
-#include <QtWidgets/QFrame>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
+#include <QFrame>
+#include <QRegularExpression>
 
 #include <AzCore/std/string/string.h>
 #include <AzCore/std/functional.h>
@@ -16,7 +18,6 @@
 #include <AzCore/std/containers/unordered_map.h>
 #include <AzQtComponents/Components/FlowLayout.h>
 #include <AzToolsFramework/UI/SearchWidget/SearchWidgetTypes.hxx>
-#endif
 
 class QBoxLayout;
 class QLabel;
@@ -31,7 +32,7 @@ namespace AzToolsFramework
     //! search terms. It contains a label and close button. Clicking the close
     //! button will notify the SearchCriteriaWidget to delete the button and
     //! remove the term from the search list.
-    class SearchCriteriaButton
+    class AZTF_API SearchCriteriaButton
         : public QFrame
     {
         Q_OBJECT
@@ -59,7 +60,7 @@ Q_SIGNALS:
 
     protected:
         void mouseReleaseEvent(QMouseEvent* event) override;
-        void enterEvent(QEvent* event) override;
+        void enterEvent(QEnterEvent* event) override;
         void leaveEvent(QEvent* event) override;
 
         QString m_tagText;
@@ -79,7 +80,7 @@ Q_SIGNALS:
     //! It emits one signal (criteriaChanged) whenever a parameter of the search changes.
     //! This signal gives the list of terms and the current operator. The parent widget is
     //! responsible for using this information to filter/search its contents.
-    class SearchCriteriaWidget
+    class AZTF_API SearchCriteriaWidget
         : public QWidget
     {
         Q_OBJECT
@@ -146,5 +147,5 @@ Q_SIGNALS:
         QString                m_defaultTag;
     };
 
-    using FilterByCategoryMap = AZStd::unordered_map<AZStd::string, QRegExp>;
+    using FilterByCategoryMap = AZStd::unordered_map<AZStd::string, QRegularExpression>;
 } // namespace AzToolsFramework

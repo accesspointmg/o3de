@@ -13,16 +13,15 @@
 #define CRYINCLUDE_EDITOR_SCRIPTTERMDIALOG_H
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzToolsFramework/API/EditorPythonConsoleBus.h>
 #include <AzToolsFramework/PythonTerminal/ScriptTermDialog.h>
 #include <AzToolsFramework/Editor/EditorSettingsAPIBus.h>
 
 #include <QWidget>
-
 #include <QColor>
 #include <QScopedPointer>
-#endif
 
 
 #define SCRIPT_TERM_WINDOW_NAME "Python Console"
@@ -34,7 +33,7 @@ namespace Ui {
 
 namespace AzToolsFramework
 {
-    class CScriptTermDialog
+    class AZTF_API CScriptTermDialog
         : public QWidget
         , protected EditorPythonConsoleNotificationBus::Handler
         , protected EditorPreferencesNotificationBus::Handler

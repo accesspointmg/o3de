@@ -70,10 +70,13 @@ namespace AZ
             RHI::Ptr<RHI::DeviceIndirectBufferWriter> CreateIndirectBufferWriter() override;
             RHI::Ptr<RHI::DeviceRayTracingBufferPools> CreateRayTracingBufferPools() override;
             RHI::Ptr<RHI::DeviceRayTracingBlas> CreateRayTracingBlas() override;
+            RHI::Ptr<RHI::DeviceRayTracingClusterBlas> CreateRayTracingClusterBlas() override;
             RHI::Ptr<RHI::DeviceRayTracingTlas> CreateRayTracingTlas() override;
             RHI::Ptr<RHI::DeviceRayTracingPipelineState> CreateRayTracingPipelineState() override;
             RHI::Ptr<RHI::DeviceRayTracingShaderTable> CreateRayTracingShaderTable() override;
             RHI::Ptr<RHI::DeviceDispatchRaysIndirectBuffer> CreateDispatchRaysIndirectBuffer() override;
+            RHI::Ptr<RHI::DeviceRayTracingCompactionQueryPool> CreateRayTracingCompactionQueryPool() override;
+            RHI::Ptr<RHI::DeviceRayTracingCompactionQuery> CreateRayTracingCompactionQuery() override;
             ///////////////////////////////////////////////////////////////////
 
         private:

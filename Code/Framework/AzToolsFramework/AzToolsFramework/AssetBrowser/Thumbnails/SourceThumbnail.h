@@ -7,10 +7,10 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzToolsFramework/Thumbnails/Thumbnail.h>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <QMutex>
-#endif
 
 namespace AzToolsFramework
 {
@@ -19,7 +19,7 @@ namespace AzToolsFramework
     namespace AssetBrowser
     {
         //! SourceAssetBrowserEntry thumbnail key
-        class SourceThumbnailKey
+        class AZTF_API SourceThumbnailKey
             : public ThumbnailKey
         {
             Q_OBJECT
@@ -35,7 +35,7 @@ namespace AzToolsFramework
             AZ::Uuid m_sourceUuid;
         };
 
-        class SourceThumbnail
+        class AZTF_API SourceThumbnail
             : public Thumbnail
         {
             Q_OBJECT
@@ -48,7 +48,7 @@ namespace AzToolsFramework
         };
 
         //! SourceAssetBrowserEntry thumbnails
-        class SourceThumbnailCache
+        class AZTF_API SourceThumbnailCache
             : public ThumbnailCache<SourceThumbnail>
         {
         public:

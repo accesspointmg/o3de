@@ -8,19 +8,17 @@
 
 #ifndef STACK_VIEW_H
 #define STACK_VIEW_H
+#pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/base.h>
 #include <AzCore/Memory/SystemAllocator.h>
 
-#include <QtCore/QObject>
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QTableWidget>
+#include <QObject>
+#include <QWidget>
+#include <QTableWidget>
 
 #include "LUAStackTrackerMessages.h"
-#endif
 
-#pragma once
 
 
 class DHStackWidget : public QTableWidget, LUAEditor::LUAStackTrackerMessages::Bus::Handler

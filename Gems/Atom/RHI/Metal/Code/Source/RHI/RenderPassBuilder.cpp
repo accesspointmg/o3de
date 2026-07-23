@@ -9,6 +9,7 @@
 #include <Atom/RHI/ImageScopeAttachment.h>
 #include <Atom/RHI/ResolveScopeAttachment.h>
 #include <Atom/RHI/SwapChainFrameAttachment.h>
+#include <RHI/ImageView.h>
 #include <RHI/RenderPassBuilder.h>
 #include <RHI/Scope.h>
 
@@ -217,6 +218,7 @@ namespace AZ::Metal
                         depthAttachment.storeAction = resolveStoreAction;
                         //Metal drivers support min/max depth resolve filters but there is no way to set them at a higher level yet.
                     }
+                    break;
                 }
                 case RHI::ScopeAttachmentUsage::SubpassInput:
                 {

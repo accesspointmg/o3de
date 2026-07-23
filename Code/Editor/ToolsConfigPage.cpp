@@ -26,11 +26,8 @@
 #include "MainWindow.h"
 #include "ToolBox.h"
 
-
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <ui_ToolsConfigPage.h>
 #include <ui_IconListDialog.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
 namespace
 {
@@ -80,7 +77,7 @@ public:
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override
     {
-        return parent.isValid() ? 0 : m_iconImages.count();
+        return parent.isValid() ? 0 : static_cast<int>(m_iconImages.count());
     }
 
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override
@@ -112,6 +109,10 @@ CIconListDialog::CIconListDialog(QWidget* pParent /* = nullptr */)
 {
     m_ui->setupUi(this);
     m_ui->m_iconListCtrl->setModel(new IconListModel(this));
+}
+
+CIconListDialog::~CIconListDialog()
+{
 }
 
 bool CIconListDialog::GetSelectedIconPath(QString& path) const
@@ -797,4 +798,3 @@ void CToolsConfigPage::OnScriptCmd()
     m_ui->m_toggleVar->setChecked(false);
 }
 
-#include <moc_ToolsConfigPage.cpp>

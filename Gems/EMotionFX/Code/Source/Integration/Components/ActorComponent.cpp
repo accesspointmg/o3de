@@ -18,6 +18,7 @@
 #include <AzFramework/Physics/RagdollPhysicsBus.h>
 #include <AzFramework/Physics/PhysicsScene.h>
 #include <AzFramework/Visibility/BoundsBus.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 #include <LmbrCentral/Animation/AttachmentComponentBus.h>
 
@@ -31,8 +32,6 @@
 #include <EMotionFX/Source/Node.h>
 #include <EMotionFX/Source/TransformData.h>
 #include <EMotionFX/Source/AttachmentNode.h>
-
-#include <MCore/Source/AzCoreConversions.h>
 
 #include <Atom/RPI.Reflect/Model/ModelAsset.h>
 
@@ -178,10 +177,10 @@ namespace EMotionFX
                 AZ::EditContext* editContext = serializeContext->GetEditContext();
                 if (editContext)
                 {
-                    editContext->Enum<EMotionFX::Integration::Space>("Space", "The transformation space.")
-                        ->Value("Local Space", Space::LocalSpace)
-                        ->Value("Model Space", Space::ModelSpace)
-                        ->Value("World Space", Space::WorldSpace);
+                    editContext->Enum<EMotionFX::Integration::Space>(QT_TRANSLATE_NOOP("EMotionFX", "Space"), QT_TRANSLATE_NOOP("EMotionFX", "The transformation space."))
+                        ->Value(QT_TRANSLATE_NOOP("EMotionFX", "Local Space"), Space::LocalSpace)
+                        ->Value(QT_TRANSLATE_NOOP("EMotionFX", "Model Space"), Space::ModelSpace)
+                        ->Value(QT_TRANSLATE_NOOP("EMotionFX", "World Space"), Space::WorldSpace);
                 }
             }
 
@@ -583,6 +582,13 @@ namespace EMotionFX
                     (
                         m_actorInstance->SetLocalSpaceScale(localTransform.m_scale);
                     )
+                    
+                    // If an object is flagged as BOUNDS_STATIC_BASED but has been moved, then its bounds must be updated.
+                    if (m_actorInstance->GetBoundsUpdateType() == ActorInstance::EBoundsType::BOUNDS_STATIC_BASED)
+                    {
+                        m_actorInstance->UpdateWorldTransform();
+                        m_actorInstance->UpdateBounds(m_actorInstance->GetLODLevel(), m_actorInstance->GetBoundsUpdateType());
+                    }
                 }
             }
         }
@@ -599,8 +605,18 @@ namespace EMotionFX
                 m_processLoadedAsset = false;
             }
 
-            if (!m_actorInstance || !m_actorInstance->GetIsEnabled())
+            if (!m_actorInstance)
             {
+                return;
+            }
+
+            // If an ActorInstance is disabled but GetBoundsUpdateEnabled() is true, update only its bounds.
+            if (!m_actorInstance->GetIsEnabled())
+            {
+                if (m_actorInstance->GetBoundsUpdateEnabled() && m_renderActorInstance)
+                {
+                    m_renderActorInstance->UpdateBounds();
+                }
                 return;
             }
 
@@ -796,17 +812,17 @@ namespace EMotionFX
             {
             case Space::LocalSpace:
             {
-                return MCore::EmfxTransformToAzTransform(currentPose->GetLocalSpaceTransform(index));
+                return currentPose->GetLocalSpaceTransform(index).ToAZTransform();
             }
 
             case Space::ModelSpace:
             {
-                return MCore::EmfxTransformToAzTransform(currentPose->GetModelSpaceTransform(index));
+                return currentPose->GetModelSpaceTransform(index).ToAZTransform();
             }
 
             case Space::WorldSpace:
             {
-                return MCore::EmfxTransformToAzTransform(currentPose->GetWorldSpaceTransform(index));
+                return currentPose->GetWorldSpaceTransform(index).ToAZTransform();
             }
 
             default:

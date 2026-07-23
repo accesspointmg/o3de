@@ -8,7 +8,6 @@
 #ifndef RCQUEUEMODEL_H
 #define RCQUEUEMODEL_H
 
-#if !defined(Q_MOC_RUN)
 #include "RCCommon.h"
 
 #include <QAbstractItemModel>
@@ -17,7 +16,6 @@
 #include <QMultiMap>
 
 #include "rcjob.h"
-#endif
 
 namespace AssetProcessor
 {
@@ -79,8 +77,12 @@ namespace AssetProcessor
         // Returns how many finished jobs that haven't been updated in the catalog.
         unsigned int jobsPendingCatalog() const;
 
-        void UpdateJobEscalation(AssetProcessor::RCJob* rcJob, int jobPrioririty);
+        void UpdateJobEscalation(const QueueElementID& toEscalate, int valueToEscalateTo);
+        void UpdateJobEscalation(AssetProcessor::RCJob* rcJob, int valueToEscalateTo);
         void UpdateRow(int jobIndex);
+
+        void UpdateJobPriority(const QueueElementID& priorityUpdate, int newPriority);
+        void UpdateJobPriority(AssetProcessor::RCJob* rcJob, int newPriority);
 
         bool isEmpty();
         void addNewJob(RCJob* rcJob);
@@ -98,6 +100,10 @@ namespace AssetProcessor
 
         ///! EraseJobs expects the database name of the source file.
         void EraseJobs(const SourceAssetReference& sourceAssetReference, AZStd::vector<RCJob*>& pendingJobs);
+
+        //! This happens when a new source file appears in the intermediate assets folder.
+        //! Returnst true if any jobs were unblocked by this.
+        bool UpdateMissingSourceDependencies(const QString& sourceFileName);
 
     private:
 

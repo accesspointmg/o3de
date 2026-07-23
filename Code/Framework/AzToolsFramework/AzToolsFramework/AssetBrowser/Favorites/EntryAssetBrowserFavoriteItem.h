@@ -7,11 +7,11 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/Asset/AssetCommon.h>
 
 #include <AzToolsFramework/AssetBrowser/Favorites/AssetBrowserFavoriteItem.h>
-#endif
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 
 namespace AzToolsFramework
 {
@@ -19,7 +19,7 @@ namespace AzToolsFramework
     {
         class AssetBrowserEntry;
 
-        class EntryAssetBrowserFavoriteItem
+        class AZTF_API EntryAssetBrowserFavoriteItem
             : public AssetBrowserFavoriteItem
         {
         public:

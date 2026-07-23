@@ -15,6 +15,8 @@
 #include <AzCore/Component/ComponentApplicationBus.h>
 #include <AzCore/Threading/ThreadUtils.h>
 
+#include <AzCore/i18n/TranslationMacros.h>
+
  // PERFORMANCE NOTE & TODO
  // Profiling Ros Con demo, Task Graph was 2-3ms slower than Jobs
  // Time for Jobs was ~5.5ms, maxing out at ~6.3ms
@@ -27,8 +29,6 @@ AZ_CVAR(float, cl_taskGraphThreadsConcurrencyRatio, 1.0f, nullptr, AZ::ConsoleFu
 AZ_CVAR(uint32_t, cl_taskGraphThreadsNumReserved, 2, nullptr, AZ::ConsoleFunctorFlags::Null, "TaskGraph number of hardware threads that are reserved for O3DE system threads. Value is clamped between 0 and the number of logical cores in the system");
 AZ_CVAR(uint32_t, cl_taskGraphThreadsMinNumber, 2, nullptr, AZ::ConsoleFunctorFlags::Null, "TaskGraph minimum number of worker threads to create after scaling the number of hw threads");
 AZ_CVAR(uint32_t, cl_taskGraphThreadsMaxNumber, 0, nullptr, AZ::ConsoleFunctorFlags::Null, "TaskGraph maximum number of worker threads to create after scaling the number of hw threads (0 indicates uncapped)");
-
-static constexpr uint32_t TaskExecutorServiceCrc = AZ_CRC_CE("TaskExecutorService");
 
 namespace AZ
 {
@@ -102,7 +102,8 @@ namespace AZ
             if (AZ::EditContext* ec = serializeContext->GetEditContext())
             {
                 ec->Class<TaskGraphSystemComponent>
-                    ("TaskGraph", "System component to create the default executor")
+                    (QT_TRANSLATE_NOOP("AzCore", "TaskGraph"),
+                    QT_TRANSLATE_NOOP("AzCore", "System component to create the default executor"))
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                         ->Attribute(AZ::Edit::Attributes::Category, "Engine")
                     ;

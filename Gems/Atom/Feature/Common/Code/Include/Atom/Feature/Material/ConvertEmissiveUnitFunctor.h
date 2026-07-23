@@ -10,6 +10,7 @@
 
 #include <Atom/RPI.Reflect/Material/MaterialFunctor.h>
 #include <Atom/RPI.Reflect/Material/MaterialPropertyDescriptor.h>
+#include <Atom/Feature/Base.h>
 #include <Atom/Feature/CoreLights/PhotometricValue.h>
 
 namespace AZ
@@ -18,7 +19,7 @@ namespace AZ
     {
         //! The functor can be used to convert between different emissive light unit
         //! Only support Ev100 and Lux
-        class ConvertEmissiveUnitFunctor final
+        class ATOM_FEATURE_COMMON_API ConvertEmissiveUnitFunctor final
             : public AZ::RPI::MaterialFunctor
         {
             friend class ConvertEmissiveUnitFunctorSourceData;
@@ -33,11 +34,13 @@ namespace AZ
             void Process(RPI::MaterialFunctorAPI::EditorContext& context) override;
             float GetProcessedValue(float originalEmissiveIntensity, uint32_t lightUnitIndex) const;
 
+            bool UpdateShaderParameterConnections(const RPI::MaterialShaderParameterLayout* layout) override;
+
         private:
 
             AZ::RPI::MaterialPropertyIndex m_intensityPropertyIndex;
             AZ::RPI::MaterialPropertyIndex m_lightUnitPropertyIndex;
-            AZ::RHI::ShaderInputConstantIndex m_shaderInputIndex;
+            AZ::RPI::MaterialShaderParameterNameIndex m_shaderParameter;
 
             uint32_t m_ev100Index;
             uint32_t m_nitIndex;

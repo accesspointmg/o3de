@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
+
 #pragma once
 
 #include <AzCore/Casting/numeric_cast.h>
@@ -39,7 +40,8 @@ namespace AZStd::Internal
         constexpr fixed_zero_size_storage() = default;
 
         //! Constructs zero sized storage from an initializer list of size zero which is a no-op
-        template <typename U, typename = enable_if_t<is_convertible_v<U, T>>>
+        template <typename U>
+            requires is_convertible_v<U, T>
         constexpr fixed_zero_size_storage(AZStd::initializer_list<U> ilist) noexcept
         {
             AZSTD_CONTAINER_ASSERT(ilist.size() == 0, "Zero size storage is only constructible with an empty initializer list");
@@ -81,7 +83,8 @@ namespace AZStd::Internal
         //!
         //! Increases size of the storage by one.
         //! Always fails for zero-sized storage.
-        template <typename... Args, typename = enable_if_t<is_constructible_v<T, Args...>>>
+        template <typename... Args>
+            requires is_constructible_v<T, Args...>
         static constexpr void emplace_back(Args&&...) noexcept
         {
             AZSTD_CONTAINER_ASSERT(false, "emplace_back is not supported on zero-size storage");
@@ -104,7 +107,7 @@ namespace AZStd::Internal
         //! Invokes destructor on all elements in range
         //! No-op on empty container
         //! Nothing to destroy since the storage is empty.
-        template <typename InputIt, typename = enable_if_t<input_iterator<InputIt>>>
+        template <input_iterator InputIt>
         static constexpr void unsafe_destroy(InputIt, InputIt) noexcept
         {
         }
@@ -135,7 +138,8 @@ namespace AZStd::Internal
         //! Constructors
         fixed_trivial_storage() = default;
 
-        template <typename U, typename = enable_if_t<is_convertible_v<U, T>>>
+        template <typename U>
+            requires is_convertible_v<U, T>
         fixed_trivial_storage(AZStd::initializer_list<U> ilist) noexcept
             : m_size(aznumeric_caster(ilist.size()))
         {
@@ -188,7 +192,8 @@ namespace AZStd::Internal
         //!
         //! Increases size of the storage by one.
         //! Always fails for empty storage.
-        template <typename... Args, typename = enable_if_t<is_constructible_v<T, Args...>>>
+        template <typename... Args>
+            requires is_constructible_v<T, Args...>
         reference emplace_back(Args&&... args) noexcept
         {
             AZSTD_CONTAINER_ASSERT(!full(), "emplace_back cannot be invoked on full storage");
@@ -217,7 +222,7 @@ namespace AZStd::Internal
         //!  Destructs elements in the range [begin, end).
         //! This does not modify the size of the storage
         //! This is a no-op for trivial types
-        template <typename InputIt, typename = enable_if_t<input_iterator<InputIt>>>
+        template <input_iterator InputIt>
         void unsafe_destroy(InputIt, InputIt) noexcept
         {
         }
@@ -255,7 +260,8 @@ namespace AZStd::Internal
             unsafe_destroy_all();
         }
 
-        template <typename U, typename = enable_if_t<is_convertible_v<U, T>>>
+        template <typename U>
+            requires is_convertible_v<U, T>
         fixed_non_trivial_storage(AZStd::initializer_list<U> ilist) noexcept(noexcept(this->emplace_back(AZStd::declval<U>())))
         {
             AZSTD_CONTAINER_ASSERT(ilist.size() <= capacity(), "Initializer list cannot be larger than storage capacity");
@@ -306,7 +312,8 @@ namespace AZStd::Internal
         //!
         //! Increases size of the storage by one.
         //! Always fails for empty storage.
-        template <typename... Args, typename = enable_if_t<is_constructible_v<T, Args...>>>
+        template <typename... Args>
+            requires is_constructible_v<T, Args...>
         reference emplace_back(Args&&... args) noexcept(is_nothrow_constructible_v<T, Args...>)
         {
             AZSTD_CONTAINER_ASSERT(!full(), "emplace_back cannot be invoked on full storage");
@@ -337,7 +344,7 @@ namespace AZStd::Internal
         //! Destructs elements in the range [begin, end).
         //! This does not modify the size of the storage
         //! Invokes the destuctor via the AZStd::destroy method
-        template <typename InputIt, typename = enable_if_t<input_iterator<InputIt>>>
+        template <input_iterator InputIt>
         void unsafe_destroy(InputIt first, InputIt last) noexcept(is_nothrow_destructible_v<value_type>)
         {
             AZSTD_CONTAINER_ASSERT(first >= data() && first <= data() + size(), "begin iterator is not in range of storage");
@@ -413,7 +420,7 @@ namespace AZStd
             AZStd::uninitialized_fill_n(data(), numElements, value);
         }
 
-        template <class InputIt, typename = AZStd::enable_if_t<input_iterator<InputIt>>>
+        template <input_iterator InputIt>
         fixed_vector(InputIt first, InputIt last)
         {
             resize_no_construct(AZStd::ranges::distance(first, last));
@@ -439,7 +446,7 @@ namespace AZStd
             rhs.clear();
         }
 
-        template<class R, class = enable_if_t<Internal::container_compatible_range<R, value_type>>>
+        template<Internal::container_compatible_range<value_type> R>
         fixed_vector(from_range_t, R&& rg)
         {
             assign_range(AZStd::forward<R>(rg));
@@ -476,7 +483,8 @@ namespace AZStd
         }
 
         template <typename R>
-        AZStd::enable_if_t<!AZStd::is_same_v<AZStd::remove_cvref_t<R>, fixed_vector>, fixed_vector>& operator=(R&& rhs)
+            requires (!AZStd::is_same_v<AZStd::remove_cvref_t<R>, fixed_vector>)
+        fixed_vector& operator=(R&& rhs)
         {
             assign_range(AZStd::forward<R>(rhs));
             if constexpr (!is_lvalue_reference_v<R>)
@@ -509,8 +517,8 @@ namespace AZStd
         // extension method
         using base_type::resize_no_construct;
 
-        template<class R>
-        auto append_range(R&& rg) -> enable_if_t<Internal::container_compatible_range<R, T>>
+        template<Internal::container_compatible_range<T> R>
+        void append_range(R&& rg)
         {
             insert_range(end(), AZStd::forward<R>(rg));
         }
@@ -548,7 +556,7 @@ namespace AZStd
 
         // Removes unused capacity - For fixed_vector this only asserts
         // that the supplied capacity is not longer than the fixed_vector capacity
-        void reserve(size_type newCapacity)
+        void reserve([[maybe_unused]] size_type newCapacity)
         {
             // No-op - Implemented to provide consistent std::vector
             AZSTD_CONTAINER_ASSERT(newCapacity <= capacity(),
@@ -616,7 +624,7 @@ namespace AZStd
             insert(end(), numElements, value);
         }
 
-        template <class InputIt, typename = AZStd::enable_if_t<input_iterator<InputIt>>>
+        template <input_iterator InputIt>
         void assign(InputIt first, InputIt last)
         {
             clear();
@@ -628,9 +636,8 @@ namespace AZStd
             assign(ilist.begin(), ilist.end());
         }
 
-        template <typename R>
-        auto assign_range(R&& rg)
-            -> enable_if_t<Internal::container_compatible_range<R, value_type>>
+        template <Internal::container_compatible_range<value_type> R>
+        void assign_range(R&& rg)
         {
             if constexpr (is_lvalue_reference_v<R>)
             {
@@ -644,7 +651,8 @@ namespace AZStd
             }
         }
 
-        template <typename... Args, typename = AZStd::enable_if_t<is_constructible_v<T, Args...>>>
+        template <typename... Args>
+            requires is_constructible_v<T, Args...>
         iterator emplace(const_iterator insertPos, Args&&... args)
         {
             AZSTD_CONTAINER_ASSERT(!full(), "Cannot emplace on a full fixed_vector");
@@ -734,32 +742,28 @@ namespace AZStd
             }
         }
 
-        template<class InputIt>
-        auto insert(const_iterator insertPos, InputIt first, InputIt last)
-            -> enable_if_t<input_iterator<InputIt>, iterator>
+        template<input_iterator InputIt>
+        iterator insert(const_iterator insertPos, InputIt first, InputIt last)
         {
             // specialize for iterator categories.
             AZSTD_CONTAINER_ASSERT(insertPos >= cbegin() && insertPos <= cend(), "insert position must be in range of container");
-            return insert_iter(insertPos, first, last, typename iterator_traits<InputIt>::iterator_category());
+            return insert_iter(insertPos, first, last);
         };
 
-        template<class R>
-        auto insert_range(const_iterator insertPos, R&& rg)
-            -> enable_if_t<Internal::container_compatible_range<R, value_type>, iterator>
+        template<Internal::container_compatible_range<value_type> R>
+        iterator insert_range(const_iterator insertPos, R&& rg)
         {
             // specialize for iterator categories.
             AZSTD_CONTAINER_ASSERT(insertPos >= cbegin() && insertPos <= cend(), "insert position must be in range of container");
             if constexpr (is_lvalue_reference_v<R>)
             {
                 auto rangeView = AZStd::forward<R>(rg) | views::common;
-                return insert_iter(insertPos, ranges::begin(rangeView), ranges::end(rangeView),
-                    typename iterator_traits<ranges::iterator_t<R>>::iterator_category());
+                return insert_iter(insertPos, ranges::begin(rangeView), ranges::end(rangeView));
             }
             else
             {
                 auto rangeView = AZStd::forward<R>(rg) | views::as_rvalue | views::common;
-                return insert_iter(insertPos, ranges::begin(rangeView), ranges::end(rangeView),
-                    typename iterator_traits<ranges::iterator_t<R>>::iterator_category());
+                return insert_iter(insertPos, ranges::begin(rangeView), ranges::end(rangeView));
             }
         };
 
@@ -853,71 +857,72 @@ namespace AZStd
 
     private:
         template<class Iterator>
-        iterator insert_iter(const_iterator insertPos, Iterator first, Iterator last, const forward_iterator_tag&)
+        iterator insert_iter(const_iterator insertPos, Iterator first, Iterator last)
         {
-            size_type numElements = AZStd::ranges::distance(first, last);
-            if (numElements == 0)
+            if constexpr (forward_iterator<Iterator>)
             {
-                return begin();
-            }
+                size_type numElements = AZStd::ranges::distance(first, last);
+                if (numElements == 0)
+                {
+                    return begin();
+                }
 
-            const size_type offset = AZStd::ranges::distance(cbegin(), insertPos);
-            pointer insertPosPtr = data() + offset;
+                const size_type offset = AZStd::ranges::distance(cbegin(), insertPos);
+                pointer insertPosPtr = data() + offset;
 
-            AZSTD_CONTAINER_ASSERT(Capacity >= size() + numElements, "AZStd::fixed_vector::insert_iter - capacity is reached!");
+                AZSTD_CONTAINER_ASSERT(Capacity >= size() + numElements, "AZStd::fixed_vector::insert_iter - capacity is reached!");
 
-            pointer dataStart = data();
-            pointer dataEnd = data() + size();
-            // Number of elements we can assign.
-            size_type numInitializedToFill = AZStd::ranges::distance(insertPosPtr, dataEnd);
-            if (numInitializedToFill < numElements)
-            {
-                // Copy the elements after insert position.
-                AZStd::uninitialized_move(insertPosPtr, dataEnd, insertPosPtr + numElements);
-                // get last iterator to use move assignment operator
-                Iterator lastToAssign = AZStd::next(first, numInitializedToFill);
+                pointer dataStart = data();
+                pointer dataEnd = data() + size();
+                // Number of elements we can assign.
+                size_type numInitializedToFill = AZStd::ranges::distance(insertPosPtr, dataEnd);
+                if (numInitializedToFill < numElements)
+                {
+                    // Copy the elements after insert position.
+                    AZStd::uninitialized_move(insertPosPtr, dataEnd, insertPosPtr + numElements);
+                    // get last iterator to use move assignment operator
+                    Iterator lastToAssign = AZStd::next(first, numInitializedToFill);
 
-                // assign new data - The data up to previous dataEnd has already been constructed
-                // so placement new should not be used for them
-                insertPosPtr = AZStd::copy(first, lastToAssign, insertPosPtr);
-                // Add new elements to uninitialized elements.
-                iterator newDataEnd = AZStd::uninitialized_copy(lastToAssign, last, insertPosPtr);
+                    // assign new data - The data up to previous dataEnd has already been constructed
+                    // so placement new should not be used for them
+                    insertPosPtr = AZStd::copy(first, lastToAssign, insertPosPtr);
+                    // Add new elements to uninitialized elements.
+                    iterator newDataEnd = AZStd::uninitialized_copy(lastToAssign, last, insertPosPtr);
 
-                // Update the fixed storage size
-                resize_no_construct(AZStd::ranges::distance(dataStart, newDataEnd));
+                    // Update the fixed storage size
+                    resize_no_construct(AZStd::ranges::distance(dataStart, newDataEnd));
+                }
+                else
+                {
+                    // We need to copy data with care, it is overlapping.
+
+                    // first copy the data that will not overlap.
+                    pointer nonOverlap = dataEnd - numElements;
+                    iterator  newLast = AZStd::uninitialized_move(nonOverlap, dataEnd, dataEnd);
+
+                    // copy the memory backwards while performing AZStd::move on the existing elements the area with overlapping memory
+                    AZStd::move_backward(insertPosPtr, nonOverlap, dataEnd);
+
+                    // add new elements
+                    AZStd::move(first, last, insertPosPtr);
+
+                    resize_no_construct(AZStd::ranges::distance(dataStart, newLast));
+                }
+
+                return AZStd::ranges::next(begin(), offset);
             }
             else
             {
-                // We need to copy data with care, it is overlapping.
+                iterator dataStart = data();
+                size_type offset = AZStd::ranges::distance(dataStart, insertPos);
 
-                // first copy the data that will not overlap.
-                pointer nonOverlap = dataEnd - numElements;
-                iterator  newLast = AZStd::uninitialized_move(nonOverlap, dataEnd, dataEnd);
+                for (Iterator iter{ first }; iter != last; ++iter, ++offset)
+                {
+                    insert(dataStart + offset, *iter);
+                }
 
-                // copy the memory backwards while performing AZStd::move on the existing elements the area with overlapping memory
-                AZStd::move_backward(insertPosPtr, nonOverlap, dataEnd);
-
-                // add new elements
-                AZStd::move(first, last, insertPosPtr);
-
-                resize_no_construct(AZStd::ranges::distance(dataStart, newLast));
+                return AZStd::ranges::next(begin(), offset);
             }
-
-            return AZStd::ranges::next(begin(), offset);
-        }
-
-        template<class Iterator>
-        iterator insert_iter(const_iterator insertPos, Iterator first, Iterator last, const input_iterator_tag&)
-        {
-            iterator dataStart = data();
-            size_type offset = AZStd::ranges::distance(dataStart, insertPos);
-
-            for (Iterator iter{ first }; iter != last; ++iter, ++offset)
-            {
-                insert(dataStart + offset, *iter);
-            }
-
-            return AZStd::ranges::next(begin(), offset);
         }
     };
 

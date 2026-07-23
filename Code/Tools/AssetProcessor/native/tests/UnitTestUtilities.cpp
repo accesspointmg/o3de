@@ -166,7 +166,7 @@ namespace UnitTests
     }
 
     void MockMultiBuilderInfoHandler::ProcessJob(
-        AssetBuilderExtraInfo extraInfo,
+        [[maybe_unused]] AssetBuilderExtraInfo extraInfo,
         [[maybe_unused]] const AssetBuilderSDK::ProcessJobRequest& request,
         AssetBuilderSDK::ProcessJobResponse& response)
     {
@@ -597,7 +597,7 @@ namespace UnitTests
     // To get around this we have to manually split the path here.
     static void MockAbsoluteSplit(const QString& absolutePath, AZStd::string& rootPath, AZStd::string& relPathFromRoot)
     {
-        int firstSlash = absolutePath.indexOf("/"); // we assume normalized forward slashes.
+        int firstSlash = static_cast<int>(absolutePath.indexOf("/")); // we assume normalized forward slashes.
         if (firstSlash == -1)
         {
             rootPath = AZStd::string();

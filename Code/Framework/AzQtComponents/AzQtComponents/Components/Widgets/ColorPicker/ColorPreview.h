@@ -7,11 +7,9 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzQtComponents/AzQtComponentsAPI.h>
 #include <AzCore/Math/Color.h>
 #include <QFrame>
-#endif
 
 namespace AzQtComponents
 {
@@ -49,10 +47,8 @@ namespace AzQtComponents
     private:
         AZ::Color colorUnderPoint(const QPoint& p);
 
-        AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
         AZ::Color m_currentColor;
         AZ::Color m_selectedColor;
-        AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
         QPoint m_dragStartPosition;
         Swatch* m_draggedSwatch;
     };

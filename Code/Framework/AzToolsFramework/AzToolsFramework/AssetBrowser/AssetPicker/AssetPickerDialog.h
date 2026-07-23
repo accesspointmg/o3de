@@ -7,14 +7,15 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzToolsFramework/AssetBrowser/Search/Filter.h>
 #include <AzToolsFramework/UI/UICore/QTreeViewStateSaver.hxx>
 #include <AzCore/std/smart_ptr/intrusive_ptr.h>
 
 #include <QDialog>
 #include <QScopedPointer>
-#endif
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 
 class QKeyEvent;
 class QModelIndex;
@@ -37,7 +38,7 @@ namespace AzToolsFramework
         class AssetBrowserModel;
         class AssetSelectionModel;
 
-        class AssetPickerDialog
+        class AZTF_API AssetPickerDialog
             : public QDialog
         {
             Q_OBJECT

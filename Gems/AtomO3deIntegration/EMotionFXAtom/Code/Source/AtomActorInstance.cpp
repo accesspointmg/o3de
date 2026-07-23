@@ -24,7 +24,6 @@
 #include <EMotionFX/Source/Skeleton.h>
 #include <EMotionFX/Source/Mesh.h>
 #include <EMotionFX/Source/Node.h>
-#include <MCore/Source/AzCoreConversions.h>
 
 #include <Atom/RHI/RHIUtils.h>
 
@@ -380,7 +379,7 @@ namespace AZ::Render
 
     void AtomActorInstance::SetRayTracingEnabled(bool enabled)
     {
-        if (m_meshHandle->IsValid() && m_meshFeatureProcessor)
+        if (m_meshHandle && m_meshHandle->IsValid() && m_meshFeatureProcessor)
         {
             m_rayTracingEnabled = enabled;
             m_meshFeatureProcessor->SetRayTracingEnabled(*m_meshHandle, m_rayTracingEnabled);
@@ -389,7 +388,7 @@ namespace AZ::Render
 
     bool AtomActorInstance::GetRayTracingEnabled() const
     {
-        if (m_meshHandle->IsValid() && m_meshFeatureProcessor)
+        if (m_meshHandle && m_meshHandle->IsValid() && m_meshFeatureProcessor)
         {
             return m_meshFeatureProcessor->GetRayTracingEnabled(*m_meshHandle);
         }
@@ -398,7 +397,7 @@ namespace AZ::Render
 
     void AtomActorInstance::SetExcludeFromReflectionCubeMaps(bool enabled)
     {
-        if (m_meshHandle->IsValid() && m_meshFeatureProcessor)
+        if (m_meshHandle && m_meshHandle->IsValid() && m_meshFeatureProcessor)
         {
             m_meshFeatureProcessor->SetExcludeFromReflectionCubeMaps(*m_meshHandle, enabled);
         }
@@ -406,7 +405,7 @@ namespace AZ::Render
 
     bool AtomActorInstance::GetExcludeFromReflectionCubeMaps() const
     {
-        if (m_meshHandle->IsValid() && m_meshFeatureProcessor)
+        if (m_meshHandle && m_meshHandle->IsValid() && m_meshFeatureProcessor)
         {
             return m_meshFeatureProcessor->GetExcludeFromReflectionCubeMaps(*m_meshHandle);
         }
@@ -454,7 +453,7 @@ namespace AZ::Render
         const EMotionFX::TransformData* transforms = m_actorInstance->GetTransformData();
         if (transforms && jointIndex < transforms->GetNumTransforms())
         {
-            return MCore::EmfxTransformToAzTransform(transforms->GetCurrentPose()->GetModelSpaceTransform(jointIndex));
+            return transforms->GetCurrentPose()->GetModelSpaceTransform(jointIndex).ToAZTransform();
         }
 
         return AZ::Transform::CreateIdentity();
@@ -550,7 +549,7 @@ namespace AZ::Render
 
     void AtomActorInstance::OnUpdateSkinningMatrices()
     {
-        if (m_skinnedMeshHandle.IsValid())
+        if (m_skinnedMeshHandle.IsValid() && IsVisible())
         {
             AZStd::vector<float> boneTransforms;
             GetBoneTransformsFromActorInstance(m_actorInstance, boneTransforms, GetSkinningMethod());
@@ -695,6 +694,7 @@ namespace AZ::Render
             MeshHandleDescriptor meshDescriptor;
             meshDescriptor.m_entityId = m_entityId;
             meshDescriptor.m_modelAsset = m_skinnedMeshInstance->m_model->GetModelAsset();
+            meshDescriptor.m_productModelAsset = m_actorAsset->GetActor()->GetMeshAsset();
             meshDescriptor.m_customMaterials = ConvertToCustomMaterialMap(materials);
             meshDescriptor.m_isRayTracingEnabled = m_rayTracingEnabled;
             meshDescriptor.m_isAlwaysDynamic = true;

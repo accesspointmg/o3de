@@ -9,6 +9,7 @@
 o3de_install_directory(
     DIRECTORIES
         AssetGem
+        AddTestsToProject
         CppToolGem
         DefaultGem
         PrebuiltGem

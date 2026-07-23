@@ -8,7 +8,6 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/Debug/TraceMessageBus.h>
 #include <AzCore/std/smart_ptr/shared_ptr.h>
 #include <AzCore/std/string/string.h>
@@ -17,11 +16,11 @@
 #include <AzQtComponents/Components/Widgets/Card.h>
 #include <AzQtComponents/Components/Widgets/CardHeader.h>
 #include <SceneAPI/SceneUI/SceneUIConfiguration.h>
+
 #include <QMap>
 #include <QPair>
 #include <QString>
 #include <QVector>
-#endif
 
 class QSvgWidget;
 
@@ -70,12 +69,8 @@ private:
     friend class SceneSettingsCard;
 };
 
-AZ_PUSH_DISABLE_DLL_EXPORT_BASECLASS_WARNING
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 class SCENE_UI_API SceneSettingsCard : public AzQtComponents::Card, public AZ::Debug::TraceMessageBus::Handler
 {
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
-AZ_POP_DISABLE_DLL_EXPORT_BASECLASS_WARNING
     Q_OBJECT
 public:
     enum class Layout
@@ -128,7 +123,6 @@ private:
     void ShowLogContextMenu(const QPoint& pos);
     void AddLogTableEntry(AzQtComponents::StyledDetailsTableModel::TableEntry& entry);
 
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
     QMap<int, QVector<QPair<QString, QString>>> m_additionalLogDetails;
     
     AzToolsFramework::Debug::TraceContextMultiStackHandler m_traceStackHandler;
@@ -136,7 +130,6 @@ AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
     AzQtComponents::StyledDetailsTableModel* m_reportModel = nullptr;
     AzQtComponents::TableView* m_reportView = nullptr;
     AZStd::shared_ptr<AZ::SceneAPI::SceneUI::ProcessingHandler> m_targetHandler;
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
     SceneSettingsCardHeader* m_settingsHeader = nullptr;
     CompletionState m_completionState = CompletionState::Success;
     State m_sceneCardState = State::Loading;

@@ -8,11 +8,12 @@
 #ifndef RCJOB_H
 #define RCJOB_H
 
-#if !defined(Q_MOC_RUN)
 #include <QObject>
 #include <QString>
 #include <QDateTime>
 #include <QStringList>
+#include <QFileInfoList>
+
 #include <AzCore/base.h>
 #include "RCCommon.h"
 #include "native/utilities/PlatformConfiguration.h"
@@ -20,8 +21,7 @@
 #include <AssetBuilderSDK/AssetBuilderSDK.h>
 #include "native/assetprocessor.h"
 #include <AzToolsFramework/AssetDatabase/AssetDatabaseConnection.h>
-#include <QFileInfoList>
-#endif
+
 
 namespace AssetProcessor
 {
@@ -209,6 +209,10 @@ namespace AssetProcessor
         const JobEntry& GetJobEntry() const;
         bool HasMissingSourceDependency() const;
 
+        // Update a job entry when a new file appears that might satisfy a missing source dependency.
+        // Returns true if the job no longer has any missing dependencies AND there were missing ones before.
+        bool UpdateMissingDependencies(const SourceAssetReference& sourceRef);
+
         void Start();
 
         const QueueElementID& GetElementID() const { return m_queueElementID; }
@@ -250,6 +254,7 @@ namespace AssetProcessor
         bool IsCritical() const;
         bool IsAutoFail() const;
         int GetPriority() const;
+        void SetPriority(int priority);
         const AZStd::vector<JobDependencyInternal>& GetJobDependencies();
 
     protected:
@@ -263,7 +268,7 @@ namespace AssetProcessor
 
         QueueElementID m_queueElementID; // cached to prevent lots of construction of this all over the place
 
-        int m_JobEscalation = AssetProcessor::JobEscalation::Default; // Escalation indicates how important the job is and how soon it needs processing, the greater the number the greater the escalation
+        int m_JobEscalation = AssetProcessor::JobEscalation::DefaultEscalation; // Escalation indicates how important the job is and how soon it needs processing, the greater the number the greater the escalation
 
         QDateTime m_timeCreated;
         QDateTime m_timeLaunched;

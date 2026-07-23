@@ -25,6 +25,11 @@ namespace AZ
             return aznew RayTracingBlas;
         }
 
+        uint64_t RayTracingBlas::GetAccelerationStructureByteSize()
+        {
+            return m_buffers.GetCurrentElement().m_blasBuffer->GetDescriptor().m_byteCount;
+        }
+
         RHI::ResultCode RayTracingBlas::CreateBuffersInternal(RHI::Device& deviceBase, const RHI::DeviceRayTracingBlasDescriptor* descriptor, const RHI::DeviceRayTracingBufferPools& bufferPools)
         {
             auto& device = static_cast<Device&>(deviceBase);
@@ -45,9 +50,9 @@ namespace AZ
             AZStd::vector<uint32_t> primitiveCounts;
 
             // A BLAS can contain either triangle geometry or procedural geometry; decide based on the descriptor which one to create
-            if (descriptor->HasAABB())
+            if (descriptor->m_aabb.has_value())
             {
-                const AZ::Aabb& aabb = descriptor->GetAABB();
+                const AZ::Aabb& aabb = *descriptor->m_aabb;
                 buffers.m_aabbBuffer = RHI::Factory::Get().CreateBuffer();
                 AZ::RHI::BufferDescriptor blasBufferDescriptor;
                 blasBufferDescriptor.m_bindFlags = RHI::BufferBindFlags::CopyRead | RHI::BufferBindFlags::RayTracingAccelerationStructure;
@@ -99,7 +104,7 @@ namespace AZ
             }
             else
             {
-                const RHI::DeviceRayTracingGeometryVector& geometries = descriptor->GetGeometries();
+                const RHI::DeviceRayTracingGeometryVector& geometries = descriptor->m_geometries;
 
                 buffers.m_geometryDescs.reserve(geometries.size());
                 buffers.m_rangeInfos.reserve(geometries.size());
@@ -123,7 +128,7 @@ namespace AZ
                         geometry.m_vertexBuffer.GetByteOffset();
                     geometryDesc.geometry.triangles.vertexStride = geometry.m_vertexBuffer.GetByteStride();
                     geometryDesc.geometry.triangles.maxVertex = geometry.m_vertexBuffer.GetByteCount() / aznumeric_cast<uint32_t>(geometryDesc.geometry.triangles.vertexStride);
-                    geometryDesc.geometry.triangles.vertexFormat = ConvertFormat(geometry.m_vertexFormat);
+                    geometryDesc.geometry.triangles.vertexFormat = ConvertFormat(RHI::ConvertToImageFormat(geometry.m_vertexFormat));
 
                     addressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
                     addressInfo.pNext = nullptr;
@@ -153,7 +158,7 @@ namespace AZ
 
             buffers.m_buildInfo = {};
             buffers.m_buildInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
-            buffers.m_buildInfo.flags = GetAccelerationStructureBuildFlags(descriptor->GetBuildFlags());
+            buffers.m_buildInfo.flags = GetAccelerationStructureBuildFlags(descriptor->m_buildFlags);
             buffers.m_buildInfo.geometryCount = aznumeric_cast<uint32_t>(buffers.m_geometryDescs.size());
             buffers.m_buildInfo.pGeometries = buffers.m_geometryDescs.data();
             buffers.m_buildInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
@@ -234,7 +239,70 @@ namespace AZ
             return RHI::ResultCode::Success;
         }
 
-        VkBuildAccelerationStructureFlagsKHR RayTracingBlas::GetAccelerationStructureBuildFlags(const RHI::RayTracingAccelerationStructureBuildFlags &buildFlags)
+        RHI::ResultCode RayTracingBlas::CreateCompactedBuffersInternal(
+            RHI::Device& deviceBase,
+            RHI::Ptr<RHI::DeviceRayTracingBlas> sourceBlas,
+            uint64_t compactedBufferSize,
+            const RHI::DeviceRayTracingBufferPools& rayTracingBufferPools)
+        {
+            auto& device = static_cast<Device&>(deviceBase);
+
+            BlasBuffers& buffers = m_buffers.AdvanceCurrentElement();
+
+            const auto& sourceBlasVulkan = static_cast<RayTracingBlas*>(sourceBlas.get());
+            auto& sourceBuffers = sourceBlasVulkan->GetBuffers();
+
+            AZ_Assert(
+                sourceBuffers.m_buildInfo.flags | VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR,
+                "Cannot compact the acceleration structures without the VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR flag");
+
+            buffers.m_accelerationStructure = {};
+            buffers.m_scratchBuffer = {};
+            buffers.m_aabbBuffer = {};
+            buffers.m_geometryDescs = sourceBuffers.m_geometryDescs;
+            buffers.m_rangeInfos = sourceBuffers.m_rangeInfos;
+            buffers.m_buildInfo = {};
+
+            buffers.m_blasBuffer = RHI::Factory::Get().CreateBuffer();
+            AZ::RHI::BufferDescriptor blasBufferDescriptor;
+            blasBufferDescriptor.m_bindFlags =
+                RHI::BufferBindFlags::ShaderReadWrite | RHI::BufferBindFlags::RayTracingAccelerationStructure;
+            blasBufferDescriptor.m_byteCount = compactedBufferSize;
+
+            AZ::RHI::DeviceBufferInitRequest blasBufferRequest;
+            blasBufferRequest.m_buffer = buffers.m_blasBuffer.get();
+            blasBufferRequest.m_descriptor = blasBufferDescriptor;
+            auto resultCode = rayTracingBufferPools.GetBlasBufferPool()->InitBuffer(blasBufferRequest);
+            AZ_Assert(resultCode == RHI::ResultCode::Success, "failed to create BLAS buffer");
+
+            BufferMemoryView* blasMemoryView = static_cast<Buffer*>(buffers.m_blasBuffer.get())->GetBufferMemoryView();
+            blasMemoryView->SetName("BLAS");
+
+            // create BLAS
+            VkAccelerationStructureCreateInfoKHR createInfo = {};
+            createInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
+            createInfo.pNext = nullptr;
+            createInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
+            createInfo.size = compactedBufferSize;
+            createInfo.offset = 0;
+
+            VkBufferDeviceAddressInfo addressInfo = {};
+            addressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+            addressInfo.buffer = static_cast<Buffer*>(buffers.m_blasBuffer.get())->GetBufferMemoryView()->GetNativeBuffer();
+            createInfo.buffer = blasMemoryView->GetNativeBuffer();
+
+            buffers.m_accelerationStructure = RayTracingAccelerationStructure::Create();
+            buffers.m_accelerationStructure->Init(device, createInfo);
+
+            // store the VkAccelerationStructureKHR in the BLAS Buffer, this is necessary since we need it to
+            // stay alive as long as it is used
+            static_cast<Buffer*>(buffers.m_blasBuffer.get())->SetNativeAccelerationStructure(buffers.m_accelerationStructure);
+
+            return resultCode;
+        }
+
+        VkBuildAccelerationStructureFlagsKHR RayTracingBlas::GetAccelerationStructureBuildFlags(
+            const RHI::RayTracingAccelerationStructureBuildFlags& buildFlags)
         {
             VkBuildAccelerationStructureFlagsKHR vkBuildFlags = { 0 };
             if (RHI::CheckBitsAny(buildFlags, RHI::RayTracingAccelerationStructureBuildFlags::FAST_TRACE))
@@ -252,7 +320,12 @@ namespace AZ
                 vkBuildFlags |= VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR;
             }
 
+            if (RHI::CheckBitsAny(buildFlags, RHI::RayTracingAccelerationStructureBuildFlags::ENABLE_COMPACTION))
+            {
+                vkBuildFlags |= VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR;
+            }
+
             return vkBuildFlags;
         }
     } // namespace Vulkan
-}
+} // namespace AZ

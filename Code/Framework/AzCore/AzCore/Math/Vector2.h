@@ -18,7 +18,7 @@ namespace AZ
     class ReflectContext;
 
     //! 2-dimensional vector class.
-    class Vector2
+    class AZCORE_API Vector2
     {
     public:
 
@@ -159,6 +159,14 @@ namespace AZ
         //! Linearly interpolates between the two vectors and normalizes the result.
         Vector2 Nlerp(const Vector2& dest, float t) const;
 
+        //! Smooths a value towards a target using a critically damped spring system.
+        //! This function adjusts `value` towards `target` while maintaining continuity of `value` and its rate of change (`valueRate`).
+        //! The smoothing is controlled by `smoothTime`, with `timeDelta` representing the time since the last update.
+        Vector2 SmoothCriticallyDamped(Vector2& valueRate, float timeDelta, const Vector2& target, float smoothTime) const;
+
+        //! Performs a smooth S-curve interpolation between this vector and a desination.
+        Vector2 SmoothStep(const Vector2& dest, float t) const;
+
         //! Gets perpendicular vector, i.e. rotates through 90 degrees.
         //! The positive rotation direction is defined such that the x-axis is rotated into the y-axis.
         Vector2 GetPerpendicular() const;
@@ -216,6 +224,8 @@ namespace AZ
         Vector2 operator*(float multiplier) const;
         Vector2 operator/(float divisor) const;
         Vector2 operator/(const Vector2& rhs) const;
+        float& operator[](const size_t i);
+        const float& operator[](const size_t i) const;
 
         //! Gets the sine of each component.
         Vector2 GetSin() const;

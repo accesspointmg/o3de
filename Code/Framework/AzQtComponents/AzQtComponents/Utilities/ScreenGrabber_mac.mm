@@ -11,8 +11,8 @@
 
 #include <QImage>
 #include <QPixmap>
-#include <QtMac>
 
+#include <AzCore/Debug/Trace.h>
 #include <AzQtComponents/Components/Widgets/Eyedropper.h>
 #include <AzQtComponents/Utilities/ScreenGrabber.h>
 
@@ -57,16 +57,21 @@ namespace AzQtComponents
         QRect region({}, m_size);
         region.moveCenter(point);
         CGRect bounds = CGRectMake(region.x(), region.y(), region.width(), region.height());
-
+#if defined(__MAC_14_0)
+        //TODO - Add proper support for macOS 14.0+.
+        //Try looking into SCScreenshotManager (https://developer.apple.com/documentation/screencapturekit/scscreenshotmanager?language=objc)
+        AZ_Error("ScreenGrabber", false, "ScreenGrabber::grab not implmented for Mac OS 14.0+");
+        Q_UNUSED(bounds);
+        return QImage();
+#else
         CGImageRef cgImage = CGWindowListCreateImageFromArray(bounds, windows, kCGWindowImageNominalResolution);
         CFRelease(windows);
-
+        
         QImage result = QtMac::fromCGImageRef(cgImage).toImage();
         CGImageRelease(cgImage);
-
         return result;
+#endif
     }
 
 } // namespace AzQtComponents
 
-#include "Utilities/moc_ScreenGrabber.cpp"

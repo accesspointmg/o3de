@@ -101,6 +101,14 @@ set(FILES
     Source/Decals/AsyncLoadTracker.h
     Source/Decals/DecalTextureArrayFeatureProcessor.h
     Source/Decals/DecalTextureArrayFeatureProcessor.cpp    
+    Source/DeferredMaterial/DeferredDrawPacket.h
+    Source/DeferredMaterial/DeferredDrawPacket.cpp
+    Source/DeferredMaterial/DeferredDrawPacketManager.h
+    Source/DeferredMaterial/DeferredDrawPacketManager.cpp
+    Source/DeferredMaterial/DeferredMeshDrawPacket.h
+    Source/DeferredMaterial/DeferredMeshDrawPacket.cpp   
+    Source/DeferredMaterial/DeferredMaterialFeatureProcessor.cpp
+    Source/DeferredMaterial/DeferredMaterialFeatureProcessor.h
     Source/DisplayMapper/AcesOutputTransformPass.cpp
     Source/DisplayMapper/AcesOutputTransformLutPass.cpp
     Source/DisplayMapper/ApplyShaperLookupTablePass.cpp
@@ -108,8 +116,6 @@ set(FILES
     Source/DisplayMapper/DisplayMapperFullScreenPass.cpp
     Source/DisplayMapper/BakeAcesOutputTransformLutPass.cpp
     Source/DisplayMapper/OutputTransformPass.cpp
-    Source/ImGui/ImGuiPass.cpp
-    Source/ImGui/ImGuiPass.h
     Source/ImGui/ImGuiSystemComponent.cpp
     Source/ImGui/ImGuiSystemComponent.h
     Source/ImageBasedLights/ImageBasedLightFeatureProcessor.cpp
@@ -120,6 +126,9 @@ set(FILES
     Source/Material/Transform2DFunctor.h
     Source/Material/UseTextureFunctor.cpp
     Source/Material/UseTextureFunctor.h
+    Source/Material/FallbackPBRMaterial.cpp
+    Source/Material/FallbackPBRMaterialManager.cpp
+    Source/Material/FallbackPBRMaterialManager.h
     Source/Math/GaussianMathFilter.h
     Source/Math/GaussianMathFilter.cpp
     Source/Math/MathFilter.h
@@ -131,6 +140,8 @@ set(FILES
     Source/Mesh/MeshInstanceGroupList.h
     Source/Mesh/MeshInstanceManager.cpp
     Source/Mesh/MeshInstanceManager.h
+    Source/Mesh/MeshInfoManager.cpp
+    Source/Mesh/MeshInfoManager.h
     Source/Mesh/MeshFeatureProcessor.cpp
     Source/Mesh/MeshFeatureProcessor.h
     Source/Mesh/ModelReloader.cpp
@@ -169,6 +180,8 @@ set(FILES
     Source/PostProcess/ExposureControl/ExposureControlSettings.h
     Source/PostProcess/FilmGrain/FilmGrainSettings.cpp
     Source/PostProcess/FilmGrain/FilmGrainSettings.h
+    Source/PostProcess/MotionBlur/MotionBlurSettings.cpp
+    Source/PostProcess/MotionBlur/MotionBlurSettings.h
     Source/PostProcess/PaniniProjection/PaniniProjectionSettings.cpp
     Source/PostProcess/PaniniProjection/PaniniProjectionSettings.h
     Source/PostProcess/Ssao/SsaoSettings.cpp
@@ -195,6 +208,8 @@ set(FILES
     Source/PostProcessing/ChromaticAberrationPass.cpp
     Source/PostProcessing/FilmGrainPass.h
     Source/PostProcessing/FilmGrainPass.cpp
+    Source/PostProcessing/MotionBlurPass.h
+    Source/PostProcessing/MotionBlurPass.cpp
     Source/PostProcessing/PaniniProjectionPass.h
     Source/PostProcessing/PaniniProjectionPass.cpp
     Source/PostProcessing/VignettePass.h
@@ -309,16 +324,12 @@ set(FILES
     Source/SkinnedMesh/SkinnedMeshVertexStreamProperties.h
     Source/SkyBox/SkyBoxFeatureProcessor.cpp
     Source/SkyBox/SkyBoxFeatureProcessor.h
-    Source/SkyAtmosphere/SkyAtmosphereFeatureProcessor.cpp
-    Source/SkyAtmosphere/SkyAtmosphereFeatureProcessor.h
-    Source/SkyAtmosphere/SkyAtmosphereParentPass.cpp
-    Source/SkyAtmosphere/SkyAtmosphereParentPass.h
-    Source/SkyAtmosphere/SkyAtmospherePass.cpp
-    Source/SkyAtmosphere/SkyAtmospherePass.h
     Source/SplashScreen/SplashScreenFeatureProcessor.cpp
     Source/SplashScreen/SplashScreenFeatureProcessor.h
     Source/SplashScreen/SplashScreenPass.cpp
     Source/SplashScreen/SplashScreenPass.h
     Source/TransformService/TransformServiceFeatureProcessor.cpp
     Source/TransformService/TransformServiceFeatureProcessor.h
+    Source/ImGui/ImGuiPass.cpp
+    Source/ImGui/ImGuiPass.h
 )

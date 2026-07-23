@@ -30,7 +30,6 @@
 #define IDI_BALL_OFFLINE                           316
 #define IDI_BALL_PENDING                           395
 #define IDI_BALL_DISABLED                          396
-#define IDR_DB_PARTICLES_BAR                       410
 #define IDR_DB_LIBRARY_BAR                         455
 #define IDR_DB_STANDART                            456
 #define IDC_ZOOM_INTERNAL                          1052
@@ -94,7 +93,6 @@
 #define ID_FILE_IMPORT                             33457
 #define ID_EDIT_HOLD                               33464
 #define ID_EDIT_FETCH                              33465
-#define ID_FILE_EXPORTTOGAMENOSURFACETEXTURE       33473
 #define ID_VIEW_SWITCHTOGAME                       33477
 #define ID_VIEW_SWITCHTOGAME_FULLSCREEN            33478
 #define ID_VIEW_SWITCHTOGAME_VIEWPORT              33479
@@ -105,7 +103,6 @@
 #define ID_EDIT_ESCAPE                             33513
 #define ID_UNDO                                    33524
 #define ID_GOTO_SELECTED                           33535
-#define ID_EDIT_LEVELDATA                          33542
 #define ID_FILE_EDITEDITORINI                      33543
 #define ID_FILE_EDITLOGFILE                        33544
 #define ID_PREFERENCES                             33546

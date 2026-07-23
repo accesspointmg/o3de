@@ -84,7 +84,6 @@ namespace EMotionFX
             }
             static void GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible)
             {
-                incompatible.push_back(AZ_CRC_CE("EMotionFXAnimGraphService"));
                 incompatible.push_back(AZ_CRC_CE("EMotionFXSimpleMotionService"));
                 incompatible.push_back(AZ_CRC_CE("NonUniformScaleService"));
             }
@@ -124,6 +123,10 @@ namespace EMotionFX
             void RemoveMotionInstanceFromActor(EMotionFX::MotionInstance* motionInstance);
 
             static EMotionFX::MotionInstance* PlayMotionInternal(const EMotionFX::ActorInstance* actorInstance, const SimpleMotionComponent::Configuration& cfg, bool deleteOnZeroWeight);
+
+            static EMotionFX::MotionInstance* StartMotionInternal(EMotionFX::MotionInstance* motionInstance, const SimpleMotionComponent::Configuration& cfg);
+
+            static EMotionFX::MotionInstance* CheckMotionInstance(EMotionFX::MotionInstance* motionInstance);
 
             Configuration                               m_configuration;        ///< Component configuration.
             EMotionFXPtr<EMotionFX::ActorInstance>      m_actorInstance;        ///< Associated actor instance (retrieved from Actor Component).

@@ -7,10 +7,8 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <QWidget>
 #include <QScopedPointer>
-#endif
 
 namespace Ui {
     class GradientSliderPage;
@@ -22,6 +20,7 @@ class GradientSliderPage : public QWidget
 
 public:
     explicit GradientSliderPage(QWidget* parent = nullptr);
+    ~GradientSliderPage() override;
 
 private:
     QScopedPointer<Ui::GradientSliderPage> ui;

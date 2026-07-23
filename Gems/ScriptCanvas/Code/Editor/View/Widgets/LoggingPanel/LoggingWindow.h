@@ -8,15 +8,14 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <QButtonGroup>
+#include <QScopedPointer>
 
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzQtComponents/Components/StyledDockWidget.h>
 
 #include <Editor/View/Widgets/LoggingPanel/LiveWindowSession/LiveLoggingDataAggregator.h>
 #include <Editor/View/Widgets/LoggingPanel/LoggingDataAggregator.h>
-#endif
 
 namespace Ui
 {
@@ -49,11 +48,11 @@ namespace ScriptCanvasEditor
 
         PivotTreeWidget* GetActivePivotWidget() const;
 
-        AZStd::unique_ptr<Ui::LoggingWindow> m_ui;
+        QScopedPointer<Ui::LoggingWindow> m_ui;
 
         QButtonGroup m_pivotGroup;
 
-        LoggingDataId m_activeDataId;        
+        LoggingDataId m_activeDataId;
 
         int m_entityPageIndex;
         int m_graphPageIndex;

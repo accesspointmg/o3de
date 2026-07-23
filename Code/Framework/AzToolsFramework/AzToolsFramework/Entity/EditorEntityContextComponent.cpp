@@ -9,6 +9,8 @@
 
 #include <AzToolsFramework/Entity/EditorEntityContextComponent.h>
 
+#include <AzFramework/Translation/TranslationDef.h>
+
 #include <AzCore/Component/Entity.h>
 #include <AzCore/Component/EntityUtils.h>
 #include <AzCore/Component/ComponentApplicationBus.h>
@@ -47,8 +49,6 @@
 #include <AzToolsFramework/Prefab/Instance/Instance.h>
 #include <AzToolsFramework/Undo/UndoCacheInterface.h>
 
-DECLARE_EBUS_INSTANTIATION(AzToolsFramework::EditorEntityContextRequests);
-
 namespace AzToolsFramework
 {
     namespace Internal
@@ -85,9 +85,10 @@ namespace AzToolsFramework
             if (AZ::EditContext* editContext = serializeContext->GetEditContext())
             {
                 editContext->Class<EditorEntityContextComponent>(
-                    "Editor Entity Context", "System component responsible for owning the edit-time entity context")
+                    QT_TRANSLATE_NOOP("AzToolsFramework", "Editor Entity Context"),
+                    QT_TRANSLATE_NOOP("AzToolsFramework", "System component responsible for owning the edit-time entity context"))
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Category, "Editor")
+                    ->Attribute(AZ::Edit::Attributes::Category, QT_TRANSLATE_NOOP("AzToolsFramework", "Editor"))
                     ;
             }
         }
@@ -335,7 +336,6 @@ namespace AzToolsFramework
     {
         AZ_PROFILE_FUNCTION(AzToolsFramework);
 
-        AZ_Assert(!m_entityOwnershipService->m_shouldAssertForLegacySlicesUsage, "Not implemented");
         return true;
     }
 
@@ -351,7 +351,6 @@ namespace AzToolsFramework
     {
         AZ_PROFILE_FUNCTION(AzToolsFramework);
 
-        AZ_Assert(!m_entityOwnershipService->m_shouldAssertForLegacySlicesUsage, "Not implemented");
         return true;
     }
 

@@ -68,10 +68,14 @@ o3de_set(O3DE_PYTHON_CMD ${O3DE_ENGINE_PATH}/python/python.sh)
 # Compiler flag to export all symbols from a library
 o3de_set(O3DE_PAL_TRAIT_EXPORT_ALL_SYMBOLS_COMPILE_OPTIONS -fvisibility=default)
 
-# Set the default window manager that applications should be using on Linux 
-# Note: Only ("xcb" or "wayland" should be considered)
-set(O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER "xcb" CACHE STRING "Sets the Window Manager type to use when configuring Linux")  
-set_property(CACHE O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER PROPERTY STRINGS xcb wayland)
+# Set the supported window manager that applications should be using on Linux
+# Note: At least one must be enabled
+option(O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB "Compile with X11/XCB window manager support" ON)
+option(O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND "Compile with Wayland window manager support" OFF)
+
+if(NOT O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB AND NOT O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND)
+    message(FATAL_ERROR "At least one window manager must be enabled (XCB or Wayland)")
+endif()
 
 # Use system default libunwind instead of maintaining an O3DE version for Linux
 include(${_cmake_Platform_Linux_PAL_linux_cmake}/libunwind_linux.cmake)

@@ -10,6 +10,7 @@
 #include <AzCore/Asset/AssetCommon.h>
 #include <AzCore/Math/Uuid.h>
 
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 #include <AzToolsFramework/AssetBrowser/Entries/AssetBrowserEntry.h>
 #include <AzToolsFramework/Thumbnails/Thumbnail.h>
 
@@ -18,7 +19,7 @@ namespace AzToolsFramework
     namespace AssetBrowser
     {
         //! FolderAssetBrowserEntry is a class for any folder.
-        class FolderAssetBrowserEntry
+        class AZTF_API FolderAssetBrowserEntry
             : public AssetBrowserEntry
         {
             friend class RootAssetBrowserEntry;
@@ -36,6 +37,7 @@ namespace AzToolsFramework
 
             bool IsScanFolder() const;
             bool IsGemFolder() const;
+            bool IsProjectFolder() const;
             const AZ::Uuid& GetFolderUuid() const;
 
             static const FolderAssetBrowserEntry* GetFolderByUuid(const AZ::Uuid& folderUuid);
@@ -46,6 +48,7 @@ namespace AzToolsFramework
         private:
             bool m_isScanFolder = false;
             bool m_isGemFolder = false;
+            bool m_isProjectFolder = false;
             AZ::Uuid m_folderUuid;
 
             AZ_DISABLE_COPY_MOVE(FolderAssetBrowserEntry);

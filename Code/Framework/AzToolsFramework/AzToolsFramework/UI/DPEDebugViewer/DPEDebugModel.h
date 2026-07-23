@@ -8,19 +8,20 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/DOM/Backends/JSON/JsonBackend.h>
 #include <AzFramework/DocumentPropertyEditor/DocumentAdapter.h>
 #include <AzQtComponents/AzQtComponentsAPI.h>
 
 #include <QAbstractItemModel>
-#endif // Q_MOC_RUN
+
 
 namespace AzToolsFramework
 {
     class DPEDebugModel;
 
-    class DPEModelNode : public QObject
+    class AZTF_API DPEModelNode : public QObject
     {
         Q_OBJECT;
 
@@ -79,7 +80,7 @@ namespace AzToolsFramework
         QVector<DPEModelNode*> m_columnChildren;
     }; // DPEModelNode
 
-    class DPEDebugModel : public QAbstractItemModel
+    class AZTF_API DPEDebugModel : public QAbstractItemModel
     {
         Q_OBJECT;
 

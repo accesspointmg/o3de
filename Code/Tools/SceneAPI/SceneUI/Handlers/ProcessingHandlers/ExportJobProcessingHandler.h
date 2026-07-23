@@ -8,7 +8,6 @@
  *
  */
 
-#if !defined(Q_MOC_RUN)
 #include <SceneAPI/SceneUI/Handlers/ProcessingHandlers/ProcessingHandler.h>
 #include <AzCore/std/containers/vector.h>
 #include <AzCore/std/containers/list.h>
@@ -16,7 +15,6 @@
 #include <AzCore/std/smart_ptr/unique_ptr.h>
 #include <SceneAPI/SceneUI/SceneUIConfiguration.h>
 #include <SceneAPI/SceneUI/CommonWidgets/JobWatcher.h>
-#endif
 
 namespace AZ
 {
@@ -38,10 +36,8 @@ namespace AZ
                 void OnAllJobsComplete();
 
             private:
-                AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
                 AZStd::string m_sourceAssetPath;
                 AZStd::unique_ptr<JobWatcher> m_jobWatcher;
-                AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
             };
         } // namespace SceneUI
     } //  namespace SceneAPI

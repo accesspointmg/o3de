@@ -19,6 +19,9 @@
 #include <QMessageBox>
 #include <QSettings>
 
+// AzCore
+#include <AzCore/std/algorithm.h>
+
 // CryCommon
 #include <CryCommon/Maestro/Types/AnimParamType.h>
 
@@ -26,10 +29,7 @@
 #include "TrackViewDialog.h"
 #include "QtUI/ColorButton.h"
 
-
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <TrackView/ui_TVCustomizeTrackColorsDialog.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
 #define TRACKCOLOR_ENTRY_PREFIX ("TrackColor")
 #define TRACKCOLOR_FOR_OTHERS_ENTRY ("TrackColorForOthers")
@@ -39,7 +39,7 @@ AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 struct STrackEntry
 {
     CAnimParamType paramType;
-    QString name;
+    const char* name;
     QColor defaultColor;
 };
 
@@ -47,62 +47,62 @@ namespace
 {
     const STrackEntry g_trackEntries[] = {
         // Color for tracks
-        { AnimParamType::Position, "Pos", QColor(90, 150, 90) },
-        { AnimParamType::Rotation, "Rot", QColor(90, 150, 90) },
-        { AnimParamType::Scale, "Scale", QColor(90, 150, 90) },
-        { AnimParamType::Event, "Event", QColor(220, 220, 220) },
-        { AnimParamType::Visibility, "Visibility", QColor(220, 220, 220) },
-        { AnimParamType::Camera, "Camera", QColor(220, 220, 220) },
-        { AnimParamType::Sound, "Sound", QColor(220, 220, 220) },
-        { AnimParamType::Animation, "Animation", QColor(220, 220, 220) },
-        { AnimParamType::Sequence, "Sequence", QColor(220, 220, 220) },
-        { AnimParamType::Console, "Console", QColor(220, 220, 220) },
-        { AnimParamType::LookAt, "LookAt", QColor(220, 220, 220) },
-        { AnimParamType::TrackEvent, "TrackEvent", QColor(220, 220, 220) },
-        { AnimParamType::ShakeMultiplier, "ShakeMult", QColor(90, 150, 90) },
-        { AnimParamType::TransformNoise, "Noise", QColor(90, 150, 90) },
-        { AnimParamType::TimeWarp, "Timewarp", QColor(220, 220, 220) },
-        { AnimParamType::FixedTimeStep, "FixedTimeStep", QColor(220, 220, 220) },
-        { AnimParamType::DepthOfField, "DepthOfField", QColor(90, 150, 90) },
-        { AnimParamType::CommentText, "CommentText", QColor(220, 220, 220) },
-        { AnimParamType::ScreenFader, "ScreenFader", QColor(220, 220, 220) },
-        { AnimParamType::LightDiffuse, "LightDiffuseColor", QColor(90, 150, 90) },
-        { AnimParamType::LightRadius, "LightRadius", QColor(220, 220, 220) },
-        { AnimParamType::LightDiffuseMult, "LightDiffuseMult", QColor(220, 220, 220) },
-        { AnimParamType::LightHDRDynamic, "LightHDRDynamic", QColor(220, 220, 220) },
-        { AnimParamType::LightSpecularMult, "LightSpecularMult", QColor(220, 220, 220) },
-        { AnimParamType::LightSpecPercentage, "LightSpecularPercent", QColor(220, 220, 220) },
-        { AnimParamType::FocusDistance, "FocusDistance", QColor(220, 220, 220) },
-        { AnimParamType::FocusRange, "FocusRange", QColor(220, 220, 220) },
-        { AnimParamType::BlurAmount, "BlurAmount", QColor(220, 220, 220) },
-        { AnimParamType::PositionX, "PosX", QColor(220, 220, 220) },
-        { AnimParamType::PositionY, "PosY", QColor(220, 220, 220) },
-        { AnimParamType::PositionZ, "PosZ", QColor(220, 220, 220) },
-        { AnimParamType::RotationX, "RotX", QColor(220, 220, 220) },
-        { AnimParamType::RotationY, "RotY", QColor(220, 220, 220) },
-        { AnimParamType::RotationZ, "RotZ", QColor(220, 220, 220) },
-        { AnimParamType::ScaleX, "ScaleX", QColor(220, 220, 220) },
-        { AnimParamType::ScaleY, "ScaleY", QColor(220, 220, 220) },
-        { AnimParamType::ScaleZ, "ScaleZ", QColor(220, 220, 220) },
-        { AnimParamType::ShakeAmpAMult, "ShakeMultAmpA", QColor(220, 220, 220) },
-        { AnimParamType::ShakeAmpBMult, "ShakeMultAmpB", QColor(220, 220, 220) },
-        { AnimParamType::ShakeFreqAMult, "ShakeMultFreqA", QColor(220, 220, 220) },
-        { AnimParamType::ShakeFreqBMult, "ShakeMultFreqB", QColor(220, 220, 220) },
-        { AnimParamType::ColorR, "ColorR", QColor(220, 220, 220) },
-        { AnimParamType::ColorG, "ColorG", QColor(220, 220, 220) },
-        { AnimParamType::ColorB, "ColorB", QColor(220, 220, 220) },
-        { AnimParamType::MaterialOpacity, "MaterialOpacity", QColor(220, 220, 220) },
-        { AnimParamType::MaterialSmoothness, "MaterialGlossiness", QColor(220, 220, 220) },
-        { AnimParamType::MaterialEmissive, "MaterialEmission", QColor(220, 220, 220) },
-        { AnimParamType::MaterialEmissiveIntensity, "MaterialEmissionIntensity", QColor(220, 220, 220) },
-        { AnimParamType::NearZ, "NearZ", QColor(220, 220, 220) },
+        { AnimParamType::Position, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Pos"), QColor(90, 150, 90) },
+        { AnimParamType::Rotation, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Rot"), QColor(90, 150, 90) },
+        { AnimParamType::Scale, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Scale"), QColor(90, 150, 90) },
+        { AnimParamType::Event, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Event"), QColor(220, 220, 220) },
+        { AnimParamType::Visibility, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Visibility"), QColor(220, 220, 220) },
+        { AnimParamType::Camera, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Camera"), QColor(220, 220, 220) },
+        { AnimParamType::Sound, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Sound"), QColor(220, 220, 220) },
+        { AnimParamType::Animation, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Animation"), QColor(220, 220, 220) },
+        { AnimParamType::Sequence, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Sequence"), QColor(220, 220, 220) },
+        { AnimParamType::Console, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Console"), QColor(220, 220, 220) },
+        { AnimParamType::LookAt, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "LookAt"), QColor(220, 220, 220) },
+        { AnimParamType::TrackEvent, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "TrackEvent"), QColor(220, 220, 220) },
+        { AnimParamType::ShakeMultiplier, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "ShakeMult"), QColor(90, 150, 90) },
+        { AnimParamType::TransformNoise, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Noise"), QColor(90, 150, 90) },
+        { AnimParamType::TimeWarp, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Timewarp"), QColor(220, 220, 220) },
+        { AnimParamType::FixedTimeStep, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "FixedTimeStep"), QColor(220, 220, 220) },
+        { AnimParamType::DepthOfField, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "DepthOfField"), QColor(90, 150, 90) },
+        { AnimParamType::CommentText, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "CommentText"), QColor(220, 220, 220) },
+        { AnimParamType::ScreenFader, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "ScreenFader"), QColor(220, 220, 220) },
+        { AnimParamType::LightDiffuse, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "LightDiffuseColor"), QColor(90, 150, 90) },
+        { AnimParamType::LightRadius, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "LightRadius"), QColor(220, 220, 220) },
+        { AnimParamType::LightDiffuseMult, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "LightDiffuseMult"), QColor(220, 220, 220) },
+        { AnimParamType::LightHDRDynamic, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "LightHDRDynamic"), QColor(220, 220, 220) },
+        { AnimParamType::LightSpecularMult, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "LightSpecularMult"), QColor(220, 220, 220) },
+        { AnimParamType::LightSpecPercentage, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "LightSpecularPercent"), QColor(220, 220, 220) },
+        { AnimParamType::FocusDistance, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "FocusDistance"), QColor(220, 220, 220) },
+        { AnimParamType::FocusRange, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "FocusRange"), QColor(220, 220, 220) },
+        { AnimParamType::BlurAmount, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "BlurAmount"), QColor(220, 220, 220) },
+        { AnimParamType::PositionX, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "PosX"), QColor(220, 220, 220) },
+        { AnimParamType::PositionY, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "PosY"), QColor(220, 220, 220) },
+        { AnimParamType::PositionZ, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "PosZ"), QColor(220, 220, 220) },
+        { AnimParamType::RotationX, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "RotX"), QColor(220, 220, 220) },
+        { AnimParamType::RotationY, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "RotY"), QColor(220, 220, 220) },
+        { AnimParamType::RotationZ, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "RotZ"), QColor(220, 220, 220) },
+        { AnimParamType::ScaleX, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "ScaleX"), QColor(220, 220, 220) },
+        { AnimParamType::ScaleY, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "ScaleY"), QColor(220, 220, 220) },
+        { AnimParamType::ScaleZ, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "ScaleZ"), QColor(220, 220, 220) },
+        { AnimParamType::ShakeAmpAMult, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "ShakeMultAmpA"), QColor(220, 220, 220) },
+        { AnimParamType::ShakeAmpBMult, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "ShakeMultAmpB"), QColor(220, 220, 220) },
+        { AnimParamType::ShakeFreqAMult, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "ShakeMultFreqA"), QColor(220, 220, 220) },
+        { AnimParamType::ShakeFreqBMult, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "ShakeMultFreqB"), QColor(220, 220, 220) },
+        { AnimParamType::ColorR, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "ColorR"), QColor(220, 220, 220) },
+        { AnimParamType::ColorG, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "ColorG"), QColor(220, 220, 220) },
+        { AnimParamType::ColorB, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "ColorB"), QColor(220, 220, 220) },
+        { AnimParamType::MaterialOpacity, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "MaterialOpacity"), QColor(220, 220, 220) },
+        { AnimParamType::MaterialSmoothness, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "MaterialGlossiness"), QColor(220, 220, 220) },
+        { AnimParamType::MaterialEmissive, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "MaterialEmission"), QColor(220, 220, 220) },
+        { AnimParamType::MaterialEmissiveIntensity, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "MaterialEmissionIntensity"), QColor(220, 220, 220) },
+        { AnimParamType::NearZ, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "NearZ"), QColor(220, 220, 220) },
 
         { AnimParamType::User, "", QColor(0, 0, 0) }, // An empty string means a separator row.
 
         // Misc colors for special states of a track
-        { AnimParamType::User, "Others", QColor(220, 220, 220) },
-        { AnimParamType::User, "Disabled/Inactive", QColor(255, 224, 224) },
-        { AnimParamType::User, "Muted", QColor(255, 224, 224) },
+        { AnimParamType::User, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Others"), QColor(220, 220, 220) },
+        { AnimParamType::User, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Disabled/Inactive"), QColor(255, 224, 224) },
+        { AnimParamType::User, QT_TRANSLATE_NOOP("CTVCustomizeTrackColorsDlg", "Muted"), QColor(255, 224, 224) },
     };
 
     const int kMaxRows = 20;
@@ -114,7 +114,7 @@ namespace
     const int kMutedEntryIndex = arraysize(g_trackEntries) - 1;
 }
 
-std::map<CAnimParamType, QColor> CTVCustomizeTrackColorsDlg::s_trackColors;
+AZStd::map<CAnimParamType, QColor> CTVCustomizeTrackColorsDlg::s_trackColors;
 QColor CTVCustomizeTrackColorsDlg::s_colorForDisabled;
 QColor CTVCustomizeTrackColorsDlg::s_colorForMuted;
 QColor CTVCustomizeTrackColorsDlg::s_colorForOthers;
@@ -148,7 +148,7 @@ void CTVCustomizeTrackColorsDlg::OnInitDialog()
     QRect buttonRect(QPoint(180, 30), QPoint(280, 50));
     // Create a label and a color button for each track.
     int col = 0, i = 0;
-    std::for_each(g_trackEntries, g_trackEntries + arraysize(g_trackEntries), [&](const STrackEntry& entry)
+    AZStd::for_each(g_trackEntries, g_trackEntries + arraysize(g_trackEntries), [&](const STrackEntry& entry)
     {
         const QString labelText = entry.name;
 
@@ -156,27 +156,27 @@ void CTVCustomizeTrackColorsDlg::OnInitDialog()
         {
             m_aLabels[i] = new QLabel(m_ui->frame);
             m_aLabels[i]->setGeometry(labelRect);
-            m_aLabels[i]->setText(labelText);
+            m_aLabels[i]->setText(tr(entry.name));
 
             m_colorButtons[i] = new ColorButton(m_ui->frame);
             m_colorButtons[i]->setGeometry(buttonRect);
 
             if(entry.paramType.GetType() == AnimParamType::User)
             {
-                assert(kOthersEntryIndex <= i);
+                AZ_Assert(kOthersEntryIndex <= i, "Button color is %i is out of range", i);
                 if (i == kOthersEntryIndex)
-                    {
+                {
                     m_colorButtons[i]->SetColor(s_colorForOthers);
-                    }
-                else if(i == kDisabledEntryIndex)
-                    {
-                    m_colorButtons[i]->SetColor(s_colorForDisabled);
-                    }
-                else if(i == kMutedEntryIndex)
-                    {
-                    m_colorButtons[i]->SetColor(s_colorForMuted);
-                    }
                 }
+                else if (i == kDisabledEntryIndex)
+                {
+                    m_colorButtons[i]->SetColor(s_colorForDisabled);
+                }
+                else if (i == kMutedEntryIndex)
+                {
+                    m_colorButtons[i]->SetColor(s_colorForMuted);
+                }
+            }
             else
             {
                 m_colorButtons[i]->SetColor(s_trackColors[entry.paramType]);
@@ -212,7 +212,7 @@ void CTVCustomizeTrackColorsDlg::accept()
 void CTVCustomizeTrackColorsDlg::OnApply()
 {
     int i = 0;
-    std::for_each(g_trackEntries, g_trackEntries + arraysize(g_trackEntries), [&](const STrackEntry& entry)
+    AZStd::for_each(g_trackEntries, g_trackEntries + arraysize(g_trackEntries), [&](const STrackEntry& entry)
     {
         if(entry.paramType.GetType() != AnimParamType::User)
         {
@@ -231,7 +231,7 @@ void CTVCustomizeTrackColorsDlg::OnApply()
 void CTVCustomizeTrackColorsDlg::OnResetAll()
 {
     int i = 0;
-    std::for_each(g_trackEntries, g_trackEntries + arraysize(g_trackEntries), [&](const STrackEntry& entry)
+    AZStd::for_each(g_trackEntries, g_trackEntries + arraysize(g_trackEntries), [&](const STrackEntry& entry)
     {
         const QString labelText = entry.name;
         if(!labelText.isEmpty())
@@ -249,8 +249,8 @@ void CTVCustomizeTrackColorsDlg::SaveColors(const char* sectionName)
     {
         settings.beginGroup(g);
     }
-    std::for_each(begin(s_trackColors), end(s_trackColors),
-    [&](const std::pair<CAnimParamType, QColor>& pair)
+    AZStd::for_each(begin(s_trackColors), end(s_trackColors),
+    [&](const AZStd::pair<CAnimParamType, QColor>& pair)
     {
         const QString trackColorEntry = QString::fromLatin1("%1%2").arg(TRACKCOLOR_ENTRY_PREFIX).arg(static_cast<int>(pair.first.GetType()));
         settings.setValue(trackColorEntry, pair.second.rgb());
@@ -268,7 +268,7 @@ void CTVCustomizeTrackColorsDlg::LoadColors(const char* sectionName)
     {
         settings.beginGroup(g);
     }
-    std::for_each(g_trackEntries, g_trackEntries + arraysize(g_trackEntries), [&](const STrackEntry& entry)
+    AZStd::for_each(g_trackEntries, g_trackEntries + arraysize(g_trackEntries), [&](const STrackEntry& entry)
     {
         if (entry.paramType.GetType() != AnimParamType::User)
         {
@@ -284,7 +284,7 @@ void CTVCustomizeTrackColorsDlg::LoadColors(const char* sectionName)
 void CTVCustomizeTrackColorsDlg::OnExport()
 {
     QString savePath;
-    if (CFileUtil::SelectSaveFile("Custom Track Colors Files (*.ctc)", "ctc",
+    if (CFileUtil::SelectSaveFile(tr("Custom Track Colors Files (*.ctc)"), "ctc",
             Path::GetUserSandboxFolder(), savePath))
     {
         Export(savePath);
@@ -294,7 +294,7 @@ void CTVCustomizeTrackColorsDlg::OnExport()
 void CTVCustomizeTrackColorsDlg::OnImport()
 {
     QString loadPath;
-    if (CFileUtil::SelectFile("Custom Track Colors Files (*.ctc)",
+    if (CFileUtil::SelectFile(tr("Custom Track Colors Files (*.ctc)"),
             Path::GetUserSandboxFolder(), loadPath))
     {
         if (Import(loadPath))
@@ -315,7 +315,7 @@ void CTVCustomizeTrackColorsDlg::Export(const QString& fullPath) const
     XmlNodeRef customTrackColorsNode = XmlHelpers::CreateXmlNode("customtrackcolors");
 
     int i = 0;
-    std::for_each(g_trackEntries, g_trackEntries + arraysize(g_trackEntries), [&](const STrackEntry& entry)
+    AZStd::for_each(g_trackEntries, g_trackEntries + arraysize(g_trackEntries), [&](const STrackEntry& entry)
     {
         if(entry.paramType.GetType() != AnimParamType::User)
         {
@@ -397,5 +397,3 @@ bool CTVCustomizeTrackColorsDlg::Import(const QString& fullPath)
 
     return true;
 }
-
-#include <TrackView/moc_TVCustomizeTrackColorsDlg.cpp>

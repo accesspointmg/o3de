@@ -36,7 +36,7 @@ namespace O3DE::ProjectManager
         setWidget(m_mainWidget);
 
         m_mainLayout = new QVBoxLayout();
-        m_mainLayout->setMargin(15);
+        m_mainLayout->setContentsMargins(15, 15, 15, 15);
         m_mainLayout->setAlignment(Qt::AlignTop);
         m_mainWidget->setLayout(m_mainLayout);
 
@@ -205,7 +205,7 @@ namespace O3DE::ProjectManager
             }
             else
             {
-                emit ShowToastNotification("Failed to copy URL to clipboard");
+                emit ShowToastNotification(tr("Failed to copy URL to clipboard"));
             }
         }
     }

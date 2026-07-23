@@ -12,5 +12,4 @@ o3de_associate_package(PACKAGE_NAME PhysX-5.1.1-rev4-windows TARGETS PhysX5 PACK
 
 if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
      o3de_associate_package(PACKAGE_NAME poly2tri-7f0487a-rev1-windows TARGETS poly2tri PACKAGE_HASH 5fea2bf294e5130e0654fbfa39f192e6369f3853901dde90bb9b3f3a11edcb1e) 
-     o3de_associate_package(PACKAGE_NAME v-hacd-2.3-1a49edf-rev1-windows TARGETS v-hacd PACKAGE_HASH c5826ec28aedc3b5931ddf655d055395872cd3e75cd829f5745a2e607deb7468)
 endif()

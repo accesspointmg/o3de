@@ -249,7 +249,7 @@ namespace ScriptCanvas
                 AZ_Assert(datum != nullptr, "the datum must be valid");
 
                 // #functions2 slot<->variable check to verify if it is a member variable
-                auto variable = sourceVariable->GetScope() == VariableFlags::Scope::Graph
+                auto variable = (sourceVariable->GetScope() == VariableFlags::Scope::Graph)
                     ? AddMemberVariable(*datum, sourceVariable->GetVariableName(), sourceVariable->GetVariableId())
                     : AddVariable(*datum, sourceVariable->GetVariableName(), sourceVariable->GetVariableId());
 
@@ -606,7 +606,7 @@ namespace ScriptCanvas
             return AZStd::const_pointer_cast<Scope>(m_graphScope)->AddVariableName(name);
         }
 
-        void AbstractCodeModel::AddUserOutToLeaf(ExecutionTreePtr parent, ExecutionTreeConstPtr root, AZStd::string_view name)
+        void AbstractCodeModel::AddUserOutToLeaf(ExecutionTreePtr parent, [[maybe_unused]] ExecutionTreeConstPtr root, AZStd::string_view name)
         {
             ExecutionTreePtr out;
 
@@ -1194,7 +1194,7 @@ namespace ScriptCanvas
             }
             else
             {
-                output->m_datum = AZStd::move(Datum(outputSlot.GetDataType(), Datum::eOriginality::Copy));
+                output->m_datum = Datum(outputSlot.GetDataType(), Datum::eOriginality::Copy);
             }
             output->m_sourceSlotId = outputSlot.GetId();
             output->m_name = execution->ModScope()->AddVariableName(slotNameOverride.empty() ? outputSlot.GetName().c_str() : slotNameOverride.data(), suffix);
@@ -4872,7 +4872,7 @@ namespace ScriptCanvas
 
         void AbstractCodeModel::ParseOutputData(ExecutionTreePtr execution, ExecutionChild& executionChild)
         {
-            if (const auto nodeling = azrtti_cast<const Nodes::Core::FunctionDefinitionNode*>(execution->GetId().m_node))
+            if (azrtti_cast<const Nodes::Core::FunctionDefinitionNode*>(execution->GetId().m_node))
             {
                 // this nodeling will always be the Execution-In part of the function definition
                 // since a call to a user out does not enter this path
@@ -5561,3 +5561,4 @@ namespace ScriptCanvas
         }
     }
 }
+

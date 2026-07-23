@@ -8,6 +8,7 @@
 #include <QStringList>
 #include <QCoreApplication>
 #include <QElapsedTimer>
+#include <QRegularExpression>
 
 #include <AzCore/Casting/lossy_cast.h>
 
@@ -102,7 +103,7 @@ namespace AssetProcessor
         {
             AzToolsFramework::AssetDatabase::SourceDatabaseEntry sourceEntry;
 
-            if (m_stateData->GetSourceByJobID(jobEntry.m_jobID, sourceEntry))
+            if (m_stateData->GetSourceBySourceID(jobEntry.m_sourcePK, sourceEntry))
             {
                 SourceAssetReference sourceAsset(sourceEntry.m_scanFolderPK, sourceEntry.m_sourceName.c_str());
 
@@ -350,7 +351,7 @@ namespace AssetProcessor
     }
 
     //! A network request came in, Given a Job Run Key (from the above Job Request), asking for the actual log for that job.
-    GetAbsoluteAssetDatabaseLocationResponse AssetProcessorManager::ProcessGetAbsoluteAssetDatabaseLocationRequest(MessageData<GetAbsoluteAssetDatabaseLocationRequest> messageData)
+    GetAbsoluteAssetDatabaseLocationResponse AssetProcessorManager::ProcessGetAbsoluteAssetDatabaseLocationRequest([[maybe_unused]] MessageData<GetAbsoluteAssetDatabaseLocationRequest> messageData)
     {
         GetAbsoluteAssetDatabaseLocationResponse response;
 
@@ -665,11 +666,12 @@ namespace AssetProcessor
         AZStd::string logFile = AssetUtilities::ComputeJobLogFolder() + "/" + AssetUtilities::ComputeJobLogFileName(jobEntry);
         EraseLogFile(logFile.c_str());
 
-        // cancelled jobs are replaced by new jobs to process the same asset, so keep track of that for the analysis tracker too
+        // cancelled jobs will be replaced by new jobs to process the same asset (AFTER this call happens)
         // note that this isn't a failure - the job just isn't there anymore.
         UpdateAnalysisTrackerForFile(jobEntry, AnalysisTrackerUpdateType::JobFinished);
 
-        OnJobStatusChanged(jobEntry, JobStatus::Failed);
+        // When a job is cancelled, it is always because it was replaced by a new job.  The job is still pending.
+        OnJobStatusChanged(jobEntry, JobStatus::Queued);
 
         // we know that things have changed at this point; ensure that we check for idle
         QueueIdleCheck();
@@ -900,7 +902,7 @@ namespace AssetProcessor
             AZ_Error(AssetProcessor::ConsoleChannel, false, "Failed to retrieve the registered setting registry.");
         }
 
-        return AZStd::move(scanDirectories);
+        return scanDirectories;
     }
 
     AssetProcessorManager::ConflictResult AssetProcessorManager::CheckIntermediateProductConflict(const char* searchSourcePath)
@@ -1348,17 +1350,25 @@ namespace AssetProcessor
                 newLegacySubIDs.push_back(product.m_legacySubIDs);
             }
 
-            // To find the set of products that were either new, or updated, this code starts with the new products, and erases
-            // the prior products that are exactly the same from that list.
-            // Note that because it uses operator==, it includes comparing the hash.  This means that if the file data has changed
-            // it won't count as being the same, and will not remove it from the list.  This results in 'updatedProducts' containing
-            // the list of new products that were EITHER literally new, or, had data that was new/changed.
+            // if we take the original list of new products
+            // and we subtract priorProducts from it, we end up with the list of new products that were EITHER literally new,
+            // or, had data that was new/changed.  This is because newProducts is the list of ALL emitted stuff from this job
+            // note that it uses operator== to compare products, which means it compares the full product entry, including the hash of the product file.
+            // flags.
             auto updatedProducts = newProducts;
-            if(!updatedProducts.empty())
+            if (!updatedProducts.empty())
             {
                 for (const auto& priorProductEntry : priorProducts)
                 {
-                    updatedProducts.erase(AZStd::remove_if(updatedProducts.begin(), updatedProducts.end(), [&priorProductEntry](const auto& pair){ return pair.first == priorProductEntry; }), updatedProducts.end());
+                    updatedProducts.erase(
+                        AZStd::remove_if(
+                            updatedProducts.begin(),
+                            updatedProducts.end(),
+                            [&priorProductEntry](const auto& pair)
+                            {
+                                return pair.first == priorProductEntry;
+                            }),
+                        updatedProducts.end());
                 }
             }
 
@@ -1381,6 +1391,7 @@ namespace AssetProcessor
                     priorProducts.erase(AZStd::remove_if(priorProducts.begin(), priorProducts.end(), logicalCompare), priorProducts.end());
                 }
             }
+
 
             // we need to delete these product files from the disk as they no longer exist and inform everyone we did so
             for (const auto& priorProduct : priorProducts)
@@ -1881,7 +1892,7 @@ namespace AssetProcessor
                     // its already been picked up by a file monitoring / scanning step.
                     continue;
                 }
-                
+
                 if (source.m_fromDependencyChain.contains(absolutePath))
                 {
                     AZ_Trace(AssetProcessor::DebugChannel, "Ignoring dependant file: " AZ_STRING_FORMAT " - cyclic dependency detected\n", AZ_STRING_ARG(absolutePath));
@@ -1898,7 +1909,7 @@ namespace AssetProcessor
         {
             m_queuedExamination = true;
             QTimer::singleShot(0, this, SLOT(ProcessFilesToExamineQueue()));
-            Q_EMIT NumRemainingJobsChanged(m_activeFiles.size() + m_filesToExamine.size() + m_numOfJobsToAnalyze, AnalysisExtraInfo());
+            Q_EMIT NumRemainingJobsChanged(static_cast<int>(m_activeFiles.size()) + static_cast<int>(m_filesToExamine.size()) + static_cast<int>(m_numOfJobsToAnalyze), AnalysisExtraInfo());
         }
     }
 
@@ -2201,7 +2212,7 @@ namespace AssetProcessor
         {
             // QSet does not actually have a function that tells us if the set already contained as well as inserts it
             // (unlike std::set and others) but an easy way to tell in o(1) is to just check if the size changed
-            int priorSize = m_knownFolders.size();
+            int priorSize = static_cast<int>(m_knownFolders.size());
             m_knownFolders.insert(normalizedParentFolder);
             if (m_knownFolders.size() == priorSize)
             {
@@ -2210,7 +2221,7 @@ namespace AssetProcessor
                 break;
             }
 
-            int pos = normalizedParentFolder.lastIndexOf(QChar('/'));
+            int pos = static_cast<int>(normalizedParentFolder.lastIndexOf(QChar('/')));
             if (pos >= 0)
             {
                 normalizedParentFolder = normalizedParentFolder.left(pos);
@@ -2829,8 +2840,8 @@ namespace AssetProcessor
             // CreateJobs can sometimes take a very long time, update the remaining count occasionally
             if (elapsedTimer.elapsed() >= MILLISECONDS_BETWEEN_CREATE_JOBS_STATUS_UPDATE)
             {
-                int remainingInSwapped = swapped.size() - i;
-                Q_EMIT NumRemainingJobsChanged(m_activeFiles.size() + remainingInSwapped + m_numOfJobsToAnalyze, AnalysisExtraInfo());
+                int remainingInSwapped = static_cast<int>(swapped.size()) - i;
+                Q_EMIT NumRemainingJobsChanged(static_cast<int>(m_activeFiles.size()) + remainingInSwapped + m_numOfJobsToAnalyze, AnalysisExtraInfo());
                 elapsedTimer.restart();
             }
 
@@ -2872,8 +2883,8 @@ namespace AssetProcessor
                     if (normalizedPath.endsWith(QString(FENCE_FILE_EXTENSION), Qt::CaseInsensitive))
                     {
                         // its a fence file, now computing fenceId from it:
-                        int startPos = normalizedPath.lastIndexOf("~");
-                        int endPos = normalizedPath.lastIndexOf(".");
+                        int startPos = static_cast<int>(normalizedPath.lastIndexOf("~"));
+                        int endPos = static_cast<int>(normalizedPath.lastIndexOf("."));
                         QString fenceIdString = normalizedPath.mid(startPos + 1, endPos - startPos - 1);
                         bool isNumber = false;
                         int fenceId = fenceIdString.toInt(&isNumber);
@@ -2991,31 +3002,6 @@ namespace AssetProcessor
                         // keep track of its parent folder so that if it is deleted later we know it is a folder
                         // delete and not a file delete.
                         AddKnownFoldersRecursivelyForFile(normalizedPath, sourceAssetReference.ScanFolderPath().c_str());
-
-                        if (normalizedPath.toUtf8().length() > normalizedPath.length())
-                        {
-                            // if we are here it implies that the source file path contains non ascii characters
-                            AutoFailJob(
-                                AZStd::string::format(
-                                    "ProcessFilesToExamineQueue: source file path ( %s ) contains non ascii characters.\n",
-                                    normalizedPath.toUtf8().constData()),
-                                AZStd::string::format(
-                                    "Source file ( %s ) contains non ASCII characters.\n"
-                                    "O3DE currently only supports file paths having ASCII characters and therefore asset processor will not be able to process this file.\n"
-                                    "Please rename the source file to fix this error.\n",
-                                    normalizedPath.toUtf8().constData()),
-                                JobEntry(
-                                    sourceAssetReference,
-                                    AZ::Uuid::CreateNull(),
-                                    { "all", {} },
-                                    QString("PreCreateJobs"),
-                                    0,
-                                    GenerateNewJobRunKey(),
-                                    AZ::Uuid::CreateNull())
-                                );
-
-                            continue;
-                        }
                     }
                     else
                     {
@@ -3177,7 +3163,7 @@ namespace AssetProcessor
             if (!m_quitRequested && m_AssetProcessorIsBusy)
             {
                 m_AssetProcessorIsBusy = false;
-                Q_EMIT NumRemainingJobsChanged(m_activeFiles.size() + m_filesToExamine.size() + m_numOfJobsToAnalyze, AnalysisExtraInfo());
+                Q_EMIT NumRemainingJobsChanged(static_cast<int>(m_activeFiles.size()) + static_cast<int>(m_filesToExamine.size()) + m_numOfJobsToAnalyze, AnalysisExtraInfo());
                 Q_EMIT AssetProcessorManagerIdleState(true);
             }
 
@@ -3206,7 +3192,7 @@ namespace AssetProcessor
             Q_EMIT AssetProcessorManagerIdleState(false);
 
             // amount of jobs to evaluate right now (no deferred jobs)
-            int numWorkRemainingNow = m_activeFiles.size() + m_filesToExamine.size();
+            int numWorkRemainingNow = static_cast<int>(m_activeFiles.size()) + static_cast<int>(m_filesToExamine.size());
             // total (GUI Shown) of work remaining (including jobs to do later)
             int numTotalWorkRemaining = numWorkRemainingNow + m_numOfJobsToAnalyze;
             Q_EMIT NumRemainingJobsChanged(numTotalWorkRemaining, AnalysisExtraInfo());
@@ -3373,7 +3359,7 @@ namespace AssetProcessor
         m_alreadyActiveFiles.insert(normalizedFullFile);
 
 
-        Q_EMIT NumRemainingJobsChanged(m_activeFiles.size() + m_filesToExamine.size() + m_numOfJobsToAnalyze, AnalysisExtraInfo());
+        Q_EMIT NumRemainingJobsChanged(static_cast<int>(m_activeFiles.size()) + static_cast<int>(m_filesToExamine.size()) + static_cast<int>(m_numOfJobsToAnalyze), AnalysisExtraInfo());
 
         if (!m_alreadyScheduledUpdate)
         {
@@ -3518,7 +3504,7 @@ namespace AssetProcessor
         [[maybe_unused]] int processedFileCount = 0;
 
         AssetProcessor::StatsCapture::BeginCaptureStat("InitialFileAssessment");
-        m_totalScannerFilesToAssess = filePaths.size();
+        m_totalScannerFilesToAssess = static_cast<int>(filePaths.size());
         m_scannerFilesAssessed = 0;
 
         for (const AssetFileInfo& fileInfo : filePaths)
@@ -3792,18 +3778,18 @@ namespace AssetProcessor
         int maxPerIteration = 50;
 
         // Burn through all pending files
-        const FileEntry* firstEntry = &m_activeFiles.front();
         while (m_filesToExamine.size() < maxPerIteration)
         {
-            m_alreadyActiveFiles.remove(firstEntry->m_fileName);
-            CheckSource(*firstEntry);
+            // CheckSource modifies m_activeFiles, so we need to work with a copy of the current entry
+            FileEntry firstEntry = m_activeFiles.front();
+            m_alreadyActiveFiles.remove(firstEntry.m_fileName);
+            CheckSource(firstEntry);
             m_activeFiles.pop_front();
 
             if (m_activeFiles.size() == 0)
             {
                 break;
             }
-            firstEntry = &m_activeFiles.front();
         }
 
         if (!m_alreadyScheduledUpdate)
@@ -3856,7 +3842,7 @@ namespace AssetProcessor
                 // Update the remaining job status occasionally
                 if (elapsedTimer.elapsed() >= MILLISECONDS_BETWEEN_PROCESS_JOBS_STATUS_UPDATE)
                 {
-                    Q_EMIT NumRemainingJobsChanged(m_activeFiles.size() + m_filesToExamine.size() + m_numOfJobsToAnalyze, AnalysisExtraInfo());
+                    Q_EMIT NumRemainingJobsChanged(static_cast<int>(m_activeFiles.size()) + static_cast<int>(m_filesToExamine.size()) + static_cast<int>(m_numOfJobsToAnalyze), AnalysisExtraInfo());
                     elapsedTimer.restart();
                 }
             }
@@ -3889,7 +3875,7 @@ namespace AssetProcessor
             QueueIdleCheck();
         }
 
-        Q_EMIT NumRemainingJobsChanged(m_activeFiles.size() + m_filesToExamine.size() + m_numOfJobsToAnalyze, AnalysisExtraInfo());
+        Q_EMIT NumRemainingJobsChanged(static_cast<int>(m_activeFiles.size()) + static_cast<int>(m_filesToExamine.size()) + static_cast<int>(m_numOfJobsToAnalyze), AnalysisExtraInfo());
     }
 
     void AssetProcessorManager::ProcessJob(JobDetails& job)
@@ -4065,13 +4051,16 @@ namespace AssetProcessor
                 }
                 else if(sourceFileDependency.m_sourceDependencyType != AssetBuilderSDK::SourceFileDependency::SourceFileDependencyType::Wildcards)
                 {
-                    AZ_TracePrintf(AssetProcessor::ConsoleChannel, "UpdateJobDependency: Failed to find builder dependency for %s job (%s, %s, %s)\n",
+                    // This is not necessarily an actual problem, you are allowed to depend on builder or job dependencies that don't exist yet and will appear
+                    // later.  This can happen when some other job generates that input dependency, so the job will wait until its dependency appears.
+
+                    AZ_TracePrintf(AssetProcessor::DebugChannel, "UpdateJobDependency: Builder is missing: No builder found for %s job (%s, %s, %s)\n",
                         job.m_jobEntry.GetAbsoluteSourcePath().toUtf8().constData(),
                         jobDependencyInternal->m_jobDependency.m_sourceFile.m_sourceFileDependencyPath.c_str(),
                         jobDependencyInternal->m_jobDependency.m_jobKey.c_str(),
                         jobDependencyInternal->m_jobDependency.m_platformIdentifier.c_str());
 
-                    job.m_hasMissingSourceDependency = true;
+                    jobDependencyInternal->m_isMissingSource = true;
                 }
             }
 
@@ -4274,7 +4263,7 @@ namespace AssetProcessor
             }
             else
             {
-                // if we get here, we succeeded.
+                // if we get here, we succeeded (as in, the job was at least emitted without the builder crashing).
                 {
                     // if we succeeded, we can erase any jobs that had failed createjobs last time for this builder:
                     AzToolsFramework::AssetSystem::JobInfo jobInfo;
@@ -4294,6 +4283,7 @@ namespace AssetProcessor
 
                     const AssetBuilderSDK::PlatformInfo* const infoForPlatform = m_platformConfig->GetPlatformByIdentifier(jobDescriptor.GetPlatformIdentifier().c_str());
 
+                    // do some basic validation
                     if (!infoForPlatform)
                     {
                         AZ_Warning(AssetProcessor::ConsoleChannel, infoForPlatform,
@@ -4301,6 +4291,45 @@ namespace AssetProcessor
                             "discarded.  Builders should check the input list of platforms and only emit jobs for platforms "
                             "in that list", builderInfo.m_name.c_str(), jobDescriptor.GetPlatformIdentifier().c_str());
                         continue;
+                    }
+
+                    bool jobPlatformValidationFailed = false;
+                    for (auto& jobDependency : jobDescriptor.m_jobDependencyList)
+                    {
+                        if (jobDependency.m_platformIdentifier.compare(AssetBuilderSDK::CommonPlatformName) != 0)
+                        {
+                            // you can only depend on the common platform, or other jobs of the same platform.
+                            if (jobDescriptor.GetPlatformIdentifier() != jobDependency.m_platformIdentifier)
+                            {
+                                AZStd::string failureMessage = AZStd::string::format(
+                                    "Invalid Job Dependency emitted for %s.\n"
+                                    "    The builder (%s, %s) emitted a job for one platform that depends on a job for a different "
+                                    "platform\n"
+                                    "    Jobs can only depend on the \"%s\" platform or other jobs for the same platform.\n"
+                                    "    This is a code error, not a problem with the assets - please modify the builder to emit job\n"
+                                    "    dependencies correctly.\n"
+                                    "      Source Job: (platform \"%s\", job Key: \"%s\")\n"
+                                    "      Depends on: (platform \"%s\", job Key: \"%s\", source file: \"%s\")",
+                                    sourceAsset.AbsolutePath().c_str(),
+                                    builderInfo.m_name.c_str(),
+                                    builderInfo.m_busId.ToString<AZStd::string>().c_str(),
+                                    AssetBuilderSDK::CommonPlatformName,
+                                    jobDescriptor.GetPlatformIdentifier().c_str(),
+                                    jobDescriptor.m_jobKey.c_str(),
+                                    jobDependency.m_platformIdentifier.c_str(),
+                                    jobDependency.m_jobKey.c_str(),
+                                    jobDependency.m_sourceFile.ToString().c_str());
+
+                                jobPlatformValidationFailed = true;
+                                JobEntry failingJob(sourceAsset, builderInfo.m_busId, *infoForPlatform, jobDescriptor.m_jobKey.c_str(), 0, GenerateNewJobRunKey(),sourceUUID);
+                                AutoFailJob(AZStd::string::format("Invalid Job Dependency: %s.\n", sourceAsset.AbsolutePath().c_str()), failureMessage, failingJob, "");
+                                break;
+                            }
+                        }
+                    }
+                    if (jobPlatformValidationFailed)
+                    {
+                        continue; // discard the job, its already been added as an auto-fail job.
                     }
 
                     {
@@ -4382,7 +4411,12 @@ namespace AssetProcessor
                 {
                     if ((builderInfo.m_flags & AssetBuilderSDK::AssetBuilderDesc::BF_EmitsNoDependencies) != 0)
                     {
-                        AZ_WarningOnce(ConsoleChannel, false, "Asset builder '%s' registered itself using BF_EmitsNoDependencies flag, but actually emitted dependencies.  This will cause rebuilds to be inconsistent.\n", builderInfo.m_name.c_str());
+                        AZ_WarningOnce(
+                            ConsoleChannel,
+                            false,
+                            "Asset builder '%s' registered itself using BF_EmitsNoDependencies flag, but actually emitted dependencies.  "
+                            "This will cause rebuilds to be inconsistent.\n",
+                            builderInfo.m_name.c_str());
                     }
 
                     // remember which builder emitted each dependency:
@@ -4434,7 +4468,7 @@ namespace AssetProcessor
 
             if (sourceDependency.m_sourceDependencyType == AssetBuilderSDK::SourceFileDependency::SourceFileDependencyType::Wildcards)
             {
-                int wildcardIndex = encodedFileData.indexOf("*");
+                int wildcardIndex = static_cast<int>(encodedFileData.indexOf("*"));
 
                 if (wildcardIndex < 0)
                 {
@@ -4443,7 +4477,7 @@ namespace AssetProcessor
                 }
                 else
                 {
-                    int slashBeforeWildcardIndex = encodedFileData.lastIndexOf("/", wildcardIndex);
+                    int slashBeforeWildcardIndex = static_cast<int>(encodedFileData.lastIndexOf("/", wildcardIndex));
                     QString knownPathBeforeWildcard = encodedFileData.left(slashBeforeWildcardIndex + 1); // include the slash
                     QString relativeSearch = encodedFileData.mid(slashBeforeWildcardIndex + 1); // skip the slash
 
@@ -5956,7 +5990,7 @@ namespace AssetProcessor
         {
             // Remove invalid characters
             QString sourcePath = entry.c_str();
-            sourcePath.remove(QRegExp("[\\n\\r]"));
+            sourcePath.remove(QRegularExpression("[\\n\\r]"));
 
             QString scanFolderName;
             QString relativePathToFile;

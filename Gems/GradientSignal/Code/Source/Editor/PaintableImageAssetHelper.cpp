@@ -6,7 +6,6 @@
  *
  */
 
-#if !defined(Q_MOC_RUN)
 #include <Atom/RPI.Edit/Common/AssetUtils.h>
 #include <Atom/RPI.Reflect/Image/StreamingImageAsset.h>
 #include <AzCore/Asset/AssetCommon.h>
@@ -34,88 +33,68 @@
 #include <QPushButton>
 #include <QString>
 #include <QVBoxLayout>
-#endif
 
 namespace GradientSignal::ImageCreatorUtils
 {
-    //! CreateImageDialog allows the user to specify a set of image creation parameters for use in creating a new image asset.
-    class CreateImageDialog : public QDialog
-    {
-        Q_OBJECT
-    public:
-        AZ_CLASS_ALLOCATOR(CreateImageDialog, AZ::SystemAllocator);
-
-        CreateImageDialog(QWidget* parent = nullptr)
-            : QDialog(parent)
-        {
-            setModal(true);
-            setMinimumWidth(300);
-            resize(300, 100);
-            setWindowTitle("Create New Image");
-
-            // Create the layout for all the widgets to be stacked vertically.
-            auto verticalLayout = new QVBoxLayout();
-
-            // Create the width and height widgets
-
-            m_width = new AzQtComponents::SpinBox();
-            m_width->setRange(MinPixels, MaxPixels);
-            m_width->setValue(DefaultPixels);
-
-            m_height = new AzQtComponents::SpinBox();
-            m_height->setRange(MinPixels, MaxPixels);
-            m_height->setValue(DefaultPixels);
-
-            QGridLayout* dimensionsLayout = new QGridLayout();
-            dimensionsLayout->addWidget(new QLabel("Width:"), 0, 0);
-            dimensionsLayout->addWidget(m_width, 0, 1);
-            dimensionsLayout->addWidget(new QLabel("Height:"), 0, 2);
-            dimensionsLayout->addWidget(m_height, 0, 3);
-
-            verticalLayout->addLayout(dimensionsLayout);
-
-            // Connect ok and cancel buttons and change "ok" to "next".
-            auto buttonBox = new QDialogButtonBox(this);
-            buttonBox->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed));
-            buttonBox->setOrientation(Qt::Horizontal);
-            buttonBox->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
-            QObject::connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
-            QObject::connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
-            verticalLayout->addWidget(buttonBox);
-
-            // We set this to "Next" instead of "OK" because after the dialog box completes, a standard native file picker dialog
-            // will appear to select the save location for the created image, so the entire process appears as two steps to the end user.
-            buttonBox->button(QDialogButtonBox::Ok)->setText("Next");
-
-            auto gridLayout = new QGridLayout(this);
-            gridLayout->addLayout(verticalLayout, 0, 0, 1, 1);
-
-            adjustSize();
-        }
-
-        ~CreateImageDialog() = default;
-
-        int GetWidth()
-        {
-            return m_width->value();
-        }
-
-        int GetHeight()
-        {
-            return m_height->value();
-        }
-
-    private:
-        // Min/max/default values for the image dimensions
-        static inline constexpr int MinPixels = 1;
-        static inline constexpr int MaxPixels = 8192;
-        static inline constexpr int DefaultPixels = 512;
-
-        AzQtComponents::SpinBox* m_width = nullptr;
-        AzQtComponents::SpinBox* m_height = nullptr;
-    };
-
     AZ_ENUM_DEFINE_REFLECT_UTILITIES(PaintableImageAssetAutoSaveMode);
+
+    CreateImageDialog::CreateImageDialog(QWidget* parent)
+        : QDialog(parent)
+    {
+        setModal(true);
+        setMinimumWidth(300);
+        resize(300, 100);
+        setWindowTitle("Create New Image");
+
+        // Create the layout for all the widgets to be stacked vertically.
+        auto verticalLayout = new QVBoxLayout();
+
+        // Create the width and height widgets
+
+        m_width = new AzQtComponents::SpinBox();
+        m_width->setRange(MinPixels, MaxPixels);
+        m_width->setValue(DefaultPixels);
+
+        m_height = new AzQtComponents::SpinBox();
+        m_height->setRange(MinPixels, MaxPixels);
+        m_height->setValue(DefaultPixels);
+
+        QGridLayout* dimensionsLayout = new QGridLayout();
+        dimensionsLayout->addWidget(new QLabel("Width:"), 0, 0);
+        dimensionsLayout->addWidget(m_width, 0, 1);
+        dimensionsLayout->addWidget(new QLabel("Height:"), 0, 2);
+        dimensionsLayout->addWidget(m_height, 0, 3);
+
+        verticalLayout->addLayout(dimensionsLayout);
+
+        // Connect ok and cancel buttons and change "ok" to "next".
+        auto buttonBox = new QDialogButtonBox(this);
+        buttonBox->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed));
+        buttonBox->setOrientation(Qt::Horizontal);
+        buttonBox->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
+        QObject::connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+        QObject::connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+        verticalLayout->addWidget(buttonBox);
+
+        // We set this to "Next" instead of "OK" because after the dialog box completes, a standard native file picker dialog
+        // will appear to select the save location for the created image, so the entire process appears as two steps to the end user.
+        buttonBox->button(QDialogButtonBox::Ok)->setText("Next");
+
+        auto gridLayout = new QGridLayout(this);
+        gridLayout->addLayout(verticalLayout, 0, 0, 1, 1);
+
+        adjustSize();
+    }
+
+    int CreateImageDialog::GetWidth()
+    {
+        return m_width->value();
+    }
+
+    int CreateImageDialog::GetHeight()
+    {
+        return m_height->value();
+    }
 
     void PaintableImageAssetHelperBase::Reflect(AZ::ReflectContext* context)
     {
@@ -137,7 +116,7 @@ namespace GradientSignal::ImageCreatorUtils
 
             if (auto editContext = serializeContext->GetEditContext())
             {
-                editContext->Class<PaintableImageAssetHelperBase>("Paintable Image Asset", "")
+                editContext->Class<PaintableImageAssetHelperBase>(QT_TRANSLATE_NOOP("GradientSignal", "Paintable Image Asset"), "")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
@@ -146,13 +125,13 @@ namespace GradientSignal::ImageCreatorUtils
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &PaintableImageAssetHelperBase::m_autoSaveMode,
-                        "Auto-Save Mode",
-                        "When editing an image, this selects whether to manually prompt for the save location, auto-save on every "
+                        QT_TRANSLATE_NOOP("GradientSignal", "Auto-Save Mode"),
+                        QT_TRANSLATE_NOOP("GradientSignal", "When editing an image, this selects whether to manually prompt for the save location, auto-save on every "
                         "edit, "
-                        "or auto-save with incrementing file names on every edit.")
-                    ->EnumAttribute(PaintableImageAssetAutoSaveMode::SaveAs, "Save As...")
-                    ->EnumAttribute(PaintableImageAssetAutoSaveMode::AutoSave, "Auto Save")
-                    ->EnumAttribute(PaintableImageAssetAutoSaveMode::AutoSaveWithIncrementalNames, "Auto Save With Incrementing Names")
+                        "or auto-save with incrementing file names on every edit."))
+                    ->EnumAttribute(PaintableImageAssetAutoSaveMode::SaveAs, QT_TRANSLATE_NOOP("GradientSignal", "Save As..."))
+                    ->EnumAttribute(PaintableImageAssetAutoSaveMode::AutoSave, QT_TRANSLATE_NOOP("GradientSignal", "Auto Save"))
+                    ->EnumAttribute(PaintableImageAssetAutoSaveMode::AutoSaveWithIncrementalNames, QT_TRANSLATE_NOOP("GradientSignal", "Auto Save With Incrementing Names"))
                     // There's no need to ChangeNotify when this property changes, it doesn't affect the behavior of the comopnent,
                     // it's only queried at the point that an edit is completed.
 
@@ -160,14 +139,14 @@ namespace GradientSignal::ImageCreatorUtils
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &PaintableImageAssetHelperBase::m_componentModeDelegate,
-                        "Paint Image",
-                        "Paint into an image asset")
-                    ->Attribute(AZ::Edit::Attributes::ButtonText, "Paint")
+                        QT_TRANSLATE_NOOP("GradientSignal", "Paint Image"),
+                        QT_TRANSLATE_NOOP("GradientSignal", "Paint into an image asset"))
+                    ->Attribute(AZ::Edit::Attributes::ButtonText, QT_TRANSLATE_NOOP("GradientSignal", "Paint"))
                     ->Attribute(AZ::Edit::Attributes::Visibility, &PaintableImageAssetHelperBase::GetPaintModeVisibility)
 
-                    ->UIElement(AZ::Edit::UIHandlers::Button, "CreateImage", "Create a new image asset.")
+                    ->UIElement(AZ::Edit::UIHandlers::Button, QT_TRANSLATE_NOOP("GradientSignal", "CreateImage"), QT_TRANSLATE_NOOP("GradientSignal", "Create a new image asset."))
                     ->Attribute(AZ::Edit::Attributes::NameLabelOverride, "")
-                    ->Attribute(AZ::Edit::Attributes::ButtonText, "Create New Image...")
+                    ->Attribute(AZ::Edit::Attributes::ButtonText, QT_TRANSLATE_NOOP("GradientSignal", "Create New Image..."))
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, &PaintableImageAssetHelperBase::CreateNewImage)
                     ->Attribute(AZ::Edit::Attributes::ReadOnly, &PaintableImageAssetHelperBase::InComponentMode)
 
@@ -610,5 +589,3 @@ namespace GradientSignal::ImageCreatorUtils
         return createdAsset;
     }
 } // namespace GradientSignal::ImageCreatorUtils
-
-#include "PaintableImageAssetHelper.moc"

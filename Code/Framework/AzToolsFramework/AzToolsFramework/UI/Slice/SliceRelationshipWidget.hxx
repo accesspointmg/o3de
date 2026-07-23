@@ -8,11 +8,11 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
-#include <QtWidgets/QWidget>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
+#include <QWidget>
 #include <AzToolsFramework/Slice/SliceDependencyBrowserBus.h>
 #include <AzToolsFramework/UI/Slice/SliceRelationshipBus.h>
-#endif
 
 class QTreeWidget;
 class QTreeWidgetItem;
@@ -29,7 +29,7 @@ namespace AzToolsFramework
     /**
      * Widget that displays relationships between slices
      */
-    class SliceRelationshipWidget
+    class AZTF_API SliceRelationshipWidget
         : public QWidget
         , private SliceDependencyBrowserNotificationsBus::Handler
         , private SliceRelationshipRequestBus::Handler

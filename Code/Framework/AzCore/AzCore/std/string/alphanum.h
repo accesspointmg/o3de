@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
-#ifndef AZSTD_STRING_ALPHANUM_H
-#define AZSTD_STRING_ALPHANUM_H
+
+#pragma once
 
 #include <AzCore/std/string/string.h>
 #include <AzCore/std/functional_basic.h>
@@ -31,7 +31,7 @@ namespace AZStd
         * @return negative if l<r, 0 if l equals r, positive if l>r
         *
         */
-        int alphanum_impl(const char* l, const char* r);
+        AZCORE_API int alphanum_impl(const char* l, const char* r);
     }
 
     /**
@@ -62,6 +62,3 @@ namespace AZStd
         }
     };
 } // namespace AZStd
-
-#endif // AZSTD_STRING_ALPHANUM_H
-

@@ -23,6 +23,11 @@ namespace AZ
             return aznew RayTracingBlas;
         }
 
+        uint64_t RayTracingBlas::GetAccelerationStructureByteSize()
+        {
+            return m_buffers.GetCurrentElement().m_blasBuffer->GetDescriptor().m_byteCount;
+        }
+
         RHI::ResultCode RayTracingBlas::CreateBuffersInternal([[maybe_unused]] RHI::Device& deviceBase, [[maybe_unused]] const RHI::DeviceRayTracingBlasDescriptor* descriptor, [[maybe_unused]] const RHI::DeviceRayTracingBufferPools& bufferPools)
         {
 #ifdef AZ_DX12_DXR_SUPPORT
@@ -35,9 +40,9 @@ namespace AZ
             m_geometryDescs.clear();
 
             // A BLAS can contain either triangle geometry or procedural geometry; decide based on the descriptor which one to create
-            if (descriptor->HasAABB())
+            if (descriptor->m_aabb.has_value())
             {
-                const AZ::Aabb& aabb = descriptor->GetAABB();
+                const AZ::Aabb& aabb = *descriptor->m_aabb;
                 buffers.m_aabbBuffer = RHI::Factory::Get().CreateBuffer();
                 AZ::RHI::BufferDescriptor blasBufferDescriptor;
                 blasBufferDescriptor.m_bindFlags = RHI::BufferBindFlags::CopyRead;
@@ -74,7 +79,7 @@ namespace AZ
             }
             else
             {
-                const RHI::DeviceRayTracingGeometryVector& geometries = descriptor->GetGeometries();
+                const RHI::DeviceRayTracingGeometryVector& geometries = descriptor->m_geometries;
 
                 // build the list of D3D12_RAYTRACING_GEOMETRY_DESC structures
                 m_geometryDescs.reserve(geometries.size());
@@ -86,7 +91,7 @@ namespace AZ
                     geometryDesc.Triangles.VertexBuffer.StartAddress = static_cast<const DX12::Buffer*>(geometry.m_vertexBuffer.GetBuffer())->GetMemoryView().GetGpuAddress() + geometry.m_vertexBuffer.GetByteOffset();
                     geometryDesc.Triangles.VertexBuffer.StrideInBytes = geometry.m_vertexBuffer.GetByteStride();
                     geometryDesc.Triangles.VertexCount = geometry.m_vertexBuffer.GetByteCount() / aznumeric_cast<UINT>(geometryDesc.Triangles.VertexBuffer.StrideInBytes);
-                    geometryDesc.Triangles.VertexFormat = ConvertFormat(geometry.m_vertexFormat);
+                    geometryDesc.Triangles.VertexFormat = ConvertFormat(RHI::ConvertToImageFormat(geometry.m_vertexFormat));
                     geometryDesc.Triangles.IndexBuffer = static_cast<const DX12::Buffer*>(geometry.m_indexBuffer.GetBuffer())->GetMemoryView().GetGpuAddress() + geometry.m_indexBuffer.GetByteOffset();
                     geometryDesc.Triangles.IndexFormat = (geometry.m_indexBuffer.GetIndexFormat() == RHI::IndexFormat::Uint16) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
                     geometryDesc.Triangles.IndexCount = aznumeric_cast<UINT>(geometry.m_indexBuffer.GetByteCount()) / ((geometry.m_indexBuffer.GetIndexFormat() == RHI::IndexFormat::Uint16) ? 2 : 4);
@@ -104,7 +109,7 @@ namespace AZ
             m_inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
             m_inputs.pGeometryDescs = m_geometryDescs.data();
             m_inputs.NumDescs = aznumeric_cast<UINT>(m_geometryDescs.size());
-            m_inputs.Flags = GetAccelerationStructureBuildFlags(descriptor->GetBuildFlags());
+            m_inputs.Flags = GetAccelerationStructureBuildFlags(descriptor->m_buildFlags);
 
             D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO prebuildInfo = {};
             dx12Device->GetRaytracingAccelerationStructurePrebuildInfo(&m_inputs, &prebuildInfo);
@@ -145,6 +150,39 @@ namespace AZ
             return RHI::ResultCode::Success;
         }
 
+        RHI::ResultCode RayTracingBlas::CreateCompactedBuffersInternal(
+            [[maybe_unused]] RHI::Device& device,
+            RHI::Ptr<RHI::DeviceRayTracingBlas> sourceBlas,
+            uint64_t compactedBufferSize,
+            const RHI::DeviceRayTracingBufferPools& rayTracingBufferPools)
+        {
+#ifdef AZ_DX12_DXR_SUPPORT
+            // advance to the next buffer
+            BlasBuffers& buffers = m_buffers.AdvanceCurrentElement();
+            // create BLAS buffer
+            buffers.m_blasBuffer = RHI::Factory::Get().CreateBuffer();
+            AZ::RHI::BufferDescriptor blasBufferDescriptor;
+            blasBufferDescriptor.m_bindFlags =
+                RHI::BufferBindFlags::ShaderReadWrite | RHI::BufferBindFlags::RayTracingAccelerationStructure;
+            blasBufferDescriptor.m_byteCount = compactedBufferSize;
+
+            AZ::RHI::DeviceBufferInitRequest blasBufferRequest;
+            blasBufferRequest.m_buffer = buffers.m_blasBuffer.get();
+            blasBufferRequest.m_descriptor = blasBufferDescriptor;
+            [[maybe_unused]] auto resultCode = rayTracingBufferPools.GetBlasBufferPool()->InitBuffer(blasBufferRequest);
+            AZ_Assert(resultCode == RHI::ResultCode::Success, "failed to create BLAS buffer");
+
+            MemoryView& blasMemoryView = static_cast<Buffer*>(buffers.m_blasBuffer.get())->GetMemoryView();
+            blasMemoryView.SetName(L"BLAS");
+
+            const auto* dx12SourceBlas = static_cast<RayTracingBlas*>(sourceBlas.get());
+            m_inputs = dx12SourceBlas->m_inputs;
+            m_geometryDescs = dx12SourceBlas->m_geometryDescs;
+#endif
+
+            return RHI::ResultCode::Success;
+        }
+
 #ifdef AZ_DX12_DXR_SUPPORT
         D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS RayTracingBlas::GetAccelerationStructureBuildFlags(const RHI::RayTracingAccelerationStructureBuildFlags &buildFlags)
         {
@@ -162,6 +200,11 @@ namespace AZ
             if (RHI::CheckBitsAny(buildFlags, RHI::RayTracingAccelerationStructureBuildFlags::ENABLE_UPDATE))
             {
                 dxBuildFlags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
+            }
+
+            if (RHI::CheckBitsAny(buildFlags, RHI::RayTracingAccelerationStructureBuildFlags::ENABLE_COMPACTION))
+            {
+                dxBuildFlags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_COMPACTION;
             }
 
             return dxBuildFlags;

@@ -84,10 +84,13 @@ if(O3DE_PAL_TRAIT_PROF_PIX_SUPPORTED)
 endif()
 
 o3de_add_target(
-    NAME ${gem_name}.Reflect STATIC
+    NAME ${gem_name}.Reflect ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_LIBRARY_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         atom_rhi_reflect_files.cmake
+    COMPILE_DEFINITIONS
+        PRIVATE
+            ATOM_RHI_REFLECT_EXPORTS
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
@@ -102,11 +105,15 @@ o3de_add_target(
 )
 
 o3de_add_target(
-    NAME ${gem_name}.Public STATIC
+    NAME ${gem_name}.Public ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_LIBRARY_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         atom_rhi_public_files.cmake
+        ../Assets/atom_rhi_asset_files.cmake
         ${pal_code_source_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
+    COMPILE_DEFINITIONS
+        PRIVATE
+            ATOM_RHI_PUBLIC_EXPORTS
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
@@ -117,11 +124,12 @@ o3de_add_target(
         PRIVATE
             AZ::AzCore
             AZ::AzFramework
+        PUBLIC
             Gem::${gem_name}.Reflect
 )
 
 o3de_add_target(
-    NAME ${gem_name}.Private.Static STATIC
+    NAME ${gem_name}.Private.Object OBJECT
     NAMESPACE Gem
     FILES_CMAKE
         atom_rhi_private_files.cmake
@@ -152,7 +160,7 @@ o3de_add_target(
         PRIVATE
             AZ::AzCore
             Gem::${gem_name}.Public
-            Gem::${gem_name}.Private.Static
+            Gem::${gem_name}.Private.Object
             Gem::${gem_name}.Profiler
     RUNTIME_DEPENDENCIES
         ${PROFILER_DEPENDENCIES}            

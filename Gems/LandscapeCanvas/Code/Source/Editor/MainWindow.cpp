@@ -674,7 +674,7 @@ namespace LandscapeCanvasEditor
         UpdateConnectionData(connection, false /* added */);
     }
 
-    void MainWindow::PreOnGraphModelNodeWrapped(GraphModel::NodePtr wrapperNode, GraphModel::NodePtr node)
+    void MainWindow::PreOnGraphModelNodeWrapped([[maybe_unused]] GraphModel::NodePtr wrapperNode, GraphModel::NodePtr node)
     {
         if (m_ignoreGraphUpdates)
         {
@@ -947,7 +947,7 @@ namespace LandscapeCanvasEditor
 
         if (it != m_dockWidgetsByEntity.end())
         {
-            const AZ::EntityId& rootEntityId = it->first;
+            AZ::EntityId rootEntityId = it->first;
             m_dockWidgetsByEntity.erase(it);
 
             // Save our graph whenever it is closed
@@ -3331,7 +3331,7 @@ namespace LandscapeCanvasEditor
         AZStd::vector<AZStd::pair<GraphModel::SlotId, AZ::EntityId>> shapeSlotEntityPairs;
         if (previewEntityId.IsValid())
         {
-            shapeSlotEntityPairs.push_back(AZStd::make_pair(LandscapeCanvas::PREVIEW_BOUNDS_SLOT_ID, previewEntityId));
+            shapeSlotEntityPairs.emplace_back(LandscapeCanvas::PREVIEW_BOUNDS_SLOT_ID, previewEntityId);
         }
 
         // Connect any inbound shape slots to the corresponding shape bounds
@@ -3375,7 +3375,7 @@ namespace LandscapeCanvasEditor
                         placementBoundsEntityId = AZStd::any_cast<AZ::EntityId>(placementBounds.GetValue());
                         if (placementBoundsEntityId.IsValid())
                         {
-                            shapeSlotEntityPairs.push_back(AZStd::make_pair(LandscapeCanvas::PLACEMENT_BOUNDS_SLOT_ID, placementBoundsEntityId));
+                            shapeSlotEntityPairs.emplace_back(LandscapeCanvas::PLACEMENT_BOUNDS_SLOT_ID, placementBoundsEntityId);
                         }
                     }
                 }
@@ -3392,7 +3392,7 @@ namespace LandscapeCanvasEditor
                         auto baseShapeNodePtr = static_cast<LandscapeCanvas::BaseNode*>(shapeNode.get());
                         if (baseShapeNodePtr->GetComponent())
                         {
-                            shapeSlotEntityPairs.push_back(AZStd::make_pair(LandscapeCanvas::PLACEMENT_BOUNDS_SLOT_ID, entityId));
+                            shapeSlotEntityPairs.emplace_back(LandscapeCanvas::PLACEMENT_BOUNDS_SLOT_ID, entityId);
                         }
                     }
                 }
@@ -3736,4 +3736,3 @@ namespace LandscapeCanvasEditor
     }
 }
 
-#include <Source/Editor/moc_MainWindow.cpp>

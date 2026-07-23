@@ -59,6 +59,14 @@ namespace AssetProcessor
             );
     }
 
+    bool QueueElementID::operator!=(const QueueElementID& other) const
+    {
+        // if this becomes a hotspot in profile, we could use CRCs or other boost to comparison here.  These classes are constructed rarely
+        // compared to how commonly they are compared with each other.
+        return !(operator==(other));
+    }
+
+
     bool QueueElementID::operator<(const QueueElementID& other) const
     {
         int compare = m_sourceAssetReference.AbsolutePath().Compare(other.m_sourceAssetReference.AbsolutePath());
@@ -84,7 +92,7 @@ namespace AssetProcessor
         return false;
     }
 
-    uint qHash(const AssetProcessor::QueueElementID& key, uint seed)
+    size_t qHash(const AssetProcessor::QueueElementID& key, uint seed)
     {
         return qHash(QString(key.GetSourceAssetReference().AbsolutePath().c_str()).toLower() + key.GetPlatform().toLower() + key.GetJobDescriptor().toLower(), seed);
     }

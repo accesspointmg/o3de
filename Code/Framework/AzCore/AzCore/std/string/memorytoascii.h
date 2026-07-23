@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
-#ifndef AZSTD_MEMORYTOASCII_H
-#define AZSTD_MEMORYTOASCII_H
+
+#pragma once
 
 #include <AzCore/std/base.h>
 #include <AzCore/std/string/string.h>
@@ -54,8 +54,6 @@ namespace AZStd
             Default = OffsetHeaderBinaryASCII
         };
 
-        AZStd::string ToString(const void* memoryAddrs, AZStd::size_t dataSize, AZStd::size_t maxShowSize, AZStd::size_t dataWidth = 16, Options format = Options::Default);
+        AZCORE_API AZStd::string ToString(const void* memoryAddrs, AZStd::size_t dataSize, AZStd::size_t maxShowSize, AZStd::size_t dataWidth = 16, Options format = Options::Default);
     }
 }
-
-#endif // AZSTD_MEMORYTOASCII_H

@@ -25,9 +25,7 @@
 // Editor
 #include "O3deViewPaneNames.h"
 
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <AssetEditor/ui_AssetEditorWindow.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
 namespace AssetEditorUtils
 {
@@ -101,9 +99,22 @@ void AssetEditorWindow::SaveAssetAs(const AZStd::string_view assetPath)
         return;
     }
 
-    auto absoluteAssetPath = AZ::IO::FixedMaxPath(AZ::Utils::GetEnginePath()) / assetPath;
+    AZ::IO::FixedMaxPath projectSourcePath = AZ::Utils::GetProjectPath();
+    projectSourcePath /= "Assets";
+    projectSourcePath /= assetPath;
 
-    if (!m_ui->m_assetEditorWidget->SaveAssetToPath(absoluteAssetPath.Native()))
+    QDir dir(projectSourcePath.c_str());
+    if (!dir.exists())
+    {
+        auto result = AZ::IO::SystemFile::CreateDir(projectSourcePath.c_str());
+        if (!result)
+        {
+            AZ_Error("Script Canvas", false, "Failed to make new folder: %s", projectSourcePath.c_str());
+            return;
+        }
+    }
+
+    if (!m_ui->m_assetEditorWidget->SaveAssetToPath(projectSourcePath.Native()))
     {
         AZ_Warning("Asset Editor", false, "File was not saved correctly via SaveAssetAs.");
     }
@@ -127,11 +138,10 @@ void AssetEditorWindow::OnAssetOpened(const AZ::Data::Asset<AZ::Data::AssetData>
         AZStd::string extension;
         AZ::Data::AssetCatalogRequestBus::BroadcastResult(assetPath, &AZ::Data::AssetCatalogRequests::GetAssetPathById, asset.GetId());
         AzFramework::StringFunc::Path::Split(assetPath.c_str(), nullptr, nullptr, &assetName, &extension);
-//        AZStd::string windowTitle = AZStd::string::format("Edit Asset: %s", (assetName + extension).c_str());
 
         AZStd::string windowTitle = asset.GetHint();
 
-        qobject_cast<QWidget*>(parent())->setWindowTitle(tr(windowTitle.c_str()));
+        qobject_cast<QWidget*>(parent())->setWindowTitle(QString::fromUtf8(windowTitle.c_str()));
     }
     else
     {
@@ -150,7 +160,5 @@ void AssetEditorWindow::closeEvent(QCloseEvent* event)
 void AssetEditorWindow::OnAssetSaveFailed(const AZStd::string& error)
 {
     QMessageBox::warning(this, tr("Unable to Save Asset"),
-        tr(error.c_str()), QMessageBox::Ok, QMessageBox::Ok);
+        QString::fromUtf8(error.c_str()), QMessageBox::Ok, QMessageBox::Ok);
 }
-
-#include <AssetEditor/moc_AssetEditorWindow.cpp>

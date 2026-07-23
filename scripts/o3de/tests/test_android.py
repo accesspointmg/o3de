@@ -26,7 +26,7 @@ def test_validate_android_config_happy_path(tmpdir):
     test_android_support_validate_gradle_result = ('/home/gradle-8.4/', test_gradle_version)
 
     test_cmake_path = "/path/cmake"
-    test_cmake_version = "3.22"
+    test_cmake_version = "3.24"
     test_ninja_path = "/path/ninja"
     test_ninja_version = "1.10.1"
 
@@ -96,7 +96,7 @@ def test_validate_android_config_bad_keystore_path(tmpdir):
     mock_android_support_validate_gradle_result = ('/home/gradle-8.4/', '8.4')
 
     test_cmake_path = "/path/cmake"
-    test_cmake_version = "3.22"
+    test_cmake_version = "3.24"
     test_ninja_path = "/path/ninja"
     test_ninja_version = "1.10.1"
 
@@ -164,7 +164,7 @@ def test_validate_android_signing_config_warnings(tmpdir, test_sc_store_file, te
     test_android_support_validate_gradle_result = ('/home/gradle-8.4/', test_gradle_version)
 
     test_cmake_path = "/path/cmake"
-    test_cmake_version = "3.22"
+    test_cmake_version = "3.24"
     test_ninja_path = "/path/ninja"
     test_ninja_version = "1.10.1"
 
@@ -720,7 +720,7 @@ def test_generate_android_project_success(tmpdir):
     test_platform_api_level = '31'
     test_asset_mode = 'LOOSE'
     test_bundle_subpath = f'AssetBundling{os.sep}Bundles'
-    test_ndk_version = '25.*'
+    test_ndk_version = '27.*'
 
     tmpdir.ensure(test_sc_store_file, dir=False)
     test_key_store_path = tmpdir.join(test_sc_store_file).realpath()

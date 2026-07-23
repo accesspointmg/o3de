@@ -8,8 +8,6 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
-
 #include <AzCore/Memory/SystemAllocator.h>
 
 #include <AzFramework/Asset/AssetCatalogBus.h>
@@ -20,7 +18,8 @@
 
 #include <QAbstractItemModel>
 
-#endif
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 
 namespace AzToolsFramework
 {
@@ -32,7 +31,7 @@ namespace AzToolsFramework
         class EntryAssetBrowserFavoriteItem;
         class SearchAssetBrowserFavoriteItem;
 
-        class AssetBrowserFavoritesModel
+        class AZTF_API AssetBrowserFavoritesModel
             : public QAbstractItemModel
             , private AssetBrowserFavoritesNotificationBus::Handler
         {

@@ -7,12 +7,12 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
-#include <QtWidgets/QFrame>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
+#include <QFrame>
 #include <AzCore/std/string/string.h>
 
 #include <AzQtComponents/Components/Widgets/CardHeader.h>
-#endif
 
 class QHBoxLayout;
 class QLabel;
@@ -26,7 +26,7 @@ namespace AzToolsFramework
      * The widgets are hidden by default and will show once they're configured
      * via the appropriate setter (ex: SetIcon causes the icon widget to appear).
      */
-    class ComponentEditorHeader
+    class AZTF_API ComponentEditorHeader
         : public AzQtComponents::CardHeader
     {
         Q_OBJECT;

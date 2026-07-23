@@ -55,9 +55,6 @@ o3de_add_target(
             Include
             .
             ..
-    BUILD_DEPENDENCIES
-        INTERFACE
-            Legacy::EditorCommon.Headers
 )
 
 ################################################################################
@@ -125,6 +122,11 @@ o3de_add_target(
     RUNTIME_DEPENDENCIES
         Legacy::EditorCommon
 )
+
+if(O3DE_PAL_TRAIT_BUILD_EXTERNAL_CRASH_HANDLER_SUPPORTED)
+    o3de_target_link_libraries(EditorLib PRIVATE AZ::ToolsCrashHandler)
+endif()
+
 # O3DE_COPYRIGHT_YEAR / O3DE_INSTALL_BUILD_VERSION are only set by installer
 # builds; fall back to the engine globals, then sane defaults, so the compile
 # definitions below never expand empty (empty defines break CryEdit.cpp).

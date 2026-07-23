@@ -7,16 +7,12 @@
  */
 
 
-#ifndef CRYINCLUDE_EDITOR_TRACKVIEW_TVEVENTSDIALOG_H
-#define CRYINCLUDE_EDITOR_TRACKVIEW_TVEVENTSDIALOG_H
 #pragma once
 
 
-#if !defined(Q_MOC_RUN)
 #include <IMovieSystem.h>
 
 #include <QDialog>
-#endif
 
 namespace Ui
 {
@@ -51,5 +47,3 @@ private:
     QScopedPointer<Ui::TVEventsDialog> m_ui;
     QString m_lastAddedEvent;
 };
-
-#endif // CRYINCLUDE_EDITOR_TRACKVIEW_TVEVENTSDIALOG_H

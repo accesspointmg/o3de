@@ -15,6 +15,7 @@
 #include <AzCore/Serialization/SerializeContext.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/EditContextConstants.inl>
+#include <AzFramework/Translation/TranslationDef.h>
 
 #include <LookupTable/LookupTableAsset.h>
 #include <ReflectionProbe/ReflectionProbeFeatureProcessor.h>
@@ -22,67 +23,67 @@
 #include <TransformService/TransformServiceFeatureProcessor.h>
 #include <CubeMapCapture/CubeMapCaptureFeatureProcessor.h>
 
-#include <ImageBasedLights/ImageBasedLightFeatureProcessor.h>
-#include <DisplayMapper/AcesOutputTransformLutPass.h>
-#include <DisplayMapper/AcesOutputTransformPass.h>
-#include <DisplayMapper/ApplyShaperLookupTablePass.h>
-#include <DisplayMapper/BakeAcesOutputTransformLutPass.h>
-#include <DisplayMapper/DisplayMapperPass.h>
-#include <DisplayMapper/DisplayMapperFullScreenPass.h>
-#include <DisplayMapper/OutputTransformPass.h>
-#include <Atom/Feature/DisplayMapper/DisplayMapperConfigurationDescriptor.h>
 #include <Atom/Feature/ACES/AcesDisplayMapperFeatureProcessor.h>
+#include <Atom/Feature/DisplayMapper/DisplayMapperConfigurationDescriptor.h>
 #include <Atom/Feature/LightingChannel/LightingChannelConfiguration.h>
 #include <Atom/Feature/RayTracing/RayTracingPass.h>
 #include <Atom/Feature/RayTracing/RayTracingPassData.h>
+#include <Atom/Feature/SkyBox/SkyBoxFogSettings.h>
 #include <Atom/Feature/SplashScreen/SplashScreenSettings.h>
 #include <Atom/Feature/Utils/LightingPreset.h>
 #include <Atom/Feature/Utils/ModelPreset.h>
-#include <Atom/Feature/SkyBox/SkyBoxFogSettings.h>
 #include <AuxGeom/AuxGeomFeatureProcessor.h>
 #include <ColorGrading/LutGenerationPass.h>
 #include <Debug/RayTracingDebugFeatureProcessor.h>
 #include <Debug/RenderDebugFeatureProcessor.h>
+#include <DeferredMaterial/DeferredMaterialFeatureProcessor.h>
+#include <DisplayMapper/AcesOutputTransformLutPass.h>
+#include <DisplayMapper/AcesOutputTransformPass.h>
+#include <DisplayMapper/ApplyShaperLookupTablePass.h>
+#include <DisplayMapper/BakeAcesOutputTransformLutPass.h>
+#include <DisplayMapper/DisplayMapperFullScreenPass.h>
+#include <DisplayMapper/DisplayMapperPass.h>
+#include <DisplayMapper/OutputTransformPass.h>
+#include <ImageBasedLights/ImageBasedLightFeatureProcessor.h>
 #include <Mesh/MeshFeatureProcessor.h>
-#include <Silhouette/SilhouetteFeatureProcessor.h>
-#include <Silhouette/SilhouetteCompositePass.h>
 #include <PostProcess/PostProcessFeatureProcessor.h>
 #include <PostProcessing/BlendColorGradingLutsPass.h>
+#include <PostProcessing/BloomBlurPass.h>
+#include <PostProcessing/BloomCompositePass.h>
+#include <PostProcessing/BloomDownsamplePass.h>
 #include <PostProcessing/BloomParentPass.h>
-#include <PostProcessing/HDRColorGradingPass.h>
-#include <PostProcessing/DepthUpsamplePass.h>
-#include <PostProcessing/DepthOfFieldCompositePass.h>
+#include <PostProcessing/ChromaticAberrationPass.h>
 #include <PostProcessing/DepthOfFieldBokehBlurPass.h>
+#include <PostProcessing/DepthOfFieldCompositePass.h>
 #include <PostProcessing/DepthOfFieldMaskPass.h>
 #include <PostProcessing/DepthOfFieldParentPass.h>
 #include <PostProcessing/DepthOfFieldReadBackFocusDepthPass.h>
 #include <PostProcessing/DepthOfFieldWriteFocusDepthFromGpuPass.h>
-#include <PostProcessing/NewDepthOfFieldPasses.h>
+#include <PostProcessing/DepthUpsamplePass.h>
 #include <PostProcessing/EyeAdaptationPass.h>
-#include <PostProcessing/LuminanceHistogramGeneratorPass.h>
 #include <PostProcessing/FastDepthAwareBlurPasses.h>
+#include <PostProcessing/FilmGrainPass.h>
+#include <PostProcessing/HDRColorGradingPass.h>
 #include <PostProcessing/LookModificationCompositePass.h>
 #include <PostProcessing/LookModificationTransformPass.h>
-#include <PostProcessing/SMAAFeatureProcessor.h>
-#include <PostProcessing/SMAAEdgeDetectionPass.h>
+#include <PostProcessing/LuminanceHistogramGeneratorPass.h>
+#include <PostProcessing/MotionBlurPass.h>
+#include <PostProcessing/NewDepthOfFieldPasses.h>
+#include <PostProcessing/PaniniProjectionPass.h>
 #include <PostProcessing/SMAABlendingWeightCalculationPass.h>
+#include <PostProcessing/SMAAEdgeDetectionPass.h>
+#include <PostProcessing/SMAAFeatureProcessor.h>
 #include <PostProcessing/SMAANeighborhoodBlendingPass.h>
 #include <PostProcessing/SsaoPasses.h>
 #include <PostProcessing/SubsurfaceScatteringPass.h>
 #include <PostProcessing/TaaPass.h>
-#include <PostProcessing/BloomDownsamplePass.h>
-#include <PostProcessing/BloomBlurPass.h>
-#include <PostProcessing/BloomCompositePass.h>
-#include <PostProcessing/ChromaticAberrationPass.h>
-#include <PostProcessing/PaniniProjectionPass.h>
-#include <PostProcessing/FilmGrainPass.h>
-#include <PostProcessing/WhiteBalancePass.h>
 #include <PostProcessing/VignettePass.h>
+#include <PostProcessing/WhiteBalancePass.h>
 #include <RayTracing/RayTracingFeatureProcessor.h>
 #include <ScreenSpace/DeferredFogPass.h>
 #include <Shadows/ProjectedShadowFeatureProcessor.h>
-#include <SkyAtmosphere/SkyAtmosphereFeatureProcessor.h>
-#include <SkyAtmosphere/SkyAtmosphereParentPass.h>
+#include <Silhouette/SilhouetteCompositePass.h>
+#include <Silhouette/SilhouetteFeatureProcessor.h>
 #include <SkyBox/SkyBoxFeatureProcessor.h>
 #include <SplashScreen/SplashScreenFeatureProcessor.h>
 #include <SplashScreen/SplashScreenPass.h>
@@ -124,7 +125,6 @@ namespace AZ
             AuxGeomFeatureProcessor::Reflect(context);
             TransformServiceFeatureProcessor::Reflect(context);
             ProjectedShadowFeatureProcessor::Reflect(context);
-            SkyAtmosphereFeatureProcessor::Reflect(context);
             SkyBoxFeatureProcessor::Reflect(context);
             SkyBoxFogSettings::Reflect(context);
             UseTextureFunctor::Reflect(context);
@@ -155,6 +155,7 @@ namespace AZ
             LightingPreset::Reflect(context);
             ModelPreset::Reflect(context);
             RayTracingFeatureProcessor::Reflect(context);
+            DeferredMaterialFeatureProcessor::Reflect(context);
             OcclusionCullingPlaneFeatureProcessor::Reflect(context);
             LightingChannelConfiguration::Reflect(context);
 
@@ -165,7 +166,7 @@ namespace AZ
 
                 if (AZ::EditContext* ec = serialize->GetEditContext())
                 {
-                    ec->Class<CommonSystemComponent>("CommonSystemComponent", "System Component for common render features")
+                    ec->Class<CommonSystemComponent>(QT_TRANSLATE_NOOP("Atom::Feature", "CommonSystemComponent"), QT_TRANSLATE_NOOP("Atom::Feature", "System Component for common render features"))
                         ->ClassElement(Edit::ClassElements::EditorData, "")
                         ->Attribute(Edit::Attributes::AutoExpand, true)
                     ;
@@ -203,7 +204,6 @@ namespace AZ
             ComponentApplicationBus::Broadcast(&AZ::ComponentApplicationBus::Events::QueryApplicationType, appType);
             if (!appType.IsHeadless())
             {
-                AZ::RPI::FeatureProcessorFactory::Get()->RegisterFeatureProcessorWithInterface<SkyAtmosphereFeatureProcessor, SkyAtmosphereFeatureProcessorInterface>();
                 AZ::RPI::FeatureProcessorFactory::Get()->RegisterFeatureProcessorWithInterface<SkyBoxFeatureProcessor, SkyBoxFeatureProcessorInterface>();
                 AZ::RPI::FeatureProcessorFactory::Get()->RegisterFeatureProcessorWithInterface<ImageBasedLightFeatureProcessor, ImageBasedLightFeatureProcessorInterface>();
                 AZ::RPI::FeatureProcessorFactory::Get()->RegisterFeatureProcessorWithInterface<DecalTextureArrayFeatureProcessor, DecalFeatureProcessorInterface>();
@@ -217,6 +217,8 @@ namespace AZ
                 AZ::RPI::FeatureProcessorFactory::Get()->RegisterFeatureProcessorWithInterface<CubeMapCaptureFeatureProcessor, CubeMapCaptureFeatureProcessorInterface>();
                 AZ::RPI::FeatureProcessorFactory::Get()->RegisterFeatureProcessor<SMAAFeatureProcessor>();
                 AZ::RPI::FeatureProcessorFactory::Get()->RegisterFeatureProcessorWithInterface<RayTracingFeatureProcessor, RayTracingFeatureProcessorInterface>();
+                AZ::RPI::FeatureProcessorFactory::Get()
+                    ->RegisterFeatureProcessorWithInterface<DeferredMaterialFeatureProcessor, DeferredMaterialFeatureProcessorInterface>();
                 AZ::RPI::FeatureProcessorFactory::Get()->RegisterFeatureProcessorWithInterface<OcclusionCullingPlaneFeatureProcessor, OcclusionCullingPlaneFeatureProcessorInterface>();
                 AZ::RPI::FeatureProcessorFactory::Get()->RegisterFeatureProcessor<SplashScreenFeatureProcessor>();
                 AZ::RPI::FeatureProcessorFactory::Get()->RegisterFeatureProcessor<SilhouetteFeatureProcessor>();
@@ -228,9 +230,6 @@ namespace AZ
 
             auto* passSystem = RPI::PassSystemInterface::Get();
             AZ_Assert(passSystem, "Cannot get the pass system.");
-
-            // Add Sky Atmosphere Parent pass
-            passSystem->AddPassCreator(Name("SkyAtmosphereParentPass"), &SkyAtmosphereParentPass::Create);
 
             // Add DisplayMapper pass
             passSystem->AddPassCreator(Name("AcesOutputTransformLutPass"), &AcesOutputTransformLutPass::Create);
@@ -297,6 +296,9 @@ namespace AZ
             // Add Chromatic Aberration
             passSystem->AddPassCreator(Name("ChromaticAberrationPass"), &ChromaticAberrationPass::Create);
 
+            // Add Motion Blur
+            passSystem->AddPassCreator(Name("MotionBlurPass"), &MotionBlurPass::Create);
+
             // Add Panini Projection
             passSystem->AddPassCreator(Name("PaniniProjectionPass"), &PaniniProjectionPass::Create);
 
@@ -353,6 +355,7 @@ namespace AZ
             if (!appType.IsHeadless())
             {
                 AZ::RPI::FeatureProcessorFactory::Get()->UnregisterFeatureProcessor<RayTracingFeatureProcessor>();
+                AZ::RPI::FeatureProcessorFactory::Get()->UnregisterFeatureProcessor<DeferredMaterialFeatureProcessor>();
                 AZ::RPI::FeatureProcessorFactory::Get()->UnregisterFeatureProcessor<SMAAFeatureProcessor>();
                 AZ::RPI::FeatureProcessorFactory::Get()->UnregisterFeatureProcessor<ReflectionProbeFeatureProcessor>();
                 AZ::RPI::FeatureProcessorFactory::Get()->UnregisterFeatureProcessor<SpecularReflectionsFeatureProcessor>();
@@ -363,7 +366,6 @@ namespace AZ
                 AZ::RPI::FeatureProcessorFactory::Get()->UnregisterFeatureProcessor<DecalTextureArrayFeatureProcessor>();
                 AZ::RPI::FeatureProcessorFactory::Get()->UnregisterFeatureProcessor<ImageBasedLightFeatureProcessor>();
                 AZ::RPI::FeatureProcessorFactory::Get()->UnregisterFeatureProcessor<SkyBoxFeatureProcessor>();
-                AZ::RPI::FeatureProcessorFactory::Get()->UnregisterFeatureProcessor<SkyAtmosphereFeatureProcessor>();
                 AZ::RPI::FeatureProcessorFactory::Get()->UnregisterFeatureProcessor<OcclusionCullingPlaneFeatureProcessor>();
                 AZ::RPI::FeatureProcessorFactory::Get()->UnregisterFeatureProcessor<RayTracingDebugFeatureProcessor>();
                 AZ::RPI::FeatureProcessorFactory::Get()->UnregisterFeatureProcessor<RenderDebugFeatureProcessor>();

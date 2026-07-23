@@ -105,7 +105,7 @@ namespace AZ
             {
                 m_containerWidget = new QWidget();
                 QGridLayout* layout = new QGridLayout();
-                layout->setMargin(0);
+                layout->setContentsMargins(0, 0, 0, 0);
                 QGridLayout* layout2 = new QGridLayout();
                 setLayout(layout);
                 AzToolsFramework::PropertyRowWidget* parentWidget = static_cast<AzToolsFramework::PropertyRowWidget*>(parent);
@@ -267,4 +267,3 @@ namespace AZ
     } // namespace SceneAPI
 } // namespace AZ
 
-#include <RowWidgets/moc_TransformRowWidget.cpp>

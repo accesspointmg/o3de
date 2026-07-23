@@ -8,19 +8,20 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/PlatformDef.h>
 
 AZ_PUSH_DISABLE_WARNING(4244 4251, "-Wunknown-warning-option")
 #include <QListView>
 #include <QStyledItemDelegate>
-#endif
 AZ_POP_DISABLE_WARNING
 
 namespace AzToolsFramework
 {
     //! Delegate on the asset autocompleter that enables html styling (used to show highlight of searched word)
-    class AssetCompleterDelegate : public QStyledItemDelegate
+    class AZTF_API AssetCompleterDelegate : public QStyledItemDelegate
     {
     public:
         explicit AssetCompleterDelegate(QObject *parent = nullptr);
@@ -34,7 +35,7 @@ namespace AzToolsFramework
     };
 
     //! List View of suggestions in the Asset Autocompleter for PropertyAssetCtrl
-    class AssetCompleterListView
+    class AZTF_API AssetCompleterListView
         : public QListView
     {
         Q_OBJECT

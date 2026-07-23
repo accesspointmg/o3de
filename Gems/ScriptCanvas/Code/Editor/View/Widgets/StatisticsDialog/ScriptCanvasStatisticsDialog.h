@@ -7,10 +7,10 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <QAbstractItemModel>
 #include <QDialog>
 #include <QSortFilterProxyModel>
+#include <QRegularExpression>
 
 #include <AzFramework/Asset/AssetCatalogBus.h>
 
@@ -26,7 +26,6 @@
 #include <Editor/View/Widgets/NodePalette/NodePaletteModel.h>
 #include <Editor/View/Widgets/StatisticsDialog/NodeUsageTreeItem.h>
 #include <ScriptCanvas/Core/Core.h>
-#endif
 
 namespace Ui
 {
@@ -51,7 +50,7 @@ namespace ScriptCanvasEditor
     private:
 
         QString m_filter;
-        QRegExp m_regex;
+        QRegularExpression m_regex;
 
         ScriptCanvas::NodeTypeIdentifier m_nodeIdentifier;
     };

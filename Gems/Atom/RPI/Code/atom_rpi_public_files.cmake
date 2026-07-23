@@ -57,7 +57,15 @@ set(FILES
     Include/Atom/RPI.Public/Image/StreamingImageController.h
     Include/Atom/RPI.Public/Image/StreamingImagePool.h
     Include/Atom/RPI.Public/Material/Material.h
+    Include/Atom/RPI.Public/Material/MaterialInstanceData.h
+    Include/Atom/RPI.Public/Material/MaterialInstanceHandler.h
+    Include/Atom/RPI.Public/Material/MaterialShaderParameter.h
+    Include/Atom/RPI.Public/Material/MaterialShaderParameterLayout.h
     Include/Atom/RPI.Public/Material/MaterialSystem.h
+    Include/Atom/RPI.Public/Material/MaterialTextureRegistry.h
+    Include/Atom/RPI.Public/Material/PersistentIndexAllocator.h
+    Include/Atom/RPI.Public/Material/SharedSamplerState.h
+    Include/Atom/RPI.Public/Material/TextureSamplerRegistry.h
     Include/Atom/RPI.Public/Model/Model.h
     Include/Atom/RPI.Public/Model/ModelLod.h
     Include/Atom/RPI.Public/Model/ModelLodUtils.h
@@ -110,6 +118,7 @@ set(FILES
     Include/Atom/RPI.Public/GpuQuery/GpuPassProfiler.h
     Include/Atom/RPI.Public/XR/XRRenderingInterface.h
     Include/Atom/RPI.Public/XR/XRSpaceNotificationBus.h
+    Include/Atom/RPI.Public/PerformanceCollectionNotificationBus.h
     Source/RPI.Public/Culling.cpp
     Source/RPI.Public/DllMain.cpp
     Source/RPI.Public/FeatureProcessor.cpp
@@ -145,7 +154,11 @@ set(FILES
     Source/RPI.Public/Image/StreamingImageController.cpp
     Source/RPI.Public/Image/StreamingImagePool.cpp
     Source/RPI.Public/Material/Material.cpp
+    Source/RPI.Public/Material/MaterialShaderParameterLayout.cpp
+    Source/RPI.Public/Material/MaterialShaderParameter.cpp
     Source/RPI.Public/Material/MaterialSystem.cpp
+    Source/RPI.Public/Material/TextureSamplerRegistry.cpp
+    Source/RPI.Public/Material/MaterialTextureRegistry.cpp
     Source/RPI.Public/Model/Model.cpp
     Source/RPI.Public/Model/ModelLod.cpp
     Source/RPI.Public/Model/ModelLodUtils.cpp
@@ -195,4 +208,5 @@ set(FILES
     Source/RPI.Public/GpuQuery/QueryPool.cpp
     Source/RPI.Public/GpuQuery/TimestampQueryPool.cpp
     Source/RPI.Public/GpuQuery/GpuPassProfiler.cpp
+    Source/RPI.Public/PerformanceCollectionNotificationBus.cpp
 )

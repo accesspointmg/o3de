@@ -227,7 +227,7 @@ namespace O3DE::ProjectManager
 
         LoadButtonsFromGemTemplatePaths(gemSetupLayout);
 
-        m_formFolderRadioButton = new QRadioButton("Choose existing template");
+        m_formFolderRadioButton = new QRadioButton(tr("Choose existing template"));
         m_formFolderRadioButton->setObjectName("createAGem");
         m_radioButtonGroup->addButton(m_formFolderRadioButton);
 
@@ -237,7 +237,7 @@ namespace O3DE::ProjectManager
         gemSetupLayout->addWidget(m_gemTemplateLocation);
         m_gemTemplateLocation->setEnabled(false);
 
-        connect(m_formFolderRadioButton, &QRadioButton::toggled, this, [=](bool checked){
+        connect(m_formFolderRadioButton, &QRadioButton::toggled, this, [this](bool checked){
             m_gemTemplateLocation->setEnabled(checked);
         });
 
@@ -285,7 +285,8 @@ namespace O3DE::ProjectManager
         QStringList platformOptions;
         
         //input the platform list in reverse alphabetical order
-        for(int i = GemInfo::NumPlatforms-1; i >= 0; i--)
+        const int numPlafforms = GemInfo::NumPlatforms;
+        for (int i = numPlafforms - 1; i >= 0; i--)
         {
             const GemInfo::Platform platform = static_cast<GemInfo::Platform>(1 << i);
             if(platform & m_platformSupportMask)

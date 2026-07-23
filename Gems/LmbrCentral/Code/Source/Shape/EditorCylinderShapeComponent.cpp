@@ -13,6 +13,7 @@
 #include "ShapeDisplay.h"
 #include <AzCore/Serialization/EditContext.h>
 #include <AzToolsFramework/ComponentModes/CylinderComponentMode.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 namespace LmbrCentral
 {
@@ -35,7 +36,8 @@ namespace LmbrCentral
             {
                 editContext
                     ->Class<EditorCylinderShapeComponent>(
-                        "Cylinder Shape", "The Cylinder Shape component creates a cylinder around the associated entity")
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Cylinder Shape"),
+                        QT_TRANSLATE_NOOP("LmbrCentral", "The Cylinder Shape component creates a cylinder around the associated entity"))
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Category, "Shape")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Cylinder_Shape.svg")
@@ -43,19 +45,19 @@ namespace LmbrCentral
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                     ->Attribute(
-                        AZ::Edit::Attributes::HelpPageURL, "https://o3de.org/docs/user-guide/components/reference/shape/cylinder-shape/")
+                        AZ::Edit::Attributes::HelpPageURL, "https://www.o3de.org/docs/user-guide/components/reference/shape/cylinder-shape/")
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &EditorCylinderShapeComponent::m_cylinderShape,
-                        "Cylinder Shape",
-                        "Cylinder Shape Configuration")
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Cylinder Shape"),
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Cylinder Shape Configuration"))
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, &EditorCylinderShapeComponent::ConfigurationChanged)
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &EditorCylinderShapeComponent::m_componentModeDelegate,
-                        "Component Mode",
-                        "Cylinder Shape Component Mode")
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Component Mode"),
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Cylinder Shape Component Mode"))
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly);
             }
         }

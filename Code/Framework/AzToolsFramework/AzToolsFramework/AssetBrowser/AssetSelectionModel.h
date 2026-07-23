@@ -10,11 +10,14 @@
 #include <AzToolsFramework/AssetBrowser/Entries/AssetBrowserEntry.h>
 #include <AzToolsFramework/AssetBrowser/Entries/ProductAssetBrowserEntry.h>
 #include <AzToolsFramework/AssetBrowser/Search/Filter.h>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/std/containers/vector.h>
 
 #include <QString>
+
+class QRegularExpression;
 
 using namespace AzToolsFramework::AssetBrowser;
 
@@ -23,7 +26,7 @@ namespace AzToolsFramework
     namespace AssetBrowser
     {
         //! Used in combination with Asset Browser Picker to configure selection settings and store selection results
-        class AssetSelectionModel
+        class AZTF_API AssetSelectionModel
         {
         public:
             AZ_CLASS_ALLOCATOR(AssetSelectionModel, AZ::SystemAllocator)
@@ -66,7 +69,7 @@ namespace AzToolsFramework
                 const char* assetTypeName, bool multiselect = false, bool supportSelectingSources = false);
             static AssetSelectionModel AssetTypeSelection(
                 const AZStd::vector<AZ::Data::AssetType>& assetTypes, bool multiselect = false, bool supportSelectingSources = false);
-            static AssetSelectionModel SourceAssetTypeSelection(const QRegExp& pattern, bool multiselect = false);
+            static AssetSelectionModel SourceAssetTypeSelection(const QRegularExpression& pattern, bool multiselect = false);
             static AssetSelectionModel EverythingSelection(bool multiselect = false);
 
         private:

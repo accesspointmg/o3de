@@ -7,6 +7,7 @@
  */
 #include <AzQtComponents/Components/Widgets/AssetFolderThumbnailView.h>
 
+#include <AzCore/Casting/numeric_cast.h>
 #include <AzCore/Debug/Trace.h>
 #include <AzCore/std/algorithm.h>
 #include <AzQtComponents/Components/Style.h>
@@ -29,6 +30,8 @@ AZ_PUSH_DISABLE_WARNING(4244 4251 4800, "-Wunknown-warning-option") // 4244: 'in
 #include <QStyledItemDelegate>
 #include <QTextDocument>
 #include <QTimer>
+#include <QApplication>
+
 AZ_POP_DISABLE_WARNING
 
 namespace
@@ -37,7 +40,7 @@ namespace
     QString elidedTextWithExtension(const QFontMetrics& fm, const QString& text, int width)
     {
         auto textWidth = fm.horizontalAdvance(text);
-        const int dot = text.lastIndexOf(QLatin1Char{ '.' });
+        const qsizetype dot = text.lastIndexOf(QLatin1Char{ '.' });
         QString extension = "";
         int extensionWidth = 0;
 
@@ -70,7 +73,7 @@ namespace
 
         // Text does not fit within one row, calculate the number of characters in each row
         double percentOfTextPerLine = static_cast<double>(width) / static_cast<double>(textWidth);
-        int charactersPerLine = percentOfTextPerLine * text.size() - 1;
+        int charactersPerLine = aznumeric_cast<int>(percentOfTextPerLine) * aznumeric_cast<int>(text.size()) - 1;
         auto firstLine = text.left(charactersPerLine);
         auto secondLine = text.mid(charactersPerLine);
         auto secondLineWidth = fm.horizontalAdvance(secondLine);
@@ -103,7 +106,7 @@ namespace AzQtComponents
             painter->setBrush(config.backgroundColor);
             painter->drawRoundedRect(rect, config.borderRadius, config.borderRadius);
             // Remove rounded border from the left hand side
-            painter->drawRect(rect.left(), rect.top(), config.borderRadius, rect.height());
+            painter->drawRect(rect.left(), rect.top(), aznumeric_cast<int>(config.borderRadius), rect.height());
         }
 
         // caret
@@ -187,7 +190,7 @@ namespace AzQtComponents
             {
                 painter->setPen(Qt::NoPen);
                 painter->setBrush(QColor::fromRgb(0x22, 0x22, 0x22));
-                painter->drawRect(rect.right() - config.borderThickness + 1 - 16, rect.top() + config.borderThickness, 16, 16);
+                painter->drawRect(rect.right() - aznumeric_cast<int>(config.borderThickness) + 1 - 16, rect.top() + aznumeric_cast<int>(config.borderThickness), 16, 16);
             }
 
             // expand button
@@ -799,7 +802,7 @@ namespace AzQtComponents
                 }
             }
 
-            itemDelegate(index)->paint(painter, option, index);
+            itemDelegateForIndex(index)->paint(painter, option, index);
         }
     }
 
@@ -895,7 +898,14 @@ namespace AzQtComponents
 
         if (m_showSearchResultsMode || !rootIndex().isValid())
         {
-            updateGeometriesInternal(model()->index(0, 0, {}), x, y);
+            // Iterate all top-level entries (scan folders). The model's invisible
+            // root has scan folders as direct children, so we must visit each one
+            // to show search results from every scope (project + gems).
+            const int topLevelCount = model()->rowCount({});
+            for (int i = 0; i < topLevelCount; ++i)
+            {
+                updateGeometriesInternal(model()->index(i, 0, {}), x, y);
+            }
         }
         else
         {
@@ -936,7 +946,7 @@ namespace AzQtComponents
                 continue;
             }
 
-            if (row > 0 && x + itemSize.width() > viewportWidth)
+            if (x + itemSize.width() > viewportWidth && x > m_config.viewportPadding)
             {
                 x = m_config.viewportPadding;
                 y += rowHeight;
@@ -1053,7 +1063,7 @@ namespace AzQtComponents
         // Postponing normal mouse press logic until mouse is released or dragged.
         // This allows drag/drop of non-selected items.
         ClearQueuedMouseEvent();
-        m_queuedMouseEvent = new QMouseEvent(*event);
+        m_queuedMouseEvent = event->clone();
     }
 
     void AssetFolderThumbnailView::mouseMoveEvent(QMouseEvent* event)
@@ -1309,9 +1319,30 @@ namespace AzQtComponents
 
     void AssetFolderThumbnailView::HandleDrag()
     {
+        // m_queuedMouseEvent is the state of the mouse when the drag operation started
+        // since then, it has moved to m_mousePosition.
+        if (!m_queuedMouseEvent)
+        {
+            return;
+        }
+
+        bool isLeftButton = (m_queuedMouseEvent->button() == Qt::LeftButton);
+        if (!isLeftButton)
+        {
+            // we don't support right-dragging
+            return;
+        }
+
+        // Only start a drag if the mouse has moved far enough since the button was held down:
+        const int moveDistance = (m_queuedMouseEvent->pos() - m_mousePosition).manhattanLength();
+
+        if (moveDistance < QApplication::startDragDistance())
+        {
+            return;
+        }
+
         // Retrieve the index at the click position.
         QModelIndex indexAtClick = indexAt(m_queuedMouseEvent->pos()).siblingAtColumn(0);
-
         // If the index is selected, we should move the whole selection.
         if (selectionModel()->isSelected(indexAtClick))
         {
@@ -1436,7 +1467,7 @@ namespace AzQtComponents
             {
                 painter.setPen(Qt::NoPen);
                 painter.setBrush(QColor::fromRgb(0x22, 0x22, 0x22));
-                painter.drawRect(rect.right() - config.borderThickness + 1 - 16, rect.top() + config.borderThickness, 16, 16);
+                painter.drawRect(rect.right() - aznumeric_cast<int>(config.borderThickness) + 1 - 16, rect.top() + aznumeric_cast<int>(config.borderThickness), 16, 16);
             }
         }
 
@@ -1448,4 +1479,3 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
-#include "Components/Widgets/moc_AssetFolderThumbnailView.cpp"

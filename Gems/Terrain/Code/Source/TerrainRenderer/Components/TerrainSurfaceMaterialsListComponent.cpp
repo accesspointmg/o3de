@@ -16,6 +16,7 @@
 #include <AzCore/RTTI/BehaviorContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 #include <AzCore/std/smart_ptr/make_shared.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 #include <AtomO3deIntegration/CommonFeatures/Material/MaterialComponentBus.h>
 
@@ -36,12 +37,17 @@ namespace Terrain
 
             if (auto edit = serialize->GetEditContext())
             {
-                edit->Class<TerrainSurfaceMaterialMapping>("Terrain surface gradient mapping", "Mapping between a surface and a material.")
+                edit->Class<TerrainSurfaceMaterialMapping>(
+                    QT_TRANSLATE_NOOP("Terrain", "Terrain surface gradient mapping"),
+                    QT_TRANSLATE_NOOP("Terrain", "Mapping between a surface and a material."))
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                         ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                     
-                    ->DataElement(AZ::Edit::UIHandlers::ComboBox, &TerrainSurfaceMaterialMapping::m_surfaceTag, "Surface tag", "Surface type to map to a material.")
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &TerrainSurfaceMaterialMapping::m_materialAsset, "Material asset", "")
+                    ->DataElement(AZ::Edit::UIHandlers::ComboBox, &TerrainSurfaceMaterialMapping::m_surfaceTag,
+                        QT_TRANSLATE_NOOP("Terrain", "Surface tag"),
+                        QT_TRANSLATE_NOOP("Terrain", "Surface type to map to a material."))
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &TerrainSurfaceMaterialMapping::m_materialAsset,
+                        QT_TRANSLATE_NOOP("Terrain", "Material asset"), "")
                         ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                         ->Attribute(AZ::Edit::Attributes::ShowProductAssetFileName, true)
                     ;
@@ -77,17 +83,20 @@ namespace Terrain
             if (edit)
             {
                 edit->Class<TerrainSurfaceMaterialsListConfig>(
-                        "Terrain Surface Material List Component", "Provide mapping between surfaces and render materials.")
+                        QT_TRANSLATE_NOOP("Terrain", "Terrain Surface Material List Component"),
+                        QT_TRANSLATE_NOOP("Terrain", "Provide mapping between surfaces and render materials."))
                     ->SetDynamicEditDataProvider(&TerrainSurfaceMaterialsListConfig::GetDynamicData)
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                         ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::Show)
                         ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
 
                     ->DataElement(AZ::Edit::UIHandlers::Default, &TerrainSurfaceMaterialsListConfig::m_defaultSurfaceMaterial,
-                        "Default Material", "The default material to fall back to where no other material surface mappings exist.")
+                        QT_TRANSLATE_NOOP("Terrain", "Default Material"),
+                        QT_TRANSLATE_NOOP("Terrain", "The default material to fall back to where no other material surface mappings exist."))
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &TerrainSurfaceMaterialsListConfig::m_surfaceMaterials,
-                        "Material Mappings", "Maps surfaces to materials.");
+                        QT_TRANSLATE_NOOP("Terrain", "Material Mappings"),
+                        QT_TRANSLATE_NOOP("Terrain", "Maps surfaces to materials."));
             }
         }
 
@@ -328,6 +337,30 @@ namespace Terrain
 
     void TerrainSurfaceMaterialsListComponent::OnAssetReady(AZ::Data::Asset<AZ::Data::AssetData> asset)
     {
+        // REMARK: This function is typically invoked within the context of one of the AssetBus::OnAssetXXX functions,
+        // and a deadlock may occur according to the following sequence:
+        // 1. Starting from Main thread, AssetBus locks a mutex.
+        // 2. AssetBus calls OnAssetReady and it enters in this function.
+        // 3. Start the instantiation of a new StreamingImage.
+        // 4. StreamingImage asynchronously queues work in the "Seconday Copy Queue".
+        // 5. StreamingImage waits until the work completes.
+        // 6. The thread of "Seconday Copy Queue" gets a new work item, which may hold a reference
+        //    to an old StreamingImage.
+        // 7. The old StreamingImage gets destroyed and it calls AssetBus::MultiHandler::BusDisconnect(GetAssetId());
+        // 8. When calling AssetBus::MultiHandler::BusDisconnect(GetAssetId()); it tries to lock the same mutex
+        //    from step 1. But the mutex is already locked on Main Thread in step 1.
+        // 9. The "Seconday Copy Queue" thread deadlocks and never completes the work.
+        // 10. Main thread is also deadlocked waiting for "Seconday Copy Queue" to complete.
+        // The solution is to enqueue texture update on the next tick.
+        auto postTickLambda = [this, asset]()
+        {
+            OnAssetReadyPostTick(asset);
+        };
+        AZ::TickBus::QueueFunction(AZStd::move(postTickLambda));
+    }
+
+    void TerrainSurfaceMaterialsListComponent::OnAssetReadyPostTick(AZ::Data::Asset<AZ::Data::AssetData> asset)
+    {
         // Find the missing material instance with the correct id.
         auto handleCreateMaterial = [&](TerrainSurfaceMaterialMapping& mapping, const AZ::Data::Asset<AZ::Data::AssetData>& asset)
         {
@@ -363,6 +396,16 @@ namespace Terrain
     }
 
     void TerrainSurfaceMaterialsListComponent::OnAssetReloaded(AZ::Data::Asset<AZ::Data::AssetData> asset)
+    {
+        // REMARK: See OnAssetReady for details on why we postpone the work on the next tick.
+        auto postTickLambda = [this, asset]()
+        {
+            OnAssetReloadedPostTick(asset);
+        };
+        AZ::TickBus::QueueFunction(AZStd::move(postTickLambda));
+    }
+
+    void TerrainSurfaceMaterialsListComponent::OnAssetReloadedPostTick(AZ::Data::Asset<AZ::Data::AssetData> asset)
     {
         // Find the material instance with the correct id.
         auto handleUpdateMaterial = [&](TerrainSurfaceMaterialMapping& mapping, const AZ::Data::Asset<AZ::Data::AssetData>& asset)

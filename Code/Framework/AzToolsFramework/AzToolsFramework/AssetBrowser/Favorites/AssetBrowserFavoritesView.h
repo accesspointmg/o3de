@@ -8,15 +8,15 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 
 #include <AzCore/Memory/SystemAllocator.h>
 
 #include <AzToolsFramework/UI/UICore/QTreeViewStateSaver.hxx>
 
 #include <QString>
-#endif
-
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+#include <AzToolsFramework/AssetBrowser/Favorites/AssetBrowserFavoritesModel.h>
+#include <AzToolsFramework/AssetBrowser/Favorites/FavoritesEntryDelegate.h>
 namespace AzToolsFramework
 {
     namespace AssetBrowser
@@ -26,7 +26,7 @@ namespace AzToolsFramework
         class FavoritesEntryDelegate;
         class SearchWidget;
 
-        class AssetBrowserFavoritesView
+        class AZTF_API AssetBrowserFavoritesView
             : public QTreeViewWithStateSaving
         {
             Q_OBJECT

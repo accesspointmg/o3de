@@ -13,9 +13,7 @@
 
 #include <QMessageBox>
 
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <ui_FBXExporterDialog.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
 CFBXExporterDialog::CFBXExporterDialog(bool bDisplayOnlyFPSSetting, QWidget* pParent)
     : QDialog(pParent)
@@ -104,4 +102,3 @@ int CFBXExporterDialog::exec()
     return QDialog::exec();
 }
 
-#include <moc_FBXExporterDialog.cpp>

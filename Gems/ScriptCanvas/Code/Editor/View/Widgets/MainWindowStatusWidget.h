@@ -7,15 +7,12 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <QWidget>
+#include <QScopedPointer>
 
 #include <AzCore/Memory/SystemAllocator.h>
-
 #include <GraphCanvas/Editor/AssetEditorBus.h>
-
 #include <Editor/View/Widgets/ValidationPanel/GraphValidationDockWidgetBus.h>
-#endif
 
 namespace Ui
 {
@@ -33,7 +30,7 @@ namespace ScriptCanvasEditor
         AZ_CLASS_ALLOCATOR(MainWindowStatusWidget, AZ::SystemAllocator);
         
         MainWindowStatusWidget(QWidget* parent = nullptr);
-        ~MainWindowStatusWidget() = default;
+        ~MainWindowStatusWidget() override;
 
         // GraphValidatorDockWidgetNotificationBus
         void OnResultsChanged(int errorCount, int warningCount) override;
@@ -46,6 +43,6 @@ namespace ScriptCanvasEditor
         void OnWarningButtonPressed();
         
     private:
-        AZStd::unique_ptr<Ui::MainWindowStatusWidget> m_ui;
+        QScopedPointer<Ui::MainWindowStatusWidget> m_ui;
     };
 }

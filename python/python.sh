@@ -20,7 +20,7 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 if [[ "$OSTYPE" = *"darwin"* ]];
 then
     PAL=Mac
-    ARCH=
+    ARCH=$( uname -m )
 elif [[ "$OSTYPE" = "msys" ]];
 then
     PAL=Windows
@@ -31,17 +31,21 @@ else
 fi
 
 if ! [ -x "$(command -v cmake)" ]; then
-    if [ -z ${O3DE_CMAKE_PATH} ]; then
-        echo "ERROR: Could not find cmake on the PATH and O3DE_CMAKE_PATH is not defined, cannot continue."
-        echo "Please add cmake to your PATH, or define O3DE_CMAKE_PATH"
-        exit 1
-    fi
-
-    export PATH=$O3DE_CMAKE_PATH:$PATH
+    export PATH=/Applications/CMake.app/Contents/bin:$PATH
     if ! [ -x "$(command -v cmake)" ]; then
-        echo "ERROR: Could not find cmake on the PATH or at the known location: $O3DE_CMAKE_PATH"
-        echo "Please add cmake to the environment PATH or place it at the above known location."
-        exit 1
+
+        if [ -z ${O3DE_CMAKE_PATH} ]; then
+            echo "ERROR: Could not find cmake on the PATH (${PATH}) and O3DE_CMAKE_PATH is not defined, cannot continue."
+            echo "Please add cmake to your PATH, or define O3DE_CMAKE_PATH"
+            exit 1
+        fi
+
+        export PATH=$O3DE_CMAKE_PATH:$PATH
+        if ! [ -x "$(command -v cmake)" ]; then
+            echo "ERROR: Could not find cmake on the PATH or at the known location: $O3DE_CMAKE_PATH"
+            echo "Please add cmake to the environment PATH or place it at the above known location."
+            exit 1
+        fi
     fi
 fi
 
@@ -77,7 +81,7 @@ fi
 
 # Set the expected location of the python venv for this engine and the locations of the critical scripts/executables 
 # needed to run python within the venv properly
-PYTHON_VENV=$HOME/.o3de/Python/venv/$ENGINE_ID
+PYTHON_VENV=${USERPROFILE:-"$HOME"}/.o3de/Python/venv/$ENGINE_ID
 if [[ "$OSTYPE" == "msys" ]];  #git bash on windows
 then
     PYTHON_VENV_ACTIVATE=$PYTHON_VENV/Scripts/activate

@@ -319,7 +319,7 @@ namespace AZ
                 //! DrawPacket for the multi object geometry raster pass.
                 AZStd::unordered_map<RPI::Shader*, RHI::ConstPtr<RHI::DrawPacket>>  m_geometryDrawPackets;
 
-                float m_frameDeltaTime = 0.02;
+                float m_frameDeltaTime = 0.02f;
 
                 //! The following are the configuration settings that might be required during the update.
                 AMD::TressFXSimulationSettings* m_simSettings = nullptr;
@@ -382,7 +382,7 @@ namespace AZ
  
                 //! Index buffer for the render pass via draw calls - naming was kept
                 Data::Instance<RHI::Buffer> m_indexBuffer;
-                RHI::GeometryView m_geometryView;
+                RHI::GeometryView m_geometryView{ RHI::MultiDevice::AllDevices };
                 //-------------------------------------------------------------------
 
                 AZStd::mutex m_mutex;

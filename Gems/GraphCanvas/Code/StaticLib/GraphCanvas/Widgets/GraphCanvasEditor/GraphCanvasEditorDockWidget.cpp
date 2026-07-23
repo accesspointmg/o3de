@@ -6,7 +6,7 @@
  *
  */
 
-#include <qevent.h>
+#include <QEvent>
 
 #include <AzCore/Component/Entity.h>
 
@@ -111,5 +111,4 @@ namespace GraphCanvas
         }
     }
 
-#include <StaticLib/GraphCanvas/Widgets/GraphCanvasEditor/moc_GraphCanvasEditorDockWidget.cpp>
 }

@@ -298,7 +298,7 @@ namespace AzToolsFramework
         {
             // Clear override cursor when moving outside of the viewport
             const auto* mouseEvent = static_cast<const QMouseEvent*>(event);
-            if (m_overrideCursor && !m_sourceWidget->geometry().contains(m_sourceWidget->mapFromGlobal(mouseEvent->globalPos())))
+            if (m_overrideCursor && !m_sourceWidget->geometry().contains(m_sourceWidget->mapFromGlobal(mouseEvent->globalPosition()).toPoint()))
             {
                 qApp->restoreOverrideCursor();
                 m_overrideCursor = false;
@@ -381,7 +381,7 @@ namespace AzToolsFramework
         else if (eventType == QEvent::Type::MouseMove)
         {
             auto mouseEvent = static_cast<QMouseEvent*>(event);
-            HandleMouseMoveEvent(mouseEvent->globalPos());
+            HandleMouseMoveEvent(mouseEvent->globalPosition().toPoint());
         }
         // Map wheel events to the mouse Z movement channel.
         else if (eventType == QEvent::Type::Wheel)
@@ -447,7 +447,7 @@ namespace AzToolsFramework
             if (buttonChannel)
             {
                 // reset the consumed event cache so the chain of calls from UpdateState below can properly update it, if necessary
-                m_lastConsumedInputChannelIdCrc32 = 0;
+                m_lastConsumedInputChannelIdCrc32 = AZ::Crc32();
 
                 if (mouseEvent->type() != QEvent::Type::MouseButtonRelease)
                 {
@@ -616,7 +616,7 @@ namespace AzToolsFramework
         }
 
         // reset the consumed event cache so the chain of calls from ProcessRawInputEvent below can properly update it, if necessary
-        m_lastConsumedInputChannelIdCrc32 = 0;
+        m_lastConsumedInputChannelIdCrc32 = AZ::Crc32();
 
         cursorZChannel->ProcessRawInputEvent(aznumeric_cast<float>(wheelAngle));
 

@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
+
 #pragma once
 
 #include <AzCore/std/parallel/config.h>
@@ -78,7 +79,7 @@ namespace AZStd
 
 
     // 30.3.1
-    class thread
+    class AZCORE_API thread
     {
     public:
         // types:
@@ -102,7 +103,8 @@ namespace AZStd
             return *this;
         }
 
-        template<class F, class... Args, typename = AZStd::enable_if_t<!AZStd::is_convertible_v<AZStd::decay_t<F>, thread_desc>>>
+        template<class F, class... Args>
+            requires (!AZStd::is_convertible_v<AZStd::decay_t<F>, thread_desc>)
         explicit thread(F&& f, Args&&... args);
 
         /**
@@ -151,10 +153,10 @@ namespace AZStd
     class thread;
     inline void swap(thread& x, thread& y)      { x.swap(y); }
     namespace this_thread {
-        thread::id get_id();
-        void yield();
+        AZCORE_API thread::id get_id();
+        AZCORE_API void yield();
         ///extension, spins for the specified number of loops, yielding correctly on hyper threaded processors
-        void pause(int numLoops);
+        AZCORE_API void pause(int numLoops);
         //template <class Clock, class Duration>
         //void sleep_until(const chrono::time_point<Clock, Duration>& abs_time);
         template <class Rep, class Period>
@@ -231,14 +233,14 @@ namespace AZStd
         {
             using FunctorType = AZStd::decay_t<F>;
             AZStd::allocator a;
-            return new (a.allocate(sizeof(thread_info_impl<FunctorType>), AZStd::alignment_of< thread_info_impl<FunctorType> >::value))thread_info_impl<FunctorType>(AZStd::forward<F>(f));
+            return new (a.allocate(sizeof(thread_info_impl<FunctorType>), AZStd::alignment_of_v< thread_info_impl<FunctorType> >))thread_info_impl<FunctorType>(AZStd::forward<F>(f));
         }
 
         template<typename F>
         static AZ_INLINE thread_info* create_thread_info(thread_move_t<F> f)
         {
             AZStd::allocator a;
-            return new (a.allocate(sizeof(thread_info_impl<F>), AZStd::alignment_of< thread_info_impl<F> >::value))thread_info_impl<F>(f);
+            return new (a.allocate(sizeof(thread_info_impl<F>), AZStd::alignment_of_v< thread_info_impl<F> >))thread_info_impl<F>(f);
         }
 
         static AZ_INLINE void destroy_thread_info(thread_info*& ti)
@@ -268,4 +270,3 @@ namespace AZStd
 }
 
 #include <AzCore/std/parallel/internal/thread_Platform.h>
-

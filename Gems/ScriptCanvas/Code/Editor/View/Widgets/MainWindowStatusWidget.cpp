@@ -31,11 +31,14 @@ namespace ScriptCanvasEditor
         OnResultsChanged(0, 0);
     }
 
-    void MainWindowStatusWidget::OnResultsChanged(int errorCount, int warningCount)
+    MainWindowStatusWidget::~MainWindowStatusWidget()
     {
-        m_ui->showErrorButton->setText(QString("%1 Errors").arg(errorCount));
-        m_ui->showWarningButton->setText(QString("%1 Warnings").arg(warningCount));
     }
 
-#include <Editor/View/Widgets/moc_MainWindowStatusWidget.cpp>
+    void MainWindowStatusWidget::OnResultsChanged(int errorCount, int warningCount)
+    {
+        m_ui->showErrorButton->setText(tr("%1 Errors").arg(errorCount));
+        m_ui->showWarningButton->setText(tr("%1 Warnings").arg(warningCount));
+    }
+
 }

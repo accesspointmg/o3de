@@ -25,6 +25,9 @@
 #include <AzCore/RTTI/BehaviorContext.h>
 
 #include <AzCore/Math/Crc.h>
+
+#include <AzCore/i18n/TranslationMacros.h>
+
 #include <AzCore/std/algorithm.h>
 #include <AzCore/std/chrono/chrono.h>
 #include <AzCore/std/parallel/thread.h>
@@ -161,6 +164,9 @@ namespace AZ
         AZ_Assert(m_state == State::Constructed, "Component should be in Constructed state to be Initialized!");
         SetState(State::Initializing);
 
+        //Update "Entity" Active state index. Does not change state yet. Left for the Entity handling to apply.
+        SetEntityActive(m_isRuntimeActiveByDefault);
+
         if (AZ::Interface<ComponentApplicationRequests>::Get() != nullptr)
         {
             [[maybe_unused]] const bool result = AZ::Interface<ComponentApplicationRequests>::Get()->AddEntity(this);
@@ -182,10 +188,11 @@ namespace AZ
             }
         }
 
-        SetState(State::Init);
-
+        // SetState AFTER notifying, so that the entity can check whether it is already in the init state, vs the "Initializing" state.
         EntityBus::Event(m_id, &EntityBus::Events::OnEntityExists, m_id);
         EntitySystemBus::Broadcast(&EntitySystemBus::Events::OnEntityInitialized, m_id);
+
+        SetState(State::Init);
     }
 
     void Entity::Activate()
@@ -208,8 +215,8 @@ namespace AZ
             ActivateComponent(**it);
         }
 
-        SetState(State::Active);
-
+        // alert listeners that the entity is becoming active, do this BEFORE you change its state to Active
+        // so that entities can check if it was already active, vs the "Activating" state.
         EntityBus::Event(m_id, &EntityBus::Events::OnEntityActivated, m_id);
         EntitySystemBus::Broadcast(&EntitySystemBus::Events::OnEntityActivated, m_id);
         AZ::ComponentApplicationRequests* componentApplication = AZ::Interface<AZ::ComponentApplicationRequests>::Get();
@@ -217,11 +224,19 @@ namespace AZ
         {
             componentApplication->SignalEntityActivated(this);
         }
+
+         SetState(State::Active);
     }
 
     void Entity::Deactivate()
     {
         AZ_PROFILE_FUNCTION(AzCore);
+
+        AZ_Assert(m_state == State::Active, "Component should be in Active state to be Deactivated!");
+
+        // To mirror the Init and Activate functions, we set the state Deactivating before we alert listeners,
+        // so that listeners can tell the difference between an entity that is currently deactivating, or one that is already deactivated.
+        SetState(State::Deactivating);
 
         AZ::ComponentApplicationRequests* componentApplication = AZ::Interface<AZ::ComponentApplicationRequests>::Get();
         if (componentApplication != nullptr)
@@ -230,9 +245,6 @@ namespace AZ
         }
         EntityBus::Event(m_id, &EntityBus::Events::OnEntityDeactivated, m_id);
         EntitySystemBus::Broadcast(&EntitySystemBus::Events::OnEntityDeactivated, m_id);
-
-        AZ_Assert(m_state == State::Active, "Component should be in Active state to be Deactivated!");
-        SetState(State::Deactivating);
 
         for (ComponentArrayType::reverse_iterator it = m_components.rbegin(); it != m_components.rend(); ++it)
         {
@@ -658,6 +670,82 @@ namespace AZ
         m_stateEvent.Signal(oldState, m_state);
     }
 
+#pragma region Entity Activation State Handling
+
+    bool Entity::SetEntityActive(bool active)
+    {
+        return SetEffectiveActiveLayerByTypeIndex(0, active);
+    }
+
+    bool Entity::SetEffectiveActiveLayerByTypeIndex(size_t index, bool active)
+    {
+        if (index >= s_maxStateFlags)
+        {
+            AZ_Warning("Entity", false, "SetEffectiveActiveLayerByTypeIndex index of %u exceeding state flag limit.", index);
+            return false;
+        }
+
+        bool pastActive = IsEffectivelyActive();
+
+        const uint32_t bit = (1u << static_cast<uint32_t>(index));
+
+        if (active)
+        {
+            m_activeStateByType |= bit;
+        }
+        else
+        {
+            m_activeStateByType &= ~bit;
+        }
+
+        return (pastActive != IsEffectivelyActive());
+    }
+
+    bool Entity::GetEffectiveActiveLayerByTypeIndex(size_t index) const noexcept
+    {
+        if (index >= s_maxStateFlags)
+        {
+            return true;
+        }
+
+        const uint32_t bit = (1u << static_cast<uint32_t>(index));
+        return (m_activeStateByType & bit) != 0;
+    }
+
+    bool Entity::ApplyEffectiveActiveState()
+    {
+        bool isEffective = IsEffectivelyActive();
+
+        // ApplyEffectiveActiveState may only be driven from a settled state (Init or Active);
+        // it transitions between those two. Being called mid-transition (Constructed,
+        // Initializing, Activating, Deactivating, ...) is a programming error in the caller,
+        // not a recoverable runtime condition. Assert so misuse fails loudly in tests rather
+        // than silently no-opping (which previously let erroneous tests pass). All in-engine
+        // callers already gate on Init/Active before calling this.
+        if (m_state != State::Init && m_state != State::Active)
+        {
+            AZ_Assert(false, "%s: ApplyEffectiveActiveState called from invalid state %d. "
+                "Only Init or Active are valid; the activation layer must settle before applying.",
+                m_name.c_str(), static_cast<int>(m_state));
+            return false;
+        }
+
+        if (isEffective && m_state == State::Init)
+        {
+            Activate();
+            return true;
+        }
+        else if (!isEffective && m_state == State::Active)
+        {
+            Deactivate();
+            return true;
+        }
+
+        return false;
+    }
+
+#pragma endregion
+
     void Entity::SetEntitySpawnTicketId(u32 entitySpawnTicketId)
     {
         m_entitySpawnTicketId = entitySpawnTicketId;
@@ -808,19 +896,27 @@ namespace AZ
             EditContext* ec = serializeContext->GetEditContext();
             if (ec)
             {
-                ec->Class<Entity>("Entity", "Base entity class")->
+                ec->Class<Entity>(
+                    QT_TRANSLATE_NOOP("AzCore", "Entity"),
+                    QT_TRANSLATE_NOOP("AzCore", "Base entity class"))->
                     DataElement(AZ::Edit::UIHandlers::Default, &Entity::m_id, "Id", "")->
                         Attribute(Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::Hide)->
                         Attribute(Edit::Attributes::SliceFlags, AZ::Edit::SliceFlags::NotPushable)->
                     DataElement(AZ::Edit::UIHandlers::Default, &Entity::m_isDependencyReady, "IsDependencyReady", "")->
                         Attribute(Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::Hide)->
                         Attribute(Edit::Attributes::SliceFlags, AZ::Edit::SliceFlags::NotPushable)->
-                    DataElement(AZ::Edit::UIHandlers::Default, &Entity::m_isRuntimeActiveByDefault, "StartActive", "")->
-                    DataElement("String", &Entity::m_name, "Name", "Unique name of the entity")->
+                    DataElement(AZ::Edit::UIHandlers::Default, &Entity::m_isRuntimeActiveByDefault,
+                        QT_TRANSLATE_NOOP("AzCore", "StartActive"), "")->
+                    DataElement("String", &Entity::m_name,
+                        QT_TRANSLATE_NOOP("AzCore", "Name"),
+                        QT_TRANSLATE_NOOP("AzCore", "Unique name of the entity"))->
                         Attribute(Edit::Attributes::ChangeNotify, &Entity::OnNameChanged)->
-                    DataElement("Components", &Entity::m_components, "Components", "");
+                    DataElement("Components", &Entity::m_components,
+                        QT_TRANSLATE_NOOP("AzCore", "Components"), "");
 
-                ec->Class<EntityId>("EntityId", "Entity Unique Id");
+                ec->Class<EntityId>(
+                    QT_TRANSLATE_NOOP("AzCore", "EntityId"),
+                    QT_TRANSLATE_NOOP("AzCore", "Entity Unique Id"));
             }
         }
 
@@ -1287,7 +1383,7 @@ namespace AZ
         if (sortedComponents.size() != componentInfos.size())
         {
             // Format message like: "Cycle exists amongst: ComponentA, ComponentB, ComponentC, ..."
-            AZStd::string message = "Infinite loop of service dependencies amongst components: ";
+            AZStd::string message = QT_TRANSLATE_NOOP("AzCore", "Infinite loop of service dependencies amongst components: ");
             size_t foundUnsorted = 0;
             for (ComponentInfo& componentInfo : componentInfos)
             {

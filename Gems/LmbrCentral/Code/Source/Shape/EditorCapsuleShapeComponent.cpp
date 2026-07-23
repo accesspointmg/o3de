@@ -10,6 +10,7 @@
 
 #include <AzCore/Serialization/EditContext.h>
 #include <AzToolsFramework/ComponentModes/CapsuleComponentMode.h>
+#include <AzFramework/Translation/TranslationDef.h>
 #include <LmbrCentral/Geometry/GeometrySystemComponentBus.h>
 #include <Shape/EditorShapeComponentConverters.h>
 #include <Shape/ShapeDisplay.h>
@@ -37,7 +38,8 @@ namespace LmbrCentral
             {
                 editContext
                     ->Class<EditorCapsuleShapeComponent>(
-                        "Capsule Shape", "The Capsule Shape component creates a capsule around the associated entity")
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Capsule Shape"),
+                        QT_TRANSLATE_NOOP("LmbrCentral", "The Capsule Shape component creates a capsule around the associated entity"))
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Category, "Shape")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Capsule_Shape.svg")
@@ -45,19 +47,19 @@ namespace LmbrCentral
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                     ->Attribute(
-                        AZ::Edit::Attributes::HelpPageURL, "https://o3de.org/docs/user-guide/components/reference/shape/capsule-shape/")
+                        AZ::Edit::Attributes::HelpPageURL, "https://www.o3de.org/docs/user-guide/components/reference/shape/capsule-shape/")
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &EditorCapsuleShapeComponent::m_capsuleShape,
-                        "Capsule Shape",
-                        "Capsule Shape Configuration")
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Capsule Shape"),
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Capsule Shape Configuration"))
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, &EditorCapsuleShapeComponent::ConfigurationChanged)
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &EditorCapsuleShapeComponent::m_componentModeDelegate,
-                        "Component Mode",
-                        "Capsule Shape Component Mode")
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Component Mode"),
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Capsule Shape Component Mode"))
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly);
             }
         }

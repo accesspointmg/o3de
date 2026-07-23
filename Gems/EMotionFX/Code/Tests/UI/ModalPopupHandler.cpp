@@ -24,7 +24,7 @@ namespace EMotionFX
 
     void ModalPopupHandler::ShowContextMenuAndTriggerAction(QWidget* widget, const QString& actionName, int timeout, ActionCompletionCallback completionCallback)
     {
-        MenuActiveCallback menuCallback = [=](QMenu* menu)
+        MenuActiveCallback menuCallback = [this, actionName](QMenu* menu)
         {
             ASSERT_TRUE(menu) << "Failed to find context menu.";
 
@@ -138,4 +138,3 @@ namespace EMotionFX
     }
 } // namespace EMotionFX
 
-#include <Tests/UI/moc_ModalPopupHandler.cpp>

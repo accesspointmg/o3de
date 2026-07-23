@@ -37,7 +37,6 @@ class CTrackViewSequenceManager;
 class CGameEngine;
 class CToolBoxManager;
 class CMusicManager;
-struct IEditorParticleManager;
 class CEAXPresetManager;
 class CErrorReport;
 class ICommandManager;
@@ -56,11 +55,9 @@ class IAWSResourceManager;
 
 struct ISystem;
 struct IRenderer;
-struct AABB;
 struct IErrorReport; // Vladimir@conffx
 struct IFileUtil;  // Vladimir@conffx
 struct IEditorLog;  // Vladimir@conffx
-struct IEditorParticleUtils;  // Leroy@conffx
 
 // Qt
 
@@ -75,6 +72,11 @@ typedef void* HANDLE;
 struct HWND__;
 typedef HWND__* HWND;
 #endif
+
+namespace AZ
+{
+    class Aabb;
+}
 
 namespace Editor
 {
@@ -151,7 +153,7 @@ enum EEditorNotifyEvent
 
     eNotify_OnSplatmapImport, // Sent when splatmaps get imported
 
-    eNotify_OnParticleUpdate,          // A particle effect was modified.
+    eNotify_Deprecated00,              //  formerly eNotify_OnParticleUpdate, old particle system
     eNotify_OnAddAWSProfile,           // An AWS profile was added
     eNotify_OnSwitchAWSProfile,        // The AWS profile was switched
     eNotify_OnSwitchAWSDeployment,     // The AWS deployment was switched
@@ -172,10 +174,10 @@ enum EEditorNotifyEvent
 // UI event handler
 struct IUIEvent
 {
-    virtual void OnClick(DWORD dwId) = 0;
-    virtual bool IsEnabled(DWORD dwId) = 0;
-    virtual bool IsChecked(DWORD dwId) = 0;
-    virtual const char* GetUIElementName(DWORD dwId) = 0;
+    virtual void OnClick(AZ::u32 id) = 0;
+    virtual bool IsEnabled(AZ::u32 id) = 0;
+    virtual bool IsChecked(AZ::u32 id) = 0;
+    virtual const char* GetUIElementName(AZ::u32 id) = 0;
 };
 
 //! Add object that implements this interface to Load listeners of IEditor
@@ -444,7 +446,7 @@ struct IEditor
     //////////////////////////////////////////////////////////////////////////
     virtual class CLevelIndependentFileMan* GetLevelIndependentFileMan() = 0;
     //! Notify all views that data is changed.
-    virtual void UpdateViews(int flags = 0xFFFFFFFF, const AABB* updateRegion = nullptr) = 0;
+    virtual void UpdateViews(int flags = 0xFFFFFFFF, const AZ::Aabb* updateRegion = nullptr) = 0;
     virtual void ResetViews() = 0;
     //! Update information in track view dialog.
     virtual void ReloadTrackView() = 0;
@@ -483,15 +485,6 @@ struct IEditor
     virtual void AcceptUndo(const QString& name) = 0;
     //! Cancel changes and restore undo objects.
     virtual void CancelUndo() = 0;
-    //! Normally this is NOT needed but in special cases this can be useful.
-    //! This allows to group a set of Begin()/Accept() sequences to be undone in one operation.
-    virtual void SuperBeginUndo() = 0;
-    //! When a SuperBegin() used, this method is used to Accept.
-    //! This leaves the undo database in its modified state and registers the IUndoObjects with the undo system.
-    //! This will allow the user to undo the operation.
-    virtual void SuperAcceptUndo(const QString& name) = 0;
-    //! Cancel changes and restore undo objects.
-    virtual void SuperCancelUndo() = 0;
     //! Suspend undo recording.
     virtual void SuspendUndo() = 0;
     //! Resume undo recording.

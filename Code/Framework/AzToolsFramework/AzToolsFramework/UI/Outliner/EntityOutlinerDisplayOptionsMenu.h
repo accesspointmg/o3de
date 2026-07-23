@@ -7,10 +7,9 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
-#include <QMenu>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 
-#endif
+#include <QMenu>
 
 class QAction;
 
@@ -37,7 +36,7 @@ namespace AzToolsFramework
             AutoExpand
         };
 
-        class DisplayOptionsMenu
+        class AZTF_API DisplayOptionsMenu
             : public QMenu
         {
             Q_OBJECT // AUTOMOC

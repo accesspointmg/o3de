@@ -23,7 +23,7 @@ namespace AZ
     class ReflectContext;
 
     //! 3-dimensional vector class.
-    class Vector3
+    class AZCORE_API Vector3
     {
     public:
 
@@ -183,6 +183,14 @@ namespace AZ
         //! Linearly interpolates between the two vectors and normalizes the result.
         Vector3 Nlerp(const Vector3& dest, float t) const;
 
+        //! Smooths a value towards a target using a critically damped spring system.
+        //! This function adjusts `value` towards `target` while maintaining continuity of `value` and its rate of change (`valueRate`).
+        //! The smoothing is controlled by `smoothTime`, with `timeDelta` representing the time since the last update.
+        Vector3 SmoothCriticallyDamped(Vector3& valueRate, float timeDelta, const Vector3& target, float smoothTime) const;
+
+        //! Performs a smooth S-curve interpolation between this vector and a desination.
+        Vector3 SmoothStep(const Vector3& dest, float t) const;
+
         //! Dot product of two vectors.
         float Dot(const Vector3& rhs) const;
 
@@ -247,6 +255,8 @@ namespace AZ
         Vector3& operator/=(const Vector3& rhs);
         Vector3& operator*=(float multiplier);
         Vector3& operator/=(float divisor);
+        float& operator[](const size_t i);
+        const float& operator[](const size_t i) const;
 
         //! Gets the sine of each component.
         Vector3 GetSin() const;

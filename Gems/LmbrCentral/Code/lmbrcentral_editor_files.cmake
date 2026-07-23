@@ -34,10 +34,6 @@ set(FILES
     Source/Builders/BenchmarkAssetBuilder/BenchmarkAssetBuilderWorker.cpp
     Source/Scripting/EditorLookAtComponent.h
     Source/Scripting/EditorLookAtComponent.cpp
-    Source/Scripting/EditorRandomTimedSpawnerComponent.cpp
-    Source/Scripting/EditorRandomTimedSpawnerComponent.h
-    Source/Scripting/EditorSpawnerComponent.h
-    Source/Scripting/EditorSpawnerComponent.cpp
     Source/Scripting/EditorTagComponent.h
     Source/Scripting/EditorTagComponent.cpp
     Source/Shape/EditorBaseShapeComponent.h
@@ -78,8 +74,6 @@ set(FILES
     Source/Shape/EditorShapeComponentConverters.cpp
     Source/Editor/EditorCommentComponent.h
     Source/Editor/EditorCommentComponent.cpp
-    Source/Scripting/SpawnerComponent.h
-    Source/Scripting/SpawnerComponent.cpp
     Source/Shape/TubeShape.h
     Source/Shape/TubeShape.cpp
     Source/Builders/CopyDependencyBuilder/CopyDependencyBuilderComponent.cpp
@@ -100,10 +94,6 @@ set(FILES
     Source/Builders/CopyDependencyBuilder/XmlBuilderWorker/XmlBuilderWorker.h
     Source/Builders/CopyDependencyBuilder/XmlFormattedAssetBuilderWorker.cpp
     Source/Builders/CopyDependencyBuilder/XmlFormattedAssetBuilderWorker.h
-    Source/Builders/LevelBuilder/LevelBuilderComponent.cpp
-    Source/Builders/LevelBuilder/LevelBuilderComponent.h
-    Source/Builders/LevelBuilder/LevelBuilderWorker.cpp
-    Source/Builders/LevelBuilder/LevelBuilderWorker.h
     Source/Builders/SliceBuilder/SliceBuilderComponent.cpp
     Source/Builders/SliceBuilder/SliceBuilderComponent.h
     Source/Builders/SliceBuilder/SliceBuilderWorker.cpp
@@ -116,5 +106,10 @@ set(FILES
     Source/Builders/LuaBuilder/LuaBuilderWorker.h
     Source/Builders/LuaBuilder/LuaHelpers.cpp
     Source/Builders/LuaBuilder/LuaHelpers.h
+    Source/Builders/GenericAssetBuilder/GenericAssetBuilderComponent.cpp
+    Source/Builders/GenericAssetBuilder/GenericAssetBuilderComponent.h
+    Source/Builders/GenericAssetBuilder/GenericAssetBuilderWorker.cpp
+    Source/Builders/GenericAssetBuilder/GenericAssetBuilderWorker.h
+    Source/Builders/GenericAssetBuilder/GenericAssetBuilderCommon.h
 
 )

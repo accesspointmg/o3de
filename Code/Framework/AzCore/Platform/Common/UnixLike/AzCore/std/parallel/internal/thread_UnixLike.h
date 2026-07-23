@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
+
 #pragma once
 
 #include <unistd.h>
@@ -19,12 +20,13 @@ namespace AZStd
         /**
          * Create and run thread
          */
-        pthread_t create_thread(const thread_desc* desc, thread_info* ti);
+        AZCORE_API pthread_t create_thread(const thread_desc* desc, thread_info* ti);
     }
 
     //////////////////////////////////////////////////////////////////////////
     // thread
-    template<class F, class... Args, typename>
+    template<class F, class... Args>
+        requires (!AZStd::is_convertible_v<AZStd::decay_t<F>, thread_desc>)
     thread::thread(F&& f, Args&&... args)
         : thread(thread_desc{}, AZStd::forward<F>(f), AZStd::forward<Args>(args)...)
     {}

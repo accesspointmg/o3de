@@ -18,6 +18,7 @@
 #include "UiCanvasComponent.h"
 #include "LyShineDebug.h"
 #include "UiElementComponent.h"
+#include "UiHierarchyInteractivityToggleComponent.h"
 #include "UiTransform2dComponent.h"
 #include "UiImageComponent.h"
 #include "UiImageSequenceComponent.h"
@@ -50,6 +51,7 @@
 #include "UiDynamicScrollBoxComponent.h"
 #include "UiNavigationSettings.h"
 #include "LyShinePass.h"
+#include <AzFramework/Translation/TranslationDef.h>
 
 namespace LyShine
 {
@@ -71,12 +73,12 @@ namespace LyShine
 
             if (AZ::EditContext* ec = serialize->GetEditContext())
             {
-                auto editInfo = ec->Class<LyShineSystemComponent>("LyShine", "In-game User Interface System");
+                auto editInfo = ec->Class<LyShineSystemComponent>(QT_TRANSLATE_NOOP("LyShine", "LyShine"), QT_TRANSLATE_NOOP("LyShine", "In-game User Interface System"));
                 editInfo->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Category, "UI")
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true);
 
-                editInfo->DataElement(0, &LyShineSystemComponent::m_cursorImagePathname, "CursorImagePath", "The cursor image path.")
+                editInfo->DataElement(0, &LyShineSystemComponent::m_cursorImagePathname, QT_TRANSLATE_NOOP("LyShine", "CursorImagePath"), QT_TRANSLATE_NOOP("LyShine", "The cursor image path."))
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, &LyShineSystemComponent::BroadcastCursorImagePathname);
             }
         }
@@ -159,6 +161,7 @@ namespace LyShine
         // These are registered in the order we want them to appear in the Add Component menu
         RegisterComponentTypeForMenuOrdering(UiCanvasComponent::RTTI_Type());
         RegisterComponentTypeForMenuOrdering(UiElementComponent::RTTI_Type());
+        RegisterComponentTypeForMenuOrdering(UiHierarchyInteractivityToggleComponent::RTTI_Type());
         RegisterComponentTypeForMenuOrdering(UiTransform2dComponent::RTTI_Type());
         RegisterComponentTypeForMenuOrdering(UiImageComponent::RTTI_Type());
         RegisterComponentTypeForMenuOrdering(UiImageSequenceComponent::RTTI_Type());

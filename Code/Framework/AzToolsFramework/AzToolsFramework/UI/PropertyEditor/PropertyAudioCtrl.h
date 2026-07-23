@@ -8,7 +8,9 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/base.h>
 #include <AzCore/RTTI/RTTI.h>
 #include <AzCore/Memory/SystemAllocator.h>
@@ -18,7 +20,6 @@
 #include <QWidget>
 
 #include "PropertyAudioCtrlTypes.h"
-#endif
 
 class QLabel;
 class QLineEdit;
@@ -33,7 +34,7 @@ namespace AzToolsFramework
     // Audio Control Selector Request Bus
     // For connecting UI proper
     //=============================================================================
-    class AudioControlSelectorRequests
+    class AZTF_API AudioControlSelectorRequests
         : public AZ::EBusTraits
     {
     public:
@@ -53,7 +54,7 @@ namespace AzToolsFramework
     //=============================================================================
     // Audio Control Selector Widget
     //=============================================================================
-    class AudioControlSelectorWidget
+    class AZTF_API AudioControlSelectorWidget
         : public QWidget
     {
         Q_OBJECT
@@ -102,7 +103,7 @@ namespace AzToolsFramework
     //=============================================================================
     // Property Handler
     //=============================================================================
-    class AudioControlSelectorWidgetHandler
+    class AZTF_API AudioControlSelectorWidgetHandler
         : QObject
         , public AzToolsFramework::PropertyHandler<CReflectedVarAudioControl, AudioControlSelectorWidget>
     {
@@ -128,6 +129,6 @@ namespace AzToolsFramework
     };
 
 
-    void RegisterAudioPropertyHandler();
+    AZTF_API void RegisterAudioPropertyHandler();
 
 } // namespace AzToolsFramework

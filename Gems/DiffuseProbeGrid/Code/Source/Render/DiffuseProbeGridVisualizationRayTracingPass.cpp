@@ -26,7 +26,7 @@ namespace AZ
         RPI::Ptr<DiffuseProbeGridVisualizationRayTracingPass> DiffuseProbeGridVisualizationRayTracingPass::Create(const RPI::PassDescriptor& descriptor)
         {
             RPI::Ptr<DiffuseProbeGridVisualizationRayTracingPass> pass = aznew DiffuseProbeGridVisualizationRayTracingPass(descriptor);
-            return AZStd::move(pass);
+            return pass;
         }
 
         DiffuseProbeGridVisualizationRayTracingPass::DiffuseProbeGridVisualizationRayTracingPass(const RPI::PassDescriptor& descriptor)
@@ -79,23 +79,20 @@ namespace AZ
 
             // build the ray tracing pipeline state descriptor
             RHI::RayTracingPipelineStateDescriptor descriptor;
-            descriptor.Build()
-                ->PipelineState(m_globalPipelineState.get())
-                ->MaxPayloadSize(64)
-                ->MaxAttributeSize(32)
-                ->MaxRecursionDepth(2)
-                ->ShaderLibrary(rayGenerationShaderDescriptor)
-                    ->RayGenerationShaderName(AZ::Name("RayGen"))
-                ->ShaderLibrary(missShaderDescriptor)
-                    ->MissShaderName(AZ::Name("Miss"))
-                ->ShaderLibrary(closestHitShaderDescriptor)
-                    ->ClosestHitShaderName(AZ::Name("ClosestHit"))
-                ->HitGroup(AZ::Name("HitGroup"))
-                    ->ClosestHitShaderName(AZ::Name("ClosestHit"));
+            descriptor.m_pipelineState = m_globalPipelineState.get();
+            descriptor.m_configuration.m_maxPayloadSize = 64;
+            descriptor.m_configuration.m_maxAttributeSize = 32;
+            descriptor.m_configuration.m_maxRecursionDepth = 2;
+
+            descriptor.AddRayGenerationShaderLibrary(rayGenerationShaderDescriptor, Name("RayGen"));
+            descriptor.AddMissShaderLibrary(missShaderDescriptor, Name("Miss"));
+            descriptor.AddClosestHitShaderLibrary(closestHitShaderDescriptor, Name("ClosestHit"));
+
+            descriptor.AddHitGroup(Name("HitGroup"), Name("ClosestHit"));
 
             // create the ray tracing pipeline state object
             m_rayTracingPipelineState = aznew RHI::RayTracingPipelineState;
-            m_rayTracingPipelineState->Init(RHI::MultiDevice::AllDevices, descriptor);
+            m_rayTracingPipelineState->Init(RHI::RHISystemInterface::Get()->GetRayTracingSupport(), descriptor);
         }
 
         bool DiffuseProbeGridVisualizationRayTracingPass::IsEnabled() const
@@ -142,16 +139,16 @@ namespace AZ
                 RHI::RayTracingBufferPools& rayTracingBufferPools = diffuseProbeGridFeatureProcessor->GetVisualizationBufferPools();
 
                 m_rayTracingShaderTable = aznew RHI::RayTracingShaderTable;
-                m_rayTracingShaderTable->Init(RHI::MultiDevice::AllDevices, rayTracingBufferPools);
+                m_rayTracingShaderTable->Init(RHI::RHISystemInterface::Get()->GetRayTracingSupport(), rayTracingBufferPools);
 
                 AZStd::shared_ptr<RHI::RayTracingShaderTableDescriptor> descriptor = AZStd::make_shared<RHI::RayTracingShaderTableDescriptor>();
 
                 // build the ray tracing shader table descriptor
-                descriptor->Build(AZ::Name("RayTracingShaderTable"), m_rayTracingPipelineState)
-                    ->RayGenerationRecord(AZ::Name("RayGen"))
-                    ->MissRecord(AZ::Name("Miss"))
-                    ->HitGroupRecord(AZ::Name("HitGroup"))
-                ;
+                descriptor->m_name = Name("RayTracingShaderTable");
+                descriptor->m_rayTracingPipelineState = m_rayTracingPipelineState;
+                descriptor->m_rayGenerationRecord.emplace_back(Name("RayGen"));
+                descriptor->m_missRecords.emplace_back(Name("Miss"));
+                descriptor->m_hitGroupRecords.emplace_back(Name("HitGroup"));
 
                 m_rayTracingShaderTable->Build(descriptor);
             }
@@ -275,7 +272,7 @@ namespace AZ
                 BindSrg(viewSRG->GetRHIShaderResourceGroup());
             }
         }
-    
+
         void DiffuseProbeGridVisualizationRayTracingPass::BuildCommandListInternal([[maybe_unused]] const RHI::FrameGraphExecuteContext& context)
         {
             RPI::Scene* scene = m_pipeline->GetScene();
@@ -288,6 +285,8 @@ namespace AZ
             {
                 return;
             }
+
+            const RHI::ShaderResourceGroup* sceneSrg = m_pipeline->GetScene()->GetRHIShaderResourceGroup();
 
             // submit the DispatchRaysItems for each DiffuseProbeGrid in this range
             for (uint32_t index = context.GetSubmitRange().m_startIndex; index < context.GetSubmitRange().m_endIndex; ++index)
@@ -303,6 +302,7 @@ namespace AZ
                     diffuseProbeGrid->GetVisualizationRayTraceSrg()->GetRHIShaderResourceGroup()->GetDeviceShaderResourceGroup(context.GetDeviceIndex()).get(),
                     rayTracingFeatureProcessor->GetRayTracingSceneSrg()->GetRHIShaderResourceGroup()->GetDeviceShaderResourceGroup(context.GetDeviceIndex()).get(),
                     views[0]->GetRHIShaderResourceGroup()->GetDeviceShaderResourceGroup(context.GetDeviceIndex()).get(),
+                    sceneSrg->GetDeviceShaderResourceGroup(context.GetDeviceIndex()).get()
                 };
 
                 RHI::DeviceDispatchRaysItem dispatchRaysItem;

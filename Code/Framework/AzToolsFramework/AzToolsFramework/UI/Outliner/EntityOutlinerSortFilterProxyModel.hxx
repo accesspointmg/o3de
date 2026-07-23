@@ -6,16 +6,13 @@
  *
  */
 
-#ifndef ENTITYOUTLINER_SORT_FILTER_PROXY_MODEL_H
-#define ENTITYOUTLINER_SORT_FILTER_PROXY_MODEL_H
-
-#if !defined(Q_MOC_RUN)
+ #pragma once
+  
+ #include <AzToolsFramework/AzToolsFrameworkAPI.h>
+ 
 #include <AzCore/base.h>
-#include <QtCore/QSortFilterProxyModel>
+#include <QSortFilterProxyModel>
 #include <AzCore/Memory/SystemAllocator.h>
-#endif
-
-#pragma once
 
 namespace AzToolsFramework
 {
@@ -25,7 +22,7 @@ namespace AzToolsFramework
     //! Enables the Outliner to filter entries based on search string.
     //! Enables the Outliner to do custom sorting on entries.
     //! Enforces the correct rendering for container entities.
-    class EntityOutlinerSortFilterProxyModel
+    class AZTF_API EntityOutlinerSortFilterProxyModel
         : public QSortFilterProxyModel
     {
         Q_OBJECT
@@ -50,5 +47,3 @@ namespace AzToolsFramework
     };
 
 }
-
-#endif

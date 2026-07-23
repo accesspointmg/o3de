@@ -7,6 +7,8 @@
  */
 #pragma once
 
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/base.h>
 #include <AzCore/Component/ComponentBus.h>
 #include <AzCore/Component/Entity.h>
@@ -352,8 +354,9 @@ namespace AzToolsFramework
         /*!
          * Completes the current undo batch.
          * It's still possible to resume the batch as long as it's still the most recent one.
+         * Returns false if the undo batch was discarded because it was empty, true in all other cases.
          */
-        virtual void EndUndoBatch() = 0;
+        virtual bool EndUndoBatch() = 0;
 
         /*!
          * \return true if the entity (or entities) can be edited/modified.
@@ -973,18 +976,30 @@ namespace AzToolsFramework
 
     using ViewPaneCallbackBus = AZ::EBus<ViewPaneCallbacks>;
 
-    /**
-     * RAII Helper class for undo batches.
+    /*! RAII Helper class for undo batches.
      *
-     * AzToolsFramework::ScopedUndoBatch undoBatch("Batch Name");
-     * entity->ChangeData(...);
-     * undoBatch.MarkEntityDirty(entity->GetId());
+     * Usage:  If you are doing a single one-off operation in one frame:
+     * 1. Open a scope.
+     * 2. ScopedUndoBatch batch("Do a thing");
+     * 3. Modify data in entities, set them dirty, and/or add child undo commands for special undo nodes.
+     * 4. Allow the ScopedUndoBatch to leave scope.
+     *
+     * Usage:  If you are doing a multi-frame operation:
+     * 1. Store a UndoSystem::URSequencePoint* resumeHandle = nullptr; in your class to remember your operation handle.
+     * 2. Each time data changes:
+     *    a) ScopedUndoBatch batch("Do a thing", &resumeHandle);
+     *       ResumeHandle will either be reused and be unchanged, or it will be set to a new value if
+     *       resumeHandle was a nullptr, or was not able to be resumed.
+     *    b) Modify the entity data and set them dirty, and/or add child undo commands for special undo nodes.
+     *    c) Allow the scoped undo batch to leave scope.  Retain the resumehandle for next time data changes.
+     * 3. When the operation is complete (as in, logical user operation, like they release the mouse in a drag),
+     *    forget the resume handle (set it to nullptr).  This will cause the next operation to start a new batch.
      */
-    class ScopedUndoBatch
+    class AZTF_API ScopedUndoBatch
     {
     public:
         AZ_CLASS_ALLOCATOR(ScopedUndoBatch, AZ::SystemAllocator);
-        explicit ScopedUndoBatch(const char* batchName);
+        [[nodiscard]] explicit ScopedUndoBatch(const char* batchName, UndoSystem::URSequencePoint** resumeHandle = nullptr);
         ~ScopedUndoBatch();
 
         // utility/convenience function for adding dirty entity
@@ -1038,7 +1053,7 @@ namespace AzToolsFramework
     /// Any currently open view panes of this type will be closed before the view pane handlers are unregistered.
     ///
     /// \param viewPaneName - name of the pane to unregister. Must be the same as the name previously registered with RegisterViewPane.
-    void UnregisterViewPane(const char* viewPaneName);
+    AZTF_API void UnregisterViewPane(const char* viewPaneName);
 
     /// Returns the widget contained/wrapped in a view pane.
     /// \param name - the name of the pane which contains the widget to be retrieved. This must match the name used for registration.
@@ -1054,25 +1069,31 @@ namespace AzToolsFramework
     /// Opens a view pane if not already open, and activating the view pane if it was already opened.
     ///
     /// \param viewPaneName - name of the pane to open/activate. Must be the same as the name previously registered with RegisterViewPane.
-    void OpenViewPane(const char* viewPaneName);
+    AZTF_API void OpenViewPane(const char* viewPaneName);
 
     /// Opens a view pane if not already open, and activating the view pane if it was already opened.
     ///
     /// \param viewPaneName - name of the pane to open/activate. Must be the same as the name previously registered with RegisterViewPane.
-    QDockWidget* InstanceViewPane(const char* viewPaneName);
+    AZTF_API QDockWidget* InstanceViewPane(const char* viewPaneName);
 
     /// Closes a view pane if it is currently open.
     ///
     /// \param viewPaneName - name of the pane to open/activate. Must be the same as the name previously registered with RegisterViewPane.
-    void CloseViewPane(const char* viewPaneName);
+    AZTF_API void CloseViewPane(const char* viewPaneName);
 
     /**
      * Helper to wrap checking if an undo/redo operation is in progress.
      */
-    bool UndoRedoOperationInProgress();
+    AZTF_API bool UndoRedoOperationInProgress();
 } // namespace AzToolsFramework
 
-AZ_DECLARE_BUDGET(AzToolsFramework);
-DECLARE_EBUS_EXTERN(AzToolsFramework::EditorRequests);
-DECLARE_EBUS_EXTERN(AzToolsFramework::ToolsApplicationEvents);
-DECLARE_EBUS_EXTERN(AzToolsFramework::EntitySelectionEvents);
+AZ_DECLARE_BUDGET_SHARED(AzToolsFramework);
+
+AZ_DECLARE_EBUS_SINGLE_ADDRESS(AZTF_API, AzToolsFramework::ToolsApplicationEvents);
+AZ_DECLARE_EBUS_SINGLE_ADDRESS(AZTF_API, AzToolsFramework::ToolsApplicationRequests);
+AZ_DECLARE_EBUS_MULTI_ADDRESS(AZTF_API, AzToolsFramework::EntitySelectionEvents);
+AZ_DECLARE_EBUS_MULTI_ADDRESS(AZTF_API, AzToolsFramework::EditorPickModeRequests);
+AZ_DECLARE_EBUS_MULTI_ADDRESS(AZTF_API, AzToolsFramework::EditorPickModeNotifications);
+AZ_DECLARE_EBUS_SINGLE_ADDRESS(AZTF_API, AzToolsFramework::EditorRequests);
+AZ_DECLARE_EBUS_SINGLE_ADDRESS(AZTF_API, AzToolsFramework::EditorEvents);
+AZ_DECLARE_EBUS_MULTI_ADDRESS(AZTF_API, AzToolsFramework::ViewPaneCallbacks);

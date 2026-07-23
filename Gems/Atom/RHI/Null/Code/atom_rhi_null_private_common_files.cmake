@@ -61,10 +61,13 @@ set(FILES
     Source/RHI/RayTracingBufferPools.h
     Source/RHI/RayTracingBlas.cpp
     Source/RHI/RayTracingBlas.h
+    Source/RHI/RayTracingClusterBlas.h
     Source/RHI/RayTracingTlas.cpp
     Source/RHI/RayTracingTlas.h
     Source/RHI/RayTracingPipelineState.cpp
     Source/RHI/RayTracingPipelineState.h
     Source/RHI/RayTracingShaderTable.cpp
     Source/RHI/RayTracingShaderTable.h
+    Source/RHI/RayTracingCompactionQueryPool.h
+    Source/RHI/RayTracingCompactionQueryPool.cpp
 )

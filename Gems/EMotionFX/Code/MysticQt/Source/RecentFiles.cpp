@@ -13,10 +13,10 @@
 #include <AzFramework/StringFunc/StringFunc.h>
 #include <AzToolsFramework/API/EditorAssetSystemAPI.h>
 #include <EMotionFX/Source/EMotionFXManager.h>
-#include <QtCore/QFileInfo>
-#include <QtCore/QSettings>
-#include <QtGui/QHelpEvent>
-#include <QtWidgets/QToolTip>
+#include <QFileInfo>
+#include <QSettings>
+#include <QHelpEvent>
+#include <QToolTip>
 
 namespace MysticQt
 {
@@ -133,7 +133,7 @@ namespace MysticQt
         AzFramework::StringFunc::Strip(cacheFolder, AZ_CORRECT_FILESYSTEM_SEPARATOR, true, false, true);
 
         int recentFilesAdded = 0;
-        const int recentFileCount = m_recentFiles.size();
+        const int recentFileCount = static_cast<int>(m_recentFiles.size());
         for (int i = 0; i < recentFileCount; ++i)
         {
             const QString recentFilePath = m_recentFiles[i];
@@ -173,7 +173,7 @@ namespace MysticQt
             if (foundInScanFolders)
             {
                 const QFileInfo fileInfo(m_recentFiles[i]);
-                const QString menuItemText = QString("&%1 %2").arg(i + 1).arg(fileInfo.fileName());
+                const QString menuItemText = QString("&%1 %2").arg(i + 1).arg(fileInfo.filePath());
 
                 QAction* action = new QAction(m_recentFilesMenu);
                 action->setText(menuItemText);
@@ -190,7 +190,7 @@ namespace MysticQt
         if (recentFilesAdded > 0)
         {
             m_recentFilesMenu->addSeparator();
-            m_resetRecentFilesAction = m_recentFilesMenu->addAction("Reset Recent Files", this, &RecentFiles::OnClearRecentFiles);
+            m_resetRecentFilesAction = m_recentFilesMenu->addAction(tr("Reset Recent Files"), this, &RecentFiles::OnClearRecentFiles);
             m_resetRecentFilesAction->setObjectName("EMFX.RecentFiles.ResetRecentFilesAction");
         }
     }
@@ -200,9 +200,9 @@ namespace MysticQt
     {
         m_maxNumRecentFiles = numRecentFiles;
 
-        if (m_recentFiles.size() > m_maxNumRecentFiles)
+        if (static_cast<size_t>(m_recentFiles.size()) > m_maxNumRecentFiles)
         {
-            while (m_recentFiles.size() > m_maxNumRecentFiles)
+            while (static_cast<size_t>(m_recentFiles.size()) > m_maxNumRecentFiles)
             {
                 m_recentFiles.removeLast();
             }
@@ -278,4 +278,3 @@ namespace MysticQt
     }
 } // namespace MysticQt
 
-#include <MysticQt/Source/moc_RecentFiles.cpp>

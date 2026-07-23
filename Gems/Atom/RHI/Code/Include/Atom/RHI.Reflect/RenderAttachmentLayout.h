@@ -25,14 +25,14 @@ namespace AZ::RHI
 {
     static const uint32_t InvalidRenderAttachmentIndex = Limits::Pipeline::RenderAttachmentCountMax;
     //! Base class for extra data to be used when building a RenderAttachmentLayout
-    struct RenderAttachmentExtras
+    struct ATOM_RHI_REFLECT_API RenderAttachmentExtras
     {
         AZ_RTTI(RenderAttachmentExtras, "{0A50E3A8-78B6-4B7A-86CD-D0AB0108743E}");
         virtual ~RenderAttachmentExtras() = default;
     };
 
     //! Describes one render attachment that is part of a layout.
-    struct RenderAttachmentDescriptor
+    struct ATOM_RHI_REFLECT_API RenderAttachmentDescriptor
     {
         AZ_TYPE_INFO(RenderAttachmentDescriptor, "{2855E1D2-BDA1-45A8-ABB9-5D8FB1E78EF4}");
         static void Reflect(ReflectContext* context);
@@ -40,6 +40,7 @@ namespace AZ::RHI
 
         bool operator==(const RenderAttachmentDescriptor& other) const;
         bool operator!=(const RenderAttachmentDescriptor& other) const;
+        bool IsEqual(const RenderAttachmentDescriptor& other, const bool compareLoadStoreAction) const;
 
         //! Position of the attachment in the layout.
         uint32_t m_attachmentIndex = InvalidRenderAttachmentIndex;
@@ -60,7 +61,7 @@ namespace AZ::RHI
     };
 
     //! Describes a subpass input attachment.
-    struct SubpassInputDescriptor
+    struct ATOM_RHI_REFLECT_API SubpassInputDescriptor
     {
         AZ_TYPE_INFO(SubpassInputDescriptor, "{5E5B933D-8209-4722-8AC5-C3FEA1D75BB3}");
         static void Reflect(ReflectContext* context);
@@ -88,13 +89,14 @@ namespace AZ::RHI
 
     //! Describes the attachments of one subpass as part of a render target layout.
     //! It include descriptions about the render targets, subpass inputs and depth/stencil attachment.
-    struct SubpassRenderAttachmentLayout
+    struct ATOM_RHI_REFLECT_API SubpassRenderAttachmentLayout
     {
         AZ_TYPE_INFO(SubpassRenderAttachmentLayout, "{7AF04EC1-D835-4F97-8433-0D445C0D6F5B}");
         static void Reflect(ReflectContext* context);
 
         bool operator==(const SubpassRenderAttachmentLayout& other) const;
         bool operator!=(const SubpassRenderAttachmentLayout& other) const;
+        bool IsEqual(const SubpassRenderAttachmentLayout& other, const bool compareLoadStoreAction) const;
 
         //! Number of render targets in the subpass.
         uint32_t m_rendertargetCount = 0;
@@ -117,7 +119,7 @@ namespace AZ::RHI
     //! A RenderAttachmentLayout may be implemented by the platform using native functionality, achieving a
     //! performance gain for that specific platform. On other platforms, it may be emulated to achieve the same result
     //! but without the performance benefits. For example, Vulkan supports the concept of subpass natively.
-    class RenderAttachmentLayout
+    class ATOM_RHI_REFLECT_API RenderAttachmentLayout
     {
     public:
         AZ_TYPE_INFO(RenderAttachmentLayout, "{5ED96982-BFB0-4EFF-ABBE-1552CECE707D}");
@@ -126,6 +128,7 @@ namespace AZ::RHI
         HashValue64 GetHash() const;
 
         bool operator==(const RenderAttachmentLayout& other) const;
+        bool IsEqual(const RenderAttachmentLayout& other, const bool compareLoadStoreAction) const;
 
         //! Number of total attachments in the list.
         uint32_t m_attachmentCount = 0;
@@ -140,7 +143,7 @@ namespace AZ::RHI
 
     //! Describes the layout of a collection of subpasses and it defines which of the subpasses this
     //! configuration will be using.
-    struct RenderAttachmentConfiguration
+    struct ATOM_RHI_REFLECT_API RenderAttachmentConfiguration
     {
         AZ_TYPE_INFO(RenderAttachmentConfiguration, "{037F27A5-B568-439B-81D4-928DFA3A74F2}");
         static void Reflect(ReflectContext* context);
@@ -148,6 +151,7 @@ namespace AZ::RHI
         HashValue64 GetHash() const;
 
         bool operator==(const RenderAttachmentConfiguration& other) const;
+        bool IsEqual(const RenderAttachmentConfiguration& other, const bool compareLoadStoreAction) const;
 
         //! Returns the format of a render target in the subpass being used.
         Format GetRenderTargetFormat(uint32_t index) const;

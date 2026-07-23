@@ -163,7 +163,7 @@ public:
     {
         RCcontrollerTest::SetUp();
         using namespace AssetProcessor;
-        m_rcController.reset(new RCController(/*minJobs*/1, /*maxJobs*/1));
+        m_rcController.reset(new RCController());
         m_rcController->SetDispatchPaused(false);
         m_rcJobListModel = m_rcController->GetQueueModel();
 
@@ -222,7 +222,7 @@ TEST_F(RCcontrollerTest_Simple, DISABLED_SameJobIsCompletedMultipleTimes_Complet
     using namespace AssetProcessor;
 
     AZStd::vector<JobEntry> jobEntries;
-    QObject::connect(m_rcController.get(), &RCController::FileCompiled, [&jobEntries](JobEntry entry, AssetBuilderSDK::ProcessJobResponse response)
+    QObject::connect(m_rcController.get(), &RCController::FileCompiled, [&jobEntries](JobEntry entry, [[maybe_unused]] AssetBuilderSDK::ProcessJobResponse response)
     {
         jobEntries.push_back(entry);
     });

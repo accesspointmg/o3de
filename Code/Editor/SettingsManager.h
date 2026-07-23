@@ -11,6 +11,11 @@
 #define CRYINCLUDE_EDITOR_SETTINGSMANAGER_H
 #pragma once
 
+#include <AzCore/std/string/string.h>
+#include <AzCore/std/containers/vector.h>
+#include <IXml.h>
+#include <map>
+
 #include <QString>
 
 class QByteArray;

@@ -21,7 +21,6 @@
 #include <ILog.h>
 #include <IFont.h>
 #include <ITexture.h>
-#include "ConsoleHelpGen.h"         // CConsoleHelpGen
 
 #include <AzFramework/Input/Devices/Keyboard/InputDeviceKeyboard.h>
 #include <AzFramework/Input/Devices/Mouse/InputDeviceMouse.h>
@@ -265,15 +264,6 @@ void Command_DumpCommandsVars(IConsoleCmdArgs* Cmd)
 
     // txt
     pConsole->DumpCommandsVarsTxt(arg);
-
-#if defined(WIN32) || defined(WIN64)
-    // HTML
-    {
-        CConsoleHelpGen Generator(*pConsole);
-
-        Generator.Work();
-    }
-#endif
 }
 
 void Command_DumpVars(IConsoleCmdArgs* Cmd)
@@ -1771,7 +1761,7 @@ void CXConsole::Exit(const char* szExitComments, ...)
         // make result string
         va_list     arglist;
         va_start(arglist, szExitComments);
-        vsprintf_s(sResultMessageText, szExitComments, arglist);
+        azvsnprintf(sResultMessageText, AZ_ARRAY_SIZE(sResultMessageText), szExitComments, arglist);
         va_end(arglist);
     }
     else
@@ -2012,7 +2002,7 @@ void CXConsole::DisplayVarValue(ICVar* pVar)
             }
             else
             {
-                sprintf_s(szRealState, " RealState=%d", iRealState);
+                azsnprintf(szRealState, AZ_ARRAY_SIZE(szRealState)-1, " RealState=%d", iRealState);
             }
         }
     }
@@ -2031,8 +2021,7 @@ void CXConsole::DisplayVarValue(ICVar* pVar)
             sValue += " (";
             if (nonAlphaBits != 0)
             {
-                char nonAlphaChars[3] = { 0 };  // 1..63 + '\0'
-                azitoa(nonAlphaBits, nonAlphaChars, AZ_ARRAY_SIZE(nonAlphaChars), 10);
+                AZStd::string nonAlphaChars = AZStd::to_string(nonAlphaBits);
                 sValue += nonAlphaChars;
                 sValue += ", ";
             }

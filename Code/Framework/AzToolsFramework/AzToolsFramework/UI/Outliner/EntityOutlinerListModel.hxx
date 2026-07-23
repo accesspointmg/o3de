@@ -8,7 +8,7 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 
 #include <AzCore/base.h>
 #include <AzCore/Asset/AssetCommon.h>
@@ -30,10 +30,9 @@
 #include <QCheckBox>
 #include <QRect>
 #include <QStyledItemDelegate>
-#include <QWidget>
-#endif
+#include <QTimer>
 
-#pragma once
+#include <QWidget>
 
 namespace AzToolsFramework
 {
@@ -49,7 +48,7 @@ namespace AzToolsFramework
     //! Model for items in the OutlinerTreeView.
     //! Each item represents an Entity.
     //! Items are parented in the tree according to their transform hierarchy.
-    class EntityOutlinerListModel
+    class AZTF_API EntityOutlinerListModel
         : public QAbstractItemModel
         , private EditorEntityContextNotificationBus::Handler
         , private EditorEntityInfoNotificationBus::Handler
@@ -305,7 +304,7 @@ namespace AzToolsFramework
     * OutlinerItemDelegate exists to render custom item-types.
     * Other item-types render in the default fashion.
     */
-    class EntityOutlinerItemDelegate
+    class AZTF_API EntityOutlinerItemDelegate
         : public QStyledItemDelegate
     {
     public:
@@ -382,6 +381,8 @@ namespace AzToolsFramework
 
         EditorEntityUiInterface* m_editorEntityFrameworkInterface = nullptr;
         ReadOnlyEntityPublicInterface* m_readOnlyEntityPublicInterface = nullptr;
+
+        QTimer* m_cacheRefreshTimer = nullptr;
     };
 
 }

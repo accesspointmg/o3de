@@ -22,6 +22,8 @@
 #include <Atom/RPI.Public/Shader/Shader.h>
 #include <Atom/RPI.Reflect/Pass/RasterPassData.h>
 
+#include <Atom/Feature/Base.h>
+
 #include <imgui/imgui.h>
 
 namespace AZ

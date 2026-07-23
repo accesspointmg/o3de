@@ -628,6 +628,14 @@ namespace ScriptCanvasEditor
         }
 
         //////////////////////////////////
+        // ScriptCanvasNodePaletteToolbar
+        //////////////////////////////////
+
+        ScriptCanvasNodePaletteToolbar::~ScriptCanvasNodePaletteToolbar()
+        {
+        }
+
+        //////////////////////////////////
         // ScriptCanvasNodePaletteConfig
         //////////////////////////////////
 
@@ -668,6 +676,8 @@ namespace ScriptCanvasEditor
 
             if (!paletteConfig.m_isInContextMenu)
             {
+                // Now that scriptcanvas is a separate application, cannot use AssetEditorRequestsBus 
+                /*
                 QMenu* creationMenu = new QMenu();
 
                 auto scriptEventAction = creationMenu->addAction("New Script Event");
@@ -682,14 +692,14 @@ namespace ScriptCanvasEditor
                 //
 
                 AddSearchCustomizationWidget(m_newCustomEvent);
-
-                
+                */
 
                 {
                     m_nextCycleAction = new QAction(treeView);
                     m_nextCycleAction->setText(tr("Next Instance in Graph"));
 
                     m_nextCycleAction->setShortcut(QKeySequence(Qt::Key_F8));
+                    m_nextCycleAction->setShortcutContext(Qt::WidgetShortcut);
                     treeView->addAction(m_nextCycleAction);
 
                     QObject::connect(m_nextCycleAction, &QAction::triggered, this, &NodePaletteDockWidget::CycleToNextNode);
@@ -700,6 +710,7 @@ namespace ScriptCanvasEditor
                     m_previousCycleAction->setText(tr("Previous Instance in Graph"));
 
                     m_previousCycleAction->setShortcut(QKeySequence(Qt::Key_F7));
+                    m_previousCycleAction->setShortcutContext(Qt::WidgetShortcut);
                     treeView->addAction(m_previousCycleAction);
 
                     QObject::connect(m_previousCycleAction, &QAction::triggered, this, &NodePaletteDockWidget::CycleToPreviousNode);
@@ -953,4 +964,3 @@ namespace ScriptCanvasEditor
     }
 }
 
-#include <Editor/View/Widgets/moc_ScriptCanvasNodePaletteDockWidget.cpp>

@@ -38,7 +38,7 @@ namespace AzQtComponents
     QSharedPointer<PaletteCard> PaletteCardCollection::makeCard(QSharedPointer<Palette> palette, const QString& title)
     {
         auto card = QSharedPointer<PaletteCard>::create(palette, m_colorController, m_undoStack, this);
-        card->setTitle(uniquePaletteName(card, title));
+        card->setTitle(uniquePaletteName(title));
         card->setSwatchSize(m_swatchSize);
         card->setGammaEnabled(m_gammaEnabled);
         card->setGamma(m_gamma);
@@ -142,7 +142,7 @@ namespace AzQtComponents
 
     int PaletteCardCollection::count() const
     {
-        return m_paletteCards.count();
+        return static_cast<int>(m_paletteCards.count());
     }
 
     bool PaletteCardCollection::isEmpty() const
@@ -157,7 +157,7 @@ namespace AzQtComponents
 
     int PaletteCardCollection::indexOf(const QSharedPointer<PaletteCard>& card) const
     {
-        return m_paletteCards.indexOf(card);
+        return static_cast<int>(m_paletteCards.indexOf(card));
     }
 
     void PaletteCardCollection::moveUp(QSharedPointer<PaletteCard>& card)
@@ -206,7 +206,7 @@ namespace AzQtComponents
         }
     }
 
-    QString PaletteCardCollection::uniquePaletteName(QSharedPointer<PaletteCard> card, const QString& name) const
+    QString PaletteCardCollection::uniquePaletteName(const QString& name) const
     {
         const auto paletteNameExists = [this](const QString& name)
         {
@@ -246,4 +246,3 @@ namespace AzQtComponents
 
 } // namespace AzQtComponents
 
-#include "Components/Widgets/ColorPicker/moc_PaletteCardCollection.cpp"

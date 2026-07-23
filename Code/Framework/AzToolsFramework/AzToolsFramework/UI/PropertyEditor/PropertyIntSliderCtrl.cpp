@@ -10,7 +10,7 @@
 #include <AzQtComponents/Components/Widgets/SpinBox.h>
 
 AZ_PUSH_DISABLE_WARNING(4244 4251, "-Wunknown-warning-option")
-#include <QtWidgets/QHBoxLayout>
+#include <QHBoxLayout>
 #include <QSignalBlocker>
 AZ_POP_DISABLE_WARNING
 
@@ -150,4 +150,3 @@ namespace AzToolsFramework
 
 }
 
-#include "UI/PropertyEditor/moc_PropertyIntSliderCtrl.cpp"

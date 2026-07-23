@@ -1,4 +1,4 @@
-#
+﻿#
 # Copyright (c) Contributors to the Open 3D Engine Project.
 # For complete copyright and license terms please see the LICENSE at the root of this distribution.
 #
@@ -40,6 +40,8 @@ set(FILES
     Include/AtomO3deIntegration/CommonFeatures/PostProcess/Bloom/BloomComponentConfig.h    
     Include/AtomO3deIntegration/CommonFeatures/PostProcess/ChromaticAberration/ChromaticAberrationBus.h
     Include/AtomO3deIntegration/CommonFeatures/PostProcess/ChromaticAberration/ChromaticAberrationComponentConfig.h    
+    Include/AtomO3deIntegration/CommonFeatures/PostProcess/MotionBlur/MotionBlurBus.h
+    Include/AtomO3deIntegration/CommonFeatures/PostProcess/MotionBlur/MotionBlurComponentConfig.h
     Include/AtomO3deIntegration/CommonFeatures/PostProcess/PaniniProjection/PaniniProjectionBus.h
     Include/AtomO3deIntegration/CommonFeatures/PostProcess/PaniniProjection/PaniniProjectionComponentConfig.h    
     Include/AtomO3deIntegration/CommonFeatures/PostProcess/FilmGrain/FilmGrainBus.h
@@ -75,8 +77,6 @@ set(FILES
     Include/AtomO3deIntegration/CommonFeatures/ScreenSpace/DeferredFogComponentConfig.h
     Include/AtomO3deIntegration/CommonFeatures/ScreenSpace/DeferredFogBus.h
     Include/AtomO3deIntegration/CommonFeatures/SkinnedMesh/SkinnedMeshOverrideBus.h
-    Include/AtomO3deIntegration/CommonFeatures/SkyAtmosphere/SkyAtmosphereBus.h
-    Include/AtomO3deIntegration/CommonFeatures/SkyAtmosphere/SkyAtmosphereComponentConfig.h
     Include/AtomO3deIntegration/CommonFeatures/SkyBox/HDRiSkyboxBus.h
     Include/AtomO3deIntegration/CommonFeatures/SkyBox/HDRiSkyboxComponentConfig.h
     Include/AtomO3deIntegration/CommonFeatures/SkyBox/PhysicalSkyBus.h

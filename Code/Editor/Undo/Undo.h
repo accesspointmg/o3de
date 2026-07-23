@@ -11,11 +11,14 @@
 #include "EditorCoreAPI.h"
 #include "IUndoManagerListener.h"
 #include "IUndoObject.h"
+
 #include <AzCore/Asset/AssetManager.h>
+#include <AzCore/std/containers/list.h>
+#include <AzCore/std/containers/vector.h>
 #include <CryCommon/StlUtils.h>
+#include <vector>
 
 struct IUndoObject;
-class CSuperUndoStep;
 class AssetManagerUndoInterruptor;
 
 //! CUndo is a collection of IUndoObjects instances that forms single undo step.
@@ -135,14 +138,12 @@ private: // ------------------------------------------------------
     std::vector<IUndoObject*> m_undoObjects;
 };
 
-AZ_PUSH_DISABLE_DLL_EXPORT_BASECLASS_WARNING
 /*!
  *  CUndoManager is keeping and operating on CUndo class instances.
  *  TODO: this class is superseded by AzToolsFramework::UndoSystem
  */
 class EDITOR_CORE_API CUndoManager
 {
-AZ_POP_DISABLE_DLL_EXPORT_BASECLASS_WARNING
 public:
     CUndoManager();
     ~CUndoManager();
@@ -158,16 +159,6 @@ public:
     void Accept(const QString& name);
     //! Cancel changes and restore undo objects.
     void Cancel();
-
-    //! Normally this is NOT needed but in special cases this can be useful.
-    //! This allows to group a set of Begin()/Accept() sequences to be undone in one operation.
-    void SuperBegin();
-    //! When a SuperBegin() used, this method is used to Accept.
-    //! This leaves the undo database in its modified state and registers the IUndoObjects with the undo system.
-    //! This will allow the user to undo the operation.
-    void SuperAccept(const QString& name);
-    //! Cancel changes and restore undo objects.
-    void SuperCancel();
 
     //! Temporarily suspends recording of undo.
     void Suspend();
@@ -241,7 +232,6 @@ private: // ---------------------------------------------------------------
     void SignalUndoFlushedToListeners();
 
     bool                                            m_bRecording;
-    bool                                            m_bSuperRecording;
     int                                             m_suspendCount;
 
     bool                                            m_bUndoing;
@@ -250,18 +240,13 @@ private: // ---------------------------------------------------------------
     bool                                            m_bClearRedoStackQueued;
 
     CUndoStep*                             m_currentUndo;
-    //! Undo step object created by SuperBegin.
-    CSuperUndoStep*                    m_superUndo;
 
     AssetManagerUndoInterruptor* m_assetManagerUndoInterruptor;
 
-    AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
+    AZStd::list<CUndoStep*>      m_undoStack;
+    AZStd::list<CUndoStep*>      m_redoStack;
 
-    std::list<CUndoStep*>      m_undoStack;
-    std::list<CUndoStep*>      m_redoStack;
-
-    std::vector<IUndoManagerListener*> m_listeners;
-    AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
+    AZStd::vector<IUndoManagerListener*> m_listeners;
 };
 
 class CScopedSuspendUndo

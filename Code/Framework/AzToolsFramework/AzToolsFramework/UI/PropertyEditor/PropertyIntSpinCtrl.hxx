@@ -8,9 +8,9 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 #include <AzToolsFramework/UI/PropertyEditor/PropertyIntCtrlCommon.h>
-#endif
 
 namespace AzQtComponents
 {
@@ -19,7 +19,7 @@ namespace AzQtComponents
 
 namespace AzToolsFramework
 {   
-    class PropertyIntSpinCtrl
+    class AZTF_API PropertyIntSpinCtrl
         : public QWidget
     {
         Q_OBJECT
@@ -52,6 +52,8 @@ namespace AzToolsFramework
     signals:
         void valueChanged(AZ::s64 newValue);
         void editingFinished();
+        void valueChangeBegan();
+        void valueChangeEnded();
 
     private:
         AzQtComponents::SpinBox* m_pSpinBox;
@@ -62,7 +64,7 @@ namespace AzToolsFramework
     };
 
     // Base class to allow QObject inheritance and definitions for IntSpinBoxHandlerCommon class template
-    class IntSpinBoxHandlerQObject
+    class AZTF_API IntSpinBoxHandlerQObject
         : public QObject
     {
         // this is a Qt Object purely so it can connect to slots with context.  This is the only reason its in this header.
@@ -101,5 +103,5 @@ namespace AzToolsFramework
         return newCtrl;
     }
 
-    void RegisterIntSpinBoxHandlers();
+    AZTF_API void RegisterIntSpinBoxHandlers();
 };

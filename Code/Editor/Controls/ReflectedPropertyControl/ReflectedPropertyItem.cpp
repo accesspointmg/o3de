@@ -27,12 +27,12 @@ const float ReflectedPropertyItem::s_DefaultNumStepIncrements = 500.0f;
 //A ReflectedVarAdapter for holding IVariableContainers
 
 //The extra ReflectedVarAdapter is the extra case of a container (has children) but also has a value itself.
-//An example is an IVariable array whose type is forced to IVariable::DT_TEXTURE. The base Ivariable has a texture,
+//An example is an IVariable array whose type is forced to IVariable::DT_TEXTURE. The base IVariable has a texture,
 //but it also has children that are parameters of the texture. The ReflectedPropertyEditor does not support this case
 //so we work around by adding the base property to the list of children and showing the value of the base property
 //in the container value space instead of "X Elements"
 
-static ColorF StringToColor(const QString &value)
+static AZ::Color StringToColor(const QString &value)
 {
     // note that converting back and forth between these values is happening in 2 cases
     // one is when its being read from the UI and the other is when it is being read from XML
@@ -40,11 +40,11 @@ static ColorF StringToColor(const QString &value)
     // which itself uses QString::number, which is always in the "C" locale (invariant culture).
     // for example, color is converted using the following line
     // void operator()(const Vec4& value, QString& to) const { to = QString::fromLatin1("%1,%2,%3,%4").arg(value.x).arg(value.y).arg(value.z).arg(value.w); }
-    // qstring::arg uses the "C" Locale unless explicitly using the notation %L1, %L2, etc, so the input will be invariant.
+    // QString::arg uses the "C" Locale unless explicitly using the notation %L1, %L2, etc, so the input will be invariant.
 
     AZ::Locale::ScopedSerializationLocale localeScope;
 
-    ColorF color;
+    AZ::Color color;
     float r, g, b, a;
     int res = azsscanf(value.toUtf8().data(), "%f,%f,%f,%f", &r, &g, &b, &a);
     if (res == 4)
@@ -53,13 +53,13 @@ static ColorF StringToColor(const QString &value)
     }
     else if (res == 3)
     {
-        color.Set(r, g, b);
+        color.Set(r, g, b, 1.f);
     }
     else
     {
         unsigned abgr;
         azsscanf(value.toUtf8().data(), "%u", &abgr);
-        color = ColorF(abgr);
+        color.FromU32(abgr);
     }
     return color;
 }
@@ -81,7 +81,7 @@ public:
         if (m_extraVariableAdapter)
             m_extraVariableAdapter->SetVariable(pVariable);
 
-        //Check whether the parent container has autoExpand flag set, and if so, the autoexpand flag for this item
+        //Check whether the parent container has autoExpand flag set, and if so, the auto-expand flag for this item
         //We need to do this because the default IVariable flags has the item expanded, so most items are expanded,
         //but the ReflectedPropertyEditor expands all ancestors if any item is expanded.
         //This is not what we want -- the old property editor did not expand ancestors. In case of Material editor,
@@ -134,7 +134,7 @@ private:
         {
             m_containerVar->AddProperty(m_extraVariableAdapter->GetReflectedVar());
         }
-        //Handle adding empty varblock
+        //Handle adding empty var-block
         if (!childContainer)
             return;
 
@@ -190,7 +190,7 @@ ReflectedPropertyItem::ReflectedPropertyItem(ReflectedPropertyControl *control, 
 
 ReflectedPropertyItem::~ReflectedPropertyItem()
 {
-    // just to make sure we dont double (or infinitely recurse...) delete
+    // just to make sure we don't double (or infinitely recurse...) delete
     AddRef();
 
     if (m_pVariable)
@@ -207,7 +207,7 @@ void ReflectedPropertyItem::SetVariable(IVariable *var)
         // A common use case, in Track View for example, is to re-use the save var for a property when switching to a new
         // instance of the same variable. The visible display of the value is often handled by invalidating the property,
         // but the non-visible attributes, i.e. the range values, are usually set using this method. Thus we reset the ranges
-        // explicitly here when the Ivariable var is the same
+        // explicitly here when the IVariable var is the same
 
         if (m_reflectedVarAdapter)
             m_reflectedVarAdapter->UpdateRangeLimits(var);
@@ -233,9 +233,11 @@ void ReflectedPropertyItem::SetVariable(IVariable *var)
     case ePropertyVector2:
         m_reflectedVarAdapter = new ReflectedVarVector2Adapter;
         break;
+    case ePropertyColor:
     case ePropertyVector:
         m_reflectedVarAdapter = new ReflectedVarVector3Adapter;
         break;
+    case ePropertyColorA:
     case ePropertyVector4:
         m_reflectedVarAdapter = new ReflectedVarVector4Adapter;
         break;
@@ -265,9 +267,6 @@ void ReflectedPropertyItem::SetVariable(IVariable *var)
     case ePropertySequenceId:
     case ePropertyLocalString:
     case ePropertyLightAnimation:
-    case ePropertyParticleName:
-        m_reflectedVarAdapter = new ReflectedVarGenericPropertyAdapter(desc.m_type);
-        break;
     case ePropertyTexture:
     case ePropertyAudioTrigger:
     case ePropertyAudioSwitch:
@@ -605,14 +604,14 @@ void ReflectedPropertyItem::SetValue(const QString& sValue, bool bRecordUndo, bo
             {
             case ePropertyColor:
             {
-                ColorF color = StringToColor(value);
+                AZ::Color color = StringToColor(value);
                 if (m_pVariable->GetType() == IVariable::VECTOR)
                 {
-                    m_pVariable->Set(color.toVec3());
+                    m_pVariable->Set(color.GetAsVector3());
                 }
                 else
                 {
-                    m_pVariable->Set(static_cast<int>(color.pack_abgr8888()));
+                    m_pVariable->Set(static_cast<int>(color.ToU32()));
                 }
                 break;
             }

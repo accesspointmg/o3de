@@ -7,7 +7,6 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/PlatformDef.h>
 AZ_PUSH_DISABLE_WARNING(4244 4251 4800, "-Wunknown-warning-option")
 #include <QAbstractListModel>
@@ -46,7 +45,6 @@ AZ_POP_DISABLE_WARNING
 
 #include <Editor/View/Widgets/VariablePanel/VariablePaletteTableView.h>
 #include <Editor/View/Widgets/VariablePanel/GraphVariablesTableView.h>
-#endif
 
 class QAction;
 class QLineEdit;
@@ -81,7 +79,7 @@ namespace ScriptCanvasEditor
 
         // VariableNotificationBus::Handler
         void OnVariableRemoved() override;
-        void OnVariableRenamed(AZStd::string_view variableName) override;        
+        void OnVariableRenamed(AZStd::string_view variableName) override;
         void OnVariableScopeChanged() override;
 
         void OnVariableValueChanged() override;

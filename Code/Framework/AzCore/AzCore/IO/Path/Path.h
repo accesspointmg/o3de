@@ -112,7 +112,7 @@ namespace AZ::IO
     //! root-name -> root-directory -> file name(0 or more times)
     //! directory separators are skipped except for the one that represents the root directory
     //! A iterated path element is never empty
-    class PathView
+    class AZCORE_API PathView
     {
     public:
         using string_view_type = AZStd::string_view;
@@ -383,21 +383,21 @@ namespace AZ::IO
         value_type m_preferred_separator = AZ_TRAIT_OS_PATH_SEPARATOR;
     };
 
-    constexpr void swap(PathView& lhs, PathView& rhs) noexcept;
+    AZCORE_API constexpr void swap(PathView& lhs, PathView& rhs) noexcept;
 
     //! Hashes a value in a manner that if two paths are equal,
     //! then their hash values are also equal
     //! For example : path "a//b" equals  "a/b", the
     //! hash value of "a//b" would also equal the hash value of "a/b"
-    constexpr size_t hash_value(const PathView& pathToHash) noexcept;
+    AZCORE_API constexpr size_t hash_value(const PathView& pathToHash) noexcept;
 
     // path.comparison
-    constexpr bool operator==(const PathView& lhs, const PathView& rhs) noexcept;
-    constexpr bool operator!=(const PathView& lhs, const PathView& rhs) noexcept;
-    constexpr bool operator<(const PathView& lhs, const PathView& rhs) noexcept;
-    constexpr bool operator<=(const PathView& lhs, const PathView& rhs) noexcept;
-    constexpr bool operator>(const PathView& lhs, const PathView& rhs) noexcept;
-    constexpr bool operator>=(const PathView& lhs, const PathView& rhs) noexcept;
+    AZCORE_API constexpr bool operator==(const PathView& lhs, const PathView& rhs) noexcept;
+    AZCORE_API constexpr bool operator!=(const PathView& lhs, const PathView& rhs) noexcept;
+    AZCORE_API constexpr bool operator<(const PathView& lhs, const PathView& rhs) noexcept;
+    AZCORE_API constexpr bool operator<=(const PathView& lhs, const PathView& rhs) noexcept;
+    AZCORE_API constexpr bool operator>(const PathView& lhs, const PathView& rhs) noexcept;
+    AZCORE_API constexpr bool operator>=(const PathView& lhs, const PathView& rhs) noexcept;
 }
 
 namespace AZ::IO
@@ -447,7 +447,7 @@ namespace AZ::IO
         //! Constructs a Path by constructing it's internal out of a value_type*
         //! The preferred separator is set to the parameter
         constexpr BasicPath(const value_type* pathString, const char preferredSeparator) noexcept;
-        //! Constructs a empty Path with the preferred separator set to the parameter
+        //! Constructs an empty Path with the preferred separator set to the parameter
         explicit constexpr BasicPath(const char preferredSeparator) noexcept;
 
         template <typename InputIt>

@@ -82,7 +82,6 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
         NAMESPACE Gem
-        AUTOMOC
         FILES_CMAKE
             stars_editor_shared_files.cmake
         INCLUDE_DIRECTORIES

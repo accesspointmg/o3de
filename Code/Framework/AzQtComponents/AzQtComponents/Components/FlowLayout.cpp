@@ -39,7 +39,8 @@
 ****************************************************************************/
 // Modified from original
 
-#include <QtWidgets/QWidget>
+#include <QWidget>
+#include <AzCore/Casting/numeric_cast.h>
 #include <AzQtComponents/Components/FlowLayout.h>
 
 FlowLayout::FlowLayout(QWidget* parent, int margin, int hSpacing, int vSpacing)
@@ -96,7 +97,7 @@ int FlowLayout::verticalSpacing() const
 
 int FlowLayout::count() const
 {
-    return itemList.size();
+    return aznumeric_cast<int>(itemList.size());
 }
 
 QLayoutItem* FlowLayout::itemAt(int index) const
@@ -146,11 +147,12 @@ QSize FlowLayout::sizeHint() const
 QSize FlowLayout::minimumSize() const
 {
     QSize size;
-    QLayoutItem* item;
-    foreach(item, itemList)
-    size = size.expandedTo(item->minimumSize());
+    for (QLayoutItem* item : itemList)
+    {
+        size = size.expandedTo(item->minimumSize());
+    }
 
-    size += QSize(2 * margin(), 2 * margin());
+    size += QSize(2 * contentsMargins().left(), 2 * contentsMargins().top());
     return size;
 }
 
@@ -163,8 +165,8 @@ int FlowLayout::doLayout(const QRect& rect, bool testOnly) const
     int y = effectiveRect.y();
     int lineHeight = 0;
 
-    QLayoutItem* item;
-    foreach(item, itemList) {
+    for (QLayoutItem* item : itemList)
+    {
         QWidget* wid = item->widget();
         int spaceX = horizontalSpacing();
         if (spaceX == -1)

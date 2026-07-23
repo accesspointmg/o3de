@@ -6,10 +6,10 @@
  *
  */
 
-#include <qaction.h>
-#include <qapplication.h>
-#include <qclipboard.h>
-#include <qheaderview.h>
+#include <QAction>
+#include <QApplication>
+#include <QClipboard>
+#include <QHeaderView>
 
 #include <GraphCanvas/Components/SceneBus.h>
 #include <GraphCanvas/Components/Slots/Data/DataSlotBus.h>
@@ -627,8 +627,8 @@ namespace ScriptCanvasEditor
 
             if (graphVariable->GetScope() != ScriptCanvas::VariableFlags::Scope::FunctionReadOnly)
             {
-            itemFlags |= Qt::ItemIsEditable;
-        }
+                itemFlags |= Qt::ItemIsEditable;
+            }
 
         }
         else if (index.column() == ColumnIndex::InitialValueSource)
@@ -870,6 +870,19 @@ namespace ScriptCanvasEditor
         }
     }
 
+    void GraphVariablesModel::OnVariableRenamed(AZStd::string_view /*newVariableName*/)
+    {
+        const ScriptCanvas::GraphScopedVariableId* variableId = ScriptCanvas::VariableNotificationBus::GetCurrentBusId();
+
+        int index = FindRowForVariableId((*variableId).m_identifier);
+
+        if (index >= 0)
+        {
+            QModelIndex modelIndex = createIndex(index, ColumnIndex::Name, nullptr);
+            dataChanged(modelIndex, modelIndex);
+        }
+    }
+
     QVariant GraphVariablesModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
     {
         if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
@@ -992,10 +1005,10 @@ namespace ScriptCanvasEditor
 
     void GraphVariablesModelSortFilterProxyModel::SetFilter(const QString& filter)
     {
-        m_filter = QRegExp::escape(filter);
-        m_filterRegex = QRegExp(m_filter, Qt::CaseInsensitive);
-
-        invalidateFilter();
+        beginFilterChange();
+        m_filter = QRegularExpression::escape(filter);
+        m_filterRegex = QRegularExpression(m_filter, QRegularExpression::PatternOption::CaseInsensitiveOption);
+        endFilterChange();
     }
 
     ////////////////////////////
@@ -1099,8 +1112,8 @@ namespace ScriptCanvasEditor
 
         {
             QAction* deleteAction = new QAction(this);
-            deleteAction->setShortcut(QKeySequence(Qt::Key_Delete));
-
+            deleteAction->setShortcut(QKeySequence::Delete);
+            deleteAction->setShortcutContext(Qt::WidgetShortcut);
             QObject::connect(deleteAction, &QAction::triggered, this, &GraphVariablesTableView::OnDeleteSelected);
 
             addAction(deleteAction);
@@ -1109,7 +1122,7 @@ namespace ScriptCanvasEditor
         {
             QAction* copyAction = new QAction(this);
             copyAction->setShortcut(QKeySequence::Copy);
-
+            copyAction->setShortcutContext(Qt::WidgetShortcut);
             QObject::connect(copyAction, &QAction::triggered, this, &GraphVariablesTableView::OnCopySelected);
 
             addAction(copyAction);
@@ -1118,7 +1131,7 @@ namespace ScriptCanvasEditor
         {
             QAction* pasteAction = new QAction(this);
             pasteAction->setShortcut(QKeySequence::Paste);
-
+            pasteAction->setShortcutContext(Qt::WidgetShortcut);
             QObject::connect(pasteAction, &QAction::triggered, this, &GraphVariablesTableView::OnPaste);
 
             addAction(pasteAction);
@@ -1126,8 +1139,8 @@ namespace ScriptCanvasEditor
 
         {
             QAction* duplicateAction = new QAction(this);
-            duplicateAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
-
+            duplicateAction->setShortcut(QKeySequence(0x0 | Qt::CTRL | Qt::Key_D));
+            duplicateAction->setShortcutContext(Qt::WidgetShortcut);
             QObject::connect(duplicateAction, &QAction::triggered, this, &GraphVariablesTableView::OnDuplicate);
 
             addAction(duplicateAction);
@@ -1136,7 +1149,7 @@ namespace ScriptCanvasEditor
         {
             m_nextInstanceAction = new QAction(this);
             m_nextInstanceAction->setShortcut(QKeySequence(Qt::Key_F8));
-
+            m_nextInstanceAction->setShortcutContext(Qt::WidgetShortcut);
             QObject::connect(m_nextInstanceAction, &QAction::triggered, this, &GraphVariablesTableView::CycleToNextVariableReference);
 
             addAction(m_nextInstanceAction);
@@ -1145,7 +1158,7 @@ namespace ScriptCanvasEditor
         {
             m_previousInstanceAction = new QAction(this);
             m_previousInstanceAction->setShortcut(QKeySequence(Qt::Key_F7));
-
+            m_previousInstanceAction->setShortcutContext(Qt::WidgetShortcut);
             QObject::connect(m_previousInstanceAction, &QAction::triggered, this, &GraphVariablesTableView::CycleToPreviousVariableReference);
 
             addAction(m_previousInstanceAction);
@@ -1421,5 +1434,4 @@ namespace ScriptCanvasEditor
         }
     }
 
-#include <Editor/View/Widgets/VariablePanel/moc_GraphVariablesTableView.cpp>
 }

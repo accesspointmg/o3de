@@ -6,11 +6,11 @@
  *
  */
 
-#include <qaction.h>
-#include <qevent.h>
-#include <qheaderview.h>
-#include <qitemselectionmodel.h>
-#include <qscrollbar.h>
+#include <QAction>
+#include <QEvent>
+#include <QHeaderView>
+#include <QItemSelectionModel>
+#include <QScrollBar>
 
 #include <AzCore/Component/ComponentApplicationBus.h>
 #include <AzCore/Serialization/Utils.h>
@@ -274,6 +274,4 @@ namespace ScriptCanvasEditor
         ScriptCanvas::Data::Type dataType = ScriptCanvas::Data::FromAZType(typeId);
         emit CreateNamedVariable(variableName, dataType);
     }
-
-#include <Editor/View/Widgets/VariablePanel/moc_VariablePaletteTableView.cpp>
 }

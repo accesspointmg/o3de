@@ -13,6 +13,7 @@
 
 #include <RPI.Private/RPISystemComponent.h>
 
+#include <Atom/RHI/Debug.h>
 #include <Atom/RHI/Factory.h>
 #include <Atom/RHI/RHIUtils.h>
 
@@ -26,6 +27,9 @@
 #include <AzFramework/API/ApplicationAPI.h>
 #include <AzFramework/CommandLine/CommandLine.h>
 #include <AzFramework/Components/ConsoleBus.h>
+
+#include <Atom/RPI.Public/PerformanceCollectionNotificationBus.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 #ifdef RPI_EDITOR
 #include <Atom/RPI.Edit/Material/MaterialFunctorSourceDataRegistration.h>
@@ -48,10 +52,10 @@ namespace AZ
 
                 if (AZ::EditContext* ec = serializeContext->GetEditContext())
                 {
-                    ec->Class<RPISystemComponent>("Atom RPI", "Atom Renderer")
+                    ec->Class<RPISystemComponent>(QT_TRANSLATE_NOOP("Atom::RPI", "Atom RPI"), QT_TRANSLATE_NOOP("Atom::RPI", "Atom Renderer"))
                         ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                         ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &RPISystemComponent::m_rpiDescriptor, "RPI System Settings", "Settings for create RPI system")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &RPISystemComponent::m_rpiDescriptor, QT_TRANSLATE_NOOP("Atom::RPI", "RPI System Settings"), QT_TRANSLATE_NOOP("Atom::RPI", "Settings for create RPI system"))
                         ;
                 }
             }
@@ -188,11 +192,18 @@ namespace AZ
         
         void RPISystemComponent::OnDeviceRemoved([[maybe_unused]] RHI::Device* device)
         {
-#if defined(AZ_FORCE_CPU_GPU_INSYNC)
-            const AZStd::string errorMessage = AZStd::string::format("GPU device was removed while working on pass %s. Check the log file for more detail.", device->GetLastExecutingScope().data());
-#else
-            const AZStd::string errorMessage = "GPU device was removed. Check the log file for more detail.";
-#endif
+            AZStd::string errorMessage;
+            if constexpr (RHI::ForceCpuGpuInSync)
+            {
+                errorMessage = AZStd::string::format(
+                    "GPU device was removed while working on pass %s. Check the log file for more detail.",
+                    device->GetLastExecutingScope().data());
+            }
+            else
+            {
+                errorMessage = "GPU device was removed. Check the log file for more detail.";
+            }
+
             if (auto nativeUI = AZ::Interface<AZ::NativeUI::NativeUIRequests>::Get(); nativeUI != nullptr)
             {
                 nativeUI->DisplayOkDialog("O3DE Fatal Error", errorMessage.c_str(), false);
@@ -241,6 +252,7 @@ namespace AZ
                     m_gpuPassProfiler->SetGpuTimeMeasurementEnabled(false);
                     // Force disabling timestamp collection in the root pass.
                     AZ::RPI::PassSystemInterface::Get()->GetRootPass()->SetTimestampQueryEnabled(false);
+                    PerformaceCollectionNotificationBus::Broadcast(&PerformaceCollectionNotification::OnPerformanceCollectionJobFinished, m_performanceCollector->GetOutputFilePath().String());
                 }
                 if (r_metricsQuitUponCompletion && (pendingBatches == 0))
                 {
@@ -267,6 +279,5 @@ namespace AZ
             m_performanceCollector->UpdateWaitTimeBeforeEachBatch(AZStd::chrono::seconds(r_metricsWaitTimePerCaptureBatch));
             m_performanceCollector->UpdateNumberOfCaptureBatches(r_metricsNumberOfCaptureBatches);
         }
-
     } // namespace RPI
 } // namespace AZ

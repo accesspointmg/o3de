@@ -49,7 +49,7 @@ namespace AzToolsFramework
             deleteAction,
             &QAction::triggered,
             this,
-            [=]()
+            [this]()
             {
                 textCursor().removeSelectedText();
             });
@@ -57,7 +57,7 @@ namespace AzToolsFramework
 
         QAction* clearAction = m_contextMenu->addAction(tr("Clear"));
         clearAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-        clearAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_C);
+        clearAction->setShortcut(Qt::CTRL | Qt::SHIFT | Qt::Key_C);
         clearAction->setEnabled(false);
         connect(clearAction, &QAction::triggered, this, &QPlainTextEdit::clear);
         addAction(clearAction);
@@ -75,7 +75,7 @@ namespace AzToolsFramework
             this,
             &QPlainTextEdit::textChanged,
             selectAllAction,
-            [=]
+            [this, clearAction, selectAllAction]
             {
                 if (document() && !document()->isEmpty())
                 {

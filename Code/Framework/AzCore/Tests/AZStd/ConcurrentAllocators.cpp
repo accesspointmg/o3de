@@ -38,20 +38,7 @@ namespace UnitTest
     using AllocatorTypes = ::testing::Types<
         AZStd::static_pool_concurrent_allocator<NodeType, s_allocatorCapacity>
     >;
-    TYPED_TEST_CASE(ConcurrentAllocatorTestFixture, AllocatorTypes);
-
-    TYPED_TEST(ConcurrentAllocatorTestFixture, Name)
-    {
-        const char name[] = "My test allocator";
-        typename TestFixture::allocator_type myalloc(name);
-        EXPECT_EQ(0, strcmp(myalloc.get_name(), name));
-        {
-            const char newName[] = "My new test allocator";
-            myalloc.set_name(newName);
-            EXPECT_EQ(0, strcmp(myalloc.get_name(), newName));
-            EXPECT_EQ(sizeof(typename TestFixture::allocator_type::value_type) * s_allocatorCapacity, myalloc.max_size());
-        }
-    }
+    TYPED_TEST_SUITE(ConcurrentAllocatorTestFixture, AllocatorTypes);
 
     TYPED_TEST(ConcurrentAllocatorTestFixture, AllocateDeallocate)
     {

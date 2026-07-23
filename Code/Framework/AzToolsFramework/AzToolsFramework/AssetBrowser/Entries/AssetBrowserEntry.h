@@ -7,7 +7,8 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/std/string/string.h>
 #include <AzCore/Asset/AssetCommon.h>
 #include <AzCore/IO/Path/Path.h>
@@ -19,7 +20,6 @@
 #include <QCollator>
 #include <QObject>
 #include <QModelIndex>
-#endif
 
 class QMimeData;
 
@@ -35,7 +35,7 @@ namespace AzToolsFramework
         class ProductAssetBrowserEntry;
 
         //! AssetBrowserEntry is a base class for asset tree view entry
-        class AssetBrowserEntry
+        class AZTF_API AssetBrowserEntry
             : public QObject
         {
             friend class AssetBrowserModel;
@@ -194,7 +194,7 @@ namespace AzToolsFramework
             AZ::u64 m_modificationTime;
 
             size_t m_diskSize;
-            AZ::Vector3 m_dimension{ NAN, NAN, NAN };
+            AZ::Vector3 m_dimension{ AZ::GetFloatQNaN(), AZ::GetFloatQNaN(), AZ::GetFloatQNaN() };
             uint32_t m_vertices{ 0 };
             AZStd::vector<AssetBrowserEntry*> m_children;
             AssetBrowserEntry* m_parentAssetEntry = nullptr;

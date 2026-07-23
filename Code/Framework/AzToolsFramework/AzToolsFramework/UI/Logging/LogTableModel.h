@@ -8,7 +8,8 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/PlatformDef.h>
 
 AZ_PUSH_DISABLE_WARNING(4127, "-Wunknown-warning-option") // conditional expression is constant
@@ -18,7 +19,8 @@ AZ_POP_DISABLE_WARNING
 #include <QVector>
 #include <QAbstractTableModel>
 #include <QIcon>
-#endif
+
+#include <AzToolsFramework/UI/Logging/LogLine.h>
 
 namespace AzToolsFramework
 {
@@ -26,7 +28,7 @@ namespace AzToolsFramework
     {
         class LogLine;
 
-        class LogTableModel
+        class AZTF_API LogTableModel
             : public AzQtComponents::TableViewModel
         {
             Q_OBJECT
@@ -86,7 +88,7 @@ namespace AzToolsFramework
             QIcon m_infoImage;
         };
 
-        class ContextDetailsLogTableModel
+        class AZTF_API ContextDetailsLogTableModel
             : public AzQtComponents::TableViewModel
         {
             Q_OBJECT

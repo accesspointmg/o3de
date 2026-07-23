@@ -27,6 +27,7 @@ o3de_add_target(
             Source
     BUILD_DEPENDENCIES
         PUBLIC
+            ciso646-include
             3rdParty::NvCloth
             AZ::AzFramework
             Gem::CommonFeaturesAtom.Public

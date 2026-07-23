@@ -7,13 +7,14 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/Asset/AssetCommon.h>
-#include <QSortFilterProxyModel>
+#include <AzToolsFramework/AssetBrowser/AssetBrowserBus.h>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+#include <Editor/EditorSettingsAPIBus.h>
+#include <QMap>
 #include <QPersistentModelIndex>
 #include <QPointer>
-#endif
-#include <Editor/EditorSettingsAPIBus.h>
+#include <QSortFilterProxyModel>
 
 namespace AzToolsFramework
 {
@@ -22,7 +23,7 @@ namespace AzToolsFramework
         class AssetBrowserFilterModel;
         class AssetBrowserEntry;
 
-        class AssetBrowserListModel
+        class AZTF_API AssetBrowserListModel
             : public QSortFilterProxyModel
             , public AssetBrowserComponentNotificationBus::Handler
         {

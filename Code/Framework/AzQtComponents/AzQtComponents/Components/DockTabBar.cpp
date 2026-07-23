@@ -87,7 +87,8 @@ namespace AzQtComponents
         for (QToolButton* button : findChildren<QToolButton*>(QString(), Qt::FindDirectChildrenOnly))
         {
             // Grab references to each button for use later
-            if (button->accessibleName() == TabBar::tr("Scroll Left"))
+            QString name = button->objectName();
+            if (name == "ScrollLeftButton")
             {
                 m_leftButton = button;
             }
@@ -96,6 +97,8 @@ namespace AzQtComponents
                 m_rightButton = button;
             }
         }
+        assert(m_leftButton);
+        assert(m_rightButton);
     }
 
     void DockTabBar::setIsShowingWindowControls(bool show)
@@ -182,7 +185,7 @@ namespace AzQtComponents
     void DockTabBar::tabInserted(int index)
     {
         auto closeButton = new DockBarButton(DockBarButton::CloseButton);
-        connect(closeButton, &DockBarButton::clicked, this, [=] {
+        connect(closeButton, &DockBarButton::clicked, this, [closeButton, this] {
             int widgetIndex = tabAt(closeButton->pos());
             if (widgetIndex >= 0)
             {
@@ -351,10 +354,9 @@ namespace AzQtComponents
      */
     void DockTabBar::finishDrag()
     {
-        QMouseEvent event(QEvent::MouseButtonRelease, {0.0f, 0.0f}, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+        QMouseEvent event(
+            QEvent::MouseButtonRelease, { 0.0f, 0.0f }, { 0.0f, 0.0f }, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
         mouseReleaseEvent(&event);
     }
 
 } // namespace AzQtComponents
-
-#include "Components/moc_DockTabBar.cpp"

@@ -20,6 +20,7 @@ from o3de import o3de_object, utils, validation, cache, schema
 
 logger = logging.getLogger('o3de.repo')
 logging.basicConfig(format=utils.LOG_FORMAT)
+logger.setLevel(logging.INFO)
 
 # Sanitize the repo URI by removing excess whitespace and any trailing slashes
 # and appending "repo.json" if it doesn't already exist

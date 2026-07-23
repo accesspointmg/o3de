@@ -12,6 +12,7 @@
 #include <AzCore/Serialization/SerializeContext.h>
 #include <LmbrCentral/Shape/ShapeComponentBus.h>
 #include <AzCore/Debug/Profiler.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 namespace GradientSignal
 {
@@ -29,11 +30,11 @@ namespace GradientSignal
             if (edit)
             {
                 edit->Class<SurfaceMaskGradientConfig>(
-                    "Surface Mask Gradient", "")
+                    QT_TRANSLATE_NOOP("GradientSignal", "Surface Mask Gradient"), "")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(0, &SurfaceMaskGradientConfig::m_surfaceTagList, "Surface Tag List", "Identifiers used to compare against underlying surfaces.")
+                    ->DataElement(0, &SurfaceMaskGradientConfig::m_surfaceTagList, QT_TRANSLATE_NOOP("GradientSignal", "Surface Tag List"), QT_TRANSLATE_NOOP("GradientSignal", "Identifiers used to compare against underlying surfaces."))
                     ;
             }
         }
@@ -211,7 +212,7 @@ namespace GradientSignal
                         [this, inPositionIndex, &outValues]([[maybe_unused]] AZ::Crc32 surfaceType, float weight) -> bool
                         {
                             if (AZStd::find(
-                                    m_configuration.m_surfaceTagList.begin(), m_configuration.m_surfaceTagList.end(), surfaceType) !=
+                                    m_configuration.m_surfaceTagList.begin(), m_configuration.m_surfaceTagList.end(), SurfaceData::SurfaceTag(surfaceType)) !=
                                 m_configuration.m_surfaceTagList.end())
                             {
                                 outValues[inPositionIndex] = AZ::GetMax(AZ::GetClamp(weight, 0.0f, 1.0f), outValues[inPositionIndex]);

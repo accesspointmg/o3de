@@ -385,7 +385,7 @@ namespace EMStudio
                     case MCore::AttributeQuaternion::TYPE_ID:
                     {
                         MCore::AttributeQuaternion* quatAttribute = static_cast<MCore::AttributeQuaternion*>(attribute);
-                        const AZ::Vector3 eulerAngles = MCore::AzQuaternionToEulerAngles(quatAttribute->GetValue());
+                        const AZ::Vector3 eulerAngles = quatAttribute->GetValue().GetEulerRadiansZYX();
                         m_tempStringA = AZStd::string::format("(%.2f, %.2f, %.2f)", static_cast<float>(eulerAngles.GetX()), static_cast<float>(eulerAngles.GetY()), static_cast<float>(eulerAngles.GetZ()));
                         break;
                     }
@@ -2646,4 +2646,3 @@ namespace EMStudio
 
 }   // namespace EMotionStudio
 
-#include <EMotionFX/Tools/EMotionStudio/Plugins/StandardPlugins/Source/AnimGraph/moc_NodeGraph.cpp>

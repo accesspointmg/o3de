@@ -9,16 +9,21 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <ATLControlsModel.h>
 #include <AzCore/std/string/string_view.h>
 #include <IEditor.h>
 
 #include <QMainWindow>
 #include <QFileSystemWatcher>
+namespace Ui
+{
+    class MainWindow;
+}
 
-#include <Source/Editor/ui_AudioControlsEditorMainWindow.h>
-#endif
+namespace Ui
+{
+    class MainWindow;
+}
 
 namespace AudioControls
 {
@@ -31,7 +36,6 @@ namespace AudioControls
     //-------------------------------------------------------------------------------------------//
     class CAudioControlsEditorWindow
         : public QMainWindow
-        , public Ui::MainWindow
         , public IEditorNotifyListener
     {
         Q_OBJECT
@@ -53,6 +57,9 @@ namespace AudioControls
             return guid;
         }
 
+    public slots:
+        void RefreshAudioSystem();
+
     private slots:
         void Reload();
         void ReloadMiddlewareData();
@@ -61,7 +68,6 @@ namespace AudioControls
         void UpdateInspector();
         void FilterControlType(EACEControlType type, bool bShow);
         void Update();
-        void RefreshAudioSystem();
 
     protected:
         void closeEvent(QCloseEvent* pEvent) override;
@@ -70,6 +76,7 @@ namespace AudioControls
         void UpdateAudioSystemData();
         void StartWatchingFolder(const AZStd::string_view folder);
 
+        Ui::MainWindow* m_gui = nullptr;
         CATLControlsModel* m_pATLModel = nullptr;
         CATLControlsPanel* m_pATLControlsPanel = nullptr;     // Left ATL panel
         CInspectorPanel* m_pInspectorPanel = nullptr;         // Center Connection Editing panel

@@ -33,10 +33,11 @@ namespace AZ
             }
         }
 
-        RHI::ResultCode BinaryFence::InitInternal(RHI::Device& baseDevice, RHI::FenceState initialState)
+        RHI::ResultCode BinaryFence::InitInternal(RHI::Device& baseDevice, RHI::FenceState initialState, bool usedForCrossDevice)
         {
-            RETURN_RESULT_IF_UNSUCCESSFUL(Base::InitInternal(baseDevice, initialState));
+            RETURN_RESULT_IF_UNSUCCESSFUL(Base::InitInternal(baseDevice, initialState, usedForCrossDevice));
             auto& device = static_cast<Device&>(baseDevice);
+            AZ_Assert(!usedForCrossDevice, "BinaryFence is not supported for Cross Device operations");
 
             VkFenceCreateInfo createInfo{};
             createInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
@@ -55,12 +56,19 @@ namespace AZ
 
             const VkResult result =
                 device.GetContext().CreateFence(device.GetNativeDevice(), &createInfo, VkSystemAllocator::Get(), &m_nativeFence);
-            AssertSuccess(result);
+            VK_RESULT_ASSERT(result);
 
             RETURN_RESULT_IF_UNSUCCESSFUL(ConvertResult(result));
             m_signalEvent = {};
             SetName(GetName());
             return RHI::ResultCode::Success;
+        }
+
+        RHI::ResultCode BinaryFence::InitCrossDeviceInternal(
+            [[maybe_unused]] RHI::Device& baseDevice, [[maybe_unused]] RHI::Ptr<Fence> originalDeviceFence)
+        {
+            AZ_Assert(false, "BinaryFence is not supported for Cross Device operations");
+            return RHI::ResultCode::Fail;
         }
 
         void BinaryFence::ShutdownInternal()
@@ -89,13 +97,15 @@ namespace AZ
                 m_signalEvent->Wait(m_waitDependencies);
             }
             auto& device = static_cast<Device&>(GetDevice());
-            AssertSuccess(device.GetContext().WaitForFences(device.GetNativeDevice(), 1, &m_nativeFence, VK_FALSE, UINT64_MAX));
+            [[maybe_unused]] VkResult vkResult = device.GetContext().WaitForFences(device.GetNativeDevice(), 1, &m_nativeFence, VK_FALSE, UINT64_MAX);
+            VK_RESULT_ASSERT(vkResult);
         }
 
         void BinaryFence::ResetInternal()
         {
             auto& device = static_cast<Device&>(GetDevice());
-            AssertSuccess(device.GetContext().ResetFences(device.GetNativeDevice(), 1, &m_nativeFence));
+            [[maybe_unused]] VkResult vkResult = device.GetContext().ResetFences(device.GetNativeDevice(), 1, &m_nativeFence);
+            VK_RESULT_ASSERT(vkResult);
             m_inSignalledState = false;
         }
 

@@ -48,12 +48,14 @@ o3de_add_target(
             AZ::AzFramework
         PRIVATE
             3rdParty::miniaudio
-            3rdParty::stb_vorbis
+            3rdParty::miniaudio_libvorbis
 )
 
 # Here add MiniAudio target, it depends on the Private Object library and Public API interface
+# note that its illegal for a target name to have the same name as another target, and the 3rd party library
+# claims `miniaudio` as its own target name, so we use `O3DEMiniAudio` instead.
 o3de_add_target(
-    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+    NAME O3DEMiniAudio ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         miniaudio_shared_files.cmake
@@ -82,8 +84,8 @@ o3de_add_source_properties(
 # By default, we will specify that the above target MiniAudio would be used by
 # Client and Server type targets when this gem is enabled.  If you don't want it
 # active in Clients or Servers by default, delete one of both of the following lines:
-o3de_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
-o3de_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::O3DEMiniAudio)
+o3de_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::O3DEMiniAudio)
 
 # For the Client and Server variants of MiniAudio Gem, an alias to the MiniAudio.API target will be made
 o3de_create_alias(NAME ${gem_name}.Clients.API NAMESPACE Gem TARGETS Gem::${gem_name}.API)
@@ -127,13 +129,12 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
                 ${gem_name}.Private.Object
             PRIVATE
                  3rdParty::miniaudio
-                 3rdParty::stb_vorbis
+                 3rdParty::miniaudio_libvorbis
     )
 
     o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
         NAMESPACE Gem
-        AUTOMOC
         FILES_CMAKE
             miniaudio_editor_shared_files.cmake
         INCLUDE_DIRECTORIES

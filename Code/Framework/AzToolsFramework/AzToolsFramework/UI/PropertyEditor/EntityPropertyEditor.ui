@@ -755,7 +755,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="m_prefabContainerText">
+            <widget class="AzQtComponents::ElidingLabel" name="m_prefabContainerText">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                <horstretch>1</horstretch>
@@ -1219,6 +1219,29 @@ p, li { white-space: pre-wrap; }
         <number>4</number>
        </property>
        <item>
+        <widget class="QToolButton" name="m_collapseAllButton">
+         <property name="minimumSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Collapse all components</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>:/PropertyEditor/Resources/collapse_all.svg</normaloff>:/PropertyEditor/Resources/collapse_all.svg</iconset>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLineEdit" name="m_entitySearchBox">
          <property name="placeholderText">
           <string>Search...</string>
@@ -1293,6 +1316,11 @@ p, li { white-space: pre-wrap; }
    <class>StatusComboBox</class>
    <extends>QComboBox</extends>
    <header>AzToolsFramework/UI/PropertyEditor/EntityPropertyEditor.hxx</header>
+  </customwidget>
+  <customwidget>
+   <class>AzQtComponents::ElidingLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">AzQtComponents/Components/Widgets/ElidingLabel.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -231,7 +231,7 @@ namespace UnitTest
     TEST_F(Algorithms, InsertionSort_SharedPtr)
     {
         AZStd::array<AZStd::shared_ptr<int>, 10> elementsSrc = {
-        { 
+        {
             AZStd::make_shared<int>(10), AZStd::make_shared<int>(2), AZStd::make_shared<int>(6), AZStd::make_shared<int>(3),
             AZStd::make_shared<int>(5), AZStd::make_shared<int>(8), AZStd::make_shared<int>(7), AZStd::make_shared<int>(9),
             AZStd::make_shared<int>(1), AZStd::make_shared<int>(4) }
@@ -599,16 +599,82 @@ namespace UnitTest
         }
     }
 
-    TEST_F(Algorithms, CopyBackwardFastCopy)
+    TEST_F(Algorithms, CopyBackwardFastCopy_SeparateArrays)
     {
-        AZStd::array<int, 3> src = {{ 1, 2, 3 }};
+        AZStd::array<int, 3> src = { { 1, 2, 3 } };
         AZStd::array<int, 3> dest;
 
         AZStd::copy_backward(src.begin(), src.end(), dest.end());
-        
+
         EXPECT_EQ(1, dest[0]);
         EXPECT_EQ(2, dest[1]);
         EXPECT_EQ(3, dest[2]);
+
+        // also make sure src is not disturbed.
+        EXPECT_EQ(1, src[0]);
+        EXPECT_EQ(2, src[1]);
+        EXPECT_EQ(3, src[2]);
+    }
+
+    TEST_F(Algorithms, CopyBackwardFastCopy_AdjacentMemory_DestAfterSrc)
+    {
+        // situation, dest is after src, $ denotes end pointer, which is always 1 past the last element.
+        //                  values[]     0  1  2  3  4  5 v$
+        //                  src,dest    s0 s1 s2 d0 d1 d2 d$
+        //                                       s$
+        AZStd::array<int, 6> values = {{ 1, 2, 3, 0, 0, 0 }};
+        AZStd::copy_backward(values.begin(), values.begin() + 3, values.end());
+        EXPECT_EQ(1, values[0]);
+        EXPECT_EQ(2, values[1]);
+        EXPECT_EQ(3, values[2]);
+        EXPECT_EQ(1, values[3]);
+        EXPECT_EQ(2, values[4]);
+        EXPECT_EQ(3, values[5]);
+    }
+
+    TEST_F(Algorithms, CopyBackwardFastCopy_AdjacentMemory_SrcAfterDest)
+    {
+        // situation, dest is before src, $ denotes end pointer, which is always 1 past the last element.
+        //                  values[]     0  1  2  3  4  5 v$
+        //                  src,dest    d0 d1 d2 s0 s1 s2 s$
+        //                                        d$
+        AZStd::array<int, 6> values = { { 0, 0, 0, 1, 2, 3 } };
+        AZStd::copy_backward(values.begin() + 3, values.end(), values.begin() + 3);
+
+        EXPECT_EQ(1, values[0]);
+        EXPECT_EQ(2, values[1]);
+        EXPECT_EQ(3, values[2]);
+        EXPECT_EQ(1, values[3]);
+        EXPECT_EQ(2, values[4]);
+        EXPECT_EQ(3, values[5]);
+    }
+
+    TEST_F(Algorithms, CopyBackwardFastCopy_OverlappingArrays_AssertsWhenUB)
+    {
+        // situation, dest overlaps src in an illegal way, where its end is inside the source range:
+        //                  values[]     0  1  2  3  4  5 v$
+        //                  src,dest    d0 d1 d2 d$
+        //                                    s0 s1 s2 s$
+        AZStd::array<int, 5> values = { { 0, 0, 1, 2, 3 } };
+        AZ_TEST_START_ASSERTTEST;
+        AZStd::copy_backward(values.begin() + 2, values.end(), values.begin() + 3);
+        AZ_TEST_STOP_ASSERTTEST(1);
+    }
+
+    TEST_F(Algorithms, CopyBackwardFastCopy_OverlappingArrays_OKWhenNotUB)
+    {
+        // situation, dest overlaps src in a legal (Non UB) way, where its end is beyond the source range:
+        //                  values[]     0  1  2  3  4  5 v$
+        //                  src,dest             d0 d1 d2 d$
+        //                              s0 s1 s2 s$
+        AZStd::array<int, 5> values = { { 1, 2, 3, 0, 0 } };
+        AZStd::copy_backward(values.begin(), values.begin() + 3, values.end());
+
+        EXPECT_EQ(1, values[0]);
+        EXPECT_EQ(2, values[1]);
+        EXPECT_EQ(1, values[2]);
+        EXPECT_EQ(2, values[3]);
+        EXPECT_EQ(3, values[4]);
     }
 
     TEST_F(Algorithms, CopyBackwardStandardCopy)
@@ -618,7 +684,7 @@ namespace UnitTest
         AZStd::array<int, 3> dest;
 
         AZStd::copy_backward(src.begin(), src.end(), dest.end());
-        
+
         EXPECT_EQ(1, dest[0]);
         EXPECT_EQ(2, dest[1]);
         EXPECT_EQ(3, dest[2]);
@@ -651,36 +717,44 @@ namespace UnitTest
 
         {
             // Single element container test
-            AZStd::pair<uint32_t*, uint32_t*> minMaxPair = AZStd::minmax_element(singleElementData.begin(), singleElementData.end());
-            EXPECT_EQ(minMaxPair.first, minMaxPair.second);
-            EXPECT_NE(singleElementData.end(), minMaxPair.second);
-            EXPECT_EQ(313, *minMaxPair.first);
-            EXPECT_EQ(313, *minMaxPair.second);
+            {
+                auto minMaxPair = AZStd::minmax_element(singleElementData.begin(), singleElementData.end());
+                EXPECT_EQ(minMaxPair.first, minMaxPair.second);
+                EXPECT_NE(singleElementData.end(), minMaxPair.second);
+                EXPECT_EQ(313, *minMaxPair.first);
+                EXPECT_EQ(313, *minMaxPair.second);
+            }
 
             // Unordered container test
-            minMaxPair = AZStd::minmax_element(unorderedData.begin(), unorderedData.end());
-            EXPECT_NE(unorderedData.end(), minMaxPair.first);
-            EXPECT_NE(unorderedData.end(), minMaxPair.second);
-            EXPECT_EQ(2, *minMaxPair.first);
-            EXPECT_EQ(5, *minMaxPair.second);
+            {
+                auto minMaxPair = AZStd::minmax_element(unorderedData.begin(), unorderedData.end());
+                EXPECT_NE(unorderedData.end(), minMaxPair.first);
+                EXPECT_NE(unorderedData.end(), minMaxPair.second);
+                EXPECT_EQ(2, *minMaxPair.first);
+                EXPECT_EQ(5, *minMaxPair.second);
+            }
 
             // Multiple min and max elements in same container test
-            minMaxPair = AZStd::minmax_element(multiMinMaxData.begin(), multiMinMaxData.end());
-            EXPECT_NE(multiMinMaxData.end(), minMaxPair.first);
-            EXPECT_NE(multiMinMaxData.end(), minMaxPair.second);
-            // The smallest element should correspond to the first '2' within the multiMinMaxData container
-            EXPECT_EQ(multiMinMaxData.begin() + 2, minMaxPair.first);
-            // The greatest element should correspond to the second '5' within the multiMinMaxData container
-            EXPECT_EQ(multiMinMaxData.begin() + 3, minMaxPair.second);
-            EXPECT_EQ(2, *minMaxPair.first);
-            EXPECT_EQ(5, *minMaxPair.second);
+            {
+                auto minMaxPair = AZStd::minmax_element(multiMinMaxData.begin(), multiMinMaxData.end());
+                EXPECT_NE(multiMinMaxData.end(), minMaxPair.first);
+                EXPECT_NE(multiMinMaxData.end(), minMaxPair.second);
+                // The smallest element should correspond to the first '2' within the multiMinMaxData container
+                EXPECT_EQ(multiMinMaxData.begin() + 2, minMaxPair.first);
+                // The greatest element should correspond to the second '5' within the multiMinMaxData container
+                EXPECT_EQ(multiMinMaxData.begin() + 3, minMaxPair.second);
+                EXPECT_EQ(2, *minMaxPair.first);
+                EXPECT_EQ(5, *minMaxPair.second);
+            }
 
             // Custom comparator test
-            minMaxPair = AZStd::minmax_element(unorderedData.begin(), unorderedData.end(), AZStd::greater<uint32_t>());
-            EXPECT_NE(unorderedData.end(), minMaxPair.first);
-            EXPECT_NE(unorderedData.end(), minMaxPair.second);
-            EXPECT_EQ(5, *minMaxPair.first);
-            EXPECT_EQ(2, *minMaxPair.second);
+            {
+                auto minMaxPair = AZStd::minmax_element(unorderedData.begin(), unorderedData.end(), AZStd::greater<uint32_t>());
+                EXPECT_NE(unorderedData.end(), minMaxPair.first);
+                EXPECT_NE(unorderedData.end(), minMaxPair.second);
+                EXPECT_EQ(5, *minMaxPair.first);
+                EXPECT_EQ(2, *minMaxPair.second);
+            }
         }
     }
 
@@ -1011,10 +1085,10 @@ namespace UnitTest
         static_assert(resultPair2.second == 14);
 
         static constexpr AZStd::array<int, 6> testList = { { 7, 43, 42, 0, -9, 500 } };
-        constexpr AZStd::pair<const int*, const int*> testPair1 = AZStd::minmax_element(testList.begin(), testList.end(), [](int lhs, int rhs) { return rhs < lhs; });
+        constexpr auto testPair1 = AZStd::minmax_element(testList.begin(), testList.end(), [](int lhs, int rhs) { return rhs < lhs; });
         static_assert(*testPair1.first == 500);
         static_assert(*testPair1.second == -9);
-        constexpr AZStd::pair<const int*, const int*> testPair2 = AZStd::minmax_element(testList.begin(), testList.end());
+        constexpr auto testPair2 = AZStd::minmax_element(testList.begin(), testList.end());
         static_assert(*testPair2.first == -9);
         static_assert(*testPair2.second == 500);
         constexpr AZStd::pair<int, int> testPair3 = AZStd::minmax({ 7, 43, 42, 0, -9, 500 }, [](int lhs, int rhs) { return rhs < lhs; });
@@ -1054,27 +1128,27 @@ namespace UnitTest
     {
         static constexpr AZStd::array<int, 3> testList = { { 1, 2, 3 } };
 
-        constexpr const int* findIter1 = AZStd::find(testList.begin(), testList.end(), 2);
+        constexpr auto findIter1 = AZStd::find(testList.begin(), testList.end(), 2);
         static_assert(*findIter1 == 2);
 
-        constexpr const int* findIter2 = AZStd::find_if(testList.begin(), testList.end(), [](int element) { return element == 3; });
+        constexpr auto findIter2 = AZStd::find_if(testList.begin(), testList.end(), [](int element) { return element == 3; });
         static_assert(*findIter2 == 3);
 
-        constexpr const int* findIter3 = AZStd::find_if_not(testList.begin(), testList.end(), [](int element) { return element == 1; });
+        constexpr auto findIter3 = AZStd::find_if_not(testList.begin(), testList.end(), [](int element) { return element == 1; });
         static_assert(*findIter3 == 2);
 
         static constexpr AZStd::array<int, 6> testList2 = { { 7, 2, 3, 3, 4, 4 } };
-        constexpr const int* findIter4 = AZStd::adjacent_find(testList2.begin(), testList2.end());
+        constexpr auto findIter4 = AZStd::adjacent_find(testList2.begin(), testList2.end());
         static_assert(*findIter4 == 3);
-        constexpr const int* findIter5 = AZStd::adjacent_find(testList2.begin(), testList2.end(), [](int first, int next) { return first != 3 && first == next; });
+        constexpr auto findIter5 = AZStd::adjacent_find(testList2.begin(), testList2.end(), [](int first, int next) { return first != 3 && first == next; });
         static_assert(*findIter5 == 4);
 
         static constexpr AZStd::array<int, 4> testList3 = { {10, 11, 12, 13 } };
         static constexpr AZStd::array<int, 4> findList = { { 96, 17, -13, 11 } };
-        constexpr const int* findIter6 = AZStd::find_first_of(testList3.begin(), testList3.end(), findList.begin(), findList.end());
+        constexpr auto findIter6 = AZStd::find_first_of(testList3.begin(), testList3.end(), findList.begin(), findList.end());
         static_assert(*findIter6 == 11);
 
-        constexpr const int* findIter7 = AZStd::find_first_of(testList3.begin(), testList3.end(), findList.begin(), findList.end(),
+        constexpr auto findIter7 = AZStd::find_first_of(testList3.begin(), testList3.end(), findList.begin(), findList.end(),
             [](int sourceElement, int findElement) {return sourceElement != findElement; });
         static_assert(*findIter7 == 10);
     }
@@ -1274,7 +1348,7 @@ namespace UnitTest
         auto TestUnique = []() constexpr
         {
             AZStd::array<int, 6> localArray{ { 1, 2, 2, 5, 5, 6} };
-            AZStd::unique(localArray.begin(), localArray.end());
+            AZ_UNUSED(AZStd::unique(localArray.begin(), localArray.end()));
             return localArray;
         };
 

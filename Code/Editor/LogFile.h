@@ -12,9 +12,13 @@
 
 #pragma once
 
+#include "SandboxAPI.h"
 #include "ILog.h"
+
 #include <IConsole.h>
 #include <stdarg.h>
+
+#include <QString>
 
 #define MAX_LOGBUFFER_SIZE 16384
 
@@ -40,14 +44,12 @@ SANDBOX_API void LogV(const char* format, va_list argList);
 SANDBOX_API void Warning(const char* format, ...);
 SANDBOX_API void WarningV(const char* format, va_list argList);
 
-AZ_PUSH_DISABLE_DLL_EXPORT_BASECLASS_WARNING
 /*!
  *  CLogFile implements ILog interface.
  */
 class SANDBOX_API CLogFile
     : public ILogCallback
 {
-AZ_POP_DISABLE_DLL_EXPORT_BASECLASS_WARNING
 public:
     static const char* GetLogFileName();
     static void AttachListBox(QListWidget* hWndListBox);
@@ -76,7 +78,7 @@ public:
     static void AboutSystem();
 
 private:
-    static void OpenFile();
+    static void GetMemoryStatusMB(AZ::u32 &totalSystemMemory, AZ::u32& availablePageMemory);
 
     // Attached control(s)
     static QListWidget* m_hWndListBox;

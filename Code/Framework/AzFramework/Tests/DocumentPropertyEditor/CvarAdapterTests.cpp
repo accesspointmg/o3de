@@ -77,7 +77,9 @@ namespace AZ::DocumentPropertyEditor::Tests
         {
             Dom::Value row = GetEntryRow(cvarName);
             ASSERT_FALSE(row.IsNull());
-            auto result = Nodes::PropertyEditor::OnChanged.InvokeOnDomNode(row[1], value, Nodes::ValueChangeType::FinishedEdit);
+            auto result = Nodes::PropertyEditor::OnChanged.InvokeOnDomNode(row[1], value, Nodes::ValueChangeType::InProgressEdit);
+            EXPECT_TRUE(result.IsSuccess());
+            result = Nodes::PropertyEditor::OnChanged.InvokeOnDomNode(row[1], value, Nodes::ValueChangeType::FinishedEdit);
             EXPECT_TRUE(result.IsSuccess());
             AZ_Error("CvarAdapterDpeTests", result.IsSuccess(), "%s", result.GetError().c_str());
         }
@@ -104,7 +106,7 @@ namespace AZ::DocumentPropertyEditor::Tests
     {
         EXPECT_EQ(static_cast<uint8_t>(dpe_TestUint), GetEntryValue("dpe_TestUint").GetUint64());
         SetEntryValue("dpe_TestUint", Dom::Value(42));
-        EXPECT_EQ(42, dpe_TestUint);
+        EXPECT_EQ(AZ::u8(42), dpe_TestUint);
         EXPECT_EQ(42, GetEntryValue("dpe_TestUint").GetUint64());
     }
 

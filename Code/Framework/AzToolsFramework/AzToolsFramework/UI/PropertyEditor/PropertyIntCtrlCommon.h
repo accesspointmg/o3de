@@ -13,7 +13,7 @@
 #include <AzToolsFramework/UI/PropertyEditor/PropertyEditorAPI.h>
 #include <AzToolsFramework/UI/PropertyEditor/PropertyQTConstants.h>
 #include <AzToolsFramework/UI/PropertyEditor/QtWidgetLimits.h>
-#include <QtWidgets/QWidget>
+#include <QWidget>
 #include <QLocale> 
 
 namespace AzToolsFramework
@@ -153,6 +153,7 @@ namespace AzToolsFramework
         });
         this->connect(newCtrl, &PropertyControl::editingFinished, this, [newCtrl]()
         {
+            AzToolsFramework::PropertyEditorGUIMessages::Bus::Broadcast(&PropertyEditorGUIMessages::Bus::Events::RequestWrite, newCtrl);
             AzToolsFramework::PropertyEditorGUIMessages::Bus::Broadcast(&PropertyEditorGUIMessages::Bus::Handler::OnEditingFinished, newCtrl);
         });
         // note:  Qt automatically disconnects objects from each other when either end is destroyed, no need to worry about delete.

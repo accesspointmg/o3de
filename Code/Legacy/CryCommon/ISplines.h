@@ -255,14 +255,14 @@ namespace spline
     template <>
     inline void Zero(Vec3& val) { val = Vec3(0.0f, 0.0f, 0.0f); }
     template <>
-    inline void Zero(Quat& val) { val.SetIdentity(); }
+    inline void Zero(AZ::Quaternion& val) { val = AZ::Quaternion::CreateIdentity(); }
 
     inline float Concatenate(float left, float right) { return left + right; }
     inline Vec3 Concatenate(const Vec3& left, const Vec3& right) { return left + right; }
-    inline Quat Concatenate(const Quat& left, const Quat& right) { return left * right; }
+    inline AZ::Quaternion Concatenate(const AZ::Quaternion& left, const AZ::Quaternion& right) { return left * right; }
     inline float Subtract (float left, float right) { return left - right; }
     inline Vec3 Subtract (const Vec3& left, const Vec3& right) { return left - right; }
-    inline Quat Subtract(const Quat& left, const Quat& right) { return left / right; }
+    inline AZ::Quaternion Subtract(const AZ::Quaternion& left, const AZ::Quaternion& right) { return left.GetConjugate() * right; }
 
     ///////////////////////////////////////////////////////////////////////////////
     // HermitBasis.
@@ -362,24 +362,18 @@ namespace spline
     }
 
     /****************************************************************************
-    **                            Key classes                                                                    **
+    **                            Key classes                                  **
     ****************************************************************************/
-    template    <class T>
-    struct  SplineKey
+    template <class T>
+    struct SplineKey
     {
-        typedef T   value_type;
+        typedef T value_type;
 
-        float               time;       //!< Key time.
-        int                 flags;  //!< Key flags.
-        value_type  value;  //!< Key value.
-        value_type  ds;         //!< Incoming tangent.
-        value_type  dd;         //!< Outgoing tangent.
-        SplineKey()
-        {
-            memset(this, 0, sizeof(SplineKey));
-        }
-
-        SplineKey& operator=(const SplineKey& src) { memcpy(this, &src, sizeof(*this)); return *this; }
+        float time = 0;        //!< Key time.
+        int flags = 0;         //!< Key flags.
+        value_type value{ 0 }; //!< Key value.
+        value_type ds{ 0 };    //!< Incoming tangent.
+        value_type dd{ 0 };    //!< Outgoing tangent.
 
         static void Reflect(AZ::ReflectContext* context) {}
     };
@@ -413,7 +407,7 @@ namespace spline
 
     //! TCB spline key used in quaternion spline with angle axis as input.
     struct TCBAngAxisKey
-        :  public TCBSplineKey<Quat>
+        :  public TCBSplineKey<AZ::Quaternion>
     {
         float angle;
         Vec3 axis;

@@ -7,10 +7,8 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <QWidget>
 #include <QScopedPointer>
-#endif
 
 namespace Ui {
     class HyperlinkPage;
@@ -23,7 +21,7 @@ class HyperlinkPage
 
 public:
     explicit HyperlinkPage(QWidget* parent = nullptr);
-    ~HyperlinkPage() override = default;
+    ~HyperlinkPage() override;
 
 private:
     QScopedPointer<Ui::HyperlinkPage> ui;

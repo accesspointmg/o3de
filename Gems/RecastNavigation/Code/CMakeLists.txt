@@ -7,93 +7,17 @@
 #
 
 # Currently we are in the Code folder: ${CMAKE_CURRENT_LIST_DIR}
-# Get the platform specific folder ${pal_dir} for the current folder: ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME}
+# Get the platform specific folder ${pal_code_path} for the current folder: ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME}
 # Note: o3de_pal_dir will take care of the details for us, as this may be a restricted platform
 #       in which case it will see if that platform is present here or in the restricted folder.
 #       i.e. It could here in our gem : Gems/${gem_name}/Code/Platform/<platorm_name>  or
 #            <restricted_folder>/<platform_name>/Gems/${gem_name}/Code
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
 
 # Now that we have the platform abstraction layer (PAL) folder for this folder, thats where we will find the
 # traits for this platform. Traits for a platform are defines for things like whether or not something in this gem
 # is supported by this platform.
-include(${pal_dir}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)
-
-# Add RecastNavigation dependency using FetchContent
-# Note: RecastNavigation::Detour requires lowering of the warning level to compile.
-include(FetchContent)
-FetchContent_Declare(
-        RecastNavigation
-        GIT_REPOSITORY "https://github.com/recastnavigation/recastnavigation"
-        GIT_TAG "5a870d427e47abd4a8e4ce58a95582ec049434d5" # main branch
-)
-set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-# Recast's pinned revision declares cmake_minimum_required < 3.5 which
-# CMake 4+ rejects outright; give the subproject a policy floor.
-set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
-set(RECASTNAVIGATION_DEMO OFF)
-set(RECASTNAVIGATION_TESTS OFF)
-set(RECASTNAVIGATION_EXAMPLES OFF)
-get_property(
-    compile_options
-    DIRECTORY
-    PROPERTY COMPILE_OPTIONS
-)
-include(${pal_dir}/PAL_recast_${O3DE_PAL_PLATFORM_WART}.cmake)
-
-# Temporarily disable CMake deprecation warnings from Recast library having a lower
-# minimum required CMake version than us.
-set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
-
-# Include compiler settings for Recast libraries
-set(common_platform_dir "${CMAKE_CURRENT_LIST_DIR}/Platform/Common")
-include(${common_platform_dir}/${O3DE_PAL_TRAIT_COMPILER_ID}/PAL_recast_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake)
-
-set_property(
-    DIRECTORY
-    APPEND
-    PROPERTY COMPILE_DEFINITIONS DT_POLYREF64
-)
-FetchContent_MakeAvailable(RecastNavigation)
-# Restore compile options
-set_property(
-    DIRECTORY
-    PROPERTY COMPILE_OPTIONS ${compile_options}
-)
-unset(compile_options)
-
-# Enable CMake deprecation warnings 
-set(CMAKE_WARN_DEPRECATED ON CACHE BOOL "" FORCE)
-
-# Place external recast libraries under RecastNavigation gem.
-get_property(recastnavigation_gem_root GLOBAL PROPERTY "@GEMROOT:${gem_name}@")
-o3de_get_engine_relative_source_dir(${recastnavigation_gem_root} relative_recastnavigation_gem_root)
-set(recastLibraries DebugUtils;Detour;DetourCrowd;DetourTileCache;Recast)
-foreach(recastLibrary ${recastLibraries})
-    set_property(TARGET ${recastLibrary} PROPERTY FOLDER "${relative_recastnavigation_gem_root}/External")
-endforeach()
-
-# Export external recast navigation targets for installers.
-set_property(DIRECTORY APPEND PROPERTY O3DE_SUBDIRECTORY_INSTALL_CODE [[
-    set(recastLibraries DebugUtils;Detour;DetourCrowd;DetourTileCache;Recast)
-    foreach(recastLibrary ${recastLibraries})
-        add_library(RecastNavigation::${recastLibrary} STATIC IMPORTED GLOBAL)
-
-        set_target_properties(RecastNavigation::${recastLibrary} 
-            PROPERTIES 
-                IMPORTED_LOCATION 
-                    "${O3DE_ENGINE_PATH}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${recastLibrary}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-
-        target_compile_definitions(RecastNavigation::${recastLibrary} 
-            INTERFACE 
-                DT_POLYREF64)
-
-        o3de_target_include_system_directories(TARGET RecastNavigation::${recastLibrary} 
-            INTERFACE 
-                "${O3DE_ENGINE_PATH}/include/recastnavigation")
-    endforeach()
-]]
-)
+include(${pal_code_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)
 
 # The ${gem_name}.API target declares the common interface that users of this gem should depend on in their targets
 o3de_add_target(
@@ -101,15 +25,16 @@ o3de_add_target(
     NAMESPACE Gem
     FILES_CMAKE
         recastnavigation_api_files.cmake
-        ${pal_dir}/recastnavigation_api_files.cmake
+        ${pal_code_path}/recastnavigation_api_files.cmake
     INCLUDE_DIRECTORIES
         INTERFACE
             Include
     BUILD_DEPENDENCIES
         INTERFACE
             AZ::AzCore
-            RecastNavigation::Detour
-            RecastNavigation::Recast
+            3rdParty::RecastNavigation::Recast
+            3rdParty::RecastNavigation::Detour
+            3rdParty::RecastNavigation::DetourCrowd
 )
 
 # The ${gem_name}.Private.Object target is an internal target
@@ -119,7 +44,7 @@ o3de_add_target(
     NAMESPACE Gem
     FILES_CMAKE
         recastnavigation_private_files.cmake
-        ${pal_dir}/recastnavigation_private_files.cmake
+        ${pal_code_path}/recastnavigation_private_files.cmake
     TARGET_PROPERTIES
         O3DE_PRIVATE_TARGET TRUE
     INCLUDE_DIRECTORIES
@@ -130,9 +55,10 @@ o3de_add_target(
         PUBLIC
             AZ::AzCore
             AZ::AzFramework
-            RecastNavigation::DebugUtils
-            RecastNavigation::Detour
-            RecastNavigation::Recast
+            3rdParty::RecastNavigation::DebugUtils
+            3rdParty::RecastNavigation::Detour
+            3rdParty::RecastNavigation::Recast
+            3rdParty::RecastNavigation::DetourCrowd
             Gem::LmbrCentral.Static
             Gem::DebugDraw.API
 )
@@ -143,7 +69,7 @@ o3de_add_target(
     NAMESPACE Gem
     FILES_CMAKE
         recastnavigation_shared_files.cmake
-        ${pal_dir}/recastnavigation_shared_files.cmake
+        ${pal_code_path}/recastnavigation_shared_files.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             Include
@@ -185,7 +111,7 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
         NAMESPACE Gem
         FILES_CMAKE
             recastnavigation_editor_api_files.cmake
-            ${pal_dir}/recastnavigation_editor_api_files.cmake
+            ${pal_code_path}/recastnavigation_editor_api_files.cmake
         INCLUDE_DIRECTORIES
             INTERFACE
                 Include
@@ -219,7 +145,6 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
         NAMESPACE Gem
-        AUTOMOC
         FILES_CMAKE
             recastnavigation_editor_shared_files.cmake
         INCLUDE_DIRECTORIES

@@ -7,11 +7,9 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzQtComponents/AzQtComponentsAPI.h>
 #include <AzQtComponents/Components/Widgets/Card.h>
 #include <AzQtComponents/Components/Widgets/ColorPicker/Palette.h>
-#endif
 
 class QUndoStack;
 class QMargins;
@@ -52,10 +50,7 @@ namespace AzQtComponents
         explicit PaletteCardBase(QSharedPointer<Palette> palette, Internal::ColorController* controller, QUndoStack* undoStack, QWidget* parent = nullptr);
 
         bool m_modified;
-        AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
         QSharedPointer<Palette> m_palette;
-        AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
-
         CardHeader* m_header;
         PaletteView* m_paletteView;
         QLayout* m_contentsLayout;

@@ -8,11 +8,10 @@
  *
  */
 
-#if !defined(Q_MOC_RUN)
 #include <QObject>
+
 #include <AzCore/std/string/string.h>
 #include <SceneAPI/SceneUI/SceneUIConfiguration.h>
-#endif
 
 namespace AzToolsFramework
 {
@@ -46,9 +45,7 @@ namespace AZ
                 void ProcessingComplete();
 
             protected:
-                AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
                 Uuid m_traceTag;
-                AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
             };
         }
     }

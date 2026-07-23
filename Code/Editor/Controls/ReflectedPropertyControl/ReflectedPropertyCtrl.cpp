@@ -332,12 +332,22 @@ void ReflectedPropertyControl::CreateItems(XmlNodeRef node, CVarBlockPtr& outBlo
             }
             else if (!azstricmp(type, "vector"))
             {
-                CSmartVariable<Vec3> vec3Var;
+                CSmartVariable<AZ::Vector3> vec3Var;
                 AddVariable(group, vec3Var, child->getTag(), humanReadableName.toUtf8().data(), strDescription.toUtf8().data(), func, pUserData);
                 Vec3 vValue(0, 0, 0);
                 if (child->getAttr("value", vValue))
                 {
-                    vec3Var->Set(vValue);
+                    vec3Var->Set(AZ::Vector3(vValue.x, vValue.y, vValue.z));
+                }
+            }
+            else if (!azstricmp(type, "vector4"))
+            {
+                CSmartVariable<AZ::Vector4> vec4Var;
+                AddVariable(group, vec4Var, child->getTag(), humanReadableName.toUtf8().data(), strDescription.toUtf8().data(), func, pUserData);
+                Vec4 vValue(0, 0, 0, 0);
+                if (child->getAttr("value", vValue))
+                {
+                    vec4Var->Set(AZ::Vector4(vValue.x, vValue.y, vValue.z, vValue.w));
                 }
             }
             else if (!azstricmp(type, "bool"))
@@ -1235,7 +1245,6 @@ PropertyCard::PropertyCard([[maybe_unused]] QWidget* parent /*= nullptr*/)
     m_propertyEditor->setProperty("ComponentDisabl", true); // used by stylesheet
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->setMargin(0);
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->addWidget(m_header);
     mainLayout->addWidget(m_propertyEditor);
@@ -1277,5 +1286,3 @@ void PropertyCard::OnExpanderChanged(bool expanded)
     SetExpanded(expanded);
     emit OnExpansionContractionDone();
 }
-
-#include <Controls/ReflectedPropertyControl/moc_ReflectedPropertyCtrl.cpp>

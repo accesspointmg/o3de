@@ -6,14 +6,13 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
-
-#if !defined(Q_MOC_RUN)
-#include <AzToolsFramework/UI/PropertyEditor/PropertyEditorAPI_Internals.h>
-#include <QWidget>
-#include <PhysX/Configuration/PhysXConfiguration.h>
-#endif
-
 #pragma once
+
+#include <AzToolsFramework/UI/PropertyEditor/PropertyEditorAPI_Internals.h>
+#include <AzToolsFramework/UI/PropertyEditor/ReflectedPropertyEditor.hxx>
+#include <PhysX/Configuration/PhysXConfiguration.h>
+
+#include <QWidget>
 
 namespace PhysX
 {

@@ -62,7 +62,6 @@ o3de_add_target(
     NAME ${gem_name}.Editor GEM_MODULE
     NAMESPACE Gem
     AUTOMOC
-    AUTORCC
     FILES_CMAKE
         graphcanvas_files.cmake
     INCLUDE_DIRECTORIES

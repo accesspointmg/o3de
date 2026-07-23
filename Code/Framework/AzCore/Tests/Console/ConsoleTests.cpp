@@ -10,6 +10,7 @@
 #include <AzCore/Interface/Interface.h>
 #include <AzCore/Console/Console.h>
 #include <AzCore/Settings/SettingsRegistryImpl.h>
+#include <AzCore/StringFunc/StringFunc.h>
 #include <AzCore/Utils/Utils.h>
 
 namespace AZ
@@ -49,6 +50,13 @@ namespace AZ
         " Option1/0 sets the CVar to the Option1 value"
         ", Option2/5 sets the CVar to the Option2 value"
         ", Option3/6 sets the CVar to the Option3 value");
+
+    // Helper function to disambiguate between various operator== implementations with not exactly matching argument types in c++20.
+    template<typename T, typename S, typename = AZStd::enable_if_t<AZStd::is_integral_v<T> && AZStd::is_integral_v<S>>>
+    bool operator==(T lhs, const AZ::ConsoleDataWrapper<S, ConsoleThreadSafety<S>>& rhs)
+    {
+        return lhs == static_cast<T>(rhs);
+    }
 
     class ConsoleTests
         : public LeakDetectionFixture
@@ -337,6 +345,46 @@ namespace AZ
             AZStd::vector<AZStd::string> matches;
             AZStd::string completeCommand = console->AutoCompleteCommand("testAutoCompleteD", &matches);
             AZ_TEST_ASSERT(matches.size() == 1 && completeCommand == "testAutoCompleteDuplication");
+        }
+
+        // Argument autocomplete callback
+        {
+            auto id = AZ::TypeId();
+            auto flag = AZ::ConsoleFunctorFlags::Null;
+            auto signature = AZ::ConsoleFunctor<void, false>::FunctorSignature();
+            AZ::ConsoleFunctor<void, false> commandWithArgumentAutocomplete(
+                *console,
+                "testArgumentAutocomplete",
+                "",
+                flag,
+                id,
+                signature);
+
+            commandWithArgumentAutocomplete.SetArgumentAutoCompleteCallback(
+                [](AZStd::string_view arguments, AZStd::vector<AZStd::string>& matches)
+                {
+                    constexpr AZStd::string_view choices[] = { "apple", "apricot", "banana" };
+                    for (AZStd::string_view choice : choices)
+                    {
+                        if (AZ::StringFunc::StartsWith(choice, arguments, false))
+                        {
+                            matches.push_back(choice);
+                        }
+                    }
+                });
+
+            AZStd::vector<AZStd::string> matches;
+            AZStd::string completeCommand = console->AutoCompleteCommand("testArgumentAutocomplete ap", &matches);
+            AZ_TEST_ASSERT(completeCommand == "testArgumentAutocomplete ap");
+            AZ_TEST_ASSERT(matches.size() == 2);
+            AZ_TEST_ASSERT(matches[0] == "testArgumentAutocomplete apple");
+            AZ_TEST_ASSERT(matches[1] == "testArgumentAutocomplete apricot");
+
+            matches.clear();
+            completeCommand = console->AutoCompleteCommand("testArgumentAutocomplete app", &matches);
+            AZ_TEST_ASSERT(completeCommand == "testArgumentAutocomplete apple");
+            AZ_TEST_ASSERT(matches.size() == 1);
+            AZ_TEST_ASSERT(matches[0] == "testArgumentAutocomplete apple");
         }
     }
 
@@ -646,7 +694,7 @@ namespace ConsoleSettingsRegistryTests
             ]
         )";
 
-    INSTANTIATE_TEST_CASE_P(
+    INSTANTIATE_TEST_SUITE_P(
         ExecuteCommandFromSettingsFile,
         ConsoleSettingsRegistryFixture,
         ::testing::Values(

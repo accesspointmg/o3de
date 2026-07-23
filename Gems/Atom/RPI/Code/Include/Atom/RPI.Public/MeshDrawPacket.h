@@ -53,12 +53,15 @@ namespace AZ
             MeshDrawPacket(
                 ModelLod& modelLod,
                 size_t modelLodMeshIndex,
+                int32_t meshInfoIndex,
                 Data::Instance<Material> materialOverride,
                 Data::Instance<ShaderResourceGroup> objectSrg,
                 const MaterialModelUvOverrideMap& materialModelUvMap = {});
 
             AZ_DEFAULT_COPY(MeshDrawPacket);
             AZ_DEFAULT_MOVE(MeshDrawPacket);
+
+            static Data::Instance<RPI::ShaderResourceGroup> InvalidSrg;
 
             bool Update(const Scene& parentScene, bool forceUpdate = false);
 
@@ -85,6 +88,9 @@ namespace AZ
 
             void DebugOutputShaderVariants();
 
+            //! Returns the DrawSrg from the DrawItem that corresponds to @drawItemIndex.
+            const Data::Instance<RPI::ShaderResourceGroup>& GetDrawSrg(uint32_t drawItemIndex) const;
+
         private:
             bool DoUpdate(const Scene& parentScene);
             void ForValidShaderOptionName(const Name& shaderOptionName, const AZStd::function<bool(const ShaderCollection::Item&, ShaderOptionIndex)>& callback);
@@ -104,6 +110,9 @@ namespace AZ
 
             // The index of the mesh within m_modelLod that is represented by the DrawPacket
             size_t m_modelLodMeshIndex;
+
+            // the index of the mesh in the MeshInfo - Srg
+            int32_t m_meshInfoIndex;
 
             // The per-object shader resource group
             Data::Instance<ShaderResourceGroup> m_objectSrg;

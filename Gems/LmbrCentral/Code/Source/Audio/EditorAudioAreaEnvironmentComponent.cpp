@@ -10,6 +10,7 @@
 
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 namespace LmbrCentral
 {
@@ -33,21 +34,26 @@ namespace LmbrCentral
 
             if (auto editContext = serializeContext->GetEditContext())
             {
-                editContext->Class<EditorAudioAreaEnvironmentComponent>("Audio Area Environment", "The Audio Area Environment component enables entities that are moving around and throughout a shape to have environment effects applied to any sounds that they trigger")
+                editContext->Class<EditorAudioAreaEnvironmentComponent>(
+                    QT_TRANSLATE_NOOP("LmbrCentral", "Audio Area Environment"),
+                    QT_TRANSLATE_NOOP("LmbrCentral", "The Audio Area Environment component enables entities that are moving around and throughout a shape to have environment effects applied to any sounds that they trigger"))
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                         ->Attribute(AZ::Edit::Attributes::Category, "Audio")
                         ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/AudioAreaEnvironment.svg")
                         ->Attribute(AZ::Edit::Attributes::ViewportIcon, "Icons/Components/Viewport/AudioAreaEnvironment.svg")
                         ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                         ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                        ->Attribute(AZ::Edit::Attributes::HelpPageURL, "https://o3de.org/docs/user-guide/components/reference/audio/area-environment/")
+                        ->Attribute(AZ::Edit::Attributes::HelpPageURL, "https://www.o3de.org/docs/user-guide/components/reference/audio/area-environment/")
                     ->DataElement(AZ::Edit::UIHandlers::Default, &EditorAudioAreaEnvironmentComponent::m_broadPhaseTriggerArea,
-                        "Broad-phase trigger area", "The entity that contains a Trigger Area component for broad-phase checks")
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Broad-phase trigger area"),
+                        QT_TRANSLATE_NOOP("LmbrCentral", "The entity that contains a Trigger Area component for broad-phase checks"))
                         ->Attribute(AZ::Edit::Attributes::RequiredService, AZ_CRC_CE("ProximityTriggerService"))
                     ->DataElement("AudioControl", &EditorAudioAreaEnvironmentComponent::m_environmentName,
-                        "Environment name", "The name of the ATL Environment to use")
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Environment name"),
+                        QT_TRANSLATE_NOOP("LmbrCentral", "The name of the ATL Environment to use"))
                     ->DataElement(AZ::Edit::UIHandlers::Default, &EditorAudioAreaEnvironmentComponent::m_environmentFadeDistance,
-                        "Fade distance", "Distance around the area shape that the environment amounts will fade")
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Fade distance"),
+                        QT_TRANSLATE_NOOP("LmbrCentral", "Distance around the area shape that the environment amounts will fade"))
                         ->Attribute(AZ::Edit::Attributes::Min, 0.01f)
                     ;
             }

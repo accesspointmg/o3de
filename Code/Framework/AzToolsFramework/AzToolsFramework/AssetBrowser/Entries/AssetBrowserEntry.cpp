@@ -269,7 +269,7 @@ namespace AzToolsFramework
             return m_entryType;
         }
 
-        inline constexpr auto operator"" _hash(const char* str, size_t len)
+        inline constexpr auto operator ""_hash(const char* str, size_t len)
         {
             return AZStd::hash<AZStd::string_view>{}(AZStd::string_view{ str, len });
         }
@@ -391,10 +391,10 @@ namespace AzToolsFramework
         {
             if (m_thumbnailKey)
             {
-                disconnect(m_thumbnailKey.data(), nullptr, this, nullptr);
+                disconnect(m_thumbnailKey.get(), nullptr, this, nullptr);
             }
             m_thumbnailKey = thumbnailKey;
-            connect(m_thumbnailKey.data(), &ThumbnailKey::ThumbnailUpdated, this, &AssetBrowserEntry::SetThumbnailDirty);
+            connect(m_thumbnailKey.get(), &ThumbnailKey::ThumbnailUpdated, this, &AssetBrowserEntry::SetThumbnailDirty);
         }
 
         SharedThumbnailKey AssetBrowserEntry::GetThumbnailKey() const
@@ -451,6 +451,27 @@ namespace AzToolsFramework
                 return false;
             }
 
+            // Project folder should always appear before other folders.
+            // The tree view sorts with Qt::DescendingOrder and the name
+            // comparator uses "> 0", so lessThan(project, other) must return
+            // false (not true) to place the project first in descending order.
+            if (GetEntryType() == AssetEntryType::Folder && other->GetEntryType() == AssetEntryType::Folder)
+            {
+                auto* leftFolder = azrtti_cast<const FolderAssetBrowserEntry*>(this);
+                auto* rightFolder = azrtti_cast<const FolderAssetBrowserEntry*>(other);
+                if (leftFolder && rightFolder)
+                {
+                    if (leftFolder->IsProjectFolder() && !rightFolder->IsProjectFolder())
+                    {
+                        return false;
+                    }
+                    if (!leftFolder->IsProjectFolder() && rightFolder->IsProjectFolder())
+                    {
+                        return true;
+                    }
+                }
+            }
+
             switch (sortMode)
             {
             case AssetEntrySortMode::FileType:
@@ -501,4 +522,3 @@ namespace AzToolsFramework
     } // namespace AssetBrowser
 } // namespace AzToolsFramework
 
-#include "AssetBrowser/Entries/moc_AssetBrowserEntry.cpp"

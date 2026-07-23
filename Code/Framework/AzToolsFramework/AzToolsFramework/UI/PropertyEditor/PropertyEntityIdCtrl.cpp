@@ -24,16 +24,16 @@
 #include <AzToolsFramework/ViewportSelection/EditorPickEntitySelection.h>
 
 AZ_PUSH_DISABLE_WARNING(4251, "-Wunknown-warning-option") // 4251: 'QLayoutItem::align': class 'QFlags<Qt::AlignmentFlag>' needs to have dll-interface to be used by clients of class 'QLayoutItem'
-#include <QtWidgets/QHBoxLayout>
+#include <QHBoxLayout>
 AZ_POP_DISABLE_WARNING
-#include <QtCore/QMimeData>
+#include <QMimeData>
 AZ_PUSH_DISABLE_WARNING(4244 4251, "-Wunknown-warning-option") // 4244: conversion from 'int' to 'float', possible loss of data
                                                                // 4251: 'QInputEvent::modState': class 'QFlags<Qt::KeyboardModifier>' needs to have dll-interface to be used by clients of class 'QInputEvent'
 #include <QDragEnterEvent>
 AZ_POP_DISABLE_WARNING
 #include <QDropEvent>
 #include <QToolButton>
-#include <QtWidgets/QApplication>
+#include <QApplication>
 
 //just a test to see how it would work to pop a dialog
 
@@ -526,7 +526,7 @@ namespace AzToolsFramework
 
         if (attrib == AZ::Edit::Attributes::RequiredService)
         {
-            AZ::ComponentServiceType requiredService = 0;
+            AZ::ComponentServiceType requiredService(0);
             AZ::ComponentDescriptor::DependencyArrayType requiredServices;
             if (attrValue->template Read<AZ::ComponentServiceType>(requiredService))
             {
@@ -539,7 +539,7 @@ namespace AzToolsFramework
         }
         else if (attrib == AZ::Edit::Attributes::IncompatibleService)
         {
-            AZ::ComponentServiceType incompatibleService = 0;
+            AZ::ComponentServiceType incompatibleService(0);
             AZ::ComponentDescriptor::DependencyArrayType incompatibleServices;
             if (attrValue->template Read<AZ::ComponentServiceType>(incompatibleService))
             {
@@ -630,4 +630,3 @@ namespace AzToolsFramework
 
 }
 
-#include "UI/PropertyEditor/moc_PropertyEntityIdCtrl.cpp"

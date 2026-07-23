@@ -15,6 +15,9 @@
 
 #include "System.h"
 
+#include <AzCore/std/string/string.h>
+#include <AzCore/IO/FileIO.h>
+
 #if AZ_LEGACY_CRYSYSTEM_TRAIT_FORWARD_EXCEPTION_POINTERS
 struct EXCEPTION_POINTERS;
 #endif
@@ -66,7 +69,7 @@ protected:
     IDebugCallStack();
     virtual ~IDebugCallStack();
 
-    static const char* TranslateExceptionCode(DWORD dwExcept);
+    static const char* TranslateExceptionCode(AZ::u32 dwExcept);
     static void PutVersion(char* str, size_t length);
 
     bool m_bIsFatalError;

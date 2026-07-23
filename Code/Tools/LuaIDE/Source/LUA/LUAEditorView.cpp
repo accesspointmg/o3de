@@ -10,7 +10,6 @@
 
 #include <AzToolsFramework/UI/UICore/ProgressShield.hxx>
 
-#include <Source/LUA/moc_LUAEditorView.cpp>
 #include "LUAEditorContextMessages.h"
 #include "LUAEditorContextInterface.h"
 #include "LUAEditorViewMessages.h"
@@ -26,6 +25,7 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QRegularExpression>
 
 namespace LUAEditor
 {
@@ -671,7 +671,7 @@ namespace LUAEditor
             if ((!isModified) && (isascii(ev->key()) || isUseful))
             {
                 QMessageBox msgBox;
-                msgBox.setText("Checkout This File To Edit?");
+                msgBox.setText(tr("Checkout This File To Edit?"));
                 msgBox.setInformativeText(m_Info.m_assetName.c_str());
                 msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
                 msgBox.setDefaultButton(QMessageBox::Ok);
@@ -851,9 +851,10 @@ namespace LUAEditor
 
         if (operation.m_impl->m_isRegularExpression)
         {
-            QRegExp regEx;
-            regEx.setCaseSensitivity(operation.m_impl->m_isCaseSensitiveSearch ? Qt::CaseSensitivity::CaseSensitive : Qt::CaseSensitivity::CaseInsensitive);
-            regEx.setPattern(operation.m_impl->m_searchString);
+            QRegularExpression regEx(
+                operation.m_impl->m_searchString,
+                operation.m_impl->m_isCaseSensitiveSearch ? QRegularExpression::CaseInsensitiveOption
+                                                          : QRegularExpression::NoPatternOption);
             operation.m_impl->m_cursor = m_gui->m_luaTextEdit->document()->find(regEx, operation.m_impl->m_cursor, static_cast<QTextDocument::FindFlag>(flags));
             if (!operation && operation.m_impl->m_wrap)
             {
@@ -1021,7 +1022,7 @@ namespace LUAEditor
             newText.append(block.text());
             newText.append("\n");
         });
-        currText.remove(currText.count() - 1, 1);
+        currText.remove(currText.length() - 1, 1);
 
         if (startLine == 0)
         {

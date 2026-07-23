@@ -11,8 +11,8 @@
 
 #include <AzToolsFramework/Entity/EditorEntityHelpers.h>
 
-DECLARE_EBUS_INSTANTIATION(AzToolsFramework::ComponentModeFramework::ComponentModeSystemRequests);
-DECLARE_EBUS_INSTANTIATION_WITH_TRAITS(AzToolsFramework::ComponentModeFramework::ComponentModeDelegateRequests, AzToolsFramework::ComponentModeFramework::ComponentModeMouseViewportRequests)
+AZ_INSTANTIATE_EBUS_SINGLE_ADDRESS(AZTF_API, AzToolsFramework::ComponentModeFramework::ComponentModeSystemRequests);
+AZ_INSTANTIATE_EBUS_MULTI_ADDRESS_WITH_TRAITS(AZTF_API, AzToolsFramework::ComponentModeFramework::ComponentModeDelegateRequests, AzToolsFramework::ComponentModeFramework::ComponentModeMouseViewportRequests)
 
 namespace AzToolsFramework
 {
@@ -27,7 +27,7 @@ namespace AzToolsFramework
             const AZ::EntityId entityId = entityComponentIdPair.GetEntityId();
             AZ_Assert(entityId.IsValid(), "Attempting to create a Component Mode with an invalid EntityId");
 
-            if (const AZ::Entity* entity = AzToolsFramework::GetEntity(entityId))
+            if ([[maybe_unused]] const AZ::Entity* entity = AzToolsFramework::GetEntity(entityId))
             {
                 AZ_Assert(entity->GetState() == AZ::Entity::State::Active,
                     "Attempting to create a Component Mode for an Entity which is not currently active. "

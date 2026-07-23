@@ -44,9 +44,8 @@
 #include "UiAnimViewKeyPropertiesDlg.h"
 #include "UiEditorAnimationBus.h"
 
-#include "EditorCommon.h"
-
 #include <QAction>
+#include <QActionGroup>
 #include <QComboBox>
 #include <QInputDialog>
 #include <QKeyEvent>
@@ -115,7 +114,7 @@ public:
                         }
                     }
 
-                    menu->exec(mouseEvent->globalPos());
+                    menu->exec(mouseEvent->globalPosition().toPoint());
                     return true;
                 }
 
@@ -221,14 +220,14 @@ void CUiAnimViewDialog::OnAddEntityNodeMenu()
 }
 
 //////////////////////////////////////////////////////////////////////////
-BOOL CUiAnimViewDialog::OnInitDialog()
+bool CUiAnimViewDialog::OnInitDialog()
 {
     InitToolbar();
     InitMenu();
 
     QWidget* w = new QWidget();
     QVBoxLayout* l = new QVBoxLayout;
-    l->setMargin(0);
+    l->setContentsMargins(0, 0, 0, 0);
 
     m_wndSplitter = new QSplitter(w);
     m_wndSplitter->setOrientation(Qt::Horizontal);
@@ -343,6 +342,7 @@ void CUiAnimViewDialog::InitToolbar()
     qaction = m_viewToolBar->addAction(QIcon(":/Trackview/view/tvview-00.png"), "Track Editor");
     qaction->setData(ID_TV_MODE_DOPESHEET);
     qaction->setShortcut(QKeySequence("Ctrl+D"));
+    qaction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     qaction->setCheckable(true);
     qaction->setChecked(true);
     m_actions[ID_TV_MODE_DOPESHEET] = qaction;
@@ -542,7 +542,7 @@ void CUiAnimViewDialog::InitToolbar()
     ag->addAction(m_actions[ID_TV_MOVEKEY]);
     ag->addAction(m_actions[ID_TV_SLIDEKEY]);
     ag->addAction(m_actions[ID_TV_SCALEKEY]);
-    foreach(QAction* qaction2, ag->actions())
+    for (QAction* qaction2 : ag->actions())
     {
         qaction2->setCheckable(true);
     }
@@ -552,7 +552,7 @@ void CUiAnimViewDialog::InitToolbar()
     ag->addAction(m_actions[ID_TV_SNAP_MAGNET]);
     ag->addAction(m_actions[ID_TV_SNAP_FRAME]);
     ag->addAction(m_actions[ID_TV_SNAP_TICK]);
-    foreach(QAction* qaction2, ag->actions())
+    for (QAction* qaction2 : ag->actions())
     {
         qaction2->setCheckable(true);
     }
@@ -1540,8 +1540,10 @@ void CUiAnimViewDialog::SaveLayouts()
     settings.setValue("layout", stateData);
     settings.setValue("lastViewMode", static_cast<int>(m_lastMode));
     QStringList sl;
-    foreach(int i, m_wndSplitter->sizes())
-    sl << QString::number(i);
+    for (int i : m_wndSplitter->sizes())
+    {
+        sl << QString::number(i);
+    }
     settings.setValue("splitter", sl.join(","));
     settings.endGroup();
     settings.sync();
@@ -1564,7 +1566,7 @@ void CUiAnimViewDialog::ReadLayouts()
     {
         QStringList sl = settings.value("splitter").toString().split(",");
         QList<int> szl;
-        foreach (QString s, sl)
+        for (QString s : sl)
         {
             szl << s.toInt();
         }
@@ -1838,4 +1840,3 @@ void CUiAnimViewDialog::EndUndoTransaction()
     m_bDoingUndoOperation = false;
 }
 
-#include <Animation/moc_UiAnimViewDialog.cpp>

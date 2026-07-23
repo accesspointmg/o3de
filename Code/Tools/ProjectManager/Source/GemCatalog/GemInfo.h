@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) Contributors to the Open 3D Engine Project.
  * For complete copyright and license terms please see the LICENSE at the root of this distribution.
  *
@@ -82,6 +82,7 @@ namespace O3DE::ProjectManager
         QString m_path;
         QString m_name = "Unknown Gem Name";
         QString m_displayName;
+        QString m_altname;
         QString m_origin = "Unknown Creator";
         GemOrigin m_gemOrigin = Local;
         QString m_originURL;

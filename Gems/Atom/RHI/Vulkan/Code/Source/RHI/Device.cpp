@@ -11,10 +11,10 @@
 #include <Atom/RHI.Reflect/Vulkan/PlatformLimitsDescriptor.h>
 #include <Atom/RHI.Reflect/Vulkan/VulkanBus.h>
 #include <Atom/RHI.Reflect/Vulkan/XRVkDescriptors.h>
+#include <Atom/RHI/DeviceTransientAttachmentPool.h>
 #include <Atom/RHI/Factory.h>
 #include <Atom/RHI/RHIMemoryStatisticsInterface.h>
 #include <Atom/RHI/RHISystemInterface.h>
-#include <Atom/RHI/DeviceTransientAttachmentPool.h>
 #include <Atom_RHI_Vulkan_Platform.h>
 #include <AzCore/Debug/Trace.h>
 #include <AzCore/std/containers/set.h>
@@ -32,6 +32,7 @@
 #include <RHI/SwapChain.h>
 #include <RHI/WSISurface.h>
 #include <RHI/WindowSurfaceBus.h>
+#include <Vulkan_Fence_Platform.h>
 #include <Vulkan_Traits_Platform.h>
 
 namespace AZ
@@ -90,9 +91,6 @@ namespace AZ
             ToRawStringList(requiredLayerStrings, requiredLayers);
             ToRawStringList(requiredExtensionStrings, requiredExtensions);
 
-            RawStringList optionalExtensions = physicalDevice.FilterSupportedOptionalExtensions();
-            requiredExtensions.insert(requiredExtensions.end(), optionalExtensions.begin(), optionalExtensions.end());
-
             // We now need to find the queues that the physical device has available and make sure
             // it has what we need. We're just expecting a Graphics queue for now.
             BuildDeviceQueueInfo(physicalDevice);
@@ -143,24 +141,98 @@ namespace AZ
                 m_supportedPipelineStageFlagsMask &= ~(VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT | VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT);
             }
 
+            static_assert(
+                AZStd::to_underlying(RHI::HardwareQueueClass::Count) == 3,
+                "Vulkan queue selection needs to be updated when new hardware queue classes are introduced.");
+
+            int graphicsFamilyIndex = -1;
+            int computeFamilyIndex = -1;
+            int transferFamilyIndex = -1;
+
+            for (int familyIndex = 0; familyIndex < static_cast<int>(m_queueFamilyProperties.size()); ++familyIndex)
+            {
+                const VkQueueFamilyProperties& familyProperties = m_queueFamilyProperties[familyIndex];
+
+                VkQueueFlags effectiveFlags = familyProperties.queueFlags;
+                if (AZ::RHI::CheckBitsAny(effectiveFlags, static_cast<VkFlags>(VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT)))
+                {
+                    // according to the Vulkan spec, if a queue supports graphics or compute, transfer bit is implied and does not
+                    // need to actually be set.  See https://registry.khronos.org/VulkanSC/specs/1.0-extensions/man/html/VkQueueFlagBits.html
+                    effectiveFlags |= VK_QUEUE_TRANSFER_BIT;
+                }
+
+                // There should be at least one queue family supporting both graphics and compute. Quoting the above registry link:
+                // > If an implementation exposes any queue family that supports graphics operations, at least one queue family of at least
+                // > one physical device exposed by the implementation must support both graphics and compute operations.
+                if ((graphicsFamilyIndex == -1) &&
+                    AZ::RHI::CheckBitsAll(effectiveFlags, static_cast<VkFlags>(VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT)))
+                {
+                    graphicsFamilyIndex = familyIndex;
+                }
+
+                // if there is a compute queue that doesn't support graphics, we prefer it over one that supports both:
+                if (AZ::RHI::CheckBitsAny(effectiveFlags, static_cast<VkFlags>(VK_QUEUE_COMPUTE_BIT)))
+                {
+                    if (computeFamilyIndex == -1)
+                    {
+                        computeFamilyIndex = familyIndex;
+                    }
+                    else
+                    {
+                        // We take the queue family that supports the least amount of features, but still supports compute. That way we
+                        // likely get an async compute queue.
+                        VkQueueFlags currentFlags = familyProperties.queueFlags;
+                        VkQueueFlags existingFlags = m_queueFamilyProperties[computeFamilyIndex].queueFlags;
+                        if (currentFlags < existingFlags)
+                        {
+                            computeFamilyIndex = familyIndex;
+                        }
+                    }
+                }
+
+                // Look for a dedicated transfer queue, if one is availalble.  Same process as above, prefer queues that
+                // support less features, as they are more likely to be async.
+                if (AZ::RHI::CheckBitsAny(effectiveFlags, static_cast<VkFlags>(VK_QUEUE_TRANSFER_BIT)))
+                {
+                    if (transferFamilyIndex == -1)
+                    {
+                        transferFamilyIndex = familyIndex;
+                    }
+                    else
+                    {
+                        VkQueueFlags currentFlags = familyProperties.queueFlags;
+                        VkQueueFlags existingFlags = m_queueFamilyProperties[transferFamilyIndex].queueFlags;
+                        if (currentFlags < existingFlags)
+                        {
+                            transferFamilyIndex = familyIndex;
+                        }
+                    }
+                }
+            }
+
+            AZ_Assert(
+                graphicsFamilyIndex != -1 && computeFamilyIndex != -1 && transferFamilyIndex != -1, "Necessary queue families not found.");
+
+            AZStd::unordered_map<int, uint32_t> queueCounts;
+
+            queueCounts[graphicsFamilyIndex]++;
+            queueCounts[computeFamilyIndex]++;
+            queueCounts[transferFamilyIndex]++;
+
             AZStd::vector<VkDeviceQueueCreateInfo> queueCreationInfo;
             VkDeviceQueueCreateInfo queueCreateInfo = {};
             queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 
-            for (size_t familyIndex = 0; familyIndex < m_queueFamilyProperties.size(); ++familyIndex)
-            {
-                const VkQueueFamilyProperties& familyProperties = m_queueFamilyProperties[familyIndex];
+            // [GFX TODO][ATOM-286] Figure out if we care about queue priority (currently: maximum of 3 queues per family)
+            AZStd::array<float, 3> queuePriority{ 1.0f, 1.0f, 1.0f };
 
-                // [GFX TODO][ATOM-286] Figure out if we care about queue priority
-                float* queuePriorities = new float[familyProperties.queueCount];
-                for (size_t index = 0; index < familyProperties.queueCount; ++index)
-                {
-                    queuePriorities[index] = 1.0f;
-                }
+            for (auto [familyIndex, queueCount] : queueCounts)
+            {
+                queueCount = AZStd::min(queueCount, m_queueFamilyProperties[familyIndex].queueCount);
 
                 queueCreateInfo.queueFamilyIndex = static_cast<uint32_t>(familyIndex);
-                queueCreateInfo.queueCount = familyProperties.queueCount;
-                queueCreateInfo.pQueuePriorities = queuePriorities;
+                queueCreateInfo.queueCount = queueCount;
+                queueCreateInfo.pQueuePriorities = queuePriority.data();
 
                 queueCreationInfo.push_back(queueCreateInfo);
             }
@@ -171,78 +243,94 @@ namespace AZ
 
             // unbounded array functionality
             VkPhysicalDeviceDescriptorIndexingFeaturesEXT descriptorIndexingFeatures = {};
-            VkBaseOutStructure& chainInit = reinterpret_cast<VkBaseOutStructure&>(descriptorIndexingFeatures);
-            descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT;
-            const VkPhysicalDeviceDescriptorIndexingFeaturesEXT& physicalDeviceDescriptorIndexingFeatures =
-                physicalDevice.GetPhysicalDeviceDescriptorIndexingFeatures();
-            descriptorIndexingFeatures.shaderInputAttachmentArrayDynamicIndexing = physicalDeviceDescriptorIndexingFeatures.shaderInputAttachmentArrayDynamicIndexing;
-            descriptorIndexingFeatures.shaderUniformTexelBufferArrayDynamicIndexing = physicalDeviceDescriptorIndexingFeatures.shaderUniformTexelBufferArrayDynamicIndexing;
-            descriptorIndexingFeatures.shaderStorageTexelBufferArrayDynamicIndexing = physicalDeviceDescriptorIndexingFeatures.shaderStorageTexelBufferArrayDynamicIndexing;
-            descriptorIndexingFeatures.shaderUniformBufferArrayNonUniformIndexing = physicalDeviceDescriptorIndexingFeatures.shaderUniformBufferArrayNonUniformIndexing;
-            descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing = physicalDeviceDescriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing;
-            descriptorIndexingFeatures.shaderStorageBufferArrayNonUniformIndexing = physicalDeviceDescriptorIndexingFeatures.shaderStorageBufferArrayNonUniformIndexing;
-            descriptorIndexingFeatures.shaderStorageImageArrayNonUniformIndexing = physicalDeviceDescriptorIndexingFeatures.shaderStorageImageArrayNonUniformIndexing;
-            descriptorIndexingFeatures.shaderInputAttachmentArrayNonUniformIndexing = physicalDeviceDescriptorIndexingFeatures.shaderInputAttachmentArrayNonUniformIndexing;
-            descriptorIndexingFeatures.shaderUniformTexelBufferArrayNonUniformIndexing = physicalDeviceDescriptorIndexingFeatures.shaderUniformTexelBufferArrayNonUniformIndexing;
-            descriptorIndexingFeatures.shaderStorageTexelBufferArrayNonUniformIndexing = physicalDeviceDescriptorIndexingFeatures.shaderStorageTexelBufferArrayNonUniformIndexing;
-            descriptorIndexingFeatures.descriptorBindingPartiallyBound = physicalDeviceDescriptorIndexingFeatures.shaderStorageTexelBufferArrayNonUniformIndexing;
-            descriptorIndexingFeatures.descriptorBindingVariableDescriptorCount = physicalDeviceDescriptorIndexingFeatures.descriptorBindingVariableDescriptorCount;
-            descriptorIndexingFeatures.runtimeDescriptorArray = physicalDeviceDescriptorIndexingFeatures.runtimeDescriptorArray;
-            descriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind =
-                physicalDeviceDescriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind;
-            descriptorIndexingFeatures.descriptorBindingStorageImageUpdateAfterBind =
-                physicalDeviceDescriptorIndexingFeatures.descriptorBindingStorageImageUpdateAfterBind;
-            descriptorIndexingFeatures.descriptorBindingStorageBufferUpdateAfterBind =
-                physicalDeviceDescriptorIndexingFeatures.descriptorBindingStorageBufferUpdateAfterBind;
 
-            auto bufferDeviceAddressFeatures = physicalDevice.GetPhysicalDeviceBufferDeviceAddressFeatures();
-            auto depthClipEnabled = physicalDevice.GetPhysicalDeviceDepthClipEnableFeatures();
-            auto rayQueryFeatures = physicalDevice.GetRayQueryFeatures();
-            auto shaderImageAtomicInt64 = physicalDevice.GetShaderImageAtomicInt64Features();
+            VkDeviceCreateInfo deviceInfo = {};
+            deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+
+            VkPhysicalDeviceBufferDeviceAddressFeaturesEXT bufferDeviceAddressFeatures;
+            VkPhysicalDeviceDepthClipEnableFeaturesEXT depthClipEnabled;
+            VkPhysicalDeviceRayQueryFeaturesKHR rayQueryFeatures;
+            VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT shaderImageAtomicInt64;
 
             VkPhysicalDeviceRobustness2FeaturesEXT robustness2 = {};
-            robustness2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT;
-            robustness2.nullDescriptor = physicalDevice.GetPhysicalDeviceRobutness2Features().nullDescriptor;
 
-            bufferDeviceAddressFeatures.pNext = nullptr;
-            depthClipEnabled.pNext = nullptr;
-            rayQueryFeatures.pNext = nullptr;
-            shaderImageAtomicInt64.pNext = nullptr;
-            robustness2.pNext = nullptr;
+            StructAppender deviceInfoAppender(deviceInfo);
 
-            AppendVkStruct(
-                chainInit, { &bufferDeviceAddressFeatures, &depthClipEnabled, &rayQueryFeatures, &shaderImageAtomicInt64, &robustness2 });
+            if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::DepthClipEnable))
+            {
+                depthClipEnabled = physicalDevice.GetPhysicalDeviceDepthClipEnableFeatures();
 
-            auto subpassMergeFeedback = physicalDevice.GetPhysicalSubpassMergeFeedbackFeatures();
+                deviceInfoAppender.append(depthClipEnabled);
+            }
+
+            if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::ShaderImageAtomicInt64))
+            {
+                shaderImageAtomicInt64 = physicalDevice.GetShaderImageAtomicInt64Features();
+
+                deviceInfoAppender.append(shaderImageAtomicInt64);
+            }
+
+            if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::Robustness2))
+            {
+                robustness2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT;
+                robustness2.nullDescriptor = physicalDevice.GetPhysicalDeviceRobustness2Features().nullDescriptor;
+
+                deviceInfoAppender.append(robustness2);
+            }
+
+            VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT subpassMergeFeedback;
+
+            if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::SubpassMergeFeedback))
+            {
+                subpassMergeFeedback = physicalDevice.GetPhysicalSubpassMergeFeedbackFeatures();
 
 #if !defined(AZ_RELEASE_BUILD)
-            subpassMergeFeedback.subpassMergeFeedback = false;
+                subpassMergeFeedback.subpassMergeFeedback = false;
 #endif
-            if (!subpassMergeFeedback.subpassMergeFeedback &&
-                physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::SubpassMergeFeedback))
-            {
-                physicalDevice.DisableOptionalDeviceExtension(OptionalDeviceExtension::SubpassMergeFeedback);
-                subpassMergeFeedback.pNext = nullptr;
-                AppendVkStruct(chainInit, &subpassMergeFeedback);
+                if (subpassMergeFeedback.subpassMergeFeedback)
+                {
+                    deviceInfoAppender.append(subpassMergeFeedback);
+                }
+                else
+                {
+                    physicalDevice.DisableOptionalDeviceExtension(OptionalDeviceExtension::SubpassMergeFeedback);
+                }
             }
 
-            auto fragmenDensityMapFeatures = physicalDevice.GetPhysicalDeviceFragmentDensityMapFeatures();
-            auto fragmenShadingRateFeatures = physicalDevice.GetPhysicalDeviceFragmentShadingRateFeatures();
+            VkPhysicalDeviceFragmentDensityMapFeaturesEXT fragmentDensityMapFeatures;
+            VkPhysicalDeviceFragmentShadingRateFeaturesKHR fragmentShadingRateFeatures;
 
-            if (fragmenShadingRateFeatures.attachmentFragmentShadingRate)
+            if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::FragmentShadingRate))
             {
-                // Must disable the "FragmentDensityMap" usage if "attachmentFragmentShadingRate" is enabled.
-                physicalDevice.DisableOptionalDeviceExtension(OptionalDeviceExtension::FragmentDensityMap);
-                fragmenShadingRateFeatures.pNext = nullptr;
-                AppendVkStruct(chainInit, &fragmenShadingRateFeatures);
+                fragmentShadingRateFeatures = physicalDevice.GetPhysicalDeviceFragmentShadingRateFeatures();
+
+                if (fragmentShadingRateFeatures.attachmentFragmentShadingRate)
+                {
+                    // Must disable the "FragmentDensityMap" usage if "attachmentFragmentShadingRate" is enabled.
+                    physicalDevice.DisableOptionalDeviceExtension(OptionalDeviceExtension::FragmentDensityMap);
+                    deviceInfoAppender.append(fragmentShadingRateFeatures);
+                }
+                else
+                {
+                    // We only support NonSubsampledImages when using fragment density map
+                    // Must disable the "FragmentShadingRate" usage so "fragmentDensityMap" can be enabled.
+                    physicalDevice.DisableOptionalDeviceExtension(OptionalDeviceExtension::FragmentShadingRate);
+                }
             }
-            else if (fragmenDensityMapFeatures.fragmentDensityMap && fragmenDensityMapFeatures.fragmentDensityMapNonSubsampledImages)
+
+            // if the extension is not supported or we got disabled within the if above we won't go into this if
+            if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::FragmentDensityMap))
             {
-                // We only support NonSubsampledImages when using fragment density map
-                // Must disable the "FragmentShadingRate" usage if "fragmentDensityMap" is enabled.
-                physicalDevice.DisableOptionalDeviceExtension(OptionalDeviceExtension::FragmentShadingRate);
-                fragmenDensityMapFeatures.pNext = nullptr;
-                AppendVkStruct(chainInit, &fragmenDensityMapFeatures);
+                fragmentDensityMapFeatures = physicalDevice.GetPhysicalDeviceFragmentDensityMapFeatures();
+
+                if (fragmentDensityMapFeatures.fragmentDensityMap && fragmentDensityMapFeatures.fragmentDensityMapNonSubsampledImages)
+                {
+                    deviceInfoAppender.append(fragmentDensityMapFeatures);
+                }
+                else
+                {
+                    physicalDevice.DisableOptionalDeviceExtension(OptionalDeviceExtension::FragmentDensityMap);
+                }
             }
 
             VkPhysicalDeviceVulkan12Features vulkan12Features = {};
@@ -250,51 +338,80 @@ namespace AZ
             VkPhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR separateDepthStencil = {};
             VkPhysicalDeviceShaderAtomicInt64Features shaderAtomicInt64 = {};
             VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures = {};
+            VkPhysicalDeviceClusterAccelerationStructureFeaturesNV clusterAccelerationStructureFeatures = {};
             VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures = {};
 
-            VkDeviceCreateInfo deviceInfo = {};
-            deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-
-            auto timelineSemaphore = physicalDevice.GetPhysicalDeviceTimelineSemaphoreFeatures();
-            // If we are running Vulkan >= 1.2, then we must use VkPhysicalDeviceVulkan12Features instead
-            // of VkPhysicalDeviceShaderFloat16Int8FeaturesKHR or VkPhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR.
+            VkPhysicalDeviceTimelineSemaphoreFeatures timelineSemaphore;
+            // If we are running Vulkan >= 1.2, then we must use VkPhysicalDeviceVulkan12Features instead the respective extensions.
             if (majorVersion >= 1 && minorVersion >= 2)
             {
+                const auto& physicalDeviceVulkan12Features = physicalDevice.GetPhysicalDeviceVulkan12Features();
+
                 vulkan12Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
-                vulkan12Features.drawIndirectCount = physicalDevice.GetPhysicalDeviceVulkan12Features().drawIndirectCount;
-                vulkan12Features.shaderFloat16 = physicalDevice.GetPhysicalDeviceVulkan12Features().shaderFloat16;
-                vulkan12Features.shaderInt8 = physicalDevice.GetPhysicalDeviceVulkan12Features().shaderInt8;
-                vulkan12Features.separateDepthStencilLayouts = physicalDevice.GetPhysicalDeviceVulkan12Features().separateDepthStencilLayouts;
-                vulkan12Features.descriptorBindingPartiallyBound = physicalDevice.GetPhysicalDeviceVulkan12Features().separateDepthStencilLayouts;
-                vulkan12Features.descriptorIndexing = physicalDevice.GetPhysicalDeviceVulkan12Features().separateDepthStencilLayouts;
-                vulkan12Features.descriptorBindingVariableDescriptorCount = physicalDevice.GetPhysicalDeviceVulkan12Features().separateDepthStencilLayouts;
-                // We use the "VkPhysicalDeviceBufferDeviceAddressFeatures" instead of the "VkPhysicalDeviceVulkan12Features" for buffer device address
-                // because some drivers (e.g. Intel) don't report any features of buffer device address through the "PhysicalDeviceVulkan12Features" but they do
-                // through the "VK_EXT_buffer_device_address" extension.
+                vulkan12Features.drawIndirectCount = physicalDeviceVulkan12Features.drawIndirectCount;
+                vulkan12Features.shaderFloat16 = physicalDeviceVulkan12Features.shaderFloat16;
+                vulkan12Features.shaderInt8 = physicalDeviceVulkan12Features.shaderInt8;
+                vulkan12Features.separateDepthStencilLayouts = physicalDeviceVulkan12Features.separateDepthStencilLayouts;
+                vulkan12Features.descriptorBindingPartiallyBound = physicalDeviceVulkan12Features.descriptorBindingPartiallyBound;
+                vulkan12Features.descriptorIndexing = physicalDeviceVulkan12Features.descriptorIndexing;
+                vulkan12Features.descriptorBindingVariableDescriptorCount =
+                    physicalDeviceVulkan12Features.descriptorBindingVariableDescriptorCount;
+                vulkan12Features.shaderInputAttachmentArrayDynamicIndexing =
+                    physicalDeviceVulkan12Features.shaderInputAttachmentArrayDynamicIndexing;
+                vulkan12Features.shaderUniformTexelBufferArrayDynamicIndexing =
+                    physicalDeviceVulkan12Features.shaderUniformTexelBufferArrayDynamicIndexing;
+                vulkan12Features.shaderStorageTexelBufferArrayDynamicIndexing =
+                    physicalDeviceVulkan12Features.shaderStorageTexelBufferArrayDynamicIndexing;
+                vulkan12Features.shaderUniformBufferArrayNonUniformIndexing =
+                    physicalDeviceVulkan12Features.shaderUniformBufferArrayNonUniformIndexing;
+                vulkan12Features.shaderSampledImageArrayNonUniformIndexing =
+                    physicalDeviceVulkan12Features.shaderSampledImageArrayNonUniformIndexing;
+                vulkan12Features.shaderStorageBufferArrayNonUniformIndexing =
+                    physicalDeviceVulkan12Features.shaderStorageBufferArrayNonUniformIndexing;
+                vulkan12Features.shaderStorageImageArrayNonUniformIndexing =
+                    physicalDeviceVulkan12Features.shaderStorageImageArrayNonUniformIndexing;
+                vulkan12Features.shaderInputAttachmentArrayNonUniformIndexing =
+                    physicalDeviceVulkan12Features.shaderInputAttachmentArrayNonUniformIndexing;
+                vulkan12Features.shaderUniformTexelBufferArrayNonUniformIndexing =
+                    physicalDeviceVulkan12Features.shaderUniformTexelBufferArrayNonUniformIndexing;
+                vulkan12Features.shaderStorageTexelBufferArrayNonUniformIndexing =
+                    physicalDeviceVulkan12Features.shaderStorageTexelBufferArrayNonUniformIndexing;
+                vulkan12Features.descriptorBindingPartiallyBound = physicalDeviceVulkan12Features.descriptorBindingPartiallyBound;
+                vulkan12Features.descriptorBindingVariableDescriptorCount =
+                    physicalDeviceVulkan12Features.descriptorBindingVariableDescriptorCount;
+                vulkan12Features.runtimeDescriptorArray = physicalDeviceVulkan12Features.runtimeDescriptorArray;
+                vulkan12Features.descriptorBindingSampledImageUpdateAfterBind =
+                    physicalDeviceVulkan12Features.descriptorBindingSampledImageUpdateAfterBind;
+                vulkan12Features.descriptorBindingStorageImageUpdateAfterBind =
+                    physicalDeviceVulkan12Features.descriptorBindingStorageImageUpdateAfterBind;
+                vulkan12Features.descriptorBindingStorageBufferUpdateAfterBind =
+                    physicalDeviceVulkan12Features.descriptorBindingStorageBufferUpdateAfterBind;
+
+                // We use the "VkPhysicalDeviceBufferDeviceAddressFeatures" instead of the "VkPhysicalDeviceVulkan12Features" for buffer
+                // device address because some drivers (e.g. Intel) don't report any features of buffer device address through the
+                // "PhysicalDeviceVulkan12Features" but they do through the "VK_EXT_buffer_device_address" extension.
                 vulkan12Features.bufferDeviceAddress = physicalDevice.GetPhysicalDeviceBufferDeviceAddressFeatures().bufferDeviceAddress;
-                vulkan12Features.bufferDeviceAddressMultiDevice = physicalDevice.GetPhysicalDeviceBufferDeviceAddressFeatures().bufferDeviceAddressMultiDevice;
-                vulkan12Features.runtimeDescriptorArray = physicalDevice.GetPhysicalDeviceVulkan12Features().runtimeDescriptorArray;
-                vulkan12Features.shaderSharedInt64Atomics = physicalDevice.GetPhysicalDeviceVulkan12Features().shaderSharedInt64Atomics;
-                vulkan12Features.shaderBufferInt64Atomics = physicalDevice.GetPhysicalDeviceVulkan12Features().shaderBufferInt64Atomics;
-                vulkan12Features.descriptorBindingSampledImageUpdateAfterBind = physicalDevice.GetPhysicalDeviceVulkan12Features().descriptorBindingSampledImageUpdateAfterBind;
-                vulkan12Features.descriptorBindingStorageImageUpdateAfterBind = physicalDevice.GetPhysicalDeviceVulkan12Features().descriptorBindingStorageImageUpdateAfterBind;
-                vulkan12Features.descriptorBindingStorageBufferUpdateAfterBind = physicalDevice.GetPhysicalDeviceVulkan12Features().descriptorBindingStorageBufferUpdateAfterBind;
-                vulkan12Features.descriptorBindingPartiallyBound = physicalDevice.GetPhysicalDeviceVulkan12Features().descriptorBindingPartiallyBound;
-                vulkan12Features.descriptorBindingUpdateUnusedWhilePending = physicalDevice.GetPhysicalDeviceVulkan12Features().descriptorBindingUpdateUnusedWhilePending;
-                vulkan12Features.shaderOutputViewportIndex = physicalDevice.GetPhysicalDeviceVulkan12Features().shaderOutputViewportIndex;
-                vulkan12Features.shaderOutputLayer = physicalDevice.GetPhysicalDeviceVulkan12Features().shaderOutputLayer;
-                vulkan12Features.timelineSemaphore = timelineSemaphore.timelineSemaphore;
+                vulkan12Features.bufferDeviceAddressMultiDevice =
+                    physicalDevice.GetPhysicalDeviceBufferDeviceAddressFeatures().bufferDeviceAddressMultiDevice;
 
-                accelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
-                accelerationStructureFeatures.accelerationStructure = physicalDevice.GetPhysicalDeviceAccelerationStructureFeatures().accelerationStructure;
+                vulkan12Features.runtimeDescriptorArray = physicalDeviceVulkan12Features.runtimeDescriptorArray;
+                vulkan12Features.shaderSharedInt64Atomics = physicalDeviceVulkan12Features.shaderSharedInt64Atomics;
+                vulkan12Features.shaderBufferInt64Atomics = physicalDeviceVulkan12Features.shaderBufferInt64Atomics;
+                vulkan12Features.descriptorBindingSampledImageUpdateAfterBind =
+                    physicalDeviceVulkan12Features.descriptorBindingSampledImageUpdateAfterBind;
+                vulkan12Features.descriptorBindingStorageImageUpdateAfterBind =
+                    physicalDeviceVulkan12Features.descriptorBindingStorageImageUpdateAfterBind;
+                vulkan12Features.descriptorBindingStorageBufferUpdateAfterBind =
+                    physicalDeviceVulkan12Features.descriptorBindingStorageBufferUpdateAfterBind;
+                vulkan12Features.descriptorBindingUpdateUnusedWhilePending =
+                    physicalDeviceVulkan12Features.descriptorBindingUpdateUnusedWhilePending;
+                vulkan12Features.shaderOutputViewportIndex = physicalDeviceVulkan12Features.shaderOutputViewportIndex;
+                vulkan12Features.shaderOutputLayer = physicalDeviceVulkan12Features.shaderOutputLayer;
+#ifndef DISABLE_TIMELINE_SEMAPHORES
+                vulkan12Features.timelineSemaphore = physicalDeviceVulkan12Features.timelineSemaphore;
+#endif
 
-                rayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
-                rayTracingPipelineFeatures.rayTracingPipeline = physicalDevice.GetPhysicalDeviceRayTracingPipelineFeatures().rayTracingPipeline;
-                rayTracingPipelineFeatures.rayTracingPipelineTraceRaysIndirect = physicalDevice.GetPhysicalDeviceRayTracingPipelineFeatures().rayTracingPipelineTraceRaysIndirect;
-
-                AppendVkStruct(chainInit, { &vulkan12Features, &accelerationStructureFeatures, &rayTracingPipelineFeatures });
-                // Do not start from the chainInit, but from the depthClipEnabled struct
-                deviceInfo.pNext = &depthClipEnabled;
+                deviceInfoAppender.append(vulkan12Features);
             }
             else
             {
@@ -304,13 +421,125 @@ namespace AZ
                 separateDepthStencil.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SEPARATE_DEPTH_STENCIL_LAYOUTS_FEATURES;
                 separateDepthStencil.separateDepthStencilLayouts = physicalDevice.GetPhysicalDeviceSeparateDepthStencilFeatures().separateDepthStencilLayouts;
 
-                shaderAtomicInt64.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES;
-                shaderAtomicInt64.shaderBufferInt64Atomics = physicalDevice.GetShaderAtomicInt64Features().shaderBufferInt64Atomics;
-                shaderAtomicInt64.shaderSharedInt64Atomics = physicalDevice.GetShaderAtomicInt64Features().shaderSharedInt64Atomics;
+                if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::ShaderFloat16Int8))
+                {
+                    deviceInfoAppender.append(float16Int8);
+                }
 
-                AppendVkStruct(chainInit, { &float16Int8, &separateDepthStencil, &shaderAtomicInt64, &timelineSemaphore });
-                deviceInfo.pNext = &chainInit;
+                if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::SeparateDepthStencilLayouts))
+                {
+                    deviceInfoAppender.append(separateDepthStencil);
+                }
+
+                if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::DescriptorIndexing))
+                {
+                    descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT;
+                    const VkPhysicalDeviceDescriptorIndexingFeaturesEXT& physicalDeviceDescriptorIndexingFeatures =
+                        physicalDevice.GetPhysicalDeviceDescriptorIndexingFeatures();
+                    descriptorIndexingFeatures.shaderInputAttachmentArrayDynamicIndexing =
+                        physicalDeviceDescriptorIndexingFeatures.shaderInputAttachmentArrayDynamicIndexing;
+                    descriptorIndexingFeatures.shaderUniformTexelBufferArrayDynamicIndexing =
+                        physicalDeviceDescriptorIndexingFeatures.shaderUniformTexelBufferArrayDynamicIndexing;
+                    descriptorIndexingFeatures.shaderStorageTexelBufferArrayDynamicIndexing =
+                        physicalDeviceDescriptorIndexingFeatures.shaderStorageTexelBufferArrayDynamicIndexing;
+                    descriptorIndexingFeatures.shaderUniformBufferArrayNonUniformIndexing =
+                        physicalDeviceDescriptorIndexingFeatures.shaderUniformBufferArrayNonUniformIndexing;
+                    descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing =
+                        physicalDeviceDescriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing;
+                    descriptorIndexingFeatures.shaderStorageBufferArrayNonUniformIndexing =
+                        physicalDeviceDescriptorIndexingFeatures.shaderStorageBufferArrayNonUniformIndexing;
+                    descriptorIndexingFeatures.shaderStorageImageArrayNonUniformIndexing =
+                        physicalDeviceDescriptorIndexingFeatures.shaderStorageImageArrayNonUniformIndexing;
+                    descriptorIndexingFeatures.shaderInputAttachmentArrayNonUniformIndexing =
+                        physicalDeviceDescriptorIndexingFeatures.shaderInputAttachmentArrayNonUniformIndexing;
+                    descriptorIndexingFeatures.shaderUniformTexelBufferArrayNonUniformIndexing =
+                        physicalDeviceDescriptorIndexingFeatures.shaderUniformTexelBufferArrayNonUniformIndexing;
+                    descriptorIndexingFeatures.shaderStorageTexelBufferArrayNonUniformIndexing =
+                        physicalDeviceDescriptorIndexingFeatures.shaderStorageTexelBufferArrayNonUniformIndexing;
+                    descriptorIndexingFeatures.descriptorBindingPartiallyBound =
+                        physicalDeviceDescriptorIndexingFeatures.descriptorBindingPartiallyBound;
+                    descriptorIndexingFeatures.descriptorBindingVariableDescriptorCount =
+                        physicalDeviceDescriptorIndexingFeatures.descriptorBindingVariableDescriptorCount;
+                    descriptorIndexingFeatures.runtimeDescriptorArray = physicalDeviceDescriptorIndexingFeatures.runtimeDescriptorArray;
+                    descriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind =
+                        physicalDeviceDescriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind;
+                    descriptorIndexingFeatures.descriptorBindingStorageImageUpdateAfterBind =
+                        physicalDeviceDescriptorIndexingFeatures.descriptorBindingStorageImageUpdateAfterBind;
+                    descriptorIndexingFeatures.descriptorBindingStorageBufferUpdateAfterBind =
+                        physicalDeviceDescriptorIndexingFeatures.descriptorBindingStorageBufferUpdateAfterBind;
+
+                    deviceInfoAppender.append(descriptorIndexingFeatures);
+                }
+
+                if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::BufferDeviceAddress))
+                {
+                    bufferDeviceAddressFeatures = physicalDevice.GetPhysicalDeviceBufferDeviceAddressFeatures();
+
+                    deviceInfoAppender.append(bufferDeviceAddressFeatures);
+                }
+
+                if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::ShaderAtomicInt64))
+                {
+                    shaderAtomicInt64 = physicalDevice.GetShaderAtomicInt64Features();
+
+                    deviceInfoAppender.append(shaderAtomicInt64);
+                }
+
+#ifdef DISABLE_TIMELINE_SEMAPHORES
+                physicalDevice.DisableOptionalDeviceExtension(OptionalDeviceExtension::TimelineSempahore);
+#else
+                if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::TimelineSempahore))
+                {
+                    timelineSemaphore = physicalDevice.GetPhysicalDeviceTimelineSemaphoreFeatures();
+
+                    deviceInfoAppender.append(timelineSemaphore);
+                }
+#endif
             }
+
+            if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::AccelerationStructure))
+            {
+                accelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+                accelerationStructureFeatures.accelerationStructure =
+                    physicalDevice.GetPhysicalDeviceAccelerationStructureFeatures().accelerationStructure;
+
+                deviceInfoAppender.append(accelerationStructureFeatures);
+
+                if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::RayTracingPipeline))
+                {
+                    rayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+                    rayTracingPipelineFeatures.rayTracingPipeline =
+                        physicalDevice.GetPhysicalDeviceRayTracingPipelineFeatures().rayTracingPipeline;
+                    rayTracingPipelineFeatures.rayTracingPipelineTraceRaysIndirect =
+                        physicalDevice.GetPhysicalDeviceRayTracingPipelineFeatures().rayTracingPipelineTraceRaysIndirect;
+
+                    deviceInfoAppender.append(rayTracingPipelineFeatures);
+                }
+
+                if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::RayQuery))
+                {
+                    rayQueryFeatures = physicalDevice.GetRayQueryFeatures();
+
+                    deviceInfoAppender.append(rayQueryFeatures);
+                }
+
+                if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::ClusterAccelerationStructure))
+                {
+                    clusterAccelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_ACCELERATION_STRUCTURE_FEATURES_NV;
+                    clusterAccelerationStructureFeatures.clusterAccelerationStructure = physicalDevice.GetPhysicalDeviceClusterAccelerationStructureFeatures().clusterAccelerationStructure;
+
+                    deviceInfoAppender.append(clusterAccelerationStructureFeatures);
+                }
+            }
+            else
+            {
+                // make sure all ray tracing extensions are disabled
+                physicalDevice.DisableOptionalDeviceExtension(OptionalDeviceExtension::RayTracingPipeline);
+                physicalDevice.DisableOptionalDeviceExtension(OptionalDeviceExtension::RayQuery);
+                physicalDevice.DisableOptionalDeviceExtension(OptionalDeviceExtension::ClusterAccelerationStructure);
+            }
+
+            deviceInfoAppender.finish();
 
 #if defined(USE_NSIGHT_AFTERMATH)
             requiredExtensions.push_back(VK_NV_DEVICE_DIAGNOSTICS_CONFIG_EXTENSION_NAME);
@@ -329,6 +558,9 @@ namespace AZ
             deviceInfo.pNext = &aftermathInfo;
 #endif
 
+            RawStringList optionalExtensions = physicalDevice.GetEnabledOptionalExtensions();
+            requiredExtensions.insert(requiredExtensions.end(), optionalExtensions.begin(), optionalExtensions.end());
+
             deviceInfo.flags = 0;
             deviceInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreationInfo.size());
             deviceInfo.pQueueCreateInfos = queueCreationInfo.data();
@@ -344,7 +576,7 @@ namespace AZ
                 &deviceInfo,
                 VkSystemAllocator::Get(),
                 &m_nativeDevice);
-            AssertSuccess(vkResult);
+            VK_RESULT_ASSERT(vkResult);
             RETURN_RESULT_IF_UNSUCCESSFUL(ConvertResult(vkResult));
 
             LoaderContext::Descriptor loaderDescriptor;
@@ -359,9 +591,9 @@ namespace AZ
                 return RHI::ResultCode::Fail;
             }
 
-            for (const VkDeviceQueueCreateInfo& queueInfo : queueCreationInfo)
+            if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::CalibratedTimestamps))
             {
-                delete[] queueInfo.pQueuePriorities;
+                InitializeTimeDomains();
             }
 
             //Load device features now that we have loaded all extension info
@@ -498,9 +730,9 @@ namespace AZ
                 // This will not allocate or bind memory.
                 ImageCreateInfo createInfo = BuildImageCreateInfo(descriptor);
                 VkImage vkImage = VK_NULL_HANDLE;
-                VkResult vkResult =
+                [[maybe_unused]] VkResult vkResult =
                     GetContext().CreateImage(GetNativeDevice(), createInfo.GetCreateInfo(), VkSystemAllocator::Get(), &vkImage);
-                AssertSuccess(vkResult);
+                VK_RESULT_ASSERT(vkResult);
 
                 VkMemoryRequirements memoryRequirements = {};
                 GetContext().GetImageMemoryRequirements(GetNativeDevice(), vkImage, &memoryRequirements);
@@ -526,9 +758,9 @@ namespace AZ
                 // This will not allocate or bind memory.
                 BufferCreateInfo createInfo = BuildBufferCreateInfo(descriptor);
                 VkBuffer vkBuffer = VK_NULL_HANDLE;
-                VkResult vkResult =
+                [[maybe_unused]] VkResult vkResult =
                     GetContext().CreateBuffer(GetNativeDevice(), createInfo.GetCreateInfo(), VkSystemAllocator::Get(), &vkBuffer);
-                AssertSuccess(vkResult);
+                VK_RESULT_ASSERT(vkResult);
 
                 VkMemoryRequirements memoryRequirements = {};
                 GetContext().GetBufferMemoryRequirements(GetNativeDevice(), vkBuffer, &memoryRequirements);
@@ -851,8 +1083,9 @@ namespace AZ
 
             const auto& physicalDevice = static_cast<const PhysicalDevice&>(GetPhysicalDevice());
             uint32_t surfaceFormatCount = 0;
-            AssertSuccess(GetContext().GetPhysicalDeviceSurfaceFormatsKHR(
-                physicalDevice.GetNativePhysicalDevice(), vkSurface, &surfaceFormatCount, nullptr));
+            [[maybe_unused]] VkResult vkResult = GetContext().GetPhysicalDeviceSurfaceFormatsKHR(
+                physicalDevice.GetNativePhysicalDevice(), vkSurface, &surfaceFormatCount, nullptr);
+            VK_RESULT_ASSERT(vkResult);
             if (surfaceFormatCount == 0)
             {
                 AZ_Assert(false, "Surface support no format.");
@@ -860,8 +1093,22 @@ namespace AZ
             }
 
             AZStd::vector<VkSurfaceFormatKHR> surfaceFormats(surfaceFormatCount);
-            AssertSuccess(GetContext().GetPhysicalDeviceSurfaceFormatsKHR(
-                physicalDevice.GetNativePhysicalDevice(), vkSurface, &surfaceFormatCount, surfaceFormats.data()));
+            vkResult = GetContext().GetPhysicalDeviceSurfaceFormatsKHR(
+                physicalDevice.GetNativePhysicalDevice(), vkSurface, &surfaceFormatCount, surfaceFormats.data());
+            VK_RESULT_ASSERT(vkResult);
+
+            bool colorSpaceExt = false;
+            if (r_hdrOutput)
+            {
+                for (const char* loaded_extension : Instance::GetInstance().GetLoadedExtensions())
+                {
+                    if (strcmp(loaded_extension, VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME) == 0)
+                    {
+                        colorSpaceExt = true;
+                        break;
+                    }
+                }
+            }
 
             AZStd::set<RHI::Format> formats;
             for (const VkSurfaceFormatKHR& surfaceFormat : surfaceFormats)
@@ -869,7 +1116,7 @@ namespace AZ
                 // Don't expose formats for HDR output when the extension is missing
                 // This can happen on Linux with Wayland.
                 if (surfaceFormat.format == VK_FORMAT_A2R10G10B10_UNORM_PACK32 &&
-                    m_loaderContext->GetContext().SetHdrMetadataEXT == nullptr)
+                    (m_loaderContext->GetContext().SetHdrMetadataEXT == nullptr || colorSpaceExt == false))
                 {
                     continue;
                 }
@@ -967,6 +1214,55 @@ namespace AZ
             const auto& physicalDevice = static_cast<const PhysicalDevice&>(GetPhysicalDevice());
             auto timeInNano = AZStd::chrono::nanoseconds(static_cast<AZStd::chrono::nanoseconds::rep>(physicalDevice.GetDeviceLimits().timestampPeriod * gpuTimestamp));
             return AZStd::chrono::duration_cast<AZStd::chrono::microseconds>(timeInNano);
+        }
+
+        AZStd::pair<uint64_t, uint64_t> Device::GetCalibratedTimestamp([[maybe_unused]] RHI::HardwareQueueClass queueClass)
+        {
+            if (!static_cast<const PhysicalDevice&>(GetPhysicalDevice())
+                     .IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::CalibratedTimestamps))
+            {
+                return { 0ull, AZStd::chrono::microseconds().count() };
+            }
+
+            uint64_t maxDeviation;
+            AZStd::pair<uint64_t, uint64_t> result;
+
+            AZStd::array<VkCalibratedTimestampInfoEXT, 2> timestampsInfos{
+                VkCalibratedTimestampInfoEXT{ VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_EXT, 0, VK_TIME_DOMAIN_DEVICE_EXT },
+                VkCalibratedTimestampInfoEXT{ VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_EXT, 0, m_hostTimeDomain }
+            };
+
+            GetContext().GetCalibratedTimestampsEXT(
+                m_nativeDevice, static_cast<uint32_t>(timestampsInfos.size()), timestampsInfos.data(), &result.first, &maxDeviation);
+            return result;
+        }
+
+        void Device::InitializeTimeDomains()
+        {
+            auto timeDomains{
+                static_cast<const PhysicalDevice&>(GetPhysicalDevice()).GetCalibratedTimeDomains(m_loaderContext->GetContext())
+            };
+
+            bool deviceTimeDomainFound{ false };
+
+            for (VkTimeDomainEXT timeDomain : timeDomains)
+            {
+                if (timeDomain == VK_TIME_DOMAIN_DEVICE_EXT)
+                {
+                    deviceTimeDomainFound = true;
+                }
+                // we prioritize VK_TIME_DOMAIN_CLOCK_MONOTONIC_RAW_EXT of the host time domains
+                else if (m_hostTimeDomain != VK_TIME_DOMAIN_CLOCK_MONOTONIC_RAW_EXT)
+                {
+                    m_hostTimeDomain = timeDomain;
+                }
+            }
+
+            // if there is no device time domain we reset the host one as this is pointless then
+            if (!deviceTimeDomainFound)
+            {
+                m_hostTimeDomain = VK_TIME_DOMAIN_MAX_ENUM_KHR;
+            }
         }
 
         RHI::ResourceMemoryRequirements Device::GetResourceMemoryRequirements(const RHI::ImageDescriptor& descriptor)
@@ -1108,6 +1404,11 @@ namespace AZ
 
         void Device::InitFeaturesAndLimits(const PhysicalDevice& physicalDevice)
         {
+            uint32_t physicalDeviceVersion = physicalDevice.GetVulkanVersion();
+            uint32_t majorVersion = VK_VERSION_MAJOR(physicalDeviceVersion);
+            uint32_t minorVersion = VK_VERSION_MINOR(physicalDeviceVersion);
+            auto vulkan12{ majorVersion >= 1 && minorVersion >= 2 };
+
             m_features.m_geometryShader = (m_enabledDeviceFeatures.geometryShader == VK_TRUE);
             m_features.m_computeShader = true;
             m_features.m_independentBlend = (m_enabledDeviceFeatures.independentBlend == VK_TRUE);
@@ -1169,14 +1470,19 @@ namespace AZ
             // to determine if ray tracing is supported on this device
             StringList deviceExtensions = physicalDevice.GetDeviceExtensionNames();
             StringList::iterator itRayTracingExtension = AZStd::find(deviceExtensions.begin(), deviceExtensions.end(), VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
-            m_features.m_unboundedArrays = physicalDevice.GetPhysicalDeviceDescriptorIndexingFeatures().shaderStorageTexelBufferArrayNonUniformIndexing;
+            StringList::iterator itRayTracingClasExtension = AZStd::find(deviceExtensions.begin(), deviceExtensions.end(), VK_NV_CLUSTER_ACCELERATION_STRUCTURE_EXTENSION_NAME);
+            m_features.m_unboundedArrays = vulkan12
+                ? physicalDevice.GetPhysicalDeviceVulkan12Features().shaderStorageTexelBufferArrayNonUniformIndexing
+                : physicalDevice.GetPhysicalDeviceDescriptorIndexingFeatures().shaderStorageTexelBufferArrayNonUniformIndexing;
             if (m_features.m_unboundedArrays)
             {
                 // Ray tracing needs raytracing extensions and unbounded arrays to work
                 m_features.m_rayTracing = (itRayTracingExtension != deviceExtensions.end());
+                m_features.m_rayTracingClas = (itRayTracingClasExtension != deviceExtensions.end());
             }
 
-            m_features.m_float16 = physicalDevice.GetPhysicalDeviceFloat16Int8Features().shaderFloat16;
+            m_features.m_float16 = vulkan12 ? physicalDevice.GetPhysicalDeviceVulkan12Features().shaderFloat16
+                                            : physicalDevice.GetPhysicalDeviceFloat16Int8Features().shaderFloat16;
 
             if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::FragmentShadingRate))
             {
@@ -1236,8 +1542,43 @@ namespace AZ
 #ifdef DISABLE_TIMELINE_SEMAPHORES
             m_features.m_signalFenceFromCPU = false;
 #else
-            m_features.m_signalFenceFromCPU = physicalDevice.GetPhysicalDeviceTimelineSemaphoreFeatures().timelineSemaphore;
+            m_features.m_signalFenceFromCPU = vulkan12 ? physicalDevice.GetPhysicalDeviceVulkan12Features().timelineSemaphore
+                                                       : physicalDevice.GetPhysicalDeviceTimelineSemaphoreFeatures().timelineSemaphore;
 #endif
+            // These are two nested ifs instead of one because MSVC complains about a missing contexpr otherwise
+            // The warning is C4127, but we can't add a constexpr when doing (constexpr && non-constexpr)
+            // The two ifs can be combined into a single one once MSVC fixes this warning
+            // See https://developercommunity.visualstudio.com/t/C4127-provides-advice-that-breaks-code/10497946?sort=newest&q=ICE
+            if constexpr (CrossDeviceFencesSupported)
+            {
+                if (physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::ExternalSemaphore))
+                {
+                    VkExternalSemaphoreProperties externalSemaphoreProperties{};
+                    externalSemaphoreProperties.sType = VK_STRUCTURE_TYPE_EXTERNAL_SEMAPHORE_PROPERTIES;
+
+                    VkPhysicalDeviceExternalSemaphoreInfo externalSemaphoreInfo{};
+                    externalSemaphoreInfo.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SEMAPHORE_INFO;
+                    externalSemaphoreInfo.handleType = ExternalSemaphoreHandleTypeBit;
+
+                    VkSemaphoreTypeCreateInfo semaphoreCreateInfo{};
+                    semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO;
+                    semaphoreCreateInfo.semaphoreType = VK_SEMAPHORE_TYPE_TIMELINE;
+                    externalSemaphoreInfo.pNext = &semaphoreCreateInfo;
+                    GetContext().GetPhysicalDeviceExternalSemaphoreProperties(
+                        physicalDevice.GetNativePhysicalDevice(), &externalSemaphoreInfo, &externalSemaphoreProperties);
+
+                    m_features.m_crossDeviceFences = RHI::CheckBitsAll<VkExternalSemaphoreFeatureFlags>(
+                        externalSemaphoreProperties.externalSemaphoreFeatures,
+                        VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT | VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT);
+
+                    // This feature was only tested on Nvidia and it's not clear if it work for other Vendors
+                    // We disable it for other vendors for the time being
+                    m_features.m_crossDeviceFences =
+                        m_features.m_crossDeviceFences && physicalDevice.GetDescriptor().m_vendorId == RHI::VendorId::nVidia;
+                }
+            }
+            m_features.m_crossDeviceHostMemory =
+                physicalDevice.IsOptionalDeviceExtensionSupported(OptionalDeviceExtension::ExternalMemoryHost);
 
             const auto& deviceLimits = physicalDevice.GetDeviceLimits();
             m_limits.m_maxImageDimension1D = deviceLimits.maxImageDimension1D;
@@ -1389,7 +1730,7 @@ namespace AZ
             }
 
             VkResult errorCode = vmaCreateAllocator(&allocatorInfo, &m_vmaAllocator);
-            AssertSuccess(errorCode);
+            VK_RESULT_ASSERT(errorCode);
 
             return ConvertResult(errorCode);
         }
@@ -1562,14 +1903,15 @@ namespace AZ
             vkCreateInfo.usage = CalculateImageUsageFlags(descriptor);
 
             VkImageFormatProperties formatProps{};
-            AssertSuccess(GetContext().GetPhysicalDeviceImageFormatProperties(
+            [[maybe_unused]] VkResult vkResult = GetContext().GetPhysicalDeviceImageFormatProperties(
                 physicalDevice.GetNativePhysicalDevice(),
                 vkCreateInfo.format,
                 vkCreateInfo.imageType,
                 vkCreateInfo.tiling,
                 vkCreateInfo.usage,
                 vkCreateInfo.flags,
-                &formatProps));
+                &formatProps);
+            VK_RESULT_ASSERT(vkResult);
 
             AZ_Assert(descriptor.m_sharedQueueMask != RHI::HardwareQueueClassMask::None, "Invalid shared queue mask");
             createInfo.m_queueFamilyIndices = GetCommandQueueContext().GetQueueFamilyIndices(descriptor.m_sharedQueueMask);

@@ -405,6 +405,20 @@ namespace AZ
     }
 
 
+    AZ_MATH_INLINE Quaternion Quaternion::SmoothCriticallyDamped(Quaternion& valueRate, float timeDelta, const Quaternion& target, float smoothTime) const
+    {
+        Quaternion result = *this;
+        AZ::SmoothCriticallyDamped(result, valueRate, timeDelta, target, smoothTime);
+        return result;
+    }
+
+
+    AZ_MATH_INLINE Quaternion Quaternion::SmoothStep(const Quaternion& dest, float t) const
+    {
+        return AZ::SmoothStep(*this, dest, t);
+    }
+
+
     AZ_MATH_INLINE bool Quaternion::IsClose(const Quaternion& q, float tolerance) const
     {
 #if AZ_TRAIT_USE_PLATFORM_SIMD_SCALAR
@@ -550,48 +564,21 @@ namespace AZ
     }
 
 
-    AZ_MATH_INLINE Vector3 Quaternion::GetEulerRadians() const
+    AZ_MATH_INLINE Vector3 Quaternion::GetEulerDegreesXYZ() const
     {
-        const float sinp = 2.0f * (m_w * m_y + m_z * m_x);
+        return Vector3RadToDeg(GetEulerRadiansXYZ());
+    }
 
-        if (sinp * sinp < 0.5f)
-        {
-            // roll (x-axis rotation)
-            const float roll = Atan2(2.0f * (m_w * m_x - m_z * m_y), 1.0f - 2.0f * (m_x * m_x + m_y * m_y));
 
-            // pitch (y-axis rotation)
-            const float pitch = asinf(sinp);
+    AZ_MATH_INLINE Vector3 Quaternion::GetEulerDegreesYXZ() const
+    {
+        return Vector3RadToDeg(GetEulerRadiansYXZ());
+    }
 
-            // yaw (z-axis rotation)
-            const float yaw = Atan2(2.0f * (m_w * m_z - m_x * m_y), 1.0f - 2.0f * (m_y * m_y + m_z * m_z));
 
-            return Vector3(roll, pitch, yaw);
-        }
-
-        // find the pitch from its cosine instead, to avoid issues with sensitivity of asin when the sine value is close to 1
-        else
-        {
-            const float sign = sinp > 0.0f ? 1.0f : -1.0f;
-            const float m12 = 2.0f * (m_z * m_y - m_w * m_x);
-            const float m22 = 1.0f - 2.0f * (m_x * m_x + m_y * m_y);
-            const float cospSq = m12 * m12 + m22 * m22;
-            const float cosp = Sqrt(cospSq);
-            const float pitch = sign * acosf(cosp);
-            if (cospSq > Constants::FloatEpsilon)
-            {
-                const float roll = Atan2(-m12, m22);
-                const float yaw = Atan2(2.0f * (m_w * m_z - m_x * m_y), 1.0f - 2.0f * (m_y * m_y + m_z * m_z));
-                return Vector3(roll, pitch, yaw);
-            }
-            // if the pitch is close enough to +-pi/2, use a different approach because the terms used above lose roll and yaw information
-            else
-            {
-                const float m21 = 2.0f * (m_y * m_z + m_x * m_w);
-                const float m11 = 1.0f - 2.0f * (m_x * m_x + m_z * m_z);
-                const float roll = Atan2(m21, m11);
-                return Vector3(roll, pitch, 0.0f);
-            }
-        }
+    AZ_MATH_INLINE Vector3 Quaternion::GetEulerDegreesZYX() const
+    {
+        return Vector3RadToDeg(GetEulerRadiansZYX());
     }
 
 
@@ -609,7 +596,9 @@ namespace AZ
 
     AZ_MATH_INLINE bool Quaternion::IsFinite() const
     {
-        return IsFiniteFloat(GetX()) && IsFiniteFloat(GetY()) && IsFiniteFloat(GetZ()) && IsFiniteFloat(GetW());
+        // Packed 4-lane finite check: abs(v) <= FloatMax
+        // catches both NaN (unordered compare returns false) and +/-Inf (Inf > FloatMax)
+        return Simd::Vec4::CmpAllLtEq(Simd::Vec4::Abs(m_value), Simd::Vec4::Splat(Constants::FloatMax));
     }
 
 

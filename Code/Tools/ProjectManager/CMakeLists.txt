@@ -47,6 +47,10 @@ o3de_add_target(
             AZ::AzToolsFramework
 )
 
+if(O3DE_PAL_TRAIT_BUILD_EXTERNAL_CRASH_HANDLER_SUPPORTED)
+    ly_target_link_libraries(ProjectManager.Static PRIVATE AZ::ToolsCrashHandler)
+endif()
+
 o3de_add_target(
     NAME ProjectManager APPLICATION
     OUTPUT_NAME o3de
@@ -75,7 +79,6 @@ if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     o3de_add_target(
         NAME ProjectManager.Tests EXECUTABLE
         NAMESPACE AZ
-        AUTORCC
         FILES_CMAKE
             project_manager_tests_files.cmake
             Platform/${O3DE_PAL_PLATFORM_NAME}/PAL_${O3DE_PAL_PLATFORM_WART}_tests_files.cmake

@@ -9,11 +9,12 @@
 #pragma once
 
 #include <AzFramework/DocumentPropertyEditor/DocumentAdapter.h>
+#include <AzFramework/AzFrameworkAPI.h>
 
 namespace AZ::DocumentPropertyEditor
 {
 
-    class MetaAdapter : public DocumentAdapter
+    class AZF_API MetaAdapter : public DocumentAdapter
     {
     public:
         void SetSourceAdapter(DocumentAdapterPtr sourceAdapter);
@@ -25,6 +26,8 @@ namespace AZ::DocumentPropertyEditor
             DocumentAdapter* referenceAdapter,
             const AZStd::string& settingsRegistryKey = AZStd::string(),
             const AZStd::string& propertyEditorName = AZStd::string()) override;
+
+        void ExecuteQueuedReset() override;
 
     protected:
         // handlers for source adapter's messages
@@ -39,6 +42,7 @@ namespace AZ::DocumentPropertyEditor
         Dom::Path GetRowPath(const Dom::Path& sourcePath) const;
 
         DocumentAdapter::ResetEvent::Handler m_resetHandler;
+        DocumentAdapter::ResetQueuedEvent::Handler m_resetQueuedHandler;
         ChangedEvent::Handler m_changedHandler;
         MessageEvent::Handler m_domMessageHandler;
 

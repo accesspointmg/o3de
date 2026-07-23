@@ -10,14 +10,12 @@
 #define CRYINCLUDE_EDITOR_UTILS_REFLECTEDPROPERTYCTRL_H
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzToolsFramework/UI/PropertyEditor/PropertyEditorAPI.h>
 #include <AzCore/std/smart_ptr/unique_ptr.h>
 #include "Include/EditorCoreAPI.h"
 #include "ReflectedPropertyItem.h"
 #include "ReflectedVar.h"
 #include <QFrame>
-#endif
 
 class QLineEdit;
 class QLabel;
@@ -31,13 +29,11 @@ namespace AzToolsFramework {
     class ComponentEditorHeader;
 }
 
-AZ_PUSH_DISABLE_DLL_EXPORT_BASECLASS_WARNING
 //ReflectedPropertyEditor-based implementation of the MFC CPropertyCtrl API
 class EDITOR_CORE_API ReflectedPropertyControl
     : public QWidget
     , public AzToolsFramework::IPropertyEditorNotify
 {
-AZ_POP_DISABLE_DLL_EXPORT_BASECLASS_WARNING
         Q_OBJECT
 public:
     //! For alternative undo.
@@ -240,22 +236,18 @@ private:
     QWidget* m_filterWidget;
     QLabel* m_titleLabel;
 
-    AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
     _smart_ptr<CVarBlock> m_pVarBlock;
     _smart_ptr<ReflectedPropertyItem> m_root;
     AZStd::unique_ptr<CPropertyContainer> m_rootContainer;
-    AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
     AZ::SerializeContext* m_serializeContext;
 
     bool m_bEnableCallback;
     QString m_filterString;
-    AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
     UpdateVarCallback m_updateVarFunc;
     UpdateObjectCallback m_updateObjectFunc;
     SelChangeCallback m_selChangeFunc;
     UndoCallback m_undoFunc;
-    AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
     bool m_bStoreUndoByItems;
     bool m_bForceModified;
@@ -268,19 +260,16 @@ private:
     bool m_isTwoColumnSection;
 
     //custom popup menu
-    AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
     std::vector<SCustomPopupItem> m_customPopupMenuItems;
     std::vector<SCustomPopupMenu> m_customPopupMenuPopups;
-    AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
+
     template<typename T>
     void RemoveCustomPopup(const QString& text, T& customPopup);
 };
 
-AZ_PUSH_DISABLE_DLL_EXPORT_BASECLASS_WARNING
 class EDITOR_CORE_API TwoColumnPropertyControl
     : public QWidget
 {
-AZ_POP_DISABLE_DLL_EXPORT_BASECLASS_WARNING
     Q_OBJECT
 public:
     TwoColumnPropertyControl(QWidget* parent = nullptr);
@@ -330,11 +319,9 @@ protected:
 private:
     void ToggleTwoColumnLayout();
 
- AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
     QVector<PropertyCard*> m_controlList;
     QVector<_smart_ptr<CVarBlock>> m_varBlockList;
     _smart_ptr<CVarBlock> m_pVarBlock;
- AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
     QWidget *m_leftContainer;
     QWidget *m_rightContainer;

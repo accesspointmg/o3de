@@ -39,7 +39,7 @@ namespace AZ
             }
         }
 
-        void ReflectionProbe::OnAssetError(Data::Asset<Data::AssetData> asset)
+        void ReflectionProbe::OnAssetError([[maybe_unused]] Data::Asset<Data::AssetData> asset)
         {
             AZ_Error("ReflectionProbe", false, "Failed to load ReflectionProbe dependency asset %s", asset.ToString<AZStd::string>().c_str());
             Data::AssetBus::Handler::BusDisconnect();
@@ -74,7 +74,7 @@ namespace AZ
             // particularly when slices are involved.
             // Note that m_visualizationMeshHandle had to be set up first, because AssetBus BusConnect() might call ReflectionProbe::OnAssetReady() immediately on this callstack.
             m_visualizationMaterialAsset = AZ::RPI::AssetUtils::GetAssetByProductPath<AZ::RPI::MaterialAsset>(
-                "Materials/ReflectionProbe/ReflectionProbeVisualization.azmaterial",
+                "materials/reflectionprobe/reflectionprobevisualization.azmaterial",
                 AZ::RPI::AssetUtils::TraceLevel::Assert);
             m_visualizationMaterialAsset.QueueLoad();
             Data::AssetBus::Handler::BusConnect(m_visualizationMaterialAsset.GetId());

@@ -17,6 +17,7 @@
 #include <AzCore/RTTI/ReflectContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 #include <AzCore/Serialization/EditContext.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 #include <AzFramework/Asset/AssetSystemBus.h>
 
@@ -41,7 +42,7 @@ namespace AZ
                 //       can open the asset with the preferred asset editor (Scene Settings).
                 if (auto* editContext = serializeContext->GetEditContext())
                 {
-                    editContext->Class<ModelAsset>("Model Asset", "")
+                    editContext->Class<ModelAsset>(QT_TRANSLATE_NOOP("Atom::RPI", "Model Asset"), "")
                         ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                         ;
                 }
@@ -459,18 +460,9 @@ namespace AZ
                 "Model id " AZ_STRING_FORMAT " not found in asset catalog, using fallback model.\n",
                 AZ_STRING_ARG(asset.GetId().ToFixedString()));
 
-            // Find out if the asset is missing completely or just still processing
-            // and escalate the asset to the top of the list if it's queued.
-            AzFramework::AssetSystem::AssetStatus missingAssetStatus = AzFramework::AssetSystem::AssetStatus::AssetStatus_Unknown;
-            AzFramework::AssetSystemRequestBus::BroadcastResult(
-                missingAssetStatus, &AzFramework::AssetSystem::AssetSystemRequests::GetAssetStatusById, asset.GetId().m_guid);
-
-            if (missingAssetStatus == AzFramework::AssetSystem::AssetStatus::AssetStatus_Queued)
-            {
-                bool sendSucceeded = false;
-                AzFramework::AssetSystemRequestBus::BroadcastResult(
-                    sendSucceeded, &AzFramework::AssetSystem::AssetSystemRequests::EscalateAssetByUuid, asset.GetId().m_guid);
-            }
+            // escalate the asset to the top of the processing list, if it can be (this is a fire and forget message that puts it in the queue
+            // and returns instantly, without waiting). 
+            AzFramework::AssetSystemRequestBus::Broadcast(&AzFramework::AssetSystem::AssetSystemRequests::EscalateAssetByUuid, asset.GetId().m_guid);
 
             // Make sure the default model asset has an entry in the asset catalog so that the asset system will try to load it.
             // Note that we specifically give it a 0-byte size and a non-empty path so that the load will just trivially succeed

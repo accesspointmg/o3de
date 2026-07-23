@@ -16,6 +16,7 @@
 
 #include <AzFramework/Physics/Common/PhysicsSceneQueries.h>
 #include <AzFramework/Physics/Components/SimulatedBodyComponentBus.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 #include <SurfaceData/SurfaceDataSystemRequestBus.h>
 #include <SurfaceData/Utility/SurfaceDataUtility.h>
@@ -36,12 +37,16 @@ namespace SurfaceData
             if (auto edit = serialize->GetEditContext())
             {
                 edit->Class<SurfaceDataColliderConfig>(
-                    "PhysX Collider Surface Tag Emitter", "")
+                    QT_TRANSLATE_NOOP("SurfaceData", "PhysX Collider Surface Tag Emitter"), "")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(0, &SurfaceDataColliderConfig::m_providerTags, "Generated Tags", "Surface tags to add to created points")
-                    ->DataElement(0, &SurfaceDataColliderConfig::m_modifierTags, "Extended Tags", "Surface tags to add to contained points")
+                    ->DataElement(0, &SurfaceDataColliderConfig::m_providerTags,
+                        QT_TRANSLATE_NOOP("SurfaceData", "Generated Tags"),
+                        QT_TRANSLATE_NOOP("SurfaceData", "Surface tags to add to created points"))
+                    ->DataElement(0, &SurfaceDataColliderConfig::m_modifierTags,
+                        QT_TRANSLATE_NOOP("SurfaceData", "Extended Tags"),
+                        QT_TRANSLATE_NOOP("SurfaceData", "Surface tags to add to contained points"))
                     ;
             }
         }
@@ -129,11 +134,13 @@ namespace SurfaceData
         m_refresh = false;
 
         AZ::TransformNotificationBus::Handler::BusConnect(GetEntityId());
-        Physics::ColliderComponentEventBus::Handler::BusConnect(GetEntityId());
+        Physics::ColliderComponentEventBus::Handler::BusConnect(GetEntityId());        
 
         // Update the cached collider data and bounds, then register the surface data provider / modifier
         m_newPointWeights.AssignSurfaceTagWeights(m_configuration.m_providerTags, 1.0f);
+
         UpdateColliderData();
+        OnCompositionChanged();
     }
 
     void SurfaceDataColliderComponent::Deactivate()
@@ -281,7 +288,7 @@ namespace SurfaceData
             m_refresh = true;
             AZ::TickBus::Handler::BusConnect();
         }
-    }
+    }    
 
     void SurfaceDataColliderComponent::OnColliderChanged()
     {

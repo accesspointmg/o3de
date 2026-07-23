@@ -9,19 +9,19 @@
 #include <AzCore/PlatformDef.h>
 
 AZ_PUSH_DISABLE_WARNING(4251, "-Wunknown-warning-option") // 'QLayoutItem::align': class 'QFlags<Qt::AlignmentFlag>' needs to have dll-interface to be used by clients of class 'QLayoutItem'
-#include <QtWidgets/QBoxLayout>
+#include <QBoxLayout>
 AZ_POP_DISABLE_WARNING
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QLayout>
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QMenu>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QComboBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLineEdit>
+#include <QMenu>
+#include <QPushButton>
+#include <QComboBox>
 AZ_PUSH_DISABLE_WARNING(4251, "-Wunknown-warning-option") // 'QFileInfo::d_ptr': class 'QSharedDataPointer<QFileInfoPrivate>' needs to have dll-interface to be used by clients of class 'QFileInfo'
-#include <QtWidgets/QFileDialog>
+#include <QFileDialog>
 AZ_POP_DISABLE_WARNING
-#include <QtWidgets/QMessageBox>
-#include <QtWidgets/QWidgetAction>
+#include <QMessageBox>
+#include <QWidgetAction>
 AZ_PUSH_DISABLE_WARNING(4244 4251, "-Wunknown-warning-option") // 4144: conversion from 'int' to 'float', possible loss of data
                                                                // 4251: 'QInputEvent::modState': class 'QFlags<Qt::KeyboardModifier>' needs to have dll-interface to be used by clients of class 'QInputEvent'
 #include <QMouseEvent>
@@ -57,7 +57,6 @@ namespace AzToolsFramework
         setMinimumSize(60, 24);
 
         QHBoxLayout* frameLayout = new QHBoxLayout(this);
-        frameLayout->setMargin(0);
         frameLayout->setSpacing(4);
         frameLayout->setContentsMargins(4, 1, 4, 1);
 
@@ -102,7 +101,7 @@ namespace AzToolsFramework
     }
 
 
-    void SearchCriteriaButton::enterEvent(QEvent* event)
+    void SearchCriteriaButton::enterEvent(QEnterEvent* event)
     {
         (void)event;
         m_mouseHover = true;
@@ -131,7 +130,7 @@ namespace AzToolsFramework
     void SearchCriteriaButton::SplitTagAndText(const QString& fullText, QString& tagText, QString& criteriaText)
     {
         //  Only the first colon is important, so use indexOf instead of split.
-        int index = fullText.indexOf(tr(":"));
+        int index = aznumeric_cast<int>(fullText.indexOf(tr(":")));
         if (index < 0)
         {
             tagText = QString();
@@ -711,4 +710,3 @@ namespace AzToolsFramework
 
 }   //  namespace AzToolsFramework
 
-#include "UI/SearchWidget/moc_SearchCriteriaWidget.cpp"

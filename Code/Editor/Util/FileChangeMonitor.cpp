@@ -11,9 +11,12 @@
 
 #include "FileChangeMonitor.h"
 
+#include <AzCore/std/string/wildcard.h>
+
 // Qt
 #include <QDateTime>
 #include <QTimer>
+#include <QRegularExpression>
 
 
 CFileChangeMonitor* CFileChangeMonitor::s_pFileMonitorInstance = nullptr;
@@ -92,7 +95,7 @@ void CFileChangeMonitor::AddIgnoreFileMask(const char* pMask)
 
 void CFileChangeMonitor::RemoveIgnoreFileMask(const char* pMask, int aAfterDelayMsec)
 {
-    QTimer::singleShot(aAfterDelayMsec, [=]() {
+    QTimer::singleShot(aAfterDelayMsec, [this, pMask]() {
         m_ignoreMasks.removeAll(QString::fromLatin1(pMask));
     });
 }
@@ -155,7 +158,7 @@ void CFileChangeMonitor::OnDirectoryChange(const QString &path)
 
     for (const auto &fi : prev)
     {
-        int eindex = entries.indexOf(fi);
+        int eindex = static_cast<int>(entries.indexOf(fi));
         if (eindex >= 0)
         {
             if (fi.lastModified() != entries.at(eindex).lastModified())
@@ -192,8 +195,7 @@ void CFileChangeMonitor::NotifyListeners(const QString &path, SFileChangeInfo::E
 {
     for (const auto &glob : m_ignoreMasks)
     {
-        QRegExp exp(glob, Qt::CaseInsensitive, QRegExp::Wildcard);
-        if (path.contains(exp))
+        if (AZStd::wildcard_match(qUtf8Printable(glob), qUtf8Printable(path)))
         {
             return; // mask matches, ignore event
         }

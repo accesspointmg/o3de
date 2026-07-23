@@ -15,13 +15,13 @@
 #include <AzCore/IO/Streamer/StreamerComponent.h>
 #include <AzCore/Jobs/JobManagerComponent.h>
 #include <AzCore/Memory/PoolAllocator.h>
+#include <AzCore/Task/TaskGraphSystemComponent.h>
 #include <AzCore/UserSettings/UserSettingsComponent.h>
 
 #include <AzFramework/Asset/CustomAssetTypeComponent.h>
 
 #include <AzToolsFramework/UI/PropertyEditor/PropertyManagerComponent.h>
 
-#include <AzQtComponents/Components/GlobalEventFilter.h>
 #include <AzQtComponents/Components/StyledDockWidget.h>
 #include <AzQtComponents/Components/O3DEStylesheet.h>
 #include <AzQtComponents/Utilities/HandleDpiAwareness.h>
@@ -58,6 +58,7 @@ public:
 
         m_componentApp.RegisterComponentDescriptor(AZ::AssetManagerComponent::CreateDescriptor());
         m_componentApp.RegisterComponentDescriptor(AZ::JobManagerComponent::CreateDescriptor());
+        m_componentApp.RegisterComponentDescriptor(AZ::TaskGraphSystemComponent::CreateDescriptor());
         m_componentApp.RegisterComponentDescriptor(AZ::StreamerComponent::CreateDescriptor());
         m_componentApp.RegisterComponentDescriptor(AZ::UserSettingsComponent::CreateDescriptor());
         m_componentApp.RegisterComponentDescriptor(AzFramework::CustomAssetTypeComponent::CreateDescriptor());
@@ -65,6 +66,7 @@ public:
 
         m_systemEntity->CreateComponent<AZ::AssetManagerComponent>();
         m_systemEntity->CreateComponent<AZ::JobManagerComponent>();
+        m_systemEntity->CreateComponent<AZ::TaskGraphSystemComponent>();
         m_systemEntity->CreateComponent<AZ::StreamerComponent>();
         m_systemEntity->CreateComponent<AZ::UserSettingsComponent>();
         m_systemEntity->CreateComponent<AzFramework::CustomAssetTypeComponent>();
@@ -86,6 +88,7 @@ public:
         {
             m_systemEntity->FindComponent<AZ::AssetManagerComponent>(),
             m_systemEntity->FindComponent<AZ::JobManagerComponent>(),
+            m_systemEntity->FindComponent<AZ::TaskGraphSystemComponent>(),
             m_systemEntity->FindComponent<AZ::StreamerComponent>(),
             m_systemEntity->FindComponent<AZ::UserSettingsComponent>(),
             m_systemEntity->FindComponent<AzFramework::CustomAssetTypeComponent>(),
@@ -101,6 +104,7 @@ public:
         m_componentApp.UnregisterComponentDescriptor(AZ::AssetManagerComponent::CreateDescriptor());
         m_componentApp.UnregisterComponentDescriptor(AZ::JobManagerComponent::CreateDescriptor());
         m_componentApp.UnregisterComponentDescriptor(AZ::StreamerComponent::CreateDescriptor());
+        m_componentApp.UnregisterComponentDescriptor(AZ::TaskGraphSystemComponent::CreateDescriptor());
         m_componentApp.UnregisterComponentDescriptor(AZ::UserSettingsComponent::CreateDescriptor());
         m_componentApp.UnregisterComponentDescriptor(AzFramework::CustomAssetTypeComponent::CreateDescriptor());
         m_componentApp.UnregisterComponentDescriptor(AzToolsFramework::Components::PropertyManagerComponent::CreateDescriptor());
@@ -124,17 +128,12 @@ int main(int argc, char **argv)
     QApplication::setOrganizationDomain("o3de.org");
     QApplication::setApplicationName("O3DEWidgetGallery");
 
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 
     qInstallMessageHandler(LogToDebug);
 
     AzQtComponents::Utilities::HandleDpiAwareness(AzQtComponents::Utilities::PerScreenDpiAware);
     QApplication app(argc, argv);
-
-    auto globalEventFilter = new AzQtComponents::GlobalEventFilter(&app);
-    app.installEventFilter(globalEventFilter);
 
     AzQtComponents::StyleManager styleManager(&app);
     AZ::IO::FixedMaxPath engineRootPath;

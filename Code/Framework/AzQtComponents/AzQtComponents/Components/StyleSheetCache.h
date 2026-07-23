@@ -8,7 +8,6 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzQtComponents/AzQtComponentsAPI.h>
 #include <AzCore/IO/Path/Path_fwd.h>
 
@@ -19,10 +18,9 @@
 #include <QSet>
 #include <QStack>
 #include <QMap>
-#endif
+#include <QRegularExpression>
 
 class QFileSystemWatcher;
-class QRegExp;
 
 namespace AzQtComponents
 {
@@ -71,7 +69,7 @@ namespace AzQtComponents
 
         QFileSystemWatcher* m_fileWatcher;
 
-        QScopedPointer<QRegExp> m_importExpression;
+        QScopedPointer<QRegularExpression> m_importExpression;
 
         QSet<QString> m_prefixes;
         QMap<QString, QString> m_diskToQrcMap;

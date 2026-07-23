@@ -51,6 +51,7 @@ o3de_add_target(
         PRIVATE
             AZ::AzCore
             AZ::AzFramework
+            3rdParty::meshoptimizer
         PUBLIC
             AZ::AtomCore
             Gem::Atom_RHI.Public
@@ -67,6 +68,7 @@ o3de_add_target(
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
+            ${pal_code_source_path}
         PUBLIC
             Include
     BUILD_DEPENDENCIES
@@ -212,6 +214,7 @@ if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::${gem_name}.Public
                 Gem::${gem_name}.TestUtils
     )
+
     o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         LABELS REQUIRES_tiaf
@@ -279,6 +282,7 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::Atom_RHI.Public
                 Gem::${gem_name}.Edit
                 Gem::${gem_name}.Public
+                3rdParty::meshoptimizer
     )
 
     o3de_add_target(

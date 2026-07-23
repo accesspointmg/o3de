@@ -8,6 +8,7 @@
 
 #include <PostProcess/ShapeWeightModifier/EditorShapeWeightModifierComponent.h>
 #include <AtomO3deIntegration/CommonFeatures/PostProcess/ShapeWeightModifier/ShapeWeightModifierComponentConstants.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 namespace AZ
 {
@@ -25,14 +26,14 @@ namespace AZ
                 if (AZ::EditContext* editContext = serializeContext->GetEditContext())
                 {
                     editContext->Class<EditorShapeWeightModifierComponent>(
-                        "PostFX Shape Weight Modifier", "Modifies PostFX override factor based on proximity of an influencer against this entity's bounding sphere")
+                        QT_TRANSLATE_NOOP("AtomO3deIntegration", "PostFX Shape Weight Modifier"), QT_TRANSLATE_NOOP("AtomO3deIntegration", "Modifies PostFX override factor based on proximity of an influencer against this entity's bounding sphere"))
                         ->ClassElement(Edit::ClassElements::EditorData, "")
                         ->Attribute(Edit::Attributes::Category, "Graphics/PostFX")
                         ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Component_Placeholder.svg")
                         ->Attribute(AZ::Edit::Attributes::ViewportIcon, "Icons/Components/Viewport/Component_Placeholder.svg")
                         ->Attribute(Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                         ->Attribute(Edit::Attributes::AutoExpand, true)
-                        ->Attribute(Edit::Attributes::HelpPageURL, "https://o3de.org/docs/user-guide/components/reference/atom/postfx-shape-weight-modifier/")
+                        ->Attribute(Edit::Attributes::HelpPageURL, "https://www.o3de.org/docs/user-guide/components/reference/atom/postfx-shape-weight-modifier/")
                         ;
 
                     editContext->Class<ShapeWeightModifierComponentController>("ShapeWeightModifierComponentController", "")
@@ -45,8 +46,8 @@ namespace AZ
                     editContext->Class<ShapeWeightModifierComponentConfig>("ShapeWeightModifierComponentConfig", "")
                         ->DataElement(AZ::Edit::UIHandlers::Slider,
                             &ShapeWeightModifierComponentConfig::m_falloffDistance,
-                            "Fall-off Distance",
-                            "Distance from the shape to smoothly transition the PostFX.")
+                            QT_TRANSLATE_NOOP("AtomO3deIntegration", "Fall-off Distance"),
+                            QT_TRANSLATE_NOOP("AtomO3deIntegration", "Distance from the shape to smoothly transition the PostFX."))
                         ->Attribute(Edit::Attributes::ChangeNotify, Edit::PropertyRefreshLevels::ValuesOnly)
                         ->Attribute(AZ::Edit::Attributes::Min, 0.0f)
                         ->Attribute(AZ::Edit::Attributes::Max, std::numeric_limits<float>::max())

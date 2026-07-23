@@ -8,6 +8,8 @@
 
 add_subdirectory(Code)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/3rdParty)
+
 o3de_gem_setup()
 
 if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)

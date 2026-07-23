@@ -44,7 +44,7 @@ namespace EMStudio
         m_treeWidget->header()->setSectionsMovable(false);
 
         QVBoxLayout* layout = new QVBoxLayout(this);
-        layout->setMargin(0);
+        layout->setContentsMargins(0, 0, 0, 0);
         layout->addWidget(m_searchWidget);
         layout->addWidget(m_treeWidget);
 
@@ -106,7 +106,7 @@ namespace EMStudio
         QList<QTreeWidgetItem*> selectedItems = m_treeWidget->selectedItems();
 
         m_selectedSimulatedObjectNames.clear();
-        const uint32 numSelectedItems = selectedItems.count();
+        const uint32 numSelectedItems = static_cast<int>(selectedItems.count());
         m_selectedSimulatedObjectNames.reserve(numSelectedItems);
 
         // Iterate through the selected items in the tree widget.

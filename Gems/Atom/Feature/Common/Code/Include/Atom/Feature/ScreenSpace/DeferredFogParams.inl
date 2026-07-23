@@ -9,7 +9,7 @@
 // Macros below are of the form:
 // PARAM(NAME, MEMBER_NAME, DEFAULT_VALUE, ...)
 
-AZ_GFX_VEC3_PARAM(FogColor, m_fogColor, Vector3(0.45, 0.45, 0.6) )
+AZ_GFX_VEC3_PARAM(FogColor, m_fogColor, Vector3(0.45f, 0.45f, 0.6f) )
 
 AZ_GFX_FLOAT_PARAM(FogStartDistance, m_fogStartDistance, 1.0f)
 AZ_GFX_FLOAT_PARAM(FogEndDistance, m_fogEndDistance, 5.0f )
@@ -32,3 +32,8 @@ AZ_GFX_VEC2_PARAM(NoiseTexCoord2Velocity, m_noiseVelocityUV2, Vector2(0.00275f, 
 
 // Amount of blend between octaves: noise = (1 - blend) * octave1 + blend * octave2
 AZ_GFX_FLOAT_PARAM(OctavesBlendFactor, m_octavesBlendFactor, 0.4f)
+
+// Unified bool flags, moved here from DeferredFogSettings.h and DeferredFogComponentConfig.h.
+AZ_GFX_BOOL_PARAM(Enabled, m_enabled, true)
+AZ_GFX_BOOL_PARAM(UseNoiseTextureShaderOption, m_useNoiseTextureShaderOption, true)
+AZ_GFX_BOOL_PARAM(EnableFogLayerShaderOption, m_enableFogLayerShaderOption, true)

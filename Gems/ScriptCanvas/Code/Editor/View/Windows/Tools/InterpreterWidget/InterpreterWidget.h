@@ -8,14 +8,12 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/PlatformDef.h>
 #include <AzCore/std/smart_ptr/unique_ptr.h>
 #include <AzQtComponents/Components/StyledDialog.h>
 #include <AzToolsFramework/UI/PropertyEditor/PropertyEditorAPI.h>
 #include <Editor/Framework/Interpreter.h>
-#include <QtWidgets/QWidget>
-#endif
+#include <QWidget>
 
 namespace AzToolsFramework
 {

@@ -18,8 +18,6 @@
 #include "Audio/EditorAudioSwitchComponent.h"
 #include "Audio/EditorAudioTriggerComponent.h"
 #include "Scripting/EditorLookAtComponent.h"
-#include "Scripting/EditorRandomTimedSpawnerComponent.h"
-#include "Scripting/EditorSpawnerComponent.h"
 #include "Scripting/EditorTagComponent.h"
 
 #include "Editor/EditorCommentComponent.h"
@@ -44,11 +42,12 @@
 #include <AzToolsFramework/ToolsComponents/EditorSelectionAccentSystemComponent.h>
 #include <AzToolsFramework/ComponentModes/BoxComponentMode.h>
 #include <Builders/BenchmarkAssetBuilder/BenchmarkAssetBuilderComponent.h>
-#include <Builders/LevelBuilder/LevelBuilderComponent.h>
 #include <Builders/LuaBuilder/LuaBuilderComponent.h>
 #include <Builders/SliceBuilder/SliceBuilderComponent.h>
 #include <Builders/TranslationBuilder/TranslationBuilderComponent.h>
 #include "Builders/CopyDependencyBuilder/CopyDependencyBuilderComponent.h"
+
+extern AZ::ComponentDescriptor* GenericAssetBuilderComponent_CreateDescriptor();
 
 namespace LmbrCentral
 {
@@ -79,13 +78,11 @@ namespace LmbrCentral
             EditorSplineComponent::CreateDescriptor(),
             EditorPolygonPrismShapeComponent::CreateDescriptor(),
             EditorCommentComponent::CreateDescriptor(),
-            EditorRandomTimedSpawnerComponent::CreateDescriptor(),
-            EditorSpawnerComponent::CreateDescriptor(),            
             CopyDependencyBuilder::CopyDependencyBuilderComponent::CreateDescriptor(),
-            LevelBuilder::LevelBuilderComponent::CreateDescriptor(),
             SliceBuilder::BuilderPluginComponent::CreateDescriptor(),
             TranslationBuilder::BuilderPluginComponent::CreateDescriptor(),
             LuaBuilder::BuilderPluginComponent::CreateDescriptor(),
+            GenericAssetBuilderComponent_CreateDescriptor(),
 
             BenchmarkAssetBuilder::BenchmarkAssetBuilderComponent::CreateDescriptor(),
         });

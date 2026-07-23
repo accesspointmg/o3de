@@ -13,8 +13,8 @@
 #include <AzCore/Name/Name.h>
 #include <AzCore/Console/IConsole.h>
 
-AZ_CVAR_EXTERNED(bool, r_gpuMarkersMergeGroups);
-AZ_CVAR_EXTERNED(bool, r_enablePsoCaching);
+AZ_CVAR_API_EXTERNED(ATOM_RHI_PUBLIC_API, bool, r_gpuMarkersMergeGroups);
+AZ_CVAR_API_EXTERNED(ATOM_RHI_PUBLIC_API, bool, r_enablePsoCaching);
 
 namespace AZ::RHI
 {
@@ -43,9 +43,12 @@ namespace AZ::RHI
     class DeviceTransientAttachmentPool;
     class DeviceRayTracingBufferPools;
     class DeviceRayTracingBlas;
+    class DeviceRayTracingClusterBlas;
     class DeviceRayTracingTlas;
     class DeviceRayTracingPipelineState;
     class DeviceRayTracingShaderTable;
+    class DeviceRayTracingCompactionQueryPool;
+    class DeviceRayTracingCompactionQuery;
 
     //! Priority of a Factory. The lower the number the higher the priority.
     //! Used when there's multiple factories available and the user hasn't define
@@ -64,7 +67,7 @@ namespace AZ::RHI
     //! A call to Get will return the active instance. In the event that it's unclear whether
     //! a platform instance exists, you must call IsReady to determine whether it's safe to
     //! call Get. Calling Get without a registered platform will result in an assert.
-    class Factory
+    class ATOM_RHI_PUBLIC_API Factory
     {
     public:
         AZ_TYPE_INFO(Factory, "{2C0231FD-DD11-4154-A4F5-177181E26D8E}");
@@ -76,13 +79,13 @@ namespace AZ::RHI
         AZ_DISABLE_COPY_MOVE(Factory);
 
         //! Returns the component service name CRC used by the platform RHI system component.
-        static uint32_t GetComponentService();
+        static Crc32 GetComponentService();
 
         //! Returns the component service name CRC used by the Factory manager component.
-        static uint32_t GetManagerComponentService();
+        static Crc32 GetManagerComponentService();
 
         //! Returns the component service name CRC used by the platform RHI system component.
-        static uint32_t GetPlatformService();
+        static Crc32 GetPlatformService();
 
         //! Registers the global factory instance.
         static void Register(Factory* instance);
@@ -187,6 +190,8 @@ namespace AZ::RHI
 
         virtual Ptr<DeviceRayTracingBlas> CreateRayTracingBlas() = 0;
 
+        virtual Ptr<DeviceRayTracingClusterBlas> CreateRayTracingClusterBlas() = 0;
+
         virtual Ptr<DeviceRayTracingTlas> CreateRayTracingTlas() = 0;
 
         virtual Ptr<DeviceRayTracingPipelineState> CreateRayTracingPipelineState() = 0;
@@ -194,5 +199,9 @@ namespace AZ::RHI
         virtual Ptr<DeviceRayTracingShaderTable> CreateRayTracingShaderTable() = 0;
 
         virtual Ptr<DeviceDispatchRaysIndirectBuffer> CreateDispatchRaysIndirectBuffer() = 0;
+
+        virtual Ptr<DeviceRayTracingCompactionQueryPool> CreateRayTracingCompactionQueryPool() = 0;
+
+        virtual Ptr<DeviceRayTracingCompactionQuery> CreateRayTracingCompactionQuery() = 0;
     };
 } // namespace AZ::RHI

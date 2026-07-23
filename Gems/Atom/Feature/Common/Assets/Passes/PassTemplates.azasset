@@ -81,30 +81,6 @@
                 "Path": "Passes/AuxGeom.pass"
             },
             {
-                "Name": "SkyAtmosphereParentTemplate",
-                "Path": "Passes/SkyAtmosphereParent.pass"
-            },
-            {
-                "Name": "SkyAtmosphereTemplate",
-                "Path": "Passes/SkyAtmosphere.pass"
-            },
-            {
-                "Name": "SkyTransmittanceLUTTemplate",
-                "Path": "Passes/SkyTransmittanceLUT.pass"
-            },
-            {
-                "Name": "SkyViewLUTTemplate",
-                "Path": "Passes/SkyViewLUT.pass"
-            },
-            {
-                "Name": "SkyVolumeLUTTemplate",
-                "Path": "Passes/SkyVolumeLUT.pass"
-            },
-            {
-                "Name": "SkyRayMarchingTemplate",
-                "Path": "Passes/SkyRayMarching.pass"
-            },
-            {
                 "Name": "SkyBoxTemplate",
                 "Path": "Passes/SkyBox.pass"
             },
@@ -619,6 +595,26 @@
             {
                 "Name": "ChromaticAberrationTemplate",
                 "Path": "Passes/ChromaticAberration.pass"
+            },
+            {
+                "Name": "MotionBlurTemplate",
+                "Path": "Passes/MotionBlur.pass"
+            },
+            {
+                "Name": "MotionBlurTileMaxHorTemplate",
+                "Path": "Passes/MotionBlurTileMaxHor.pass"
+            },
+            {
+                "Name": "MotionBlurTileMaxVerTemplate",
+                "Path": "Passes/MotionBlurTileMaxVer.pass"
+            },
+            {
+                "Name": "MotionBlurTileFilterTemplate",
+                "Path": "Passes/MotionBlurTileFilter.pass"
+            },
+            {
+                "Name": "MotionBlurParentTemplate",
+                "Path": "Passes/MotionBlurParent.pass"
             },
             {
                 "Name": "PaniniProjectionTemplate",

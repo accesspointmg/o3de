@@ -161,7 +161,7 @@ namespace EMStudio
     void PhonemeSelectionWindow::Init()
     {
         // set window title
-        setWindowTitle("Phoneme Selection Window");
+        setWindowTitle(tr("Phoneme Selection Window"));
         setSizeGripEnabled(false);
 
         // buttons to add / remove / clear phonemes
@@ -211,7 +211,7 @@ namespace EMStudio
 
         // create and fill the main layout
         QHBoxLayout* layout = new QHBoxLayout();
-        layout->setMargin(0);
+        layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(0);
 
         QVBoxLayout* leftLayout     = new QVBoxLayout();
@@ -222,9 +222,9 @@ namespace EMStudio
         QWidget* labelHelperWidgetAdd = new QWidget();
         QVBoxLayout* labelHelperWidgetAddLayout = new QVBoxLayout();
         labelHelperWidgetAddLayout->setSpacing(0);
-        labelHelperWidgetAddLayout->setMargin(2);
+        labelHelperWidgetAddLayout->setContentsMargins(2, 2, 2, 2);
         labelHelperWidgetAdd->setLayout(labelHelperWidgetAddLayout);
-        QLabel* labelAdd = new QLabel("- Use drag&drop or double click to add -");
+        QLabel* labelAdd = new QLabel(tr("- Use drag&drop or double click to add -"));
         labelHelperWidgetAddLayout->addWidget(labelAdd);
         labelHelperWidgetAddLayout->setAlignment(labelAdd, Qt::AlignCenter);
 
@@ -252,9 +252,9 @@ namespace EMStudio
         QWidget* labelHelperWidgetRemove = new QWidget();
         QVBoxLayout* labelHelperWidgetRemoveLayout = new QVBoxLayout();
         labelHelperWidgetRemoveLayout->setSpacing(0);
-        labelHelperWidgetRemoveLayout->setMargin(2);
+        labelHelperWidgetRemoveLayout->setContentsMargins(2, 2, 2, 2);
         labelHelperWidgetRemove->setLayout(labelHelperWidgetRemoveLayout);
-        QLabel* labelRemove = new QLabel("- Use drag&drop or double click to remove -");
+        QLabel* labelRemove = new QLabel(tr("- Use drag&drop or double click to remove -"));
         labelHelperWidgetRemoveLayout->addWidget(labelRemove);
         labelHelperWidgetRemoveLayout->setAlignment(labelRemove, Qt::AlignCenter);
 
@@ -278,9 +278,9 @@ namespace EMStudio
         helperWidgetRight->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
         leftLayout->setSpacing(0);
-        leftLayout->setMargin(0);
+        leftLayout->setContentsMargins(0, 0, 0, 0);
         rightLayout->setSpacing(0);
-        rightLayout->setMargin(0);
+        rightLayout->setContentsMargins(0, 0, 0, 0);
         helperWidgetLeft->setLayout(leftLayout);
         helperWidgetRight->setLayout(rightLayout);
 
@@ -638,4 +638,3 @@ namespace EMStudio
     }
 } // namespace EMStudio
 
-#include <EMotionFX/Tools/EMotionStudio/Plugins/StandardPlugins/Source/MorphTargetsWindow/moc_PhonemeSelectionWindow.cpp>

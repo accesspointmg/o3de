@@ -22,6 +22,7 @@
 #include <QListWidgetItem>
 #include <QTextDocument>
 #include <QTimer>
+#include <QRegularExpression>
 
 namespace LUAEditorInternal
 {
@@ -81,7 +82,11 @@ namespace LUAEditor
         auto pState = AZ::UserSettings::CreateFind<LUAEditorInternal::FindSavedState>(AZ_CRC_CE("FindInCurrent"), AZ::UserSettings::CT_LOCAL);
         m_gui->wrapCheckBox->setChecked((pState ? pState->m_findWrap : true));
 
-        connect(m_gui->wrapCheckBox, &QCheckBox::stateChanged, this, [](int newState)
+        connect(
+            m_gui->wrapCheckBox,
+            &QCheckBox::checkStateChanged,
+            this,
+            [](Qt::CheckState newState)
         {
             auto pState = AZ::UserSettings::CreateFind<LUAEditorInternal::FindSavedState>(AZ_CRC_CE("FindInCurrent"), AZ::UserSettings::CT_LOCAL);
             pState->m_findWrap = (newState == Qt::Checked);
@@ -240,11 +245,11 @@ namespace LUAEditor
 
         if (m_bWasFindInAll)
         {
-            this->setWindowTitle("Find in files...");
+            this->setWindowTitle(tr("Find in files..."));
         }
         else
         {
-            this->setWindowTitle("Find...");
+            this->setWindowTitle(tr("Find..."));
         }
     }
 
@@ -343,12 +348,12 @@ namespace LUAEditor
         }
         else
         {
-            QMessageBox::warning(this, "Error!", "You may not search for an empty string!");
+            QMessageBox::warning(this, tr("Error!"), tr("You may not search for an empty string!"));
         }
 
         if (!m_findOperation)
         {
-            QMessageBox::warning(this, "Search failed!", tr("Could not find \"%1\" within/further this context.").arg(m_gui->txtFind->text()));
+            QMessageBox::warning(this, tr("Search failed!"), tr("Could not find \"%1\" within/further this context.").arg(m_gui->txtFind->text()));
         }
     }
 
@@ -419,7 +424,7 @@ namespace LUAEditor
     {
         if (m_bReplaceThreadRunning)
         {
-            QMessageBox::warning(this, "Error!", "You may not run Find ALL while a Replace All is running!");
+            QMessageBox::warning(this, tr("Error!"), tr("You may not run Find ALL while a Replace All is running!"));
             return;
         }
 
@@ -486,7 +491,7 @@ namespace LUAEditor
         }
         else
         {
-            QMessageBox::warning(this, "Error!", "You may not search for an empty string!");
+            QMessageBox::warning(this, tr("Error!"), tr("You may not search for an empty string!"));
         }
     }
 
@@ -602,15 +607,18 @@ namespace LUAEditor
                     ResultEntry entry;
                     entry.m_lineText = dLines[line];
 
-                    QRegExp regex(m_FIFData.m_SearchText, m_FIFData.m_bCaseSensitiveIsChecked ? Qt::CaseSensitive : Qt::CaseInsensitive);
+                    QRegularExpression regex(
+                        m_FIFData.m_SearchText,
+                        m_FIFData.m_bCaseSensitiveIsChecked ? QRegularExpression::NoPatternOption
+                                                            : QRegularExpression::CaseInsensitiveOption);
                     int index = 0;
                     if (m_FIFData.m_bRegExIsChecked || m_FIFData.m_bWholeWordIsChecked)
                     {
-                        index = entry.m_lineText.indexOf(regex, index);
+                        index = static_cast<int>(entry.m_lineText.indexOf(regex, index));
                     }
                     else
                     {
-                        index = entry.m_lineText.indexOf(m_FIFData.m_SearchText, index, m_FIFData.m_bCaseSensitiveIsChecked ? Qt::CaseSensitive : Qt::CaseInsensitive);
+                        index = static_cast<int>(entry.m_lineText.indexOf(m_FIFData.m_SearchText, index, m_FIFData.m_bCaseSensitiveIsChecked ? Qt::CaseSensitive : Qt::CaseInsensitive));
                     }
 
                     if (index > -1)
@@ -626,25 +634,29 @@ namespace LUAEditor
                         entry.m_lineNumber = line + 1;
                         entry.m_lineText = entry.m_lineText.trimmed();
 
-                        while (index > -1)
+                        if (m_FIFData.m_bRegExIsChecked || m_FIFData.m_bWholeWordIsChecked)
                         {
-                            if (m_FIFData.m_bRegExIsChecked || m_FIFData.m_bWholeWordIsChecked)
+                            QRegularExpressionMatch match = regex.match(entry.m_lineText);
+                            index = static_cast<int>(match.capturedStart());
+                            while (match.hasMatch())
                             {
-                                entry.m_matches.push_back(AZStd::make_pair(index, regex.matchedLength()));
-                            }
-                            else
-                            {
-                                entry.m_matches.push_back(AZStd::make_pair(index, m_FIFData.m_SearchText.length()));
-                            }
+                                const int length = static_cast<int>(match.capturedLength());
+                                entry.m_matches.push_back(AZStd::make_pair(index, length));
 
-                            index++;
-                            if (m_FIFData.m_bRegExIsChecked || m_FIFData.m_bWholeWordIsChecked)
-                            {
-                                index = entry.m_lineText.indexOf(regex, index);
+                                match = regex.match(entry.m_lineText, index + length);
+                                index = static_cast<int>(match.capturedStart());
                             }
-                            else
+                        }
+                        else
+                        {
+                            while (index > -1)
                             {
-                                index = entry.m_lineText.indexOf(m_FIFData.m_SearchText, index, m_FIFData.m_bCaseSensitiveIsChecked ? Qt::CaseSensitive : Qt::CaseInsensitive);
+                                entry.m_matches.push_back(AZStd::make_pair(index, static_cast<int>(m_FIFData.m_SearchText.length())));
+                                index++;
+                                index = static_cast<int>(entry.m_lineText.indexOf(
+                                    m_FIFData.m_SearchText,
+                                    index,
+                                    m_FIFData.m_bCaseSensitiveIsChecked ? Qt::CaseSensitive : Qt::CaseInsensitive));
                             }
                         }
 
@@ -739,7 +751,7 @@ namespace LUAEditor
                             ResultEntry entry;
                             entry.m_lineText = dLines[line];
 
-                            QRegExp regex(m_FIFData.m_SearchText, m_FIFData.m_bCaseSensitiveIsChecked ? Qt::CaseSensitive : Qt::CaseInsensitive);
+                            QRegularExpression regex(m_FIFData.m_SearchText, m_FIFData.m_bCaseSensitiveIsChecked ? QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption);
                             int index = 0;
                             if(m_FIFData.m_bRegExIsChecked || m_FIFData.m_bWholeWordIsChecked)
                                 index = entry.m_lineText.indexOf(regex, index);
@@ -829,28 +841,15 @@ namespace LUAEditor
 
         int currentLine = 0;
         m_FIFData.m_resultsWidget->Clear();
-        QString hits;
-        if (m_FIFData.m_TotalMatchesFound == 1)
-        {
-            hits.append("hit");
-        }
-        else
-        {
-            hits.append("hits");
-        }
+        // Use Qt's %n plural forms for proper internationalization.
+        // Languages like Russian, Arabic, etc. have more than 2 plural forms.
+        //: %n is the number of search matches found
+        QString hits = tr("%n hit(s)", "", m_FIFData.m_TotalMatchesFound);
+        //: %n is the number of files containing matches
+        QString files = tr("%n file(s)", "", static_cast<int>(m_resultList.size()));
 
-        QString files;
-        if (m_resultList.size() == 1)
-        {
-            files.append("file");
-        }
-        else
-        {
-            files.append("files");
-        }
-
-        QString header("Find \"%1\" (%2 %4 in %3 %5)");
-        header = header.arg(m_FIFData.m_SearchText).arg(m_FIFData.m_TotalMatchesFound).arg(m_resultList.size()).arg(hits).arg(files);
+        QString header = tr("Find \"%1\" (%2 in %3)")
+            .arg(m_FIFData.m_SearchText, hits, files);
         m_FIFData.m_resultsWidget->AppendPlainText(header);
         setFoldLevel(currentLine, 0, 0);
 
@@ -962,7 +961,7 @@ namespace LUAEditor
             }
             else if (!pLUAViewWidget->m_Info.m_bSourceControl_CanWrite)
             {
-                QMessageBox::warning(this, "Error!", "Can not check out file for replace!");
+                QMessageBox::warning(this, tr("Error!"), tr("Can not check out file for replace!"));
             }
             else
             {
@@ -1103,7 +1102,7 @@ namespace LUAEditor
                         for(AZStd::size_t line=0; line<dLines.size(); ++line)
                         {
                             QString str(dLines[line]);
-                            QRegExp regex(m_RIFData.m_SearchText, m_bCaseSensitiveIsChecked ? Qt::CaseSensitive : Qt::CaseInsensitive);
+                            QRegularExpression regex(m_RIFData.m_SearchText, m_bCaseSensitiveIsChecked ? QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption);
                             int index = 0;
                             if(m_bRegExIsChecked || m_bWholeWordIsChecked)
                                 index = str.indexOf(regex, index);
@@ -1288,13 +1287,13 @@ namespace LUAEditor
         }
         else if (!pLUAViewWidget->m_Info.m_bSourceControl_CanWrite)
         {
-            QMessageBox::warning(this, "Can not check out file!", (pLUAViewWidget->m_Info.m_assetName + ".lua").c_str());
+            QMessageBox::warning(this, tr("Can not check out file!"), (pLUAViewWidget->m_Info.m_assetName + ".lua").c_str());
             return -1;
         }
 
         int count = 0;
         pLUAViewWidget->SetCursorPosition(0, 0);
-        const int advance = m_gui->txtReplaceWith->text().size();
+        const int advance = static_cast<int>(m_gui->txtReplaceWith->text().size());
         int firstFoundLine = 0;
         int firstFoundIndex = 0;
         if (pLUAViewWidget->FindFirst(m_gui->txtFind->text(),
@@ -1339,7 +1338,7 @@ namespace LUAEditor
     {
         if (m_bFindThreadRunning)
         {
-            QMessageBox::warning(this, "Error!", "You may not run Replace ALL while a Find All is running!");
+            QMessageBox::warning(this, tr("Error!"), tr("You may not run Replace ALL while a Find All is running!"));
             return;
         }
 
@@ -1379,24 +1378,24 @@ namespace LUAEditor
         }
         else
         {
-            QMessageBox::warning(this, "Error!", "You may not replace an empty string!");
+            QMessageBox::warning(this, tr("Error!"), tr("You may not replace an empty string!"));
         }
     }
 
     void LUAEditorFindDialog::BusyOn()
     {
         m_gui->cancelButton->setEnabled(true);
-        m_gui->busyLabel->setText("Working");
+        m_gui->busyLabel->setText(tr("Working"));
     }
     void LUAEditorFindDialog::BusyOff()
     {
         m_gui->cancelButton->setEnabled(false);
-        m_gui->busyLabel->setText("Idle");
+        m_gui->busyLabel->setText(tr("Idle"));
     }
     void LUAEditorFindDialog::PostProcessOn()
     {
         m_gui->cancelButton->setEnabled(false);
-        m_gui->busyLabel->setText("List Prep");
+        m_gui->busyLabel->setText(tr("List Prep"));
     }
     void LUAEditorFindDialog::PostReplaceOn()
     {
@@ -1404,7 +1403,7 @@ namespace LUAEditor
         m_bReplaceThreadRunning = false;
 
         m_gui->cancelButton->setEnabled(true);
-        m_gui->busyLabel->setText("Replacing");
+        m_gui->busyLabel->setText(tr("Replacing"));
     }
 
     void LUAEditorFindDialog::showEvent(QShowEvent* event)
@@ -1419,4 +1418,3 @@ namespace LUAEditor
     }
 }//namespace LUAEditor
 
-#include <Source/LUA/moc_LUAEditorFindDialog.cpp>

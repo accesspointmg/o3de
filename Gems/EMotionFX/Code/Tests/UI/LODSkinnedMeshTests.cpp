@@ -34,13 +34,6 @@
 
 namespace EMotionFX
 {
-    class LODSkinnedMeshFixture
-        : public ::testing::WithParamInterface <int>
-        , public UIFixture
-    {
-    public:
-    };
-
     class LODSystemMock : public SystemMock
     {
     };
@@ -87,14 +80,14 @@ namespace EMotionFX
         // Modify the actor to have numLODs LOD levels.
         Actor* actor = actorAsset->GetActor();
         Mesh* lodMesh = actor->GetMesh(0, 0);
-        
+
         for (int i = 1; i < numLODs; ++i)
         {
             actor->InsertLODLevel(i);
             actor->SetMesh(i, 0, lodMesh->Clone());
         }
 
-        return AZStd::move(actorAsset);
+        return actorAsset;
     }
 
     class LODPropertyRowWidget
@@ -103,8 +96,6 @@ namespace EMotionFX
     public:
         QLabel* GetDefaultLabel() { return m_defaultLabel; }
     };
-
-    INSTANTIATE_TEST_CASE_P(LODSkinnedMeshFixtureTests, LODSkinnedMeshFixture, ::testing::Range<int>(1, 7));
 
     // TODO: Re-enabled the test when we can access viewport context in the SimpleLODComponent.
     TEST_F(LODSkinnedMeshColorFixture, DISABLED_CheckLODDistanceChange)

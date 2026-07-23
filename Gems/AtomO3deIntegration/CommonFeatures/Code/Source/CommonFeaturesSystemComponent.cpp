@@ -15,6 +15,7 @@
 #include <AzCore/Serialization/EditContextConstants.inl>
 #include <AzCore/Serialization/SerializeContext.h>
 #include <CommonFeaturesSystemComponent.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 namespace AZ
 {
@@ -32,7 +33,7 @@ namespace AZ
 
                 if (AZ::EditContext* ec = serialize->GetEditContext())
                 {
-                    ec->Class<AtomO3deIntegrationCommonFeaturesSystemComponent>("Common", "[Description of functionality provided by this System Component]")
+                    ec->Class<AtomO3deIntegrationCommonFeaturesSystemComponent>(QT_TRANSLATE_NOOP("AtomO3deIntegration", "Common"), QT_TRANSLATE_NOOP("AtomO3deIntegration", "[Description of functionality provided by this System Component]"))
                         ->ClassElement(Edit::ClassElements::EditorData, "")
                             ->Attribute(Edit::Attributes::AutoExpand, true)
                         ;

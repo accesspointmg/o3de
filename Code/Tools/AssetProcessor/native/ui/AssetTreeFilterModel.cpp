@@ -10,6 +10,8 @@
 
 #include "AssetTreeItem.h"
 
+#include <QRegularExpression>
+
 namespace AssetProcessor
 {
 
@@ -20,11 +22,12 @@ namespace AssetProcessor
 
     void AssetTreeFilterModel::FilterChanged(const QString& newFilter)
     {
+        beginFilterChange();
         // If the search was changed, clear the asset that had visibility forced.
         m_pathToForceVisibleAsset.clear();
-        setFilterRegExp(newFilter);
+        setFilterRegularExpression(newFilter);
         setFilterCaseSensitivity(Qt::CaseInsensitive);
-        invalidateFilter();
+        endFilterChange();
     }
 
     bool AssetTreeFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const
@@ -45,8 +48,8 @@ namespace AssetProcessor
             }
         }
 
-        QRegExp filter(filterRegExp());
-        if (filter.isEmpty())
+        QRegularExpression filter(filterRegularExpression());
+        if (filter.pattern().isEmpty())
         {
             return true;
         }
@@ -70,9 +73,9 @@ namespace AssetProcessor
         return DescendantMatchesFilter(*assetTreeItem, filter, filterAsUuid);
     }
 
-    bool AssetTreeFilterModel::DescendantMatchesFilter(const AssetTreeItem& assetTreeItem, const QRegExp& filter, const AZ::Uuid& filterAsUuid) const
+    bool AssetTreeFilterModel::DescendantMatchesFilter(const AssetTreeItem& assetTreeItem, const QRegularExpression& filter, const AZ::Uuid& filterAsUuid) const
     {
-        if (filter.isEmpty())
+        if (filter.pattern().isEmpty())
         {
             // Match everything if there is no filter.
             return true;
@@ -143,6 +146,8 @@ namespace AssetProcessor
         {
             return;
         }
+
+        beginFilterChange();
         m_pathToForceVisibleAsset.clear();
 
         for (AssetTreeItem* item = static_cast<AssetTreeItem*>(sourceIndex.internalPointer());
@@ -152,7 +157,7 @@ namespace AssetProcessor
             m_pathToForceVisibleAsset.push_front(item->GetData());
         }
 
-        invalidateFilter();
+        endFilterChange();
     }
 
 }

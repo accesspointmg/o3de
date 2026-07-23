@@ -14,11 +14,7 @@
 // Qt
 #include <QAbstractListModel>
 
-
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <ui_TrackViewFBXImportPreviewDialog.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
-
 
 class FBXImportModel
     : public QAbstractListModel
@@ -32,7 +28,7 @@ public:
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override
     {
-        return parent.isValid() ? 0 : m_map.size();
+        return parent.isValid() ? 0 : static_cast<int>(m_map.size());
     }
 
     Qt::ItemFlags flags(const QModelIndex& index) const override
@@ -86,7 +82,7 @@ public:
         {
             it.checked = checked;
         }
-        emit dataChanged(index(0, 0), index(m_map.size() - 1, 0), QVector<int>(1, Qt::CheckStateRole));
+        emit dataChanged(index(0, 0), index(static_cast<int>(m_map.size()) - 1, 0), QVector<int>(1, Qt::CheckStateRole));
     }
 
 private:
@@ -144,4 +140,3 @@ void CTrackViewFBXImportPreviewDialog::OnBnUnselectAllClicked()
     static_cast<FBXImportModel*>(m_ui->m_tree->model())->setAllItemsChecked(false);
 }
 
-#include <moc_TrackViewFBXImportPreviewDialog.cpp>

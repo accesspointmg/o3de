@@ -8,14 +8,17 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/PlatformDef.h>
 #include <AzToolsFramework/Thumbnails/Thumbnail.h>
 AZ_PUSH_DISABLE_WARNING(4251 4800, "-Wunknown-warning-option") // 4251: class '...' needs to have dll-interface to be used by clients of class '...'
                                                                // 4800: 'uint': forcing value to bool 'true' or 'false' (performance warning)
 #include <QWidget>
 AZ_POP_DISABLE_WARNING
-#endif
+
+class QLabel;
 
 namespace AzToolsFramework
 {
@@ -27,7 +30,7 @@ namespace AzToolsFramework
     }
 
     //! Used by PropertyAssetCtrl to display thumbnail preview of the asset as well as additional drop-down actions
-    class ThumbnailPropertyCtrl : public QWidget
+    class AZTF_API ThumbnailPropertyCtrl : public QWidget
     {
         Q_OBJECT
     public:
@@ -56,7 +59,7 @@ namespace AzToolsFramework
 
         bool event(QEvent* e) override;
         void paintEvent(QPaintEvent* e) override;
-        void enterEvent(QEvent* e) override;
+        void enterEvent(QEnterEvent* e) override;
         void leaveEvent(QEvent* e) override;
 
         Thumbnailer::SharedThumbnailKey m_key;

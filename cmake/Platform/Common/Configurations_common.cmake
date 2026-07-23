@@ -16,6 +16,10 @@ set(O3DE_EXTRA_C_FLAGS ""       CACHE STRING "Additional C Compiler flags to app
 set(O3DE_EXTRA_CXX_FLAGS ""     CACHE STRING "Additional Cxx Compiler flags to apply globally")
 set(O3DE_EXTRA_LINK_OPTIONS ""  CACHE STRING "Additional link options to apply globally")
 
+# If you turn fast math on, beware, as all floating point operations that result or involve NaN or Inf
+# will be undefined behavior and cannot be detected or dealt with.
+set(USE_FAST_MATH OFF CACHE BOOL "Use fp:precise (MSVC) or -ffast-math (Clang/GCC) to allow aggressive, lossy floating-point optimizations")
+
 o3de_set(CMAKE_C_FLAGS "${O3DE_EXTRA_C_FLAGS}")
 o3de_set(CMAKE_CXX_FLAGS "${O3DE_EXTRA_CXX_FLAGS}")
 o3de_set(LINK_OPTIONS "${O3DE_EXTRA_LINK_OPTIONS}")
@@ -71,6 +75,16 @@ if(CMAKE_GENERATOR MATCHES "Ninja")
     endif()
 endif()
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "21")
+    # Workaround for a googletest bug with char conversions recognized by Clang 21+
+    # See https://github.com/google/googletest/issues/4762
+    # TODO: remove when googletest is updated
+    o3de_append_configurations_options(
+        COMPILATION
+            -Wno-character-conversion
+    )
+endif()
+
 set(CMAKE_POSITION_INDEPENDENT_CODE True)
 
 include(CheckPIESupported)
@@ -78,3 +92,9 @@ check_pie_supported()
 
 # Determine if lld is installed to use as a default linker by supported platforms/configurations
 find_program(LLD_LINKER_INSTALLED lld)
+
+if (NOT TARGET ciso646-include)
+    # Temporarily gets around the inclusion of <ciso646> in some 3rd party libraries.
+    add_library(ciso646-include INTERFACE)
+    target_include_directories(ciso646-include INTERFACE ${CMAKE_CURRENT_LIST_DIR}/ciso646-include)
+endif()

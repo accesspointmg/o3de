@@ -16,10 +16,7 @@
 #include <QStyle>
 #include <QPushButton>
 
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <AssetImporter/UI/ui_SelectDestinationDialog.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
-
 
 static const char* g_assetProcessorLink = "<a href=\"https://www.o3de.org/docs/user-guide/assets/asset-processor/\">Asset Processor</a>";
 static const char* g_copyFilesMessage = "The original file will remain outside of the project and the %1 will not monitor the file.";
@@ -232,7 +229,7 @@ void SelectDestinationDialog::ValidatePath()
     else
     {
         QString destinationDirectory = DestinationDirectory();
-        int strLength = destinationDirectory.length();
+        int strLength = static_cast<int>(destinationDirectory.length());
 
         // store the updated acceptable destination directory into the registry,
         // so that when users manually modify the directory,
@@ -248,6 +245,4 @@ QString SelectDestinationDialog::DestinationDirectory() const
 {
     return QDir::fromNativeSeparators(m_ui->DestinationLineEdit->text());
 }
-
-#include <AssetImporter/UI/moc_SelectDestinationDialog.cpp>
 

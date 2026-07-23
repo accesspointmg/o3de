@@ -7,11 +7,15 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzQtComponents/AzQtComponentsAPI.h>
 
 #include <QLabel>
-#endif
+
+class QShowEvent;
+class QPaintEvent;
+class QResizeEvent;
+
+#include <QRegularExpression>
 
 namespace AzQtComponents
 {
@@ -112,17 +116,16 @@ namespace AzQtComponents
         //! Overrides the QLabel sizeHint function to return the elided text size.
         QSize sizeHint() const override;
 
-        void handleElision();
-
     protected:
         void resizeEvent(QResizeEvent* event) override;
         void paintEvent(QPaintEvent* event) override;
-        void timerEvent(QTimerEvent* event) override;
+        void showEvent(QShowEvent* event) override;
 
-        void requestElide(bool updateGeometry);
+        //! Requests that the label re-elide its text.
+        void requestElide();
 
         QString m_filterString;
-        QRegExp m_filterRegex;
+        QRegularExpression m_filterRegex;
 
     private:
         void elide();
@@ -136,11 +139,6 @@ namespace AzQtComponents
 
         Qt::TextElideMode m_elideMode;
         QLabel* m_metricsLabel;
-        
-        static constexpr int s_minTimeBetweenUpdates = 200;
-        int m_elideTimerId = 0;
-        bool m_elideDeferred = false;
-        bool m_updateGeomentry = false;
     };
 
 } // namespace AzQtComponents

@@ -59,6 +59,8 @@
 #include <QWidgetAction>
 #include <QKeyEvent>
 #include <QFileDialog>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 static const QString g_jobFilteredSearchWidgetState = QStringLiteral("jobFilteredSearchWidget");
 static const qint64 AssetTabFilterUpdateIntervalMs = 5000;
@@ -296,13 +298,13 @@ void MainWindow::Activate()
     connect(ui->allowedListToRejectedListToolButton, &QToolButton::clicked, this, &MainWindow::OnToRejectedListButtonClicked);
 
     //set the input validator for ip addresses on the add address line edit
-    QRegExp validHostName("^((?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|\\b-){0,61}[0-9A-Za-z])?(?:\\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|\\b-){0,61}[0-9A-Za-z])?)*\\.?)$");
-    QRegExp validIP("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$|^((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$");
+    QRegularExpression validHostName("^((?=.{1,255}$)[0-9A-Za-z](?:(?:[0-9A-Za-z]|\\b-){0,61}[0-9A-Za-z])?(?:\\.[0-9A-Za-z](?:(?:[0-9A-Za-z]|\\b-){0,61}[0-9A-Za-z])?)*\\.?)$");
+    QRegularExpression validIP("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$|^((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$");
 
-    QRegExpValidator* hostNameValidator = new QRegExpValidator(validHostName, this);
+    QRegularExpressionValidator* hostNameValidator = new QRegularExpressionValidator(validHostName, this);
     ui->allowedListAddHostNameLineEdit->setValidator(hostNameValidator);
 
-    QRegExpValidator* ipValidator = new QRegExpValidator(validIP, this);
+    QRegularExpressionValidator* ipValidator = new QRegularExpressionValidator(validIP, this);
     ui->allowedListAddIPLineEdit->setValidator(ipValidator);
 
     //Job view
@@ -319,7 +321,7 @@ void MainWindow::Activate()
 
     ui->detailsFilterWidget->SetTypeFilterVisible(true);
     connect(ui->detailsFilterWidget, &AzQtComponents::FilteredSearchWidget::TextFilterChanged, m_logSortFilterProxy,
-        static_cast<void (QSortFilterProxyModel::*)(const QString&)>(&LogSortFilterProxy::setFilterRegExp));
+        static_cast<void (QSortFilterProxyModel::*)(const QString&)>(&LogSortFilterProxy::setFilterRegularExpression));
     connect(ui->detailsFilterWidget, &AzQtComponents::FilteredSearchWidget::TypeFilterChanged, m_logSortFilterProxy, &LogSortFilterProxy::onTypeFilterChanged);
 
     // add filters for each logging type
@@ -375,7 +377,7 @@ void MainWindow::Activate()
         m_jobSortFilterProxy, &AssetProcessor::JobSortFilterProxyModel::OnJobStatusFilterChanged);
     connect(ui->jobFilteredSearchWidget, &AzQtComponents::FilteredSearchWidget::TextFilterChanged,
         m_jobSortFilterProxy,
-        static_cast<void (QSortFilterProxyModel::*)(const QString&)>(&AssetProcessor::JobSortFilterProxyModel::setFilterRegExp));
+        static_cast<void (QSortFilterProxyModel::*)(const QString&)>(&AssetProcessor::JobSortFilterProxyModel::setFilterRegularExpression));
     {
         QSettings settingsObj(this);
         ui->jobFilteredSearchWidget->readSettings(settingsObj, g_jobFilteredSearchWidgetState);
@@ -599,65 +601,65 @@ void MainWindow::Activate()
     AzQtComponents::CheckBox::applyToggleSwitchStyle(ui->modtimeSkippingCheckBox);
     AzQtComponents::CheckBox::applyToggleSwitchStyle(ui->disableStartupScanCheckBox);
     AzQtComponents::CheckBox::applyToggleSwitchStyle(ui->debugOutputCheckBox);
+    AzQtComponents::CheckBox::applyToggleSwitchStyle(ui->verboseLoggingCheckbox);
 
     const auto apm = m_guiApplicationManager->GetAssetProcessorManager();
 
-    // Note: the settings can't be used in ::MainWindow(), because the application name
-    // hasn't been set up and therefore the settings will load from somewhere different than later
-    // on.
-    // Read the current settings to give command line options a chance to override the default
-    QSettings settings;
-    settings.beginGroup("Options");
-    bool zeroAnalysisModeFromSettings = settings.value("EnableZeroAnalysis", QVariant(true)).toBool() || apm->GetModtimeSkippingFeatureEnabled();
-    bool enableBuilderDebugFlag = settings.value("EnableBuilderDebugFlag", QVariant(false)).toBool() || apm->GetBuilderDebugFlag();
-    bool initialScanSkippingEnabled = settings.value("SkipInitialScan", QVariant(false)).toBool() || apm->GetInitialScanSkippingFeatureEnabled();
-    settings.endGroup();
-
+    // Zero Analysis mode ("Fast scan mode") is enabled by default in the gui (running this mainwindow file), false in batch mode.
+    bool zeroAnalysisMode = AssetUtilities::GetUserSetting(AssetUtilities::ZeroAnalysisModeOptionName, true);
+    bool enableBuilderDebugFlag = AssetUtilities::GetUserSetting(AssetUtilities::EnableBuilderDebugFlagOptionName, apm->GetBuilderDebugFlag());
+    bool initialScanSkippingEnabled = AssetUtilities::GetUserSetting(AssetUtilities::SkipInitialScanOptionName, apm->GetInitialScanSkippingFeatureEnabled());
+    bool verboseLogDump = AssetUtilities::GetUserSetting(AssetUtilities::VerboseLoggingOptionName, false);
     // zero analysis flag
-    apm->SetEnableModtimeSkippingFeature(zeroAnalysisModeFromSettings);
-    ui->modtimeSkippingCheckBox->setCheckState(zeroAnalysisModeFromSettings ? Qt::Checked : Qt::Unchecked);
 
-    // Connect after updating settings to avoid saving a command line override
-    QObject::connect(ui->modtimeSkippingCheckBox, &QCheckBox::stateChanged, this,
-        [this](int newCheckState)
-    {
-        bool newOption = newCheckState == Qt::Checked ? true : false;
-        m_guiApplicationManager->GetAssetProcessorManager()->SetEnableModtimeSkippingFeature(newOption);
-        QSettings settingsInCallback;
-        settingsInCallback.beginGroup("Options");
-        settingsInCallback.setValue("EnableZeroAnalysis", QVariant(newOption));
-        settingsInCallback.endGroup();
-    });
-
-    // output debug flag
+    apm->SetEnableModtimeSkippingFeature(zeroAnalysisMode);
     apm->SetBuilderDebugFlag(enableBuilderDebugFlag);
-    ui->debugOutputCheckBox->setCheckState(enableBuilderDebugFlag ? Qt::Checked : Qt::Unchecked);
+    apm->SetInitialScanSkippingFeature(initialScanSkippingEnabled);
 
-    QObject::connect(ui->debugOutputCheckBox, &QCheckBox::stateChanged, this,
-        [this](int newCheckState)
+    // first, update the visual checkboxes, and then connect to the "changed" notify
+    // so that we don't save settings applied by the apm command line
+    ui->modtimeSkippingCheckBox->setCheckState(zeroAnalysisMode ? Qt::Checked : Qt::Unchecked);
+    ui->debugOutputCheckBox->setCheckState(enableBuilderDebugFlag ? Qt::Checked : Qt::Unchecked);
+    ui->disableStartupScanCheckBox->setCheckState(initialScanSkippingEnabled ? Qt::Checked : Qt::Unchecked);
+    ui->verboseLoggingCheckbox->setCheckState(verboseLogDump ? Qt::Checked : Qt::Unchecked);
+
+    QObject::connect(ui->modtimeSkippingCheckBox, &QCheckBox::checkStateChanged, this,
+        [this](Qt::CheckState newCheckState)
+        {
+            bool newOption = newCheckState == Qt::Checked ? true : false;
+            m_guiApplicationManager->GetAssetProcessorManager()->SetEnableModtimeSkippingFeature(newOption);
+            AssetUtilities::SetUserSetting(AssetUtilities::ZeroAnalysisModeOptionName, newOption);
+        });
+
+    QObject::connect(
+        ui->debugOutputCheckBox,
+        &QCheckBox::checkStateChanged,
+        this,
+        [this](Qt::CheckState newCheckState)
         {
             bool newOption = newCheckState == Qt::Checked ? true : false;
             m_guiApplicationManager->GetAssetProcessorManager()->SetBuilderDebugFlag(newOption);
-            QSettings settingsInCallback;
-            settingsInCallback.beginGroup("Options");
-            settingsInCallback.setValue("EnableBuilderDebugFlag", QVariant(newOption));
-            settingsInCallback.endGroup();
+            AssetUtilities::SetUserSetting(AssetUtilities::EnableBuilderDebugFlagOptionName, newOption);
         });
 
-    apm->SetInitialScanSkippingFeature(initialScanSkippingEnabled);
-    ui->disableStartupScanCheckBox->setCheckState(initialScanSkippingEnabled ? Qt::Checked : Qt::Unchecked);
 
-    QObject::connect(ui->disableStartupScanCheckBox, &QCheckBox::stateChanged, this,
-        [](int newCheckState)
-    {
-        bool newOption = newCheckState == Qt::Checked ? true : false;
-        // don't change initial scan skipping feature value, as it's only relevant on the first scan
-        // save the value for the next run
-        QSettings settingsInCallback;
-        settingsInCallback.beginGroup("Options");
-        settingsInCallback.setValue("SkipInitialScan", QVariant(newOption));
-        settingsInCallback.endGroup();
-    });
+    QObject::connect(ui->disableStartupScanCheckBox, &QCheckBox::checkStateChanged, this,
+        [](Qt::CheckState newCheckState)
+        {
+            // this is not something that we change while running, so just set it for next time.
+            bool newOption = newCheckState == Qt::Checked ? true : false;
+            AssetUtilities::SetUserSetting(AssetUtilities::SkipInitialScanOptionName, newOption);
+        });
+
+     QObject::connect(
+        ui->verboseLoggingCheckbox,
+        &QCheckBox::checkStateChanged,
+        this,
+        [](Qt::CheckState newCheckState)
+        {
+            bool newOption = newCheckState == Qt::Checked ? true : false;
+            AssetUtilities::SetUserSetting(AssetUtilities::VerboseLoggingOptionName, newOption);
+        });
 
     // Shared Cache tab:
     SetupAssetServerTab();
@@ -792,7 +794,7 @@ void MainWindow::SetupAssetServerTab()
         });
 
     QObject::connect(ui->sharedCacheDiscardButton, &QPushButton::clicked, this,
-        [this]()
+        [this](bool)
         {
             this->m_cacheServerData.Reset();
             this->ResetAssetServerView();
@@ -804,7 +806,7 @@ void MainWindow::SetupAssetServerTab()
 
     // setting up the patterns table
     QObject::connect(ui->sharedCacheAddPattern, &QPushButton::clicked, this,
-        [this]()
+        [this](bool)
         {
             AddPatternRow("New Name", AssetBuilderSDK::AssetBuilderPattern::PatternType::Wildcard, "", true);
             this->m_cacheServerData.m_dirty = true;
@@ -829,7 +831,14 @@ void MainWindow::AddPatternRow(AZStd::string_view name, AssetBuilderSDK::AssetBu
     int row = ui->sharedCacheTable->rowCount();
     ui->sharedCacheTable->insertRow(row);
 
-    auto updateStatus = [this](int)
+    auto updateStatusFromCheck = [this](Qt::CheckState)
+    {
+        this->m_cacheServerData.m_dirty = true;
+        this->m_cacheServerData.m_updateStatus = false;
+        this->CheckAssetServerStates();
+    };
+
+    auto updateStatusFromIndex = [this](int)
     {
         this->m_cacheServerData.m_dirty = true;
         this->m_cacheServerData.m_updateStatus = false;
@@ -846,7 +855,7 @@ void MainWindow::AddPatternRow(AZStd::string_view name, AssetBuilderSDK::AssetBu
     // Enabled check mark
     auto* enableChackmark = new QCheckBox();
     enableChackmark->setChecked(enable);
-    QObject::connect(enableChackmark, &QCheckBox::stateChanged, ui->sharedCacheTable, updateStatus);
+    QObject::connect(enableChackmark, &QCheckBox::checkStateChanged, ui->sharedCacheTable, updateStatusFromCheck);
     ui->sharedCacheTable->setCellWidget(row, aznumeric_cast<int>(PatternColumns::Enabled), enableChackmark);
     ui->sharedCacheTable->setColumnWidth(aznumeric_cast<int>(PatternColumns::Enabled), 8);
     enableChackmark->setToolTip(tr("Temporarily disable the pattern by unchecking this box"));
@@ -858,7 +867,7 @@ void MainWindow::AddPatternRow(AZStd::string_view name, AssetBuilderSDK::AssetBu
 
     // Type combo
     auto* combo = new QComboBox();
-    QObject::connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged), ui->sharedCacheTable, updateStatus);
+    QObject::connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged), ui->sharedCacheTable, updateStatusFromIndex);
     combo->addItem("Wildcard", QVariant(AssetBuilderPattern::PatternType::Wildcard));
     combo->addItem("Regex", QVariant(AssetBuilderPattern::PatternType::Regex));
     combo->setCurrentIndex(aznumeric_cast<int>(type));
@@ -1222,7 +1231,8 @@ void MainWindow::OnAllowedListCheckBoxToggled()
 void MainWindow::OnAddHostNameAllowedListButtonClicked()
 {
     QString text = ui->allowedListAddHostNameLineEdit->text();
-    const QRegExpValidator *hostnameValidator = static_cast<const QRegExpValidator *>(ui->allowedListAddHostNameLineEdit->validator());
+    const QRegularExpressionValidator* hostnameValidator =
+        static_cast<const QRegularExpressionValidator*>(ui->allowedListAddHostNameLineEdit->validator());
     int pos;
     QValidator::State state = hostnameValidator->validate(text, pos);
     if (state == QValidator::Acceptable)
@@ -1243,7 +1253,8 @@ void MainWindow::OnAddHostNameAllowedListButtonClicked()
 void MainWindow::OnAddIPAllowedListButtonClicked()
 {
     QString text = ui->allowedListAddIPLineEdit->text();
-    const QRegExpValidator *ipValidator = static_cast<const QRegExpValidator *>(ui->allowedListAddIPLineEdit->validator());
+    const QRegularExpressionValidator* ipValidator =
+        static_cast<const QRegularExpressionValidator*>(ui->allowedListAddIPLineEdit->validator());
     int pos;
     QValidator::State state = ipValidator->validate(text, pos);
     if (state== QValidator::Acceptable)
@@ -1297,10 +1308,10 @@ void MainWindow::OnRemoveConnection(bool /*checked*/)
 void MainWindow::OnConnectionSelectionChanged(const QItemSelection& /*selected*/, const QItemSelection& /*deselected*/)
 {
     auto selectedIndices = ui->connectionTreeView->selectionModel()->selectedRows();
-    int selectionCount = selectedIndices.count();
+    auto selectionCount = selectedIndices.count();
 
     bool anyUserConnectionsSelected = false;
-    for (int i = 0; i < selectionCount; i++)
+    for (decltype(selectionCount) i = 0; i < selectionCount; i++)
     {
         QModelIndex selectedIndex = selectedIndices[i];
         if (selectedIndex.data(ConnectionManager::UserConnectionRole).toBool())
@@ -1736,7 +1747,7 @@ void MainWindow::SetContextLogDetails(const QMap<QString, QString>& details)
 
     if (!details.isEmpty())
     {
-        int tableRows = details.size();
+        auto tableRows = static_cast<int>(details.size());
         if(tableRows > m_config.contextDetailsTableMaximumRows)
         {
             tableRows = m_config.contextDetailsTableMaximumRows;
@@ -1850,7 +1861,6 @@ void MainWindow::ResetLoggingPanel()
 {
     if (m_loggingPanel)
     {
-        m_loggingPanel->AddLogTab(AzToolsFramework::LogPanel::TabSettings("Debug", "", ""));
         m_loggingPanel->AddLogTab(AzToolsFramework::LogPanel::TabSettings("Messages", "", "", true, true, true, false));
         m_loggingPanel->AddLogTab(AzToolsFramework::LogPanel::TabSettings("Warnings/Errors Only", "", "", false, true, true, false));
     }

@@ -25,7 +25,7 @@ namespace AZ::Internal
         static constexpr size_t value = sizeof(T) / sizeof(std::remove_extent_t<T>);
     };
 }
-#define AZ_ARRAY_SIZE(__a)  AZ::Internal::StaticArraySize<std::remove_reference_t<decltype(__a)>>::value
+#define AZ_ARRAY_SIZE(__a)  AZ::Internal::StaticArraySize<::std::remove_reference_t<decltype(__a)>>::value
 
 
 #ifndef AZ_SIZE_ALIGN_UP
@@ -43,14 +43,14 @@ namespace AZ::Internal
 
 #if defined(AZ_MONOLITHIC_BUILD)
     #define AZCORE_API
-    #define AZCORE_API_EXTERN
+    #define AZCORE_API_EXPORT
 #else
     #if defined(AZCORE_EXPORTS)
-        #define AZCORE_API        AZ_DLL_EXPORT
-        #define AZCORE_API_EXTERN AZ_DLL_EXPORT_EXTERN
+        #define AZCORE_API              AZ_DLL_EXPORT
+        #define AZCORE_API_EXPORT       AZ_DLL_EXPORT
     #else
-        #define AZCORE_API        AZ_DLL_IMPORT
-        #define AZCORE_API_EXTERN AZ_DLL_IMPORT_EXTERN
+        #define AZCORE_API              AZ_DLL_IMPORT
+        #define AZCORE_API_EXPORT       
     #endif
 #endif
 
@@ -138,7 +138,8 @@ namespace AZ::Internal
 #   define azfopen(_fp, _filename, _attrib)                 *(_fp) = fopen(_filename, _attrib)
 #   define azfscanf                                         fscanf
 
-#   define azsprintf                                        sprintf
+#   define azsprintf(_buffer, ...)                          snprintf(_buffer, AZ_ARRAY_SIZE(_buffer), __VA_ARGS__)
+
 #   define azstrlwr(_buffer, _size)                         strlwr(_buffer)
 #   define azvsprintf                                       vsprintf
 #   define azwcscpy(_dest, _size, _buffer)                  wcscpy(_dest, _buffer)
@@ -499,3 +500,23 @@ constexpr bool operator!=(EnumType lhs, EnumType rhs) \
         using UnderlyingType = AZStd::underlying_type_t<EnumType>; \
         return static_cast<UnderlyingType>(lhs) != static_cast<UnderlyingType>(rhs); \
     }
+
+// Macros to safely delete raw pointers and set them to nullptr afterwards
+
+#ifndef SAFE_DELETE
+// Delete a raw pointer and set it to nullptr to prevent dangling pointers
+#define SAFE_DELETE(p) { if (p) { delete (p); (p) = NULL; } \
+}
+#endif
+
+#ifndef SAFE_DELETE_ARRAY
+// Delete a raw pointer to an array and set it to nullptr to prevent dangling pointers
+#define SAFE_DELETE_ARRAY(p) { if (p) { delete [] (p); (p) = NULL; } \
+}
+#endif
+
+#ifndef SAFE_RELEASE
+// For object pointers that releases itself using a `Release()` call, call the release on the pointer and set it to nullptr
+#define SAFE_RELEASE(p) { if (p) { (p)->Release(); (p) = NULL; } \
+}
+#endif

@@ -25,7 +25,7 @@
 #include <AzQtComponents/Components/Widgets/FileDialog.h>
 
 #include <QFileInfo>
-#include <QtWidgets/QMessageBox>
+#include <QMessageBox>
 #include <QHBoxLayout>
 #include <QMimeData>
 #include <QTimer>
@@ -261,6 +261,8 @@ namespace AzToolsFramework
             if (action == Qt::IgnoreAction)
                 return true;
 
+            auto sourceparent = parent.data(AssetBrowserModel::Roles::EntryRole).value<const AssetBrowserEntry*>();
+
             const AssetBrowserEntry* item = static_cast<const AssetBrowserEntry*>(parent.internalPointer());
 
             // We should only have an item as a folder but will check
@@ -291,7 +293,7 @@ namespace AzToolsFramework
                         return false;
                     }
 
-                    Qt::DropAction selectedAction = AssetBrowserViewUtils::SelectDropActionForEntries(entries);
+                    Qt::DropAction selectedAction = AssetBrowserViewUtils::SelectDropActionForEntries(sourceparent, entries);
                     if (selectedAction == Qt::IgnoreAction)
                     {
                         return false;
@@ -657,4 +659,3 @@ namespace AzToolsFramework
     } // namespace AssetBrowser
 } // namespace AzToolsFramework
 
-#include "AssetBrowser/moc_AssetBrowserModel.cpp"

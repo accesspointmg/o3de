@@ -69,27 +69,11 @@
 #undef new
 #endif
 
-#ifndef SAFE_DELETE
-#define SAFE_DELETE(p)          { if (p) { delete (p);       (p) = nullptr; } \
-}
-#endif
-
-#ifndef SAFE_DELETE_ARRAY
-#define SAFE_DELETE_ARRAY(p)    { if (p) { delete[] (p);     (p) = nullptr; } \
-}
-#endif
-
-#ifndef SAFE_RELEASE
-#define SAFE_RELEASE(p)         { if (p) { (p)->Release();   (p) = nullptr; } \
-}
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 // CRY Stuff ////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 #include <platform.h>
 #include <Cry_Math.h>
-#include <Cry_Geo.h>
 #include <Range.h>
 #include <StlUtils.h>
 
@@ -116,7 +100,6 @@
 #include "Util/EditorUtils.h"
 #include "Util/FileEnum.h"
 #include <Editor/Util/EditorUtils.h>
-#include <CryCommon/Cry_GeoIntersect.h>
 #include "Util/AffineParts.h"
 
 // Xml support.

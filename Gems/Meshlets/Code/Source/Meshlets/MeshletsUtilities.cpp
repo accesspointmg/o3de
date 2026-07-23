@@ -145,7 +145,7 @@ namespace AZ
 
         // Returns the buffer view instance as well as the buffer allocator
         Data::Instance<RHI::BufferView> UtilityClass::CreateSharedBufferView(
-            const char* warningHeader,
+            [[maybe_unused]] const char* warningHeader,
             SrgBufferDescriptor& bufferDesc,
             Data::Instance<Meshlets::SharedBufferAllocation>& outputBufferAllocator)
         {
@@ -173,7 +173,7 @@ namespace AZ
             viewDescriptor.m_ignoreFrameAttachmentValidation = true;
 
             RHI::Buffer* rhiBuffer = Meshlets::SharedBufferInterface::Get()->GetBuffer()->GetRHIBuffer();
-            return rhiBuffer->BuildBufferView(viewDescriptor);
+            return rhiBuffer->GetBufferView(viewDescriptor);
         }
 
         bool UtilityClass::BindBufferViewToSrg(
@@ -196,7 +196,7 @@ namespace AZ
                 return false;
             }
 
-            if (!srg->SetBufferView(bufferIndex, bufferView))
+            if (!srg->SetBufferView(bufferIndex, bufferView.get()))
             {
                 AZ_Error(warningHeader, false, "Failed to bind buffer view for [%s]", bufferDesc.m_bufferName.GetCStr());
                 return false;

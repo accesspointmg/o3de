@@ -865,6 +865,29 @@ void AzAssetBrowserRequestHandler::AddContextMenuActions(QWidget* caller, QMenu*
                             tableView->MoveEntries();
                         }
                     });
+                // Open in another Asset Browser - navigate to the folder
+                menu->addAction(
+                    QObject::tr("Open in another Asset Browser"),
+                    [fullFilePath, thumbnailView, tableView]()
+                    {
+                        AzAssetBrowserWindow* newAssetBrowser = AzAssetBrowserMultiWindow::OpenNewAssetBrowserWindow();
+
+                        if (thumbnailView)
+                        {
+                            newAssetBrowser->SetCurrentMode(AssetBrowserMode::ThumbnailView);
+                        }
+                        else if (tableView)
+                        {
+                            newAssetBrowser->SetCurrentMode(AssetBrowserMode::TableView);
+                        }
+                        else
+                        {
+                            newAssetBrowser->SetCurrentMode(AssetBrowserMode::ListView);
+                        }
+
+                        newAssetBrowser->SelectAsset(fullFilePath.c_str(), true);
+                    });
+
                 AddCreateMenu(menu, fullFilePath);
             }
         }
@@ -1182,18 +1205,46 @@ void AzAssetBrowserRequestHandler::OpenAssetInAssociatedEditor(const AZ::Data::A
         const SourceFileOpenerDetails* firstValidOpener = nullptr;
         int numValidOpeners = 0;
         QMenu menu(mainWindow);
-        for (const SourceFileOpenerDetails& openerDetails : openers)
+        const auto addOpener =
+            [&numValidOpeners, &firstValidOpener, &menu, switchToOpener, mainWindow](const SourceFileOpenerDetails& opener)
         {
-            // bind that function to the current loop element.
-            if (openerDetails.m_opener) // only VALID openers with an actual callback.
+            if (opener.m_opener) // only VALID openers with an actual callback.
             {
                 ++numValidOpeners;
                 if (!firstValidOpener)
                 {
-                    firstValidOpener = &openerDetails;
+                    firstValidOpener = &opener;
                 }
                 // bind a callback such that when the menu item is clicked, it sets that as the opener to use.
-                menu.addAction(openerDetails.m_iconToUse, QObject::tr(openerDetails.m_displayText.c_str()), mainWindow, [switchToOpener, details = &openerDetails] { return switchToOpener(details); });
+                menu.addAction(
+                    opener.m_iconToUse,
+                    QObject::tr(opener.m_displayText.c_str()),
+                    mainWindow,
+                    [switchToOpener, details = &opener]()
+                    {
+                        return switchToOpener(details);
+                    });
+            }
+        };
+
+        // Check if any prioritized opener exists
+        const auto it = std::find_if(
+            openers.begin(),
+            openers.end(),
+            [](const SourceFileOpenerDetails& opener)
+            {
+                return opener.m_opener && opener.m_isPrioritized;
+            });
+
+        if (it != openers.end())
+        {
+            addOpener(*it);
+        }
+        else
+        {
+            for (const SourceFileOpenerDetails& openerDetails : openers)
+            {
+                addOpener(openerDetails);
             }
         }
 

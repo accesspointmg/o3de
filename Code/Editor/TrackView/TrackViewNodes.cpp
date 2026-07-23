@@ -30,6 +30,8 @@
 #include <AzToolsFramework/Entity/EditorEntitySearchBus.h>
 #include <AzToolsFramework/ToolsComponents/GenericComponentWrapper.h>
 
+#include <AzCore/std/containers/map.h>
+
 // AzQtComponents
 #include <AzQtComponents/Components/InputDialog.h>
 #include <AzQtComponents/Components/Widgets/ColorPicker.h>
@@ -56,7 +58,7 @@ CTrackViewNodesCtrl::CRecord::CRecord(CTrackViewNode* pNode /*= nullptr*/)
     if (pNode)
     {
         QVariant v;
-        v.setValue<CTrackViewNodePtr>(pNode);
+        v.setValue(pNode);
         setData(0, Qt::UserRole, v);
     }
 }
@@ -108,7 +110,7 @@ protected:
 
     void dragMoveEvent(QDragMoveEvent* event) override
     {
-        CTrackViewNodesCtrl::CRecord* record = (CTrackViewNodesCtrl::CRecord*) itemAt(event->pos());
+        CTrackViewNodesCtrl::CRecord* record = (CTrackViewNodesCtrl::CRecord*) itemAt(event->position().toPoint());
         if (!record)
         {
             return;
@@ -146,7 +148,7 @@ protected:
 
     void dropEvent(QDropEvent* event) override
     {
-        CTrackViewNodesCtrl::CRecord* record = (CTrackViewNodesCtrl::CRecord*) itemAt(event->pos());
+        CTrackViewNodesCtrl::CRecord* record = (CTrackViewNodesCtrl::CRecord*) itemAt(event->position().toPoint());
         if (!record)
         {
             return;
@@ -263,7 +265,7 @@ private:
             QVariant v = roleDataMap[Qt::UserRole];
             if (v.isValid())
             {
-                CTrackViewNode* pNode = v.value<CTrackViewNodePtr>();
+                CTrackViewNode* pNode = v.value<CTrackViewNode*>();
                 if (pNode && pNode->GetNodeType() == eTVNT_AnimNode)
                 {
                     nodes << (CTrackViewAnimNode*)pNode;
@@ -276,13 +278,13 @@ private:
     CTrackViewNodesCtrl*    m_controller;
 };
 
-QDataStream& operator<<(QDataStream& out, const CTrackViewNodePtr& obj)
+QDataStream& operator<<(QDataStream& out, const CTrackViewNode*& obj)
 {
     out.writeRawData((const char*) &obj, sizeof(obj));
     return out;
 }
 
-QDataStream& operator>>(QDataStream& in, CTrackViewNodePtr& obj)
+QDataStream& operator>>(QDataStream& in, CTrackViewNode*& obj)
 {
     in.readRawData((char*) &obj, sizeof(obj));
     return in;
@@ -342,12 +344,8 @@ enum EMenuItem
 
 // The 'MI' represents a Menu Item.
 
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <TrackView/ui_TrackViewNodes.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
-
-//////////////////////////////////////////////////////////////////////////
 CTrackViewNodesCtrl::CTrackViewNodesCtrl(QWidget* hParentWnd, CTrackViewDialog* parent /* = 0 */)
     : QWidget(hParentWnd)
     , m_bIgnoreNotifications(false)
@@ -361,8 +359,7 @@ CTrackViewNodesCtrl::CTrackViewNodesCtrl(QWidget* hParentWnd, CTrackViewDialog* 
     m_currentMatchIndex = 0;
     m_matchCount = 0;
 
-    qRegisterMetaType<CTrackViewNodePtr>("CTrackViewNodePtr");
-    qRegisterMetaTypeStreamOperators<CTrackViewNodePtr>("CTrackViewNodePtr");
+    qRegisterMetaType<CTrackViewNode*>("CTrackViewNodePtr");
 
     ui->treeWidget->hide();
     ui->searchField->hide();
@@ -409,7 +406,6 @@ CTrackViewNodesCtrl::CTrackViewNodesCtrl(QWidget* hParentWnd, CTrackViewDialog* 
     GetIEditor()->GetUndoManager()->AddListener(this);
 };
 
-//////////////////////////////////////////////////////////////////////////
 CTrackViewNodesCtrl::~CTrackViewNodesCtrl()
 {
     GetIEditor()->GetUndoManager()->RemoveListener(this);
@@ -432,10 +428,9 @@ bool CTrackViewNodesCtrl::eventFilter(QObject* o, QEvent* e)
 }
 
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::OnSequenceChanged()
 {
-    assert(m_pTrackViewDialog);
+    AZ_Assert(m_pTrackViewDialog, "m_pTrackViewDialog is null");
 
     m_nodeToRecordMap.clear();
     ui->treeWidget->clear();
@@ -457,13 +452,11 @@ void CTrackViewNodesCtrl::OnSequenceRemoved([[maybe_unused]] CTrackViewSequence*
     OnSequenceChanged();
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::SetDopeSheet(CTrackViewDopeSheetBase* pDopeSheet)
 {
     m_pDopeSheet = pDopeSheet;
 }
 
-//////////////////////////////////////////////////////////////////////////
 CTrackViewNodesCtrl::CRecord* CTrackViewNodesCtrl::AddAnimNodeRecord(CRecord* pParentRecord, CTrackViewAnimNode* animNode)
 {
     CRecord* pNewRecord = new CRecord(animNode);
@@ -476,7 +469,6 @@ CTrackViewNodesCtrl::CRecord* CTrackViewNodesCtrl::AddAnimNodeRecord(CRecord* pP
     return pNewRecord;
 }
 
-//////////////////////////////////////////////////////////////////////////
 CTrackViewNodesCtrl::CRecord* CTrackViewNodesCtrl::AddTrackRecord(CRecord* pParentRecord, CTrackViewTrack* pTrack)
 {
     CRecord* pNewTrackRecord = new CRecord(pTrack);
@@ -488,7 +480,6 @@ CTrackViewNodesCtrl::CRecord* CTrackViewNodesCtrl::AddTrackRecord(CRecord* pPare
     return pNewTrackRecord;
 }
 
-//////////////////////////////////////////////////////////////////////////
 int CTrackViewNodesCtrl::GetInsertPosition(CRecord* pParentRecord, CTrackViewNode* pNode)
 {
     // Search for insert position
@@ -507,12 +498,12 @@ int CTrackViewNodesCtrl::GetInsertPosition(CRecord* pParentRecord, CTrackViewNod
     return siblingCount;
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::AddNodeRecord(CRecord* record, CTrackViewNode* pNode)
 {
-    assert(m_nodeToRecordMap.find(pNode) == m_nodeToRecordMap.end());
     if (m_nodeToRecordMap.find(pNode) != m_nodeToRecordMap.end())
     {
+        AZ_Assert(false, "Node %p already added to the node to record map", pNode)
+
         // For safety. Shouldn't happen
         return;
     }
@@ -560,7 +551,6 @@ void CTrackViewNodesCtrl::AddNodeRecord(CRecord* record, CTrackViewNode* pNode)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::FillNodesRec(CRecord* record, CTrackViewNode* pCurrentNode)
 {
     const unsigned int childCount = pCurrentNode->GetChildCount();
@@ -576,7 +566,6 @@ void CTrackViewNodesCtrl::FillNodesRec(CRecord* record, CTrackViewNode* pCurrent
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::UpdateNodeRecord(CRecord* record)
 {
     CTrackViewNode* pNode = record->GetNode();
@@ -595,7 +584,6 @@ void CTrackViewNodesCtrl::UpdateNodeRecord(CRecord* record)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::UpdateTrackRecord(CRecord* record, CTrackViewTrack* pTrack)
 {
     record->setIcon(0, GetIconForTrack(pTrack));
@@ -610,7 +598,6 @@ void CTrackViewNodesCtrl::UpdateTrackRecord(CRecord* record, CTrackViewTrack* pT
     record->setData(0, CRecord::EnableRole, !bDisabledOrMuted && isParamValid);
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::UpdateAnimNodeRecord(CRecord* record, CTrackViewAnimNode* animNode)
 {
     const QColor TextColorForMissingEntity(226, 52, 43);        // O3DE palette for 'Error/Failure'
@@ -685,7 +672,6 @@ void CTrackViewNodesCtrl::UpdateAnimNodeRecord(CRecord* record, CTrackViewAnimNo
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::Reload()
 {
     ui->treeWidget->clear();
@@ -722,7 +708,6 @@ void CTrackViewNodesCtrl::OnFillItems()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::OnItemExpanded(QTreeWidgetItem* item)
 {
     CRecord* record = (CRecord*) item;
@@ -756,7 +741,6 @@ void CTrackViewNodesCtrl::OnItemExpanded(QTreeWidgetItem* item)
     UpdateDopeSheet();
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::OnSelectionChanged()
 {
     // Need to avoid the second call to this, because GetSelectedRows is broken
@@ -774,7 +758,7 @@ void CTrackViewNodesCtrl::OnSelectionChanged()
         sequence->ClearSelection();
 
         QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
-        int nCount = items.count();
+        int nCount = static_cast<int>(items.count());
         for (int i = 0; i < nCount; i++)
         {
             CRecord* record = (CRecord*)items.at(i);
@@ -794,7 +778,6 @@ void CTrackViewNodesCtrl::OnSelectionChanged()
     UpdateDopeSheet();
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::OnNMRclick(QPoint point)
 {
     CRecord* record = nullptr;
@@ -895,7 +878,10 @@ void CTrackViewNodesCtrl::OnNMRclick(QPoint point)
             {
                 AzToolsFramework::ScopedUndoBatch undoBatch("Add Entities to Track View");
                 CTrackViewAnimNodeBundle addedNodes = groupNode->AddSelectedEntities(m_pTrackViewDialog->GetDefaultTracksForEntityNode());
-                undoBatch.MarkEntityDirty(groupNode->GetSequence()->GetSequenceComponentEntityId());
+                if (addedNodes.GetCount() > 0)
+                {
+                    undoBatch.MarkEntityDirty(groupNode->GetSequence()->GetSequenceComponentEntityId());
+                }
 
                 int selectedEntitiesCount = 0;
                 AzToolsFramework::ToolsApplicationRequestBus::BroadcastResult(
@@ -927,14 +913,17 @@ void CTrackViewNodesCtrl::OnNMRclick(QPoint point)
                                 break;
                             }
                         }
-                        shortMessages += "Message truncated, please see console for a full list of warnings.\n";
+                        shortMessages += tr("Message truncated, please see console for a full list of warnings.\n").toUtf8().constData();
                     }
                     else
                     {
                         shortMessages = messages;
                     }
 
-                    QMessageBox::information(this, tr("Track View Warning"), tr(shortMessages.c_str()));
+                    if (!shortMessages.empty())
+                    {
+                        QMessageBox::information(this, tr("Track View Warning"), tr(shortMessages.c_str()));
+                    }
 
                     // clear the notification log now that we've consumed and presented them.
                     movieSystem->ClearUserNotificationMsgs();
@@ -1302,7 +1291,6 @@ void CTrackViewNodesCtrl::OnNMRclick(QPoint point)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::OnItemDblClick(QTreeWidgetItem* item, int)
 {
     CRecord* record = (CRecord*)item;
@@ -1326,14 +1314,12 @@ void CTrackViewNodesCtrl::OnItemDblClick(QTreeWidgetItem* item, int)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::EditEvents()
 {
     CTVEventsDialog dlg;
     dlg.exec();
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::CreateFolder(CTrackViewAnimNode* groupNode)
 {
     // Change Group of the node.
@@ -1348,15 +1334,13 @@ void CTrackViewNodesCtrl::CreateFolder(CTrackViewAnimNode* groupNode)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 struct STrackMenuTreeNode
 {
     QMenu menu;
     CAnimParamType paramType;
-    std::map<QString, std::unique_ptr<STrackMenuTreeNode> > children;
+    AZStd::map<QString, AZStd::unique_ptr<STrackMenuTreeNode> > children;
 };
 
-//////////////////////////////////////////////////////////////////////////
 struct SContextMenu
 {
     QMenu main;
@@ -1367,10 +1351,9 @@ struct SContextMenu
     QMenu addComponentSub;
 };
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::AddGroupNodeAddItems(SContextMenu& contextMenu, CTrackViewAnimNode* animNode)
 {
-    contextMenu.main.addAction("Create Folder")->setData(eMI_CreateFolder);
+    contextMenu.main.addAction(tr("Create Folder"))->setData(eMI_CreateFolder);
 
     AzToolsFramework::EntityIdList entityIds;
     AzToolsFramework::ToolsApplicationRequests::Bus::BroadcastResult(
@@ -1378,7 +1361,7 @@ void CTrackViewNodesCtrl::AddGroupNodeAddItems(SContextMenu& contextMenu, CTrack
 
     if (!entityIds.empty())
     {
-        const char* msg = entityIds.size() == 1 ? "Add Selected Entity" : "Add Selected Entities";
+        QString msg = entityIds.size() == 1 ? tr("Add Selected Entity") : tr("Add Selected Entities");
         contextMenu.main.addAction(msg)->setData(eMI_AddSelectedEntities);
     }
 
@@ -1387,42 +1370,41 @@ void CTrackViewNodesCtrl::AddGroupNodeAddItems(SContextMenu& contextMenu, CTrack
 
     if (pDirector->GetAnimNodesByType(AnimNodeType::RadialBlur).GetCount() == 0)
     {
-        contextMenu.main.addAction("Add Radial Blur Node")->setData(eMI_AddRadialBlur);
+        contextMenu.main.addAction(tr("Add Radial Blur Node"))->setData(eMI_AddRadialBlur);
     }
 
     if (pDirector->GetAnimNodesByType(AnimNodeType::ColorCorrection).GetCount() == 0)
     {
-        contextMenu.main.addAction("Add Color Correction Node")->setData(eMI_AddColorCorrection);
+        contextMenu.main.addAction(tr("Add Color Correction Node"))->setData(eMI_AddColorCorrection);
     }
 
     if (pDirector->GetAnimNodesByType(AnimNodeType::DepthOfField).GetCount() == 0)
     {
-        contextMenu.main.addAction("Add Depth of Field Node")->setData(eMI_AddDOF);
+        contextMenu.main.addAction(tr("Add Depth of Field Node"))->setData(eMI_AddDOF);
     }
 
     if (pDirector->GetAnimNodesByType(AnimNodeType::ScreenFader).GetCount() == 0)
     {
-        contextMenu.main.addAction("Add Screen Fader")->setData(eMI_AddScreenfader);
+        contextMenu.main.addAction(tr("Add Screen Fader"))->setData(eMI_AddScreenfader);
     }
 
     if (pDirector->GetAnimNodesByType(AnimNodeType::ShadowSetup).GetCount() == 0)
     {
-        contextMenu.main.addAction("Add Shadows Setup Node")->setData(eMI_AddShadowSetup);
+        contextMenu.main.addAction(tr("Add Shadows Setup Node"))->setData(eMI_AddShadowSetup);
     }
 
     // A director node cannot have another director node as a child.
     if (animNode->GetType() != AnimNodeType::Director)
     {
-        contextMenu.main.addAction("Add Director(Scene) Node")->setData(eMI_AddDirectorNode);
+        contextMenu.main.addAction(tr("Add Director(Scene) Node"))->setData(eMI_AddDirectorNode);
     }
 
-    contextMenu.main.addAction("Add Comment Node")->setData(eMI_AddCommentNode);
-    contextMenu.main.addAction("Add Console Variable Node")->setData(eMI_AddConsoleVariable);
-    contextMenu.main.addAction("Add Script Variable Node")->setData(eMI_AddScriptVariable);
-    contextMenu.main.addAction("Add Event Node")->setData(eMI_AddEvent);
+    contextMenu.main.addAction(tr("Add Comment Node"))->setData(eMI_AddCommentNode);
+    contextMenu.main.addAction(tr("Add Console Variable Node"))->setData(eMI_AddConsoleVariable);
+    contextMenu.main.addAction(tr("Add Script Variable Node"))->setData(eMI_AddScriptVariable);
+    contextMenu.main.addAction(tr("Add Event Node"))->setData(eMI_AddEvent);
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::AddMenuSeperatorConditional(QMenu& menu, bool& bAppended)
 {
     if (bAppended)
@@ -1433,7 +1415,6 @@ void CTrackViewNodesCtrl::AddMenuSeperatorConditional(QMenu& menu, bool& bAppend
     bAppended = false;
 }
 
-//////////////////////////////////////////////////////////////////////////
 int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu, CTrackViewSequence* sequence, CTrackViewNode* pNode)
 {
     bool bAppended = false;
@@ -1478,7 +1459,7 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
 
     if (isOnSequence)
     {
-        contextMenu.main.addAction("Select In Viewport")->setData(eMI_SelectInViewport);
+        contextMenu.main.addAction(tr("Select In Viewport"))->setData(eMI_SelectInViewport);
         contextMenu.main.addSeparator();
     }
 
@@ -1487,7 +1468,7 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
     {
         AddMenuSeperatorConditional(contextMenu.main, bAppended);
 
-        contextMenu.main.addAction("Select In Viewport")->setData(eMI_SelectInViewport);
+        contextMenu.main.addAction(tr("Select In Viewport"))->setData(eMI_SelectInViewport);
 
         bAppended = true;
     }
@@ -1499,19 +1480,19 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
         if ((bOnNode || bOnSequence) && !isOnComponentNode)
         {
             AddMenuSeperatorConditional(contextMenu.main, bAppended);
-            contextMenu.main.addAction("Copy")->setData(eMI_CopyNodes);
+            contextMenu.main.addAction(tr("Copy"))->setData(eMI_CopyNodes);
             bCopyPasteRenameAppended = true;
         }
 
         if (pNode->IsGroupNode() && !isOnAzEntity)
         {
-            contextMenu.main.addAction("Paste")->setData(eMI_PasteNodes);
+            contextMenu.main.addAction(tr("Paste"))->setData(eMI_PasteNodes);
             bCopyPasteRenameAppended = true;
         }
 
         if ((bOnNode || bOnSequence || bOnTrackNotSub) && !isOnComponentNode)
         {
-            contextMenu.main.addAction("Delete")->setData(bOnTrackNotSub ? eMI_RemoveTrack : eMI_RemoveSelected);
+            contextMenu.main.addAction(tr("Delete"))->setData(bOnTrackNotSub ? eMI_RemoveTrack : eMI_RemoveSelected);
             bCopyPasteRenameAppended = true;
         }
 
@@ -1519,7 +1500,7 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
         if (pNode->CanBeRenamed())
         {
             AddMenuSeperatorConditional(contextMenu.main, bAppended);
-            contextMenu.main.addAction("Rename")->setData(eMI_Rename);
+            contextMenu.main.addAction(tr("Rename"))->setData(eMI_Rename);
             bCopyPasteRenameAppended = true;
         }
 
@@ -1530,9 +1511,9 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
     {
         // Copy & paste keys
         AddMenuSeperatorConditional(contextMenu.main, bAppended);
-        contextMenu.main.addAction("Copy Keys")->setData(eMI_CopyKeys);
-        contextMenu.main.addAction("Copy Selected Keys")->setData(eMI_CopySelectedKeys);
-        contextMenu.main.addAction("Paste Keys")->setData(eMI_PasteKeys);
+        contextMenu.main.addAction(tr("Copy Keys"))->setData(eMI_CopyKeys);
+        contextMenu.main.addAction(tr("Copy Selected Keys"))->setData(eMI_CopySelectedKeys);
+        contextMenu.main.addAction(tr("Paste Keys"))->setData(eMI_PasteKeys);
         bAppended = true;
     }
 
@@ -1543,7 +1524,7 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
         if (!bOnSequence)
         {
             AddMenuSeperatorConditional(contextMenu.main, bAppended);
-            QAction* a = contextMenu.main.addAction("Disabled");
+            QAction* a = contextMenu.main.addAction(tr("Disabled"));
             a->setData(eMI_Disable);
             a->setCheckable(true);
             a->setChecked(pNode->IsDisabled());
@@ -1561,7 +1542,7 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
             {
                 AddMenuSeperatorConditional(contextMenu.main, bAppended);
                 bool bMuted = pTrack->GetFlags() & IAnimTrack::eAnimTrackFlags_Muted;
-                QAction* a = contextMenu.main.addAction("Muted");
+                QAction* a = contextMenu.main.addAction(tr("Muted"));
                 a->setData(eMI_Mute);
                 a->setCheckable(true);
                 a->setChecked(bMuted);
@@ -1573,7 +1554,7 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
         if (bOnNode && animNode->GetType() == AnimNodeType::Director)
         {
             AddMenuSeperatorConditional(contextMenu.main, bAppended);
-            QAction* a = contextMenu.main.addAction("Active Director");
+            QAction* a = contextMenu.main.addAction(tr("Active Director"));
             a->setData(eMI_SetAsActiveDirector);
             a->setCheckable(true);
             a->setChecked(animNode->IsActiveDirector());
@@ -1588,20 +1569,20 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
     {
         AddMenuSeperatorConditional(contextMenu.main, bAppended);
 
-        contextMenu.expandSub.addAction("Expand all")->setData(eMI_ExpandAll);
-        contextMenu.collapseSub.addAction("Collapse all")->setData(eMI_CollapseAll);
+        contextMenu.expandSub.addAction(tr("Expand all"))->setData(eMI_ExpandAll);
+        contextMenu.collapseSub.addAction(tr("Collapse all"))->setData(eMI_CollapseAll);
         if (!isOnAzEntity)
         {
-            contextMenu.expandSub.addAction("Expand Folders")->setData(eMI_ExpandFolders);
-            contextMenu.collapseSub.addAction("Collapse Folders")->setData(eMI_CollapseFolders);
-            contextMenu.expandSub.addAction("Expand Entities")->setData(eMI_ExpandEntities);
-            contextMenu.collapseSub.addAction("Collapse Entities")->setData(eMI_CollapseEntities);
-            contextMenu.expandSub.addAction("Expand Events")->setData(eMI_ExpandEvents);
-            contextMenu.collapseSub.addAction("Collapse Events")->setData(eMI_CollapseEvents);
+            contextMenu.expandSub.addAction(tr("Expand Folders"))->setData(eMI_ExpandFolders);
+            contextMenu.collapseSub.addAction(tr("Collapse Folders"))->setData(eMI_CollapseFolders);
+            contextMenu.expandSub.addAction(tr("Expand Entities"))->setData(eMI_ExpandEntities);
+            contextMenu.collapseSub.addAction(tr("Collapse Entities"))->setData(eMI_CollapseEntities);
+            contextMenu.expandSub.addAction(tr("Expand Events"))->setData(eMI_ExpandEvents);
+            contextMenu.collapseSub.addAction(tr("Collapse Events"))->setData(eMI_CollapseEvents);
         }
-        contextMenu.expandSub.setTitle("Expand");
+        contextMenu.expandSub.setTitle(tr("Expand"));
         contextMenu.main.addMenu(&contextMenu.expandSub);
-        contextMenu.collapseSub.setTitle("Collapse");
+        contextMenu.collapseSub.setTitle(tr("Collapse"));
         contextMenu.main.addMenu(&contextMenu.collapseSub);
 
         bAppended = true;
@@ -1625,7 +1606,7 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
                 // Create 'Add Tracks' submenu
                 m_menuParamTypeMap.clear();
 
-                const QString addTracksMenuName = "Add Tracks";
+                const QString addTracksMenuName = tr("Add Tracks");
                 if (FillAddTrackMenu(contextMenu.addTrackSub, animNode))
                 {
                     // add script table properties -> tracks available for adding
@@ -1648,8 +1629,8 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
     if (isLegacySequence && bOnNode && !bIsLightAnimationSet && !isOnDirector && !isOnComponentNode && !isOnAzEntityNode)
     {
         AddMenuSeperatorConditional(contextMenu.main, bAppended);
-        contextMenu.main.addAction("Import FBX File...")->setData(eMI_ImportFromFBX);
-        contextMenu.main.addAction("Export FBX File...")->setData(eMI_SaveToFBX);
+        contextMenu.main.addAction(tr("Import FBX File..."))->setData(eMI_ImportFromFBX);
+        contextMenu.main.addAction(tr("Export FBX File..."))->setData(eMI_SaveToFBX);
         bAppended = true;
     }
 
@@ -1657,7 +1638,7 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
     if (bOnSequence || pNode->IsGroupNode() && !bIsLightAnimationSet && !isOnAzEntity)
     {
         AddMenuSeperatorConditional(contextMenu.main, bAppended);
-        contextMenu.main.addAction("Edit Events...")->setData(eMI_EditEvents);
+        contextMenu.main.addAction(tr("Edit Events..."))->setData(eMI_EditEvents);
         bAppended = true;
     }
 
@@ -1669,7 +1650,7 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
             // Add the set-animation-layer pop-up menu.
             AddMenuSeperatorConditional(contextMenu.main, bAppended);
             CreateSetAnimationLayerPopupMenu(contextMenu.setLayerSub, pTrack);
-            contextMenu.setLayerSub.setTitle("Set Animation Layer");
+            contextMenu.setLayerSub.setTitle(tr("Set Animation Layer"));
             contextMenu.main.addMenu(&contextMenu.setLayerSub);
             bAppended = true;
         }
@@ -1679,10 +1660,10 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
     if (bOnTrack)
     {
         AddMenuSeperatorConditional(contextMenu.main, bAppended);
-        contextMenu.main.addAction("Customize Track Color...")->setData(eMI_CustomizeTrackColor);
+        contextMenu.main.addAction(tr("Customize Track Color..."))->setData(eMI_CustomizeTrackColor);
         if (pTrack->HasCustomColor())
         {
-            contextMenu.main.addAction("Clear Custom Track Color")->setData(eMI_ClearCustomTrackColor);
+            contextMenu.main.addAction(tr("Clear Custom Track Color"))->setData(eMI_ClearCustomTrackColor);
         }
         bAppended = true;
     }
@@ -1692,7 +1673,7 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
     {
         AddMenuSeperatorConditional(contextMenu.main, bAppended);
 
-        const QString manageTracksMenuName = "Toggle Tracks";
+        const QString manageTracksMenuName = tr("Toggle Tracks");
         auto manageTracksAction = contextMenu.main.addAction(manageTracksMenuName);
 
         bool bAppendedTrackFlag = false;
@@ -1726,7 +1707,6 @@ int CTrackViewNodesCtrl::ShowPopupMenuSingleSelection(SContextMenu& contextMenu,
     return 0;
 }
 
-//////////////////////////////////////////////////////////////////////////
 int CTrackViewNodesCtrl::ShowPopupMenuMultiSelection(SContextMenu& contextMenu)
 {
     QList<QTreeWidgetItem*> records = ui->treeWidget->selectedItems();
@@ -1744,15 +1724,15 @@ int CTrackViewNodesCtrl::ShowPopupMenuMultiSelection(SContextMenu& contextMenu)
 
     if (bNodeSelected)
     {
-        contextMenu.main.addAction("Copy Selected Nodes")->setData(eMI_CopySelectedNodes);
+        contextMenu.main.addAction(tr("Copy Selected Nodes"))->setData(eMI_CopySelectedNodes);
     }
 
-    contextMenu.main.addAction("Remove Selected Nodes/Tracks")->setData(eMI_RemoveSelected);
+    contextMenu.main.addAction(tr("Remove Selected Nodes/Tracks"))->setData(eMI_RemoveSelected);
 
     if (bNodeSelected)
     {
         contextMenu.main.addSeparator();
-        contextMenu.main.addAction("Select In Viewport")->setData(eMI_SelectInViewport);
+        contextMenu.main.addAction(tr("Select In Viewport"))->setData(eMI_SelectInViewport);
 
         // Importing FBX is currently only supported on legacy entities. Legacy
         // sequences contain only legacy Cry entities and no AZ component entities.
@@ -1763,8 +1743,8 @@ int CTrackViewNodesCtrl::ShowPopupMenuMultiSelection(SContextMenu& contextMenu)
             CTrackViewSequence* sequence = context->GetSequence();
             if (sequence && sequence->GetSequenceType() == SequenceType::Legacy)
             {
-                contextMenu.main.addAction("Import From FBX File")->setData(eMI_ImportFromFBX);
-                contextMenu.main.addAction("Save To FBX File")->setData(eMI_SaveToFBX);
+                contextMenu.main.addAction(tr("Import From FBX File"))->setData(eMI_ImportFromFBX);
+                contextMenu.main.addAction(tr("Save To FBX File"))->setData(eMI_SaveToFBX);
             }
         }
     }
@@ -1772,7 +1752,6 @@ int CTrackViewNodesCtrl::ShowPopupMenuMultiSelection(SContextMenu& contextMenu)
     return 0;
 }
 
-//////////////////////////////////////////////////////////////////////////
 int CTrackViewNodesCtrl::ShowPopupMenu([[maybe_unused]] QPoint point, const CRecord* record)
 {
     CTrackViewSequence* sequence = GetIEditor()->GetAnimation()->GetSequence();
@@ -1809,7 +1788,6 @@ int CTrackViewNodesCtrl::ShowPopupMenu([[maybe_unused]] QPoint point, const CRec
     return ret;
 }
 
-//////////////////////////////////////////////////////////////////////////
 // Add tracks that can be added to the given animation node to the
 // internal track menu tree data structure rooted at menuAddTrack
 bool CTrackViewNodesCtrl::FillAddTrackMenu(STrackMenuTreeNode& menuAddTrack, const CTrackViewAnimNode* animNode)
@@ -1897,7 +1875,7 @@ bool CTrackViewNodesCtrl::FillAddTrackMenu(STrackMenuTreeNode& menuAddTrack, con
         if (matchedTracks.GetCount() == 0 && !splitName.isEmpty())
         {
             STrackMenuTreeNode* pParamNode = new STrackMenuTreeNode;
-            pCurrentNode->children[splitName.back()] = std::unique_ptr<STrackMenuTreeNode>(pParamNode);
+            pCurrentNode->children[splitName.back()] = AZStd::unique_ptr<STrackMenuTreeNode>(pParamNode);
             pParamNode->paramType = paramType;
 
             bTracksToAdd = true;
@@ -1907,7 +1885,6 @@ bool CTrackViewNodesCtrl::FillAddTrackMenu(STrackMenuTreeNode& menuAddTrack, con
     return bTracksToAdd;
 }
 
-//////////////////////////////////////////////////////////////////////////
 //
 // FillAddTrackMenu fills the data structure for tracks to add (a STrackMenuTreeNode tree)
 // CreateAddTrackMenuRec actually creates the Qt submenu from this data structure
@@ -1934,7 +1911,6 @@ void CTrackViewNodesCtrl::CreateAddTrackMenuRec(QMenu& parent, const QString& na
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::SetPopupMenuLock(QMenu* menu)
 {
     if (!m_bEditLock || !menu)
@@ -1942,28 +1918,26 @@ void CTrackViewNodesCtrl::SetPopupMenuLock(QMenu* menu)
         return;
     }
 
-    UINT count = menu->actions().size();
+    UINT count = static_cast<int>(menu->actions().size());
     for (UINT i = 0; i < count; ++i)
     {
         QAction* a = menu->actions()[i];
         QString menuString = a->text();
 
-        if (menuString != "Expand" && menuString != "Collapse")
+        if (menuString != tr("Expand") && menuString != tr("Collapse"))
         {
             a->setEnabled(false);
         }
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 float CTrackViewNodesCtrl::SaveVerticalScrollPos() const
 {
     int sbMin = ui->treeWidget->verticalScrollBar()->minimum();
     int sbMax = ui->treeWidget->verticalScrollBar()->maximum();
-    return float(ui->treeWidget->verticalScrollBar()->value() - sbMin) / std::max(float(sbMax - sbMin), 1.0f);
+    return float(ui->treeWidget->verticalScrollBar()->value() - sbMin) / AZStd::max(float(sbMax - sbMin), 1.0f);
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::RestoreVerticalScrollPos(float fScrollPos)
 {
     int sbMin = ui->treeWidget->verticalScrollBar()->minimum();
@@ -1972,7 +1946,6 @@ void CTrackViewNodesCtrl::RestoreVerticalScrollPos(float fScrollPos)
     ui->treeWidget->verticalScrollBar()->setValue(newScrollPos);
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::FillAutoCompletionListForFilter()
 {
     QStringList strings;
@@ -2005,7 +1978,6 @@ void CTrackViewNodesCtrl::FillAutoCompletionListForFilter()
     ui->searchField->setCompleter(c);
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::OnFilterChange(const QString& text)
 {
     CTrackViewSequence* sequence = GetIEditor()->GetAnimation()->GetSequence();
@@ -2020,7 +1992,7 @@ void CTrackViewNodesCtrl::OnFilterChange(const QString& text)
 
             CTrackViewAnimNodeBundle animNodes = sequence->GetAllAnimNodes();
 
-            m_matchCount = items.size();                    // and the count.
+            m_matchCount = static_cast<int>(items.size());                    // and the count.
 
             if (!items.empty())
             {
@@ -2034,7 +2006,6 @@ void CTrackViewNodesCtrl::OnFilterChange(const QString& text)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 int CTrackViewNodesCtrl::GetMatNameAndSubMtlIndexFromName(QString& matName, const char* nodeName)
 {
     if (const char* pCh = strstr(nodeName, ".["))
@@ -2057,7 +2028,6 @@ int CTrackViewNodesCtrl::GetMatNameAndSubMtlIndexFromName(QString& matName, cons
     return -1;
 }
 
-//////////////////////////////////////////////////////////////////////////
 
 void CTrackViewNodesCtrl::ShowNextResult()
 {
@@ -2071,7 +2041,7 @@ void CTrackViewNodesCtrl::ShowNextResult()
 
             CTrackViewAnimNodeBundle animNodes = sequence->GetAllAnimNodes();
 
-            m_matchCount = items.size();                    // and the count.
+            m_matchCount = static_cast<int>(items.size());                    // and the count.
 
             if (!items.empty())
             {
@@ -2154,12 +2124,13 @@ bool CTrackViewNodesCtrl::event(QEvent* e)
 void CTrackViewNodesCtrl::CreateSetAnimationLayerPopupMenu(QMenu& menuSetLayer, CTrackViewTrack* pTrack) const
 {
     // First collect layers already in use.
-    std::vector<int> layersInUse;
+    AZStd::vector<int> layersInUse;
 
     CTrackViewTrackBundle lookAtTracks = pTrack->GetAnimNode()->GetTracksByParam(AnimParamType::LookAt);
-    assert(lookAtTracks.GetCount() <= 1);
+    const auto numLookAtTracks = lookAtTracks.GetCount();
+    AZ_Assert(numLookAtTracks <= 1, "Invalid number of LookAt tracks %u", numLookAtTracks);
 
-    if (lookAtTracks.GetCount() > 0)
+    if (numLookAtTracks > 0)
     {
         const int kDefaultLookIKLayer = 15;
         int lookIKLayerIndex = lookAtTracks.GetTrack(0)->GetAnimationLayerIndex();
@@ -2195,7 +2166,7 @@ void CTrackViewNodesCtrl::CreateSetAnimationLayerPopupMenu(QMenu& menuSetLayer, 
     // Add layer items.
     for (int i = 0; i < 16; ++i)
     {
-        QString layerText = QString("Layer #%1").arg(i);
+        QString layerText = tr("Layer #%1").arg(i);
 
         QAction* a = menuSetLayer.addAction(layerText);
         a->setData(eMI_SetAnimationLayerBase + i);
@@ -2205,7 +2176,6 @@ void CTrackViewNodesCtrl::CreateSetAnimationLayerPopupMenu(QMenu& menuSetLayer, 
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::CustomizeTrackColor(CTrackViewTrack* pTrack)
 {
     CTrackViewSequence* sequence = GetIEditor()->GetAnimation()->GetSequence();
@@ -2217,22 +2187,20 @@ void CTrackViewNodesCtrl::CustomizeTrackColor(CTrackViewTrack* pTrack)
     AZ::Color defaultColor;
     if (pTrack->HasCustomColor())
     {
-        ColorB customColor = pTrack->GetCustomColor();
-        defaultColor = AZ::Color(customColor.r, customColor.g, customColor.b, customColor.a);
+        defaultColor = pTrack->GetCustomColor();
     }
     const AZ::Color color = AzQtComponents::ColorPicker::getColor(AzQtComponents::ColorPicker::Configuration::RGB, defaultColor, tr("Select Color"));
     if (color != defaultColor)
     {
         AzToolsFramework::ScopedUndoBatch undoBatch("Customize Track Color");
 
-        pTrack->SetCustomColor(ColorB(color.GetR8(), color.GetG8(), color.GetB8()));
+        pTrack->SetCustomColor(color);
         undoBatch.MarkEntityDirty(sequence->GetSequenceComponentEntityId());
 
         UpdateDopeSheet();
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::ClearCustomTrackColor(CTrackViewTrack* pTrack)
 {
     CTrackViewSequence* sequence = GetIEditor()->GetAnimation()->GetSequence();
@@ -2249,14 +2217,12 @@ void CTrackViewNodesCtrl::ClearCustomTrackColor(CTrackViewTrack* pTrack)
     UpdateDopeSheet();
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::paintEvent(QPaintEvent* event)
 {
     QWidget::paintEvent(event);
     UpdateDopeSheet();
 }
 
-//////////////////////////////////////////////////////////////////////////
 CTrackViewNodesCtrl::CRecord* CTrackViewNodesCtrl::GetNodeRecord(const CTrackViewNode* pNode) const
 {
     auto findIter = m_nodeToRecordMap.find(pNode);
@@ -2265,11 +2231,10 @@ CTrackViewNodesCtrl::CRecord* CTrackViewNodesCtrl::GetNodeRecord(const CTrackVie
         return nullptr;
     }
 
-    assert (findIter->second->GetNode() == pNode);
+    AZ_Assert(findIter->second->GetNode() == pNode, "Node record does not belong to the node %p", pNode);
     return findIter->second;
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::UpdateDopeSheet()
 {
     UpdateRecordVisibility();
@@ -2280,10 +2245,8 @@ void CTrackViewNodesCtrl::UpdateDopeSheet()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 // Workaround: CXTPReportRecord::IsVisible is
 // unreliable after the last visible element
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::UpdateRecordVisibility()
 {
     // Mark all records invisible
@@ -2293,7 +2256,6 @@ void CTrackViewNodesCtrl::UpdateRecordVisibility()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::OnNodeChanged(CTrackViewNode* pNode, ITrackViewSequenceListener::ENodeChangeType type)
 {
     if (pNode->GetSequence() != GetIEditor()->GetAnimation()->GetSequence())
@@ -2372,7 +2334,6 @@ void CTrackViewNodesCtrl::OnNodeChanged(CTrackViewNode* pNode, ITrackViewSequenc
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::OnNodeRenamed(CTrackViewNode* pNode, [[maybe_unused]] const char* pOldName)
 {
     if (!m_bIgnoreNotifications)
@@ -2388,7 +2349,6 @@ void CTrackViewNodesCtrl::OnNodeRenamed(CTrackViewNode* pNode, [[maybe_unused]] 
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::BeginUndoTransaction()
 {
     m_bNeedReload = false;
@@ -2396,7 +2356,6 @@ void CTrackViewNodesCtrl::BeginUndoTransaction()
     m_storedScrollPosition = SaveVerticalScrollPos();
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::EndUndoTransaction()
 {
     m_bIgnoreNotifications = false;
@@ -2509,13 +2468,11 @@ QIcon CTrackViewNodesCtrl::TrackViewNodeIcon(AnimNodeType type)
     }
     return QIcon(QStringLiteral(":/nodes/tvnodes-21.png"));
 }
-//////////////////////////////////////////////////////////////////////////
 QIcon CTrackViewNodesCtrl::GetIconForTrack(const CTrackViewTrack* pTrack)
 {
     return TrackViewIcon(pTrack);
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::OnKeysChanged(CTrackViewSequence* sequence)
 {
     if (!m_bIgnoreNotifications && sequence && sequence == GetIEditor()->GetAnimation()->GetSequence())
@@ -2524,13 +2481,11 @@ void CTrackViewNodesCtrl::OnKeysChanged(CTrackViewSequence* sequence)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::OnKeySelectionChanged(CTrackViewSequence* sequence)
 {
     OnKeysChanged(sequence);
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::OnNodeSelectionChanged(CTrackViewSequence* sequence)
 {
     if (m_bSelectionChanging)
@@ -2559,10 +2514,9 @@ void CTrackViewNodesCtrl::OnNodeSelectionChanged(CTrackViewSequence* sequence)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::SelectRow(CTrackViewNode* pNode, const bool bEnsureVisible, const bool bDeselectOtherRows)
 {
-    std::unordered_map<const CTrackViewNode*, CRecord*>::const_iterator it = m_nodeToRecordMap.find(pNode);
+    AZStd::unordered_map<const CTrackViewNode*, CRecord*>::const_iterator it = m_nodeToRecordMap.find(pNode);
     if (it != m_nodeToRecordMap.end())
     {
         if (bDeselectOtherRows)
@@ -2577,17 +2531,15 @@ void CTrackViewNodesCtrl::SelectRow(CTrackViewNode* pNode, const bool bEnsureVis
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::DeselectRow(CTrackViewNode* pNode)
 {
-    std::unordered_map<const CTrackViewNode*, CRecord*>::const_iterator it = m_nodeToRecordMap.find(pNode);
+    AZStd::unordered_map<const CTrackViewNode*, CRecord*>::const_iterator it = m_nodeToRecordMap.find(pNode);
     if (it != m_nodeToRecordMap.end())
     {
         (*it).second->setSelected(false);
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::EraseNodeRecordRec(CTrackViewNode* pNode)
 {
     m_nodeToRecordMap.erase(pNode);
@@ -2598,5 +2550,3 @@ void CTrackViewNodesCtrl::EraseNodeRecordRec(CTrackViewNode* pNode)
         EraseNodeRecordRec(pNode->GetChild(i));
     }
 }
-
-#include <TrackView/moc_TrackViewNodes.cpp>

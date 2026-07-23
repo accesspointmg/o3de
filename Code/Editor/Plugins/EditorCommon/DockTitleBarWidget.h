@@ -9,7 +9,6 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include "EditorCommonAPI.h"
 #include <QAbstractButton>
 #include <QWidget>
@@ -18,7 +17,6 @@
 #include <QBoxLayout>
 
 #include <vector>
-#endif
 
 class EDITOR_COMMON_API CDockTitleBarWidget
     : public QWidget
@@ -53,8 +51,6 @@ private:
         int id;
         QAbstractButton* button;
     };
-    AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
     std::vector<SCustomButton> m_customButtons;
-    AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 };
 

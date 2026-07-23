@@ -65,6 +65,10 @@ namespace AZ
 
             }
 
+            HeaderWidget::~HeaderWidget()
+            {
+            }
+
             void HeaderWidget::SetManifestObject(const DataTypes::IManifestObject* target)
             {
                 AZ_TraceContext("New target", GetSerializedName(target));
@@ -330,4 +334,3 @@ namespace AZ
     } // SceneAPI
 } // AZ
 
-#include <RowWidgets/moc_HeaderWidget.cpp>

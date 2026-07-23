@@ -55,6 +55,11 @@ namespace AZ::DocumentPropertyEditor
         handler.Connect(m_resetEvent);
     }
 
+    void DocumentAdapter::ConnectResetQueuedHandler(ResetQueuedEvent::Handler& handler)
+    {
+        handler.Connect(m_resetQueuedEvent);
+    }
+
     void DocumentAdapter::ConnectChangedHandler(ChangedEvent::Handler& handler)
     {
         handler.Connect(m_changedEvent);
@@ -63,6 +68,11 @@ namespace AZ::DocumentPropertyEditor
     void DocumentAdapter::ConnectMessageHandler(MessageEvent::Handler& handler)
     {
         handler.Connect(m_messageEvent);
+    }
+
+    void DocumentAdapter::ConnectFilterHandler(FilterEvent::Handler& handler)
+    {
+        handler.Connect(m_filterEvent);
     }
 
     void DocumentAdapter::SetRouter(RoutingAdapter* /*router*/, const Dom::Path& /*route*/)
@@ -97,8 +107,47 @@ namespace AZ::DocumentPropertyEditor
         return new ExpanderSettings(referenceAdapter, settingsRegistryKey, propertyEditorName);
     }
 
+    void DocumentAdapter::QueueResetDocument(DocumentResetType resetType)
+    {
+        // This document needs to refresh itself and may no longer match the underlying data, for example if an outside change has occurred.
+        // It should queue up a reset event, but wait for the views attached to execute it so that it doesn't happen deep in the middle
+        // of some complex callstack.
+
+        // Upgrade the reset type to HardReset in case its already queued as a soft reset.
+        m_queuedResetType = m_queuedResetType == DocumentResetType::HardReset ? DocumentResetType::HardReset : resetType;
+
+        // De-bounce the reset event.
+        if (!m_isResetQueued)
+        {
+            m_isResetQueued = true;
+            NotifyResetQueued();
+        }
+    }
+
+    void DocumentAdapter::NotifyResetQueued()
+    {
+        // This happens both in the above case (where we are the originator) but also when there is some sort of proxy / meta adapter.
+        // The Document Property Editor (GUI) may have its source adapter set to a filter/proxy/meta adapter.
+        // The filtered adapter may be a proxy on top of the "Real adapter".  There are two Adapters involved, the "underlying" real one
+        // and a filter.  The GUI is watching the filtered one, the filtered one watching the underlying one.
+        // This means that for the document to get these kind of events, the filtered adapter needs to pass any events relevant up the chain
+        m_resetQueuedEvent.Signal();
+    }
+
+    void DocumentAdapter::ExecuteQueuedReset()
+    {
+        // Called by the view when its a good time to execute the queued reset, like when the callstack is short and simple.
+        if (m_isResetQueued)
+        {
+            NotifyResetDocument(m_queuedResetType);
+        }
+    }
+
     void DocumentAdapter::NotifyResetDocument(DocumentResetType resetType)
     {
+        // this is the actual reset function, which overrides any queuing, so reset it.
+        m_isResetQueued = false;
+
         if (resetType == DocumentResetType::HardReset || m_cachedContents.IsNull())
         {
             // If it's a hard reset, or we don't have any lazily cached contents, just send the reset signal.
@@ -184,6 +233,11 @@ namespace AZ::DocumentPropertyEditor
             }
         }
         m_changedEvent.Signal(*appliedPatch);
+    }
+
+    void DocumentAdapter::NotifyFilterChanged(const AZStd::string& filter)
+    {
+        m_filterEvent.Signal(filter);
     }
 
     Dom::Value DocumentAdapter::SendAdapterMessage(const AdapterMessage& message)

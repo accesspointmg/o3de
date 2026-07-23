@@ -20,6 +20,8 @@
 #include <AzCore/NativeUI/NativeUIRequests.h>
 #include <AzCore/Debug/TraceMessageBus.h>
 
+#include <AzCore/i18n/TranslationMacros.h>
+
 // Used to keep a set of ignored asserts for CRC checking
 #include <AzCore/std/containers/unordered_set.h>
 #include <AzCore/Module/Environment.h>
@@ -87,7 +89,7 @@ namespace AZ::Debug
         Debug::ITrace::Instance().SetAlwaysPrintCallstack(enable);
     }
 
-    AZ_CVAR_SCOPED(int, bg_traceLogLevel, static_cast<int>(LogLevel::Info), &TraceLevelChanged, ConsoleFunctorFlags::Null, "Enable trace message logging in release mode.  0=disabled, 1=errors, 2=warnings, 3=info, 4=debug, 5=trace.");
+    AZ_CVAR_API(AZCORE_API, int, bg_traceLogLevel, static_cast<int>(LogLevel::Info), &TraceLevelChanged, ConsoleFunctorFlags::Null, "Enable trace message logging in release mode.  0=disabled, 1=errors, 2=warnings, 3=info, 4=debug, 5=trace.");
     AZ_CVAR_SCOPED(bool, bg_alwaysShowCallstack, false, &AlwaysShowCallstackChanged, ConsoleFunctorFlags::Null, "Force stack trace output without allowing ebus interception.");
 
     // Allow redirection of trace raw output writes to stdout, stderr or to /dev/null
@@ -375,7 +377,8 @@ namespace AZ::Debug
             Output(g_dbgSystemWnd, "==================================================================\n");
 
             char dialogBoxText[g_maxMessageLength];
-            azsnprintf(dialogBoxText, g_maxMessageLength, "Assert \n\n %s(%d) \n %s \n\n %s", fileName, line, funcName, message);
+            azsnprintf(dialogBoxText, g_maxMessageLength,
+                QT_TRANSLATE_NOOP("AzCore", "Assert \n\n %s(%d) \n %s \n\n %s"), fileName, line, funcName, message);
 
             // If we are logging only then ignore the assert after it logs once in order to prevent spam
             if (currentLevel == 1 && !IsDebuggerPresent())

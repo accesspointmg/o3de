@@ -39,7 +39,7 @@ namespace AZ::RHI
     //! with another device.
     //!
     //! Multi-Device interop support is planned in the future and will likely require API changes.
-    class Device
+    class ATOM_RHI_PUBLIC_API Device
         : public Object
     {
     public:
@@ -127,6 +127,9 @@ namespace AZ::RHI
 
         //! Converts a GPU timestamp to microseconds
         virtual AZStd::chrono::microseconds GpuTimestampToMicroseconds(uint64_t gpuTimestamp, HardwareQueueClass queueClass) const = 0;
+
+        //! Get a calibrated timestamp that returns a "simultaneous" timestamp on the GPU and CPU
+        virtual AZStd::pair<uint64_t, uint64_t> GetCalibratedTimestamp(HardwareQueueClass queueClass = HardwareQueueClass::Graphics) = 0;
 
         //! Called before the device is going to be shutdown. This lets the device release any resources
         //! that also hold on to a Ptr to Device.
@@ -238,8 +241,7 @@ namespace AZ::RHI
 
         bool m_wasDeviceRemoved = false;
 
-        // Cache the name of the last executing scope name. Used within AZ_FORCE_CPU_GPU_INSYNC
+        // Cache the name of the last executing scope name. Used only if RHI::ForceCpuGpuInSync is enabled.
         AZStd::string m_lastExecutingScope;
-
     };
 }

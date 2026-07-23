@@ -48,7 +48,7 @@ namespace AZ
         {
             m_baseConfiguration = baseConfig;
 
-            constexpr float MinFovY = Constants::Pi / 1e4;
+            constexpr float MinFovY = Constants::Pi / 1e4f;
             constexpr float MaxFovY = Constants::Pi - MinFovY;
             if (baseConfig.m_fovRadians < MinFovY)
             {
@@ -721,13 +721,9 @@ namespace AZ
             }
         }
 
-        void DirectionalLightFeatureProcessor::OnRenderPipelinePersistentViewChanged(RPI::RenderPipeline* pipeline, RPI::PipelineViewTag, RPI::ViewPtr, RPI::ViewPtr)
+        void DirectionalLightFeatureProcessor::OnRenderPipelinePersistentViewChanged(RPI::RenderPipeline*, RPI::PipelineViewTag, RPI::ViewPtr, RPI::ViewPtr)
         {
-            if (m_cascadedShadowmapsPasses.find(pipeline->GetId()) != m_cascadedShadowmapsPasses.end() ||
-                m_esmShadowmapsPasses.find(pipeline->GetId()) != m_esmShadowmapsPasses.end())
-            {
-                PrepareForChangingRenderPipelineAndCameraView();
-            }
+            PrepareForChangingRenderPipelineAndCameraView();
         }
 
         void DirectionalLightFeatureProcessor::PrepareForChangingRenderPipelineAndCameraView() 

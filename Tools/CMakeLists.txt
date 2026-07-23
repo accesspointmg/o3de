@@ -8,3 +8,4 @@
 
 add_subdirectory(O3deTestTools)
 add_subdirectory(RemoteConsole)
+add_subdirectory(ClassCreationWizard)

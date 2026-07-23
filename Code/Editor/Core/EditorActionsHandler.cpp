@@ -33,12 +33,14 @@
 #include <Core/Widgets/ViewportSettingsWidgets.h>
 #include <CryEdit.h>
 #include <EditorCoreAPI.h>
+#include <LevelRoots.h>
 #include <Editor/EditorViewportCamera.h>
 #include <Editor/EditorViewportSettings.h>
 #include <Editor/Undo/Undo.h>
 #include <GameEngine.h>
 #include <LmbrCentral/Audio/AudioSystemComponentBus.h>
 #include <MainWindow.h>
+#include <Viewport.h>
 #include <QtViewPaneManager.h>
 #include <ToolBox.h>
 #include <ToolsConfigPage.h>
@@ -50,6 +52,7 @@
 #include <QLabel>
 #include <QMainWindow>
 #include <QMenu>
+#include <QApplication>
 #include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
@@ -92,8 +95,7 @@ private:
 
 bool IsLevelLoaded()
 {
-    auto cryEdit = CCryEditApp::instance();
-    return !cryEdit->IsExportingLegacyData() && GetIEditor()->IsLevelLoaded();
+    return GetIEditor()->IsLevelLoaded();
 }
 
 bool AreEntitiesSelected()
@@ -265,6 +267,28 @@ void EditorActionsHandler::OnActionRegistrationHook()
         m_hotKeyManagerInterface->SetActionHotKey("o3de.action.file.new", "Ctrl+N");
     }
 
+    // New Component
+    {
+        constexpr AZStd::string_view actionIdentifier = "o3de.action.file.newComponent";
+        AzToolsFramework::ActionProperties actionProperties;
+        actionProperties.m_name = "New Component";
+        actionProperties.m_description = "Create a new C++ component";
+        actionProperties.m_category = "Tools";
+        actionProperties.m_menuVisibility = AzToolsFramework::ActionVisibility::AlwaysShow;
+
+        m_actionManagerInterface->RegisterAction(
+            EditorIdentifiers::MainWindowActionContextIdentifier,
+            actionIdentifier,
+            actionProperties,
+            [cryEdit = m_cryEditApp]
+            {
+                cryEdit->OnNewComponent();
+            });
+
+        // This action is only accessible outside of Component Modes
+        m_actionManagerInterface->AssignModeToAction(AzToolsFramework::DefaultActionContextModeIdentifier, actionIdentifier);
+    }
+
     // Open Level
     {
         constexpr AZStd::string_view actionIdentifier = "o3de.action.file.open";
@@ -381,8 +405,37 @@ void EditorActionsHandler::OnActionRegistrationHook()
         
         m_actionManagerInterface->RegisterAction(
             EditorIdentifiers::MainWindowActionContextIdentifier, "o3de.action.file.save", actionProperties,
-            [cryEdit = m_cryEditApp]
+            [cryEdit = m_cryEditApp, mainWindow = m_mainWindow]
             {
+                // Step out of any in-progress property field edit (e.g. the Entity Inspector) so its value
+                // and undo entry are committed via the focus-out before the level is saved. Move focus to the
+                // viewport rather than clearing it to nothing: a null focus widget leaves no widget in the main
+                // window holding keyboard focus, so editor shortcuts (e.g. Ctrl+Z) are not delivered until the
+                // user clicks back into the interface. Focusing the viewport both commits the edit and keeps
+                // keyboard focus inside the editor's shortcut scope.
+                //
+                // Only redirect focus when it is currently OUTSIDE the viewport. GetActiveViewport() returns the
+                // outer EditorViewportWidget, but keyboard input is owned by its child render viewport (the input
+                // mapper's source widget). If focus is already inside the viewport, moving it to the wrapper
+                // strands the in-flight modifier-key release (e.g. the Ctrl of Ctrl+S) on the wrong widget,
+                // leaving the viewport's Ctrl state latched on. There is also no field edit to commit in that case.
+                if (QWidget* focusWidget = QApplication::focusWidget())
+                {
+                    QtViewport* viewport = mainWindow ? mainWindow->GetActiveViewport() : nullptr;
+                    const bool focusInViewport =
+                        viewport && (focusWidget == viewport || viewport->isAncestorOf(focusWidget));
+                    if (!focusInViewport)
+                    {
+                        if (viewport)
+                        {
+                            viewport->setFocus(Qt::OtherFocusReason);
+                        }
+                        else
+                        {
+                            focusWidget->clearFocus();
+                        }
+                    }
+                }
                 cryEdit->OnFileSave();
             }
         );
@@ -567,7 +620,7 @@ void EditorActionsHandler::OnActionRegistrationHook()
             EditorIdentifiers::MainWindowActionContextIdentifier,
             "o3de.action.editor.exit",
             actionProperties,
-            [=]
+            [this]
             {
                 m_mainWindow->window()->close();
             }
@@ -757,7 +810,7 @@ void EditorActionsHandler::OnActionRegistrationHook()
     {
         constexpr AZStd::string_view actionIdentifier = "o3de.action.edit.editorSettingsManager";
         AzToolsFramework::ActionProperties actionProperties;
-        actionProperties.m_name = "Editor Settings Manager";
+        actionProperties.m_name = "Editor Settings Manager...";
         actionProperties.m_category = "Editor";
 
         m_actionManagerInterface->RegisterAction(
@@ -950,9 +1003,9 @@ void EditorActionsHandler::OnActionRegistrationHook()
             {
                 cryEdit->OnSwitchPhysics();
             },
-            [cryEdit = m_cryEditApp]
+            []
             {
-                return !cryEdit->IsExportingLegacyData() && GetIEditor()->GetGameEngine()->GetSimulationMode();
+                return GetIEditor()->GetGameEngine()->GetSimulationMode();
             }
         );
 
@@ -962,6 +1015,8 @@ void EditorActionsHandler::OnActionRegistrationHook()
 
         // This action is only accessible outside of Component Modes
         m_actionManagerInterface->AssignModeToAction(AzToolsFramework::DefaultActionContextModeIdentifier, actionIdentifier);
+
+        m_hotKeyManagerInterface->SetActionHotKey(actionIdentifier, "Ctrl+Alt+G");
     }
 
     // Move Player and Camera Separately
@@ -1650,8 +1705,7 @@ void EditorActionsHandler::OnMenuRegistrationHook()
             menuProperties.m_name = "Open Recent";
             m_menuManagerInterface->RegisterMenu(EditorIdentifiers::RecentFilesMenuIdentifier, menuProperties);
 
-            // Legacy - the menu should update when the files list is changed.
-            QMenu* menu = m_menuManagerInternalInterface->GetMenu(EditorIdentifiers::FileMenuIdentifier);
+            QMenu* menu = m_menuManagerInternalInterface->GetMenu(EditorIdentifiers::RecentFilesMenuIdentifier);
             QObject::connect(
                 menu,
                 &QMenu::aboutToShow,
@@ -1793,6 +1847,7 @@ void EditorActionsHandler::OnMenuBindingHook()
     // File
     {
         m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.file.new", 100);
+        m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.file.newComponent", 110);
         m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.file.open", 200);
         m_menuManagerInterface->AddSubMenuToMenu(EditorIdentifiers::FileMenuIdentifier, EditorIdentifiers::RecentFilesMenuIdentifier, 300);
         {
@@ -1809,15 +1864,12 @@ void EditorActionsHandler::OnMenuBindingHook()
         m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.file.saveAs", 600);
         m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.file.saveLevelStatistics", 700);
         m_menuManagerInterface->AddSeparatorToMenu(EditorIdentifiers::FileMenuIdentifier, 800);
-        m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.project.editSettings", 900);
-        m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.platform.editSettings", 1000);
+        m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.project.new", 900);
+        m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.project.open", 1000);
         m_menuManagerInterface->AddSeparatorToMenu(EditorIdentifiers::FileMenuIdentifier, 1100);
-        m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.project.new", 1200);
-        m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.project.open", 1300);
-        m_menuManagerInterface->AddSeparatorToMenu(EditorIdentifiers::FileMenuIdentifier, 1400);
-        m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.file.showLog", 1500);
-        m_menuManagerInterface->AddSeparatorToMenu(EditorIdentifiers::FileMenuIdentifier, 1600);
-        m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.editor.exit", 1700);
+        m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.file.showLog", 1200);
+        m_menuManagerInterface->AddSeparatorToMenu(EditorIdentifiers::FileMenuIdentifier, 1300);
+        m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::FileMenuIdentifier, "o3de.action.editor.exit", 1400);
     }
 
     // Edit
@@ -1839,6 +1891,9 @@ void EditorActionsHandler::OnMenuBindingHook()
         {
             m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::EditSettingsMenuIdentifier, "o3de.action.edit.globalPreferences", 100);
             m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::EditSettingsMenuIdentifier, "o3de.action.edit.editorSettingsManager", 200);
+            m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::EditSettingsMenuIdentifier, "o3de.action.project.editSettings", 300);
+            m_menuManagerInterface->AddActionToMenu(EditorIdentifiers::EditSettingsMenuIdentifier, "o3de.action.platform.editSettings", 400);
+
         }
     }
 
@@ -2223,6 +2278,7 @@ bool EditorActionsHandler::IsRecentFileEntryValid(const QString& entry, const QS
         return false;
     }
 
+    // Project-rooted level (legacy fast path).
     const QDir gameDir(gameFolderPath);
     QDir dir(entry); // actually pointing at file, first cdUp() gets us the parent dir
     while (dir.cdUp())
@@ -2233,7 +2289,9 @@ bool EditorActionsHandler::IsRecentFileEntryValid(const QString& entry, const QS
         }
     }
 
-    return false;
+    // Gem-rooted level: a recent file living under any active gem's source
+    // tree is also a valid Open Recent target.
+    return LevelRoots::IsPathUnderActiveSource(entry);
 }
 
 void EditorActionsHandler::OpenLevelByRecentFileEntryIndex(int index)
@@ -2307,9 +2365,24 @@ void EditorActionsHandler::UpdateRecentFileActions()
 
         if (index < recentFilesSize)
         {
-            // If the index is valid, use it to populate the action's name and then increment for the next menu item.
+            // For project-rooted entries, GetDisplayName already produces a
+            // path relative to the project. For gem-rooted entries it falls
+            // back to the absolute path, so swap in the LevelRoots helper
+            // which renders the file as "<GemName>/Levels/...".
             QString displayName;
             recentFiles->GetDisplayName(displayName, index, sCurDir);
+
+            const QString& absoluteEntry = (*recentFiles)[index];
+            if (!LevelRoots::IsPathUnderActiveSource(absoluteEntry))
+            {
+                // Fall through with whatever GetDisplayName produced.
+            }
+            else if (QDir::cleanPath(displayName).compare(QDir::cleanPath(absoluteEntry), Qt::CaseInsensitive) == 0)
+            {
+                // GetDisplayName left the absolute path intact (gem-rooted case);
+                // replace it with the gem-aware short form.
+                displayName = LevelRoots::FormatRelativeDisplay(absoluteEntry);
+            }
 
             m_actionManagerInterface->SetActionName(
                 actionIdentifier, AZStd::string::format("%i | %s", counter + 1, displayName.toUtf8().data()));

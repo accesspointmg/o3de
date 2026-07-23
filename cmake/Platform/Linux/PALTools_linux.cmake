@@ -6,3 +6,7 @@
 #
 #
 
+
+# Mac supports multiple system architectures
+o3de_set(LY_ARCHITECTURE_DETECTION_Mac ${CMAKE_SYSTEM_PROCESSOR})
+o3de_set(LY_HOST_ARCHITECTURE_DETECTION_Mac ${CMAKE_HOST_SYSTEM_PROCESSOR})

@@ -7,13 +7,14 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzCore/Math/Crc.h>
 #include <AzCore/Memory/SystemAllocator.h>
-#include <QtWidgets/QWidget>
+#include <QWidget>
 
 #include "PropertyEditorAPI.h"
-#endif
 
 class QLineEdit;
 class QString;
@@ -21,7 +22,7 @@ class QString;
 namespace AzToolsFramework
 {
     // a control for storing a CRC-like u32 hex value and displaying it as hex.
-    class PropertyCRCCtrl
+    class AZTF_API PropertyCRCCtrl
         : public QWidget
     {
         Q_OBJECT
@@ -65,7 +66,7 @@ namespace AzToolsFramework
         void UpdateWidgetInternalTabbing(PropertyCRCCtrl* widget) override { widget->UpdateTabOrder(); }
     };
 
-    class U32CRCHandler
+    class AZTF_API U32CRCHandler
         : public QObject
         , public CRC32HandlerCommon<AZ::u32>
     {
@@ -79,7 +80,7 @@ namespace AzToolsFramework
         bool ReadValuesIntoGUI(size_t index, PropertyCRCCtrl* GUI, const property_t& instance, InstanceDataNode* node) override;
     };
 
-    class CRC32Handler
+    class AZTF_API CRC32Handler
         : public QObject
         , public CRC32HandlerCommon<AZ::Crc32>
     {
@@ -93,5 +94,5 @@ namespace AzToolsFramework
         bool ReadValuesIntoGUI(size_t index, PropertyCRCCtrl* GUI, const property_t& instance, InstanceDataNode* node) override;
     };
 
-    void RegisterCrcHandler();
+    AZTF_API void RegisterCrcHandler();
 };

@@ -33,7 +33,7 @@ namespace EMStudio
         topLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         QVBoxLayout* topLayout = new QVBoxLayout();
         topLayout->addWidget(topLabel);
-        topLayout->setMargin(0);
+        topLayout->setContentsMargins(0, 0, 0, 0);
 
         // open the load actor settings file
         
@@ -170,7 +170,7 @@ namespace EMStudio
         layout->addWidget(settingsLayoutWidget);
         layout->addWidget(buttonLayoutWidget);
         layout->setSpacing(0);
-        layout->setMargin(0);
+        layout->setContentsMargins(0, 0, 0, 0);
 
         // set the layout
         setLayout(layout);
@@ -277,4 +277,3 @@ namespace EMStudio
 
 } // namespace EMStudio
 
-#include <EMotionFX/Tools/EMotionStudio/EMStudioSDK/Source/moc_LoadActorSettingsWindow.cpp>

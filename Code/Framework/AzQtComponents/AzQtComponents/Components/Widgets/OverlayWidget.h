@@ -8,7 +8,6 @@
  *
  */
 
-#if !defined(Q_MOC_RUN)
 #include <AzQtComponents/AzQtComponentsAPI.h>
 #include <QWidget>
 #include <QStackedLayout>
@@ -16,7 +15,6 @@
 #include <QVector>
 #include <AzCore/std/functional.h>
 #include <QPointer>
-#endif
 
 class QDockWidget;
 
@@ -129,14 +127,12 @@ namespace AzQtComponents
         static int PushLayer(OverlayWidget* targetOverlay, Internal::OverlayWidgetLayer* layer, bool hasBreakoutWindow);
 
         int m_layerIdCounter;
-        AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
         QVector<LayerInfo> m_layers;
         QStackedLayout* m_stack;
         int m_rootIndex;
 
         Qt::DockWidgetAreas m_originalDockWidgetAreas;
         QPointer<QDockWidget> m_parentDockWidget;
-        AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
     };
 } // namespace AzQtComponents
 

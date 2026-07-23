@@ -10,6 +10,7 @@
 
 #include "ErrorReportTableModel.h"
 #include <QIcon>
+#include <QRegularExpression>
 
 // Editor
 #include "ErrorReport.h"
@@ -17,29 +18,29 @@
 bool GetPositionFromString(QString er, float* x, float* y, float* z)
 {
     er = er.toLower();
-    int ind = er.indexOf("pos:");
+    int ind = static_cast<int>(er.indexOf("pos:"));
     int shift = 4;
     if (ind < 0)
     {
-        ind = er.indexOf("position:");
+        ind = static_cast<int>(er.indexOf("position:"));
         shift = 9;
     }
     if (ind >= 0)
     {
         er = er.mid(ind + shift);
-        er.remove(QRegExp("^ *"));
+        er.remove(QRegularExpression("^ *"));
         if (er[0] == '(')
         {
             er = er.mid(1);
-            er.remove(QRegExp("^ *"));
-            ind = er.indexOf(")");
+            er.remove(QRegularExpression("^ *"));
+            ind = static_cast<int>(er.indexOf(")"));
             if (ind > 0)
             {
                 er = er.mid(0, ind);
-                er.remove(QRegExp(" *$"));
+                er.remove(QRegularExpression(" *$"));
 
-                ind = er.indexOf(" ");
-                int ind2 = er.indexOf(",");
+                ind = static_cast<int>(er.indexOf(" "));
+                int ind2 = static_cast<int>(er.indexOf(","));
                 if (ind < 0 || (ind2 > 0 && ind > ind2))
                 {
                     ind = ind2;
@@ -48,10 +49,10 @@ bool GetPositionFromString(QString er, float* x, float* y, float* z)
                 {
                     *x = er.mid(0, ind).toFloat();
                     er = er.mid(ind);
-                    er.remove(QRegExp("^[ ,]*"));
+                    er.remove(QRegularExpression("^[ ,]*"));
 
-                    ind = er.indexOf(" ");
-                    ind2 = er.indexOf(",");
+                    ind = static_cast<int>(er.indexOf(" "));
+                    ind2 = static_cast<int>(er.indexOf(","));
                     if (ind < 0 || (ind2 > 0 && ind > ind2))
                     {
                         ind = ind2;
@@ -60,7 +61,7 @@ bool GetPositionFromString(QString er, float* x, float* y, float* z)
                     {
                         *y = er.mid(0, ind).toFloat();
                         er = er.mid(ind);
-                        er.remove(QRegExp("^[ ,]*"));
+                        er.remove(QRegularExpression("^[ ,]*"));
                         if (er.length())
                         {
                             *z = er.toFloat();
@@ -307,4 +308,3 @@ bool CErrorReportTableModel::LessThan(const QModelIndex& lhs, const QModelIndex&
     return l.toString() < r.toString();
 }
 
-#include <moc_ErrorReportTableModel.cpp>

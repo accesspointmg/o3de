@@ -8,11 +8,12 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/std/containers/vector.h>
 #include <AzCore/Asset/AssetCommon.h>
 
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 #include <AzToolsFramework/AssetBrowser/AssetBrowserBus.h>
 #include <AzToolsFramework/AssetBrowser/AssetBrowserFilterModel.h>
 #include <AzToolsFramework/UI/UICore/QTreeViewStateSaver.hxx>
@@ -21,7 +22,6 @@
 #include <QPointer>
 #include <QDialog>
 #include <QMessageBox>
-#endif
 
 class QTimer;
 
@@ -37,7 +37,7 @@ namespace AzToolsFramework
         class AssetBrowserThumbnailView;
         class EntryDelegate;
 
-        class AssetBrowserTreeView
+        class AZTF_API AssetBrowserTreeView
             : public QTreeViewWithStateSaving
             , public AssetBrowserViewRequestBus::Handler
             , public AssetBrowserComponentNotificationBus::Handler

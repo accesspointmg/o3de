@@ -24,9 +24,7 @@
 #include "Util/AutoDirectoryRestoreFileDialog.h"    // for CAutoDirectoryRestoreFileDialog
 #include "O3deViewPaneNames.h"                        // for O3deViewPane::
 
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include "ui_SettingsManagerDialog.h"
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
 //////////////////////////////////////////////////////////////////////////
 CSettingsManagerDialog::CSettingsManagerDialog(QWidget* pParent)
@@ -276,4 +274,3 @@ void CSettingsManagerDialog::OnSelectionChanged()
     ui->m_importBtn->setEnabled(ui->m_layoutListBox->selectedItems().count());
 }
 
-#include <moc_SettingsManagerDialog.cpp>

@@ -8,17 +8,18 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <AzToolsFramework/AssetBrowser/AssetBrowserFilterModel.h>
 #include <AzCore/std/smart_ptr/unique_ptr.h>
-#endif
 
 namespace AzToolsFramework
 {
     using namespace AzToolsFramework::AssetBrowser;
 
     //! Model storing all the files that can be suggested in the Asset Autocompleter for PropertyAssetCtrl
-    class AssetCompleterModel
+    class AZTF_API AssetCompleterModel
         : public QAbstractTableModel
     {
         Q_OBJECT

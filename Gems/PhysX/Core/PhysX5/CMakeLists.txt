@@ -8,6 +8,8 @@
 
 o3de_gem_setup()
 
+get_property(v_hacd_gem_root GLOBAL PROPERTY "@GEMROOT:PhysXCommon@")
+list(APPEND CMAKE_MODULE_PATH ${v_hacd_gem_root}/3rdParty)
 o3de_add_external_target_path(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
 
 o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
@@ -16,7 +18,8 @@ set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common
 include(${pal_code_source_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake) # for O3DE_PAL_TRAIT_PHYSX_SUPPORTED
 
 if(O3DE_PAL_TRAIT_PHYSX_SUPPORTED)
-    set(physx_dependency 3rdParty::PhysX5)
+    o3de_add_target(NAME physx_5_dependency NAMESPACE Gem INTERFACE BUILD_DEPENDENCIES INTERFACE ciso646-include 3rdParty::PhysX5)
+    set(physx_dependency physx_5_dependency)
     set(physx_files Code/physx_files.cmake)
     set(physx_module_files physx_module_files.cmake)
     set(physx_shared_files Code/physx_shared_files.cmake)

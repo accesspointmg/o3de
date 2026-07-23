@@ -22,11 +22,12 @@
 
 namespace AssetProcessor
 {
+    bool ConvertDatabaseProductPathToProductFilename(AZStd::string_view dbPath, QString& productFileName);
+
     AssetCatalog::AssetCatalog(QObject* parent, AssetProcessor::PlatformConfiguration* platformConfiguration)
         : QObject(parent)
         , m_platformConfig(platformConfiguration)
         , m_registryBuiltOnce(false)
-        , m_registriesMutex(QMutex::Recursive)
     {
 
         for (const AssetBuilderSDK::PlatformInfo& info : m_platformConfig->GetEnabledPlatforms())
@@ -658,7 +659,7 @@ namespace AssetProcessor
         {
             QMutexLocker locker(&m_registriesMutex);
             m_registries[platform].RegisterAssetDependency(assetId, newDependency);
-            message.m_dependencies = AZStd::move(m_registries[platform].GetAssetDependencies(assetId));
+            message.m_dependencies = m_registries[platform].GetAssetDependencies(assetId);
         }
 
         if (m_registryBuiltOnce)
@@ -700,7 +701,7 @@ namespace AssetProcessor
 
                 message.m_assetId = assetInfo.second.m_assetId;
                 message.m_sizeBytes = assetInfo.second.m_sizeBytes;
-                message.m_dependencies = AZStd::move(currentRegistry.GetAssetDependencies(assetInfo.second.m_assetId));
+                message.m_dependencies = currentRegistry.GetAssetDependencies(assetInfo.second.m_assetId);
 
 
                 bulkMessage.m_messages.push_back(AZStd::move(message));
@@ -1217,6 +1218,11 @@ namespace AssetProcessor
                     AZ::Data::AssetInfo assetInfo;
                     assetInfo.m_assetId = AZ::Data::AssetId(sourceUuid, product.m_subID);
                     assetInfo.m_assetType = product.m_assetType;
+                    QString productFileName;
+                    if (ConvertDatabaseProductPathToProductFilename(product.m_productName, productFileName))
+                    {
+                        assetInfo.m_relativePath = productFileName.toUtf8().constData();
+                    }
                     productsAssetInfo.emplace_back(assetInfo);
                 }
             }

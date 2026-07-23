@@ -14,9 +14,7 @@
 #include <QPushButton>
 #include <QStyle>
 
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <AssetImporter/UI/ui_ProcessingAssetsDialog.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
 ProcessingAssetsDialog::ProcessingAssetsDialog(int numberOfProcessedFiles, QWidget* parent)
     : QDialog(parent)
@@ -76,5 +74,3 @@ void ProcessingAssetsDialog::UpdateTextsAndTitle(int numberOfProcessedFiles)
         m_ui->label->setText("The Asset Processor will process your asset and when it is finished it will appear in the Asset Browser. You can view the status of your asset in the Asset Processor.");
     }   
 }
-
-#include <AssetImporter/UI/moc_ProcessingAssetsDialog.cpp>

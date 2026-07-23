@@ -7,9 +7,8 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <QWidget>
-#endif
+#include <QScopedPointer>
 
 namespace Ui
 {
@@ -23,6 +22,7 @@ class TabWidgetPage
 
 public:
     explicit TabWidgetPage(QWidget* parent = nullptr);
+    ~TabWidgetPage() override;
 
 private:
     QScopedPointer<Ui::TabWidgetPage> ui;

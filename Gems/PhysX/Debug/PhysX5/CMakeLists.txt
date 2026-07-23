@@ -8,8 +8,6 @@
 
 o3de_gem_setup()
 
-o3de_add_external_target_path(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
-
 # This gem relies on the PhysX gem
 o3de_find_gem("PhysX5" physx_gem_path)
 set(physx_gem_json ${physx_gem_path}/gem.json)
@@ -19,7 +17,7 @@ o3de_pal_dir(physx_pal_source_dir ${physx_gem_path}/Source/Platform/${O3DE_PAL_P
 include(${physx_pal_source_dir}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake) # for O3DE_PAL_TRAIT_PHYSX_SUPPORTED
 
 if(O3DE_PAL_TRAIT_PHYSX_SUPPORTED)
-    set(physxdebug_dependency 3rdParty::PhysX5)
+    set(physxdebug_dependency physx_5_dependency)
     set(physxdebug_files Code/physxdebug_files.cmake)
     set(physxdebug_module_files physxdebug_module_files.cmake)
     set(physxdebug_editor_files Code/physxdebug_editor_files.cmake)

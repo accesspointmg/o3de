@@ -197,10 +197,10 @@ namespace GraphCanvas
 
     void NodeTableSortProxyModel::SetFilter(const QString& filter)
     {
+        beginFilterChange();
         m_filter = filter;
-        m_filterRegex = QRegExp(m_filter, Qt::CaseInsensitive);
-
-        invalidateFilter();
+        m_filterRegex = QRegularExpression(m_filter, QRegularExpression::PatternOption::CaseInsensitiveOption);
+        endFilterChange();
     }
     void NodeTableSortProxyModel::ClearFilter()
     {

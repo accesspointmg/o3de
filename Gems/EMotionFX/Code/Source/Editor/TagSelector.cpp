@@ -19,7 +19,7 @@ namespace EMotionFX
         : QWidget(parent)
     {
         QHBoxLayout* hLayout = new QHBoxLayout();
-        hLayout->setMargin(0);
+        hLayout->setContentsMargins(0, 0, 0, 0);
 
         m_tagSelector = new AzQtComponents::TagSelector(this);
         connect(m_tagSelector, &AzQtComponents::TagSelector::TagsChanged, this, &TagSelector::OnSelectedTagsChanged);
@@ -60,7 +60,7 @@ namespace EMotionFX
         // Get the currently selected tag strings from the widget.
         QVector<QString> tagStrings;
         m_tagSelector->GetSelectedTagStrings(tagStrings);
-        const int numTags = tagStrings.count();
+        const int numTags = static_cast<int>(tagStrings.count());
 
         AZStd::vector<AZStd::string> newTags;
         newTags.reserve(numTags);

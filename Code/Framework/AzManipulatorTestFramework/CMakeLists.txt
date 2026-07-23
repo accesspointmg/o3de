@@ -6,7 +6,7 @@
 #
 #
 
-if(NOT O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED OR NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_TEST_GOOGLE_TEST_SUPPORTED OR NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
@@ -29,6 +29,10 @@ o3de_add_target(
             AZ::AzCore
             AZ::AzFramework
 )
+
+if(NOT O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    return()
+endif()
 
 o3de_add_target(
     NAME AzManipulatorTestFramework.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}

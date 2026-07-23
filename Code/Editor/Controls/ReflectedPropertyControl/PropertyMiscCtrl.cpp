@@ -12,10 +12,10 @@
 
 // Qt
 #include <QHBoxLayout>
-#include <QtWidgets/QLabel>
+#include <QLabel>
 #include <QLineEdit>
-#include <QtWidgets/QToolButton>
-#include <QtCore/QTimer>
+#include <QToolButton>
+#include <QTimer>
 #include <QtUtilWin.h>
 
 // Editor
@@ -140,8 +140,6 @@ bool UserPopupWidgetHandler::ReadValuesIntoGUI(size_t index, UserPropertyEditor*
     GUI->SetValue(val.m_value.c_str(), false);
     return false;
 }
-
-#include <Controls/ReflectedPropertyControl/moc_PropertyMiscCtrl.cpp>
 
 QWidget* FloatCurveHandler::CreateGUI(QWidget *pParent)
 {

@@ -173,6 +173,8 @@ namespace Multiplayer
             AZ::Interface<IMultiplayer>::Unregister(m_mockMultiplayer.get());
             AZ::Interface<AZ::ComponentApplicationRequests>::Unregister(m_mockComponentApplicationRequests.get());
 
+            m_eventScheduler->Deactivate();
+
             m_eventScheduler.reset();
             m_mockTime.reset();
 
@@ -330,11 +332,11 @@ namespace Multiplayer
 
             constexpr uint32_t bufferSize = 100;
             AZStd::array<uint8_t, bufferSize> buffer = {};
-            NetworkInputSerializer inSerializer(buffer.begin(), bufferSize);
+            NetworkInputSerializer inSerializer(buffer.data(), bufferSize);
             ISerializer& serializer = inSerializer;
             serializer.Serialize(netParentId, "parentEntityId"); // Derived from NetworkTransformComponent.AutoComponent.xml
 
-            NetworkOutputSerializer outSerializer(buffer.begin(), bufferSize);
+            NetworkOutputSerializer outSerializer(buffer.data(), bufferSize);
 
             ReplicationRecord notifyRecord = currentRecord;
             entity->FindComponent<NetworkTransformComponent>()->SerializeStateDeltaMessage(currentRecord, outSerializer);
@@ -353,11 +355,11 @@ namespace Multiplayer
 
             constexpr uint32_t bufferSize = 100;
             AZStd::array<uint8_t, bufferSize> buffer = {};
-            NetworkInputSerializer inSerializer(buffer.begin(), bufferSize);
+            NetworkInputSerializer inSerializer(buffer.data(), bufferSize);
             static_cast<ISerializer*>(&inSerializer)->Serialize(translation,
                 "translation" /* Derived from NetworkTransformComponent.AutoComponent.xml */);
 
-            NetworkOutputSerializer outSerializer(buffer.begin(), bufferSize);
+            NetworkOutputSerializer outSerializer(buffer.data(), bufferSize);
 
             ReplicationRecord notifyRecord = currentRecord;
             entity->FindComponent<NetworkTransformComponent>()->SerializeStateDeltaMessage(currentRecord, outSerializer);
@@ -377,11 +379,11 @@ namespace Multiplayer
 
             constexpr uint32_t bufferSize = 100;
             AZStd::array<uint8_t, bufferSize> buffer = {};
-            NetworkInputSerializer inSerializer(buffer.begin(), bufferSize);
+            NetworkInputSerializer inSerializer(buffer.data(), bufferSize);
             ISerializer& serializer = inSerializer;
             serializer.Serialize(value, "hierarchyRoot"); // Derived from NetworkHierarchyChildComponent.AutoComponent.xml
 
-            NetworkOutputSerializer outSerializer(buffer.begin(), bufferSize);
+            NetworkOutputSerializer outSerializer(buffer.data(), bufferSize);
 
             ReplicationRecord notifyRecord = currentRecord;
             entity->FindComponent<Component>()->SerializeStateDeltaMessage(currentRecord, outSerializer);

@@ -28,7 +28,7 @@ namespace AZ
         // shared data for rendering reflections, loaded and stored by the ReflectionProbeFeatureProcessor and passed to all probes
         struct ReflectionRenderData
         {
-            RHI::GeometryView m_geometryView;
+            RHI::GeometryView m_geometryView{ RHI::MultiDevice::AllDevices };
 
             RPI::Ptr<RPI::PipelineStateForDraw> m_stencilPipelineState;
             RPI::Ptr<RPI::PipelineStateForDraw> m_blendWeightPipelineState;
@@ -75,7 +75,7 @@ namespace AZ
             void Simulate(uint32_t probeIndex);
             void OnRenderEnd();
 
-            const Vector3& GetPosition() const { return m_transform.GetTranslation(); }
+            Vector3 GetPosition() const { return m_transform.GetTranslation(); }
             const AZ::Transform& GetTransform() const { return m_transform; }
             void SetTransform(const AZ::Transform& transform);
 

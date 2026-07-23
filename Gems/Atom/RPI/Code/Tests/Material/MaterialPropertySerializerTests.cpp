@@ -15,9 +15,6 @@
 #include <Common/TestUtils.h>
 #include <Tests/Serialization/Json/JsonSerializerConformityTests.h>
 
-extern "C" void CleanUpRpiPublicGenericClassInfo();
-extern "C" void CleanUpRpiEditGenericClassInfo();
-
 namespace JsonSerializationTests
 {
     class MaterialPropertySerializerTestDescription :
@@ -144,15 +141,14 @@ namespace JsonSerializationTests
 
         void TearDown() override
         {
-            CleanUpRpiPublicGenericClassInfo();
-            CleanUpRpiEditGenericClassInfo();
+            AZ::GetGlobalSerializeContextModule().Cleanup();
 
             JsonSerializerConformityTestDescriptor::TearDown();
         }
     };
 
     using MaterialPropertySerializerTestTypes = ::testing::Types<MaterialPropertySerializerTestDescription>;
-    IF_JSON_CONFORMITY_ENABLED(INSTANTIATE_TYPED_TEST_CASE_P(MaterialPropertySerializerTests, JsonSerializerConformityTests, MaterialPropertySerializerTestTypes));
+    IF_JSON_CONFORMITY_ENABLED(INSTANTIATE_TYPED_TEST_SUITE_P(MaterialPropertySerializerTests, JsonSerializerConformityTests, MaterialPropertySerializerTestTypes));
 } // namespace JsonSerializationTests
 
 namespace UnitTest

@@ -6,9 +6,8 @@
  *
  */
 #pragma once
-#if !defined(Q_MOC_RUN)
+
 #include <AzQtComponents/Components/Widgets/SpinBox.h>
-#endif
 
 class CTrackViewDoubleSpinBox
     : public AzQtComponents::DoubleSpinBox
@@ -20,7 +19,7 @@ public:
     ~CTrackViewDoubleSpinBox() override;
 
 protected:
-    virtual void stepBy(int steps) override;
+    void stepBy(int steps) override;
 
 signals:
     void stepByFinished();

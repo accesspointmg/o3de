@@ -15,9 +15,6 @@
 */
 
 
-
-#ifndef CRYINCLUDE_EDITOR_TRACKVIEW_COMMENTNODEANIMATOR_H
-#define CRYINCLUDE_EDITOR_TRACKVIEW_COMMENTNODEANIMATOR_H
 #pragma once
 
 #include "TrackViewAnimNode.h"
@@ -32,7 +29,7 @@ struct CCommentContext
         , m_align(0)
         , m_color(0.f, 0.f, 0.f, 1.f)
     {
-        sprintf_s(m_strFont, sizeof(m_strFont), "default");
+        azsnprintf(m_strFont, sizeof(m_strFont), "default");
         m_unitPos = Vec2(0.f, 0.f);
     }
 
@@ -51,8 +48,8 @@ class CCommentNodeAnimator
 {
 public:
     CCommentNodeAnimator(CTrackViewAnimNode* pCommentNode);
-    virtual void Animate(CTrackViewAnimNode* pNode, const SAnimContext& ac);
-    virtual void Render(CTrackViewAnimNode* pNode, const SAnimContext& ac);
+    void Animate(CTrackViewAnimNode* pNode, const SAnimContext& ac) override;
+    void Render(CTrackViewAnimNode* pNode, const SAnimContext& ac) override;
 
 private:
     virtual ~CCommentNodeAnimator();
@@ -60,9 +57,8 @@ private:
     void AnimateCommentTextTrack(CTrackViewTrack* pTrack, const SAnimContext& ac);
     CTrackViewKeyHandle GetActiveKeyHandle(CTrackViewTrack* pTrack, float fTime);
     Vec2 GetScreenPosFromNormalizedPos(const Vec2& unitPos);
-    void DrawText(const char* szFontName, float fSize, const Vec2& unitPos, const ColorF col, const char* szText, int align);
+    void DrawText(const char* szFontName, float fSize, const Vec2& unitPos, const AZ::Color col, const char* szText, int align);
 
     CTrackViewAnimNode* m_pCommentNode;
     CCommentContext m_commentContext;
 };
-#endif // CRYINCLUDE_EDITOR_TRACKVIEW_COMMENTNODEANIMATOR_H

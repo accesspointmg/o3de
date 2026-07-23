@@ -7,11 +7,9 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzQtComponents/AzQtComponentsAPI.h>
 
 #include <QWidget>
-#endif
 
 class QToolButton;
 
@@ -37,9 +35,7 @@ namespace AzQtComponents
         friend class TabWidget;
         friend class TabWidgetActionToolBarContainer;
 
-        AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
         QHash<QAction*, QToolButton*> m_actionButtons;
-        AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
         void removeWidgetFromLayout(QWidget* widget);
     };

@@ -91,7 +91,7 @@ public:
     virtual bool getAttributeByIndex(int index, XmlString& key, XmlString& value);
 
 
-    void copyAttributes(XmlNodeRef fromNode) override { assert(0); };
+    void copyAttributes([[maybe_unused]] XmlNodeRef fromNode) override { assert(0); };
 
     //! Get XML Node attribute for specified key.
     const char* getAttr(const char* key) const override;
@@ -149,7 +149,7 @@ public:
     void setAttr([[maybe_unused]] const char* key, [[maybe_unused]] const Ang3& value) override { assert(0); };
     void setAttr([[maybe_unused]] const char* key, [[maybe_unused]] const Vec3& value) override { assert(0); };
     void setAttr([[maybe_unused]] const char* key, [[maybe_unused]] const Vec4& value) override { assert(0); };
-    void setAttr([[maybe_unused]] const char* key, [[maybe_unused]] const Quat& value) override { assert(0); };
+    void setAttr([[maybe_unused]] const char* key, [[maybe_unused]] const AZ::Quaternion& value) override { assert(0); };
     void delAttr([[maybe_unused]] const char* key) override { assert(0); };
     void removeAllAttributes() override { assert(0); };
 
@@ -166,8 +166,8 @@ public:
     bool getAttr(const char* key, Ang3& value) const override;
     bool getAttr(const char* key, Vec3& value) const override;
     bool getAttr(const char* key, Vec4& value) const override;
-    bool getAttr(const char* key, Quat& value) const override;
-    bool getAttr(const char* key, ColorB& value) const override;
+    bool getAttr(const char* key, AZ::Quaternion& value) const override;
+    bool getAttr(const char* key, AZ::Color& value) const override;
 
 private:
     //////////////////////////////////////////////////////////////////////////

@@ -42,7 +42,6 @@
 #include <Editor/View/Widgets/PropertyGridBus.h>
 #include <Editor/View/Widgets/UnitTestPanel/UnitTestDockWidget.h>
 #include <Editor/View/Widgets/UnitTestPanel/ui_UnitTestDockWidget.h>
-#include <Editor/View/Widgets/UnitTestPanel/moc_UnitTestDockWidget.cpp>
 
 #include <Data/Data.h>
 
@@ -427,9 +426,6 @@ namespace ScriptCanvasEditor
 
     void UnitTestDockWidget::OpenScriptInEditor(AZ::Uuid sourceUuid)
     {
-        AzToolsFramework::OpenViewPane(O3deViewPane::ScriptCanvas);
-        AZ::Data::AssetId sourceAssetId(sourceUuid, 0);
-
         AZ::Outcome<int, AZStd::string> openOutcome = AZ::Failure(AZStd::string());
         GeneralRequestBus::BroadcastResult(openOutcome, &GeneralRequests::OpenScriptCanvasAssetId
             , SourceHandle(nullptr, sourceUuid)

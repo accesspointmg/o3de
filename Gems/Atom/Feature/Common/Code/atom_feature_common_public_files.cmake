@@ -11,6 +11,7 @@ set(FILES
     3rdParty/ACES/ACES/Aces.h
     Include/Atom/Feature/ACES/AcesDisplayMapperFeatureProcessor.h
     Include/Atom/Feature/Automation/AtomAutomationBus.h
+    Include/Atom/Feature/Base.h
     Include/Atom/Feature/ColorGrading/LutResolution.h
     Include/Atom/Feature/CoreLights/CapsuleLightFeatureProcessorInterface.h
     Include/Atom/Feature/CoreLights/CoreLightsConstants.h
@@ -35,6 +36,7 @@ set(FILES
     Include/Atom/Feature/Debug/RenderDebugParams.inl
     Include/Atom/Feature/Debug/RenderDebugSettingsInterface.h
     Include/Atom/Feature/Decals/DecalFeatureProcessorInterface.h
+    Include/Atom/Feature/DeferredMaterial/DeferredMaterialFeatureProcessorInterface.h
     Include/Atom/Feature/DisplayMapper/DisplayMapperConfigurationDescriptor.h
     Include/Atom/Feature/DisplayMapper/DisplayMapperFeatureProcessorInterface.h
     Include/Atom/Feature/ImGui/ImGuiUtils.h
@@ -42,8 +44,11 @@ set(FILES
     Include/Atom/Feature/ImageBasedLights/ImageBasedLightFeatureProcessorInterface.h
     Include/Atom/Feature/LightingChannel/LightingChannelConfiguration.h
     Include/Atom/Feature/Material/ConvertEmissiveUnitFunctor.h
+    Include/Atom/Feature/Material/FallbackPBRMaterial.h
     Include/Atom/Feature/Mesh/MeshCommon.h
     Include/Atom/Feature/Mesh/MeshFeatureProcessorInterface.h
+    Include/Atom/Feature/Mesh/MeshInfo.h
+    Include/Atom/Feature/Mesh/MeshInfoBus.h
     Include/Atom/Feature/Mesh/ModelReloaderSystemInterface.h
     Include/Atom/Feature/Mesh/StreamBufferViewsBuilderInterface.h
     Include/Atom/Feature/MorphTargets/MorphTargetInputBuffers.h
@@ -85,6 +90,9 @@ set(FILES
     Include/Atom/Feature/PostProcess/FilmGrain/FilmGrainSettingsInterface.h
     Include/Atom/Feature/PostProcess/LookModification/LookModificationParams.inl
     Include/Atom/Feature/PostProcess/LookModification/LookModificationSettingsInterface.h
+    Include/Atom/Feature/PostProcess/MotionBlur/MotionBlurConstants.h
+    Include/Atom/Feature/PostProcess/MotionBlur/MotionBlurParams.inl
+    Include/Atom/Feature/PostProcess/MotionBlur/MotionBlurSettingsInterface.h
     Include/Atom/Feature/PostProcess/PaniniProjection/PaniniProjectionConstants.h
     Include/Atom/Feature/PostProcess/PaniniProjection/PaniniProjectionParams.inl
     Include/Atom/Feature/PostProcess/PaniniProjection/PaniniProjectionSettingsInterface.h
@@ -109,7 +117,6 @@ set(FILES
     Include/Atom/Feature/RayTracing/RayTracingPass.h
     Include/Atom/Feature/RayTracing/RayTracingPassData.h
     Include/Atom/Feature/ReflectionProbe/ReflectionProbeFeatureProcessorInterface.h
-    Include/Atom/Feature/ReflectionProbe/ReflectionProbeFeatureProcessorInterface.h
     Include/Atom/Feature/RenderCommon.h
     Include/Atom/Feature/ScreenSpace/DeferredFogParams.inl
     Include/Atom/Feature/ScreenSpace/DeferredFogSettingsInterface.h
@@ -122,7 +129,6 @@ set(FILES
     Include/Atom/Feature/SkinnedMesh/SkinnedMeshShaderOptions.h
     Include/Atom/Feature/SkinnedMesh/SkinnedMeshStatsBus.h
     Include/Atom/Feature/SkinnedMesh/SkinnedMeshVertexStreams.h
-    Include/Atom/Feature/SkyAtmosphere/SkyAtmosphereFeatureProcessorInterface.h
     Include/Atom/Feature/SkyBox/SkyBoxFeatureProcessorInterface.h
     Include/Atom/Feature/SkyBox/SkyBoxFogBus.h
     Include/Atom/Feature/SkyBox/SkyBoxFogSettings.h

@@ -83,8 +83,14 @@ namespace AZ
                 if (m_outputTransformPass)
                 {
                     if (m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::Reinhard ||
+                        m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::ReinhardExtended ||
                         m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::AcesFitted ||
-                        m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::AcesFilmic)
+                        m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::AcesFilmic ||
+                        m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::Agx ||
+                        m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::AgxGolden ||
+                        m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::AgxPunchy ||
+                        m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::AgxWarm ||
+                        m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::PbrNeutral)
                     {
                         // When using Reinhard tonemapper, a gamma of 2.2 for the transfer function is used for LDR display,
                         // and PQ is used for HDR.
@@ -243,13 +249,10 @@ namespace AZ
             AZStd::string azshaderPath = shaderFilePath;
             AZ::StringFunc::Path::ReplaceExtension(azshaderPath, "azshader");
 
-            Data::AssetId shaderAssetId;
-            Data::AssetCatalogRequestBus::BroadcastResult(
-                shaderAssetId, &Data::AssetCatalogRequestBus::Events::GetAssetIdByPath,
-                azshaderPath.c_str(), azrtti_typeid<RPI::ShaderAsset>(), false);
+            Data::AssetId shaderAssetId = AZ::RPI::AssetUtils::GetAssetIdForProductPath(azshaderPath.c_str(), AZ::RPI::AssetUtils::TraceLevel::Assert, azrtti_typeid<RPI::ShaderAsset>());
             if (!shaderAssetId.IsValid())
             {
-                AZ_Assert(false, "[DisplayMapperPass] Unable to obtain asset id for %s.", shaderFilePath);
+                // The above GetAssetIdForProductPath will already have asserted if the asset was not found.
                 return nullptr;
             }
 
@@ -276,13 +279,11 @@ namespace AZ
             outSlot.m_scopeAttachmentUsage = RHI::ScopeAttachmentUsage::Shader;
             outSlot.m_loadStoreAction.m_loadAction = RHI::AttachmentLoadAction::Clear;
 
-            Data::AssetId shaderAssetId;
-            Data::AssetCatalogRequestBus::BroadcastResult(
-                shaderAssetId, &Data::AssetCatalogRequestBus::Events::GetAssetIdByPath,
-                shaderFilePath, azrtti_typeid<RPI::ShaderAsset>(), false);
+            // Since this asset is required or a fatal assert occurs, we can use GetAssetIdForProductPath to ensure that it is built if at all possible.
+            Data::AssetId shaderAssetId = AZ::RPI::AssetUtils::GetAssetIdForProductPath(shaderFilePath, AZ::RPI::AssetUtils::TraceLevel::Assert, azrtti_typeid<RPI::ShaderAsset>());
             if (!shaderAssetId.IsValid())
             {
-                AZ_Assert(false, "[DisplayMapperPass] Unable to obtain asset id for %s.", shaderFilePath);
+                // The above GetAssetIdForProductPath will already have asserted if the asset was not found.
                 return nullptr;
             }
 
@@ -312,7 +313,7 @@ namespace AZ
             const Name ldrGradingLutTemplateName = Name{ "LdrGradingLutTemplate" };
             const Name outputTransformTemplateName = Name{ "OutputTransformTemplate" };
 
-            // Pass classes 
+            // Pass classes
             const Name acesOutputTransformPassClassName = Name{ "AcesOutputTransformPass" };
             const Name acesOutputTransformLutPassClassName = Name{ "AcesOutputTransformLutPass" };
             const Name bakeAcesOutputTransformLutPassClassName = Name{ "BakeAcesOutputTransformLutPass" };
@@ -402,7 +403,7 @@ namespace AZ
             }
 
             RPI::Ptr<PassType> returnPass = static_cast<PassType*>(pass.get());
-            return AZStd::move(returnPass);
+            return returnPass;
         }
 
         void DisplayMapperPass::CreateGradingAndAcesPasses()
@@ -443,6 +444,9 @@ namespace AZ
                 case DisplayMapperOperationType::Reinhard:
                     type = ToneMapperType::Reinhard;
                     break;
+                case DisplayMapperOperationType::ReinhardExtended:
+                    type = ToneMapperType::ReinhardExtended;
+                    break;
                 case DisplayMapperOperationType::AcesFitted:
                     type = ToneMapperType::AcesFitted;
                     break;
@@ -451,6 +455,21 @@ namespace AZ
                     break;
                 case DisplayMapperOperationType::Filmic:
                     type = ToneMapperType::Filmic;
+                    break;
+                case DisplayMapperOperationType::Agx:
+                    type = ToneMapperType::Agx;
+                    break;
+                case DisplayMapperOperationType::AgxGolden:
+                    type = ToneMapperType::AgxGolden;
+                    break;
+                case DisplayMapperOperationType::AgxPunchy:
+                    type = ToneMapperType::AgxPunchy;
+                    break;
+                case DisplayMapperOperationType::AgxWarm:
+                    type = ToneMapperType::AgxWarm;
+                    break;
+                case DisplayMapperOperationType::PbrNeutral:
+                    type = ToneMapperType::PbrNeutral;
                     break;
                 default:
                     AZ_Assert(false, "Invalid tonemapper type %d", m_displayMapperConfigurationDescriptor.m_operationType);
@@ -567,9 +586,15 @@ namespace AZ
         bool DisplayMapperPass::UsesOutputTransformPass() const
         {
             return m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::Reinhard ||
+                m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::ReinhardExtended ||
                 m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::AcesFitted ||
                 m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::Filmic ||
-                m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::AcesFilmic;
+                m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::AcesFilmic ||
+                m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::Agx ||
+                m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::AgxGolden ||
+                m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::AgxPunchy ||
+                m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::AgxWarm ||
+                m_displayMapperConfigurationDescriptor.m_operationType == DisplayMapperOperationType::PbrNeutral;
         }
     }   // namespace Render
 }   // namespace AZ

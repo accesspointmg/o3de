@@ -30,7 +30,7 @@ namespace AZ
         /**
         * Base for EBus<T>::Context. We use it to support multiple EBusEnvironments (have collection of contexts and manage state).
         */
-        class ContextBase
+        class AZCORE_API ContextBase
         {
             template<class Context>
             friend struct AZ::EBusEnvironmentStoragePolicy;
@@ -57,7 +57,7 @@ namespace AZ
         * If this happens make sure you create this structure in the environment from the main executable
         * or a module that will be loaded before and unloaded before any EBuses are used.
         */
-        struct EBusEnvironmentTLSAccessors
+        struct AZCORE_API EBusEnvironmentTLSAccessors
         {
             EBusEnvironmentTLSAccessors();
 
@@ -70,8 +70,6 @@ namespace AZ
             static void SetTLSEnvironment(EBusEnvironment* environment);
 
             AZStd::atomic_int m_numUniqueEBuses; ///< Used to provide unique index for the TLS table
-
-            static AZ_THREAD_LOCAL EBusEnvironment* s_tlsCurrentEnvironment; ///< Pointer to the current environment for the current thread.
         };
 
         using EBusEnvironmentAllocator = AZStd::stateless_allocator;
@@ -85,7 +83,7 @@ namespace AZ
      * EBusEnvironment is very similar to the way OpenGL contexts operate. You can manage their livecycle from any thread at anytime by calling EBusEnvironment::Create/Destroy. You can activate/deactivate an environment by calling
      * ActivateOnCurrentThread/DeactivateOnCurrentThread. Every EBusEnvironment can be activated to only one thread at a time.
      */
-    class EBusEnvironment
+    class AZCORE_API EBusEnvironment
     {
         template<class Context>
         friend struct EBusEnvironmentStoragePolicy;
@@ -204,9 +202,9 @@ namespace AZ
         */
         static EnvironmentVariable<Context> s_defaultGlobalContext;
 
-        // EBus traits should provide a valid unique name, so that handlers can 
+        // EBus traits should provide a valid unique name, so that handlers can
         // connect to the EBus across modules.
-        // This can fail on some compilers. If it fails, make sure that you give 
+        // This can fail on some compilers. If it fails, make sure that you give
         // each bus a unique name.
         static u32 GetVariableId();
     };
@@ -259,11 +257,15 @@ namespace AZ
         return globalContext;
     }
 
-    //////////////////////////////////////////////////////////////////////////
-    template<class Context>
-    u32 EBusEnvironmentStoragePolicy<Context>::GetVariableId()
-    {
-        static constexpr u32 NameCrc = Crc32(AZ_FUNCTION_SIGNATURE);
-        return NameCrc;
-    }
 } // namespace AZ
+
+// Defined outside namespace AZ so that AZ_FUNCTION_SIGNATURE (__PRETTY_FUNCTION__)
+// produces a fully qualified return type (e.g. "AZ::u32") regardless of
+// compiler version.
+// See: https://github.com/o3de/o3de/issues/19690
+template<class Context>
+AZ::u32 AZ::EBusEnvironmentStoragePolicy<Context>::GetVariableId()
+{
+    static constexpr AZ::u32 NameCrc = AZ::Crc32(AZ_FUNCTION_SIGNATURE);
+    return NameCrc;
+}

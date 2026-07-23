@@ -6,7 +6,7 @@
 #
 #
 
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.24)
 
 if(NOT ${CMAKE_VERSION} VERSION_LESS "3.24") 
     # CMP0135 - controls whether, when unpacking an archive file, it should:

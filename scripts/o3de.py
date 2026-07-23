@@ -12,6 +12,7 @@ import pathlib
 import sys
 
 logger = logging.getLogger('o3de')
+logger.setLevel(logging.INFO)
 
 def add_args(parser: argparse.ArgumentParser) -> None:
     """
@@ -48,7 +49,6 @@ def add_args(parser: argparse.ArgumentParser) -> None:
 
     # o3de object (resolve - required by the CMake build)
     o3de_object.add_args(subparsers)
-
 
 if __name__ == "__main__":
     # parse the command line args

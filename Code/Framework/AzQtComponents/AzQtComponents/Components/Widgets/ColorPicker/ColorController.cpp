@@ -8,7 +8,6 @@
 
 #include <AzQtComponents/Components/Widgets/ColorPicker/ColorController.h>
 #include <AzQtComponents/Components/Widgets/ColorPicker/ColorValidator.h>
-#include <AzQtComponents/Components/Widgets/ColorPicker/Palette.h> // needed for Q_DECLARE_METATYPE(AZ::Color);
 #include <AzQtComponents/Utilities/ColorUtilities.h>
 #include <AzQtComponents/Utilities/Conversions.h>
 #include <AzCore/Math/MathUtils.h>
@@ -773,4 +772,3 @@ namespace AzQtComponents
     } // namespace Internal
 } // namespace AzQtComponents
 
-#include "Components/Widgets/ColorPicker/moc_ColorController.cpp"

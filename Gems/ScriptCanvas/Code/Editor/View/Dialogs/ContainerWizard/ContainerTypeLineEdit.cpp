@@ -6,9 +6,8 @@
  *
  */
 
-#include <qtoolbutton.h>
-#include <qscopedvaluerollback.h>
-
+#include <QToolButton>
+#include <QScopedValueRollback>
 #include <QFocusEvent>
 #include <QHeaderView>
 #include <QWidgetAction>
@@ -633,4 +632,3 @@ namespace ScriptCanvasEditor
     }
 }
 
-#include <Editor/View/Dialogs/ContainerWizard/moc_ContainerTypeLineEdit.cpp>

@@ -8,7 +8,6 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include "LastPathBus.h"
 #include "Platforms.h"
 #include "PlatformSettings.h"
@@ -16,10 +15,11 @@
 #include "ProjectSettingsSerialization.h"
 #include "ValidatorBus.h"
 
+#include <AzCore/Math/Guid.h>
+
 #include <QProcess>
 #include <QScopedPointer>
 #include <QWidget>
-#endif
 
 // Forward Declares
 namespace Ui
@@ -46,6 +46,7 @@ namespace ProjectSettingsTool
         BaseSettings base;
         AndroidSettings android;
         IosSettings ios;
+        WindowsSettings windows;
     };
 
     // Main window for Project Settings tool

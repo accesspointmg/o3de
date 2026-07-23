@@ -6,14 +6,11 @@
  *
  */
 
-#ifndef NEWLOGDIALOG_H
-#define NEWLOGDIALOG_H
-
 #pragma once
 
-#if !defined(Q_MOC_RUN)
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
 #include <QDialog>
-#endif
 
 namespace Ui
 {
@@ -25,7 +22,7 @@ namespace AzToolsFramework
     namespace LogPanel
     {
         //! NewLogTabDialog - the dialog that pops up and asks you to configure a tab in a log control.
-        class NewLogTabDialog
+        class AZTF_API NewLogTabDialog
             : public QDialog
         {
             Q_OBJECT;
@@ -51,5 +48,3 @@ namespace AzToolsFramework
         };
     } // namespace LogPanel
 } // namespace AzToolsFramework
-
-#endif

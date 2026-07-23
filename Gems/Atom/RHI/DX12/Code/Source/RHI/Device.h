@@ -79,14 +79,15 @@ namespace AZ
 
 #ifdef USE_AMD_D3D12MA
             MemoryView CreateD3d12maBuffer(
-                const RHI::BufferDescriptor& bufferDescriptor,
-                D3D12_RESOURCE_STATES initialState,
-                D3D12_HEAP_TYPE heapType);
+                const RHI::BufferDescriptor& bufferDescriptor, D3D12_RESOURCE_STATES initialState, D3D12_HEAP_TYPE heapType);
 #endif
             MemoryView CreateBufferCommitted(
                 const RHI::BufferDescriptor& bufferDescriptor,
                 D3D12_RESOURCE_STATES initialState,
                 D3D12_HEAP_TYPE heapType);
+
+            MemoryView CreateCrossDeviceCapableBuffer(
+                const RHI::BufferDescriptor& bufferDescriptor, D3D12_RESOURCE_STATES initialState, D3D12_HEAP_TYPE heapType);
 
             MemoryView CreateImageCommitted(
                 const RHI::ImageDescriptor& imageDescriptor,
@@ -98,7 +99,8 @@ namespace AZ
                 const RHI::BufferDescriptor& bufferDescriptor,
                 D3D12_RESOURCE_STATES initialState,
                 ID3D12Heap* heap,
-                size_t heapByteOffset);
+                size_t heapByteOffset,
+                bool importedFromCrossDevice);
 
             MemoryView CreateImagePlaced(
                 const RHI::ImageDescriptor& imageDescriptor,
@@ -173,6 +175,7 @@ namespace AZ
             void EndFrameInternal() override;
             void WaitForIdleInternal() override;
             AZStd::chrono::microseconds GpuTimestampToMicroseconds(uint64_t gpuTimestamp, RHI::HardwareQueueClass queueClass) const override;
+            AZStd::pair<uint64_t, uint64_t> GetCalibratedTimestamp(RHI::HardwareQueueClass queueClass) override;
             void FillFormatsCapabilitiesInternal(FormatCapabilitiesList& formatsCapabilities) override;
             RHI::ResultCode InitializeLimits() override;
             AZStd::vector<RHI::Format> GetValidSwapChainImageFormats(const RHI::WindowHandle& windowHandle) const override;

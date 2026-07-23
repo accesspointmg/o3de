@@ -116,8 +116,8 @@ SETTINGS_PLATFORM_SDK_API      = register_setting(key='platform.sdk.api',
                                                   default='31')
 
 SETTINGS_NDK_VERSION           = register_setting(key='ndk.version',
-                                                  description='The version of the android NDK (ref https://developer.android.com/ndk/downloads). File matching patterns can be used (i.e. 25.* will search for the most update to date major version 25)',
-                                                  default='25.*')
+                                                  description='The version of the android NDK (ref https://developer.android.com/ndk/downloads). File matching patterns can be used (i.e. 27.* will search for the most update to date major version 27)',
+                                                  default='27.*')
 
 SETTINGS_GRADLE_PLUGIN_VERSION = register_setting(key='android.gradle.plugin',
                                                   description='The version of the android gradle plugin to use for the build (ref https://developer.android.com/reference/tools/gradle-api)',
@@ -296,9 +296,32 @@ class AndroidGradlePluginRequirements(object):
 
 # The ANDROID_GRADLE_PLUGIN_COMPATIBILITY_MAP manages the known android plugin known to O3DE and its compatibility requirements
 # Note: This map needs to be updated in conjunction with newer versions of the Android Gradle plugins.
-
+# see https://developer.android.com/build/releases/gradle-plugin for the actual table that this data comes from
+# each entry associates the key (version of the android gradle plugin)
+# to the minimum required version of gradle, android sdk build tools, and jdk version required for it to work.
 ANDROID_GRADLE_PLUGIN_COMPATIBILITY_MAP = {
+    '8.13': AndroidGradlePluginRequirements(agp_version='8.13',
+                                            gradle_version='8.13',
+                                            sdk_build_tools_version='35.0.0',
+                                            jdk_version='17',
+                                            release_note_url='https://developer.android.com/build/releases/gradle-plugin'),
+    '8.12': AndroidGradlePluginRequirements(agp_version='8.12',
+                                            gradle_version='8.13',
+                                            sdk_build_tools_version='35.0.0',
+                                            jdk_version='17',
+                                            release_note_url='https://developer.android.com/build/releases/gradle-plugin'),
+    '8.11': AndroidGradlePluginRequirements(agp_version='8.11',
+                                           gradle_version='8.13',
+                                           sdk_build_tools_version='35.0.0',
+                                           jdk_version='17',
+                                           release_note_url='https://developer.android.com/build/releases/gradle-plugin'),
 
+    '8.10': AndroidGradlePluginRequirements(agp_version='8.10',
+                                           gradle_version='8.11',
+                                           sdk_build_tools_version='35.0.0',
+                                           jdk_version='17',
+                                           release_note_url='https://developer.android.com/build/releases/gradle-plugin'),
+    
     '8.1': AndroidGradlePluginRequirements(agp_version='8.1',
                                            gradle_version='8.0',
                                            sdk_build_tools_version='33.0.1',
@@ -776,10 +799,10 @@ class AndroidSigningConfig(object):
         :return:    The signing config string section to insert
         """
         tab_prefix = ' '* 4 * tabs  # 4 spaces per tab
-        return f"{tab_prefix}storeFile file('{self._store_file.as_posix()}')\n" \
-               f"{tab_prefix}storePassword '{self._store_password}'\n" \
-               f"{tab_prefix}keyPassword '{self._key_password}'\n" \
-               f"{tab_prefix}keyAlias '{self._key_alias}'"
+        return f"{tab_prefix}storeFile = file('{self._store_file.as_posix()}')\n" \
+               f"{tab_prefix}storePassword = '{self._store_password}'\n" \
+               f"{tab_prefix}keyPassword = '{self._key_password}'\n" \
+               f"{tab_prefix}keyAlias = '{self._key_alias}'"
 
 
 JAVA_VERSION_REGEX = re.compile(r'.*(\w)\s(version)\s*\"?(?P<version>[\d\_\.]+)', re.MULTILINE)
@@ -972,9 +995,9 @@ dependencies {{
 NATIVE_CMAKE_SECTION_ANDROID_FORMAT = """
     externalNativeBuild {{
         cmake {{
-            buildStagingDirectory "{native_build_path}"
-            version "{cmake_version}"
-            path "{absolute_cmakelist_path}"
+            buildStagingDirectory = "{native_build_path}"
+            version = "{cmake_version}"
+            path = "{absolute_cmakelist_path}"
         }}
     }}
 """
@@ -1674,7 +1697,7 @@ class AndroidProjectGenerator(object):
                                                                  full_command_line=sync_layout_command_line,
                                                                  config=native_config)
 
-            gradle_build_env[f'SIGNING_{native_config_upper}_CONFIG'] = f'signingConfig signingConfigs.{native_config_lower}' if self._signing_config else ''
+            gradle_build_env[f'SIGNING_{native_config_upper}_CONFIG'] = f'signingConfig = signingConfigs.{native_config_lower}' if self._signing_config else ''
 
         if self._signing_config:
             gradle_build_env['SIGNING_CONFIGS'] = f"""
@@ -1695,7 +1718,7 @@ class AndroidProjectGenerator(object):
 
         if self._gradle_plugin_version >= Version('7.0'):
             package_namespace = self._project_android_settings['package_name']
-            gradle_build_env['PROJECT_NAMESPACE_OPTION'] = f'namespace "{package_namespace}"'
+            gradle_build_env['PROJECT_NAMESPACE_OPTION'] = f'namespace = "{package_namespace}"'
         else:
             gradle_build_env['PROJECT_NAMESPACE_OPTION'] = ''
 
@@ -1849,7 +1872,7 @@ class AndroidProjectGenerator(object):
             return Path(source_path)
 
         game_gem_resources = self._project_path / 'Gem' / 'Resources'
-        if game_gem_resources.is_dir(game_gem_resources):
+        if game_gem_resources.is_dir():
             # If the source is relative and the game gem's resource is present, construct the path based on that
             return game_gem_resources / source_path
 
@@ -1890,7 +1913,7 @@ class AndroidProjectGenerator(object):
         for resolution in ANDROID_RESOLUTION_SETTINGS:
 
             target_directory = dst_resource_path / f'{MIPMAP_PATH_PREFIX}-{resolution}'
-            target_directory.mkdir(parent=True, exist_ok=True)
+            target_directory.mkdir(parents=True, exist_ok=True)
 
             # get the current resolution icon override
             icon_source = icon_overrides.get(resolution, default_icon)
@@ -1932,7 +1955,31 @@ class AndroidProjectGenerator(object):
         if not splash_overrides:
             return
 
-        orientation = az_android_package_env['ORIENTATION']
+        orientation_source = az_android_package_env['ANDROID_SCREEN_ORIENTATION']
+        orientation = ORIENTATION_LANDSCAPE
+
+        # Check orientation type and convert if needed
+        if isinstance(orientation_source, str):
+            if orientation_source not in ORIENTATION_MAPPING:
+                raise AndroidToolError(
+                    f'Invalid orientation "{orientation}" in android_project.json. '
+                    f'Expected one of: {list(ORIENTATION_MAPPING.keys())}'
+                )
+            orientation = ORIENTATION_MAPPING[orientation_source]
+        elif isinstance(orientation_source, int):
+            VALID_ORIENTATIONS = {ORIENTATION_LANDSCAPE, ORIENTATION_PORTRAIT, ORIENTATION_ALL}
+            if orientation_source not in VALID_ORIENTATIONS:
+                raise AndroidToolError(
+                    f'Invalid numeric orientation "{orientation}" in android_project.json. '
+                    f'Expected one of: {VALID_ORIENTATIONS}'
+                )
+            orientation = orientation_source
+        else:
+            raise AndroidToolError(
+                f'ANDROID_SCREEN_ORIENTATION must be a string or int in android_project.json. '
+                f'Got: {type(orientation).__name__}'
+            )
+
         drawable_path_prefix = 'drawable-'
 
         for orientation_flag, orientation_key in ORIENTATION_FLAG_TO_KEY_MAP.items():
@@ -2126,7 +2173,7 @@ class AndroidProjectGenerator(object):
             }
 
             if self._gradle_plugin_version >= Version('7.0'):
-                build_gradle_env['PROJECT_NAMESPACE_OPTION'] = f'namespace "{name_space}"' if self._gradle_plugin_version >= Version('7.0') else ''
+                build_gradle_env['PROJECT_NAMESPACE_OPTION'] = f'namespace = "{name_space}"' if self._gradle_plugin_version >= Version('7.0') else ''
 
             build_gradle_content = utils.load_template_file(template_file_path=android_project_builder_path / 'build.gradle.in',
                                                              template_env=build_gradle_env)

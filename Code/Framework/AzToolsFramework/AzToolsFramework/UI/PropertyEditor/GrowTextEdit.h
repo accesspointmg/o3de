@@ -1,5 +1,3 @@
-#pragma once
-
 /*
  * Copyright (c) Contributors to the Open 3D Engine Project.
  * For complete copyright and license terms please see the LICENSE at the root of this distribution.
@@ -8,7 +6,9 @@
  *
  */
 
-#if !defined(Q_MOC_RUN)
+#pragma once
+ 
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 #include <AzCore/PlatformDef.h>
 
 AZ_PUSH_DISABLE_WARNING(4251 4800, "-Wunknown-warning-option") // 4251: class '...' needs to have dll-interface to be used by clients of class '...'
@@ -17,11 +17,10 @@ AZ_PUSH_DISABLE_WARNING(4251 4800, "-Wunknown-warning-option") // 4251: class '.
 #include <AzCore/std/string/string.h>
 #include <AzCore/Memory/SystemAllocator.h>
 AZ_POP_DISABLE_WARNING
-#endif
 
 namespace AzToolsFramework
 {
-    class GrowTextEdit : public QTextEdit
+    class AZTF_API GrowTextEdit : public QTextEdit
     {
         Q_OBJECT
     public:
@@ -35,13 +34,17 @@ namespace AzToolsFramework
         void setVisible(bool visible) override;
         QSize sizeHint() const override;
 
+        void focusInEvent(QFocusEvent* event) override;
         void focusOutEvent(QFocusEvent* event) override;
+        bool event(QEvent* event) override;
+        void keyPressEvent(QKeyEvent* event) override;
     signals:
         void EditCompleted();
     private:
         static const int s_padding;
         static const int s_minHeight;
         static const int s_maxHeight;
+        QString m_textOnFocusIn;
         bool m_textChanged;
     };
 }

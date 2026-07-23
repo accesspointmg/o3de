@@ -7,11 +7,11 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <ProjectInfo.h>
 
 #include <QThread>
-#endif
+
+#include "ProjectManagerBuses.h"
 
 QT_FORWARD_DECLARE_CLASS(QProcess)
 
@@ -20,7 +20,9 @@ namespace O3DE::ProjectManager
     QT_FORWARD_DECLARE_CLASS(ProjectButton)
     QT_FORWARD_DECLARE_CLASS(ProjectExportWorker)
 
-    class ProjectExportController : public QObject
+    class ProjectExportController
+        : public QObject
+        , public ProjectManagerUtilityRequestsBus::Handler
     {
         Q_OBJECT
 
@@ -32,7 +34,7 @@ namespace O3DE::ProjectManager
         const ProjectInfo& GetProjectInfo() const;
 
         constexpr static int s_maxDisplayedBuiltOutputChars = 25;
-        inline static const char * LauncherExportFailedMessage = "Launcher failed to export.";
+        inline static const char* LauncherExportFailedMessage = "Launcher failed to export.";
 
     public slots:
         void Start();
@@ -43,6 +45,10 @@ namespace O3DE::ProjectManager
     signals:
         void Done(bool success = true);
         void NotifyExportProject(const ProjectInfo& projectInfo);
+
+    private:
+        // ProjectManagerUtilityRequests overrides...
+        void CanCloseProjectManager(bool& result) const override;
 
     private:
         ProjectInfo m_projectInfo;

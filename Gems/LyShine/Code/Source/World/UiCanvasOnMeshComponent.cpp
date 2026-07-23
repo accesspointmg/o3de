@@ -18,12 +18,12 @@
 #include <LyShine/Bus/World/UiCanvasRefBus.h>
 #include <LyShine/UiSerializeHelpers.h>
 
-#include <Cry_Geo.h>
 #include <IIndexedMesh.h>
 
 
 #include <AzFramework/Render/GeometryIntersectionStructures.h>
 #include <AtomO3deIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Anonymous namespace
@@ -130,19 +130,19 @@ void UiCanvasOnMeshComponent::Reflect(AZ::ReflectContext* context)
         if (editContext)
         {
             auto editInfo = editContext->Class<UiCanvasOnMeshComponent>(
-                    "UI Canvas on Mesh", "The UI Canvas on Mesh component allows you to place a UI Canvas on an entity in the 3D world that a player can interact with via ray casts");
+                    QT_TRANSLATE_NOOP("LyShine", "UI Canvas on Mesh"), QT_TRANSLATE_NOOP("LyShine", "The UI Canvas on Mesh component allows you to place a UI Canvas on an entity in the 3D world that a player can interact with via ray casts"));
 
             editInfo->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                 ->Attribute(AZ::Edit::Attributes::Category, "UI")
                 ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/UiCanvasOnMesh.svg")
                 ->Attribute(AZ::Edit::Attributes::ViewportIcon, "Icons/Components/Viewport/UiCanvasOnMesh.svg")
-                ->Attribute(AZ::Edit::Attributes::HelpPageURL, "https://o3de.org/docs/user-guide/components/reference/ui/canvas-on-mesh/")
+                ->Attribute(AZ::Edit::Attributes::HelpPageURL, "https://www.o3de.org/docs/user-guide/components/reference/ui/canvas-on-mesh/")
                 ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"));
 
             editInfo->DataElement(0, &UiCanvasOnMeshComponent::m_attachmentImageAssetOverride,
-                "Render target override",
-                "If not empty, this asset overrides the render target set on the UI canvas.\n"
-                "This is useful if multiple instances of the same UI canvas are rendered in the level.");
+                QT_TRANSLATE_NOOP("LyShine", "Render target override"),
+                QT_TRANSLATE_NOOP("LyShine", "If not empty, this asset overrides the render target set on the UI canvas.\n"
+                "This is useful if multiple instances of the same UI canvas are rendered in the level."));
         }
     }
 }
@@ -243,19 +243,19 @@ bool UiCanvasOnMeshComponent::CalculateUVFromRayIntersection(const AzFramework::
         }
 
         auto positionBufferAsset = positionBuffer->m_bufferAssetView.GetBufferAsset();
-        const float* rawPositionBuffer = (const float*)(positionBufferAsset->GetBuffer().begin());
+        const float* rawPositionBuffer = (const float*)(positionBufferAsset->GetBuffer().data());
         AZ_Assert(
             positionBuffer->m_bufferAssetView.GetBufferViewDescriptor().m_elementFormat == AZ::RHI::Format::R32G32B32_FLOAT,
             "Unexpected position element format.");
 
         auto uvBufferAsset = uvBuffer->m_bufferAssetView.GetBufferAsset();
-        const float* rawUvBuffer = (const float*)(uvBufferAsset->GetBuffer().begin());
+        const float* rawUvBuffer = (const float*)(uvBufferAsset->GetBuffer().data());
         AZ_Assert(
             uvBuffer->m_bufferAssetView.GetBufferViewDescriptor().m_elementFormat == AZ::RHI::Format::R32G32_FLOAT,
             "Unexpected UV element format.");
 
         auto indexBuffer = mesh.GetIndexBufferAssetView().GetBufferAsset();
-        const uint32_t* rawIndexBuffer = (const uint32_t*)(indexBuffer->GetBuffer().begin());
+        const uint32_t* rawIndexBuffer = (const uint32_t*)(indexBuffer->GetBuffer().data());
         AZ_Assert(
             (indexBuffer->GetBufferViewDescriptor().m_elementCount % 3) == 0,
             "index buffer not a multiple of 3");

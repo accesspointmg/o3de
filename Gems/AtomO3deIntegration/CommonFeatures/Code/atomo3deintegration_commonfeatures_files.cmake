@@ -94,6 +94,11 @@ set(FILES
     Source/PostProcess/ChromaticAberration/ChromaticAberrationComponentConfig.cpp
     Source/PostProcess/ChromaticAberration/ChromaticAberrationComponentController.cpp
     Source/PostProcess/ChromaticAberration/ChromaticAberrationComponentController.h
+    Source/PostProcess/MotionBlur/MotionBlurComponent.cpp
+    Source/PostProcess/MotionBlur/MotionBlurComponent.h
+    Source/PostProcess/MotionBlur/MotionBlurComponentConfig.cpp
+    Source/PostProcess/MotionBlur/MotionBlurComponentController.cpp
+    Source/PostProcess/MotionBlur/MotionBlurComponentController.h
     Source/PostProcess/PaniniProjection/PaniniProjectionComponent.cpp
     Source/PostProcess/PaniniProjection/PaniniProjectionComponent.h
     Source/PostProcess/PaniniProjection/PaniniProjectionComponentConfig.cpp
@@ -174,11 +179,6 @@ set(FILES
     Source/SpecularReflections/SpecularReflectionsComponentConfig.cpp
     Source/SpecularReflections/SpecularReflectionsComponentController.h
     Source/SpecularReflections/SpecularReflectionsComponentController.cpp
-    Source/SkyAtmosphere/SkyAtmosphereComponentConfig.cpp
-    Source/SkyAtmosphere/SkyAtmosphereComponentController.cpp
-    Source/SkyAtmosphere/SkyAtmosphereComponentController.h
-    Source/SkyAtmosphere/SkyAtmosphereComponent.cpp
-    Source/SkyAtmosphere/SkyAtmosphereComponent.h
     Source/SkyBox/HDRiSkyboxComponentConfig.cpp
     Source/SkyBox/HDRiSkyboxComponentController.cpp
     Source/SkyBox/HDRiSkyboxComponentController.h

@@ -16,6 +16,7 @@
 #include <RHI/Device.h>
 #include <RHI/RayTracingAccelerationStructure.h>
 #include <RHI/RayTracingBlas.h>
+#include <RHI/RayTracingClusterBlas.h>
 #include <RHI/RayTracingTlas.h>
 
 namespace AZ
@@ -41,7 +42,7 @@ namespace AZ
                 buffers.m_accelerationStructure = nullptr;
             }
 
-            const RHI::DeviceRayTracingTlasInstanceVector& instances = descriptor->GetInstances();
+            const RHI::DeviceRayTracingTlasInstanceVector& instances = descriptor->m_instances;
             if (instances.empty())
             {
                 // no instances in the scene, clear the TLAS buffers
@@ -53,7 +54,7 @@ namespace AZ
 
             AZStd::vector<RHI::Ptr<RHI::DeviceBuffer>> blasBuffers;
             VkDeviceAddress tlasInstancesGpuAddress = 0;
-            if (descriptor->GetInstancesBuffer() == nullptr)
+            if (descriptor->m_instancesBuffer == nullptr)
             {
                 buffers.m_instanceCount = aznumeric_caster(instances.size());
                 uint64_t instanceDescsSizeInBytes = aznumeric_cast<uint32_t>(sizeof(VkAccelerationStructureInstanceKHR) * instances.size());
@@ -90,19 +91,30 @@ namespace AZ
                     AZ::Matrix3x4 matrix3x4 = AZ::Matrix3x4::CreateFromTransform(instance.m_transform);
                     matrix3x4.MultiplyByScale(instance.m_nonUniformScale);
                     matrix3x4.StoreToRowMajorFloat12(&mappedData[i].transform.matrix[0][0]);
-            
-                    RayTracingBlas* blas = static_cast<RayTracingBlas*>(instance.m_blas.get());
-                    VkAccelerationStructureDeviceAddressInfoKHR addressInfo = {};
-                    addressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
-                    addressInfo.pNext = nullptr;
-                    addressInfo.accelerationStructure = blas->GetBuffers().m_accelerationStructure->GetNativeAccelerationStructure();
-                    mappedData[i].accelerationStructureReference =
-                        device.GetContext().GetAccelerationStructureDeviceAddressKHR(device.GetNativeDevice(), &addressInfo);
 
                     mappedData[i].mask = instance.m_instanceMask;
                     mappedData[i].flags = instance.m_transparent ? VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR : 0;
 
-                    blasBuffers.emplace_back(blas->GetBuffers().m_blasBuffer);
+                    if (instance.m_blas)
+                    {
+                        RayTracingBlas* blas = static_cast<RayTracingBlas*>(instance.m_blas.get());
+                        VkAccelerationStructureDeviceAddressInfoKHR addressInfo = {};
+                        addressInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR;
+                        addressInfo.pNext = nullptr;
+                        addressInfo.accelerationStructure = blas->GetBuffers().m_accelerationStructure->GetNativeAccelerationStructure();
+                        mappedData[i].accelerationStructureReference =
+                            device.GetContext().GetAccelerationStructureDeviceAddressKHR(device.GetNativeDevice(), &addressInfo);
+                        
+                        blasBuffers.emplace_back(blas->GetBuffers().m_blasBuffer);
+                    }
+                    else
+                    {
+                        RayTracingClusterBlas* clusterBlas = static_cast<RayTracingClusterBlas*>(instance.m_clusterBlas.get());
+                        mappedData[i].accelerationStructureReference =
+                            clusterBlas->GetBuffers().m_clusterBlasDstImplicitBuffer->GetDeviceAddress();
+
+                        blasBuffers.emplace_back(clusterBlas->GetBuffers().m_clusterBlasDstImplicitBuffer);
+                    }
                 }
             
                 bufferPools.GetTlasInstancesBufferPool()->UnmapBuffer(*buffers.m_tlasInstancesBuffer);
@@ -115,14 +127,14 @@ namespace AZ
             }
             else
             {
-                AZ_Assert(descriptor->GetNumInstancesInBuffer(), "TLAS InstancesBuffer set but instances count is zero");
+                AZ_Assert(descriptor->m_numInstancesInBuffer, "TLAS InstancesBuffer set but instances count is zero");
 
                 VkBufferDeviceAddressInfo addressInfo = {};
                 addressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
                 addressInfo.pNext = nullptr;
-                addressInfo.buffer = static_cast<Buffer*>(descriptor->GetInstancesBuffer().get())->GetBufferMemoryView()->GetNativeBuffer();
+                addressInfo.buffer = static_cast<Buffer*>(descriptor->m_instancesBuffer.get())->GetBufferMemoryView()->GetNativeBuffer();
                 tlasInstancesGpuAddress = device.GetContext().GetBufferDeviceAddress(device.GetNativeDevice(), &addressInfo);
-                buffers.m_instanceCount = descriptor->GetNumInstancesInBuffer();
+                buffers.m_instanceCount = descriptor->m_numInstancesInBuffer;
             }
             
             buffers.m_geometry = {};

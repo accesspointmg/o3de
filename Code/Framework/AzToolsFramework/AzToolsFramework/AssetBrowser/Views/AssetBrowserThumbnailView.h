@@ -7,18 +7,17 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/std/containers/vector.h>
 
 #include <AzToolsFramework/AssetBrowser/AssetBrowserFilterModel.h>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 
 #include <QItemSelection>
 #include <QWidget>
 #include <QMenu>
 #include <QAbstractItemView>
 
-#endif
 
 namespace AzQtComponents
 {
@@ -34,7 +33,7 @@ namespace AzToolsFramework
         class AssetBrowserThumbnailViewProxyModel;
         class AssetBrowserEntry;
 
-        class AssetBrowserThumbnailView
+        class AZTF_API AssetBrowserThumbnailView
             : public QWidget
         {
             Q_OBJECT

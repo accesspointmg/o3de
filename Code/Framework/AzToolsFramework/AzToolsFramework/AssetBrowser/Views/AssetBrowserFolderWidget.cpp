@@ -12,6 +12,7 @@
 #include <AzQtComponents/Components/Widgets/BreadCrumbs.h>
 
 #include <QAction>
+#include <QActionGroup>
 #include <QComboBox>
 #include <QStackedWidget>
 #include <QToolBar>
@@ -141,4 +142,3 @@ namespace AzToolsFramework
    }
 }
 
-#include "AssetBrowser/Views/moc_AssetBrowserFolderWidget.cpp"

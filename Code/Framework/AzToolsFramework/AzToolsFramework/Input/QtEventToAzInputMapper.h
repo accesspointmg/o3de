@@ -8,7 +8,6 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/std/smart_ptr/shared_ptr.h>
 #include <AzCore/std/smart_ptr/unique_ptr.h>
 #include <AzFramework/Input/Channels/InputChannel.h>
@@ -19,11 +18,13 @@
 #include <AzFramework/Input/Devices/Mouse/InputDeviceMouse.h>
 #include <AzFramework/Input/Events/InputChannelEventListener.h>
 #include <AzToolsFramework/Viewport/ViewportMessages.h>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 
 #include <QEvent>
 #include <QObject>
 #include <QPoint>
-#endif //! defined(Q_MOC_RUN)
+
+
 
 class QWidget;
 class QKeyEvent;
@@ -44,12 +45,12 @@ namespace AzToolsFramework
         CursorModeWrappedY //!< Flags whether the cursor is going to wrap around the source widget only on the top and bottom side.
     };
 
-    AzFramework::InputDeviceId GetSyntheticKeyboardDeviceId(AzFramework::ViewportId viewportId);
-    AzFramework::InputDeviceId GetSyntheticMouseDeviceId(AzFramework::ViewportId viewportId);
+    AZTF_API AzFramework::InputDeviceId GetSyntheticKeyboardDeviceId(AzFramework::ViewportId viewportId);
+    AZTF_API AzFramework::InputDeviceId GetSyntheticMouseDeviceId(AzFramework::ViewportId viewportId);
 
     //! Maps events from the Qt input system to synthetic InputChannels in AzFramework
     //! that can be used by AzFramework::ViewportControllers.
-    class QtEventToAzInputMapper final
+    class AZTF_API QtEventToAzInputMapper final
         : public QObject
         , public AzFramework::InputChannelNotificationBus::Handler
     {
@@ -189,7 +190,7 @@ namespace AzToolsFramework
         // A lookup table for AZ input channel ID -> physical input channel on our mouse or keyboard device.
         AZStd::unordered_map<AzFramework::InputChannelId, AzFramework::InputChannel*> m_channels;
         // The crc32 of the last consumed input event's channel id.
-        AZ::Crc32 m_lastConsumedInputChannelIdCrc32 = 0;
+        AZ::Crc32 m_lastConsumedInputChannelIdCrc32;
         // Where the mouse cursor was at the last cursor event.
         QPoint m_previousGlobalCursorPosition;
         // The source widget to map events from, used to calculate the relative mouse position within the widget bounds.

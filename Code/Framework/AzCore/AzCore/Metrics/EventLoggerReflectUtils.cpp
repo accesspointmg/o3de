@@ -49,6 +49,39 @@ namespace AZ::Metrics
             // in order to use the BehaviorContext::ClassBuilder::Constructor function
             ScriptEventValue() = default;
 
+            // Special case - when the Script Event Value is being copied from another,
+            // the default constructor cannot be used, as it would do
+            // m_valueStorage = other.m_valueStorage;
+            // m_eventValueMirror = other.m_eventValueMirror;
+            // The problem is that value storage is a local array of data, as in
+            // AZStd::vector<EventValueStorageVariant> m_valueStorage;
+            // and the mirror is supposed to basically point at the front of the storage, the first
+            // value in it, for types that require storage.  Having it point at the `other` storage
+            // risks the `other` being destroyed while this object is still in use
+            // So here, we make sure that the mirror value points the local storage, instead of the other.
+            ScriptEventValue(const ScriptEventValue& other)
+            {
+                m_eventValueMirror = other.m_eventValueMirror;
+                if (!other.m_valueStorage.empty())
+                {
+                    m_valueStorage = other.m_valueStorage;
+                
+                    // we cannot just copy the other's mirror - that would make our mirror point at their internal storage.
+                    if (AZStd::holds_alternative<AZStd::string>(m_valueStorage.front()))
+                    {
+                        m_eventValueMirror = AZStd::get<AZStd::string>(m_valueStorage.front());
+                    }
+                    else if (AZStd::holds_alternative<AZStd::vector<EventValue>>(m_valueStorage.front()))
+                    {
+                        m_eventValueMirror = EventArray{ AZStd::get<AZStd::vector<EventValue>>(m_valueStorage.front()) };
+                    }
+                    else if (AZStd::holds_alternative<AZStd::vector<EventField>>(m_valueStorage.front()))
+                    {
+                        m_eventValueMirror = EventObject{ AZStd::get<AZStd::vector<EventField>>(m_valueStorage.front()) };
+                    }
+                }
+            }
+
             //! string instances need storage
             ScriptEventValue(AZStd::string value)
                 : m_valueStorage{ EventValueStorageVariant{AZStd::in_place_type<AZStd::string>, AZStd::move(value)} }
@@ -349,25 +382,25 @@ namespace AZ::Metrics
                 ->Attribute(AZ::Script::Attributes::Category, MetricsCategory)
                 ;
         }
-
-        static void ReflectRecordEvent(AZ::BehaviorContext& behaviorContext)
+        static bool RecordEvent(EventLoggerId eventLoggerId,
+                              EventPhase eventPhase,
+                              ScriptEventArgs eventPhaseArgs,
+                              IEventLoggerFactory* eventLoggerFactory = nullptr)
         {
-            auto RecordEvent = [](EventLoggerId eventLoggerId, EventPhase eventPhase, ScriptEventArgs eventPhaseArgs,
-                IEventLoggerFactory* eventLoggerFactory = nullptr)
-                -> bool
+            if (eventLoggerFactory == nullptr)
             {
-                if (eventLoggerFactory == nullptr)
-                {
-                    eventLoggerFactory = EventLoggerFactory::Get();
-                }
+                eventLoggerFactory = EventLoggerFactory::Get();
+            }
 
-                IEventLogger::ResultOutcome recordOutcome(AZStd::unexpect, IEventLogger::ResultOutcome::ErrorType::format(
+            IEventLogger::ResultOutcome recordOutcome(
+                AZStd::unexpect,
+                IEventLogger::ResultOutcome::ErrorType::format(
                     R"(Invalid eventPhase type %.*s specified)", AZ_STRING_ARG(ToString(eventPhase))));
 
-                switch (eventPhase)
-                {
-                case EventPhase::DurationBegin:
-                case EventPhase::DurationEnd:
+            switch (eventPhase)
+            {
+            case EventPhase::DurationBegin:
+            case EventPhase::DurationEnd:
                 {
                     DurationArgs durationArgs;
                     durationArgs.m_name = eventPhaseArgs.m_name;
@@ -386,7 +419,7 @@ namespace AZ::Metrics
                     recordOutcome = AZ::Metrics::Utility::RecordEvent(eventLoggerId, eventPhase, durationArgs, eventLoggerFactory);
                     break;
                 }
-                case EventPhase::Complete:
+            case EventPhase::Complete:
                 {
                     CompleteArgs completeArgs;
                     completeArgs.m_name = eventPhaseArgs.m_name;
@@ -406,7 +439,7 @@ namespace AZ::Metrics
                     recordOutcome = AZ::Metrics::Utility::RecordEvent(eventLoggerId, eventPhase, completeArgs, eventLoggerFactory);
                     break;
                 }
-                case EventPhase::Instant:
+            case EventPhase::Instant:
                 {
                     InstantArgs instantArgs;
                     instantArgs.m_name = eventPhaseArgs.m_name;
@@ -426,7 +459,7 @@ namespace AZ::Metrics
                     recordOutcome = AZ::Metrics::Utility::RecordEvent(eventLoggerId, eventPhase, instantArgs, eventLoggerFactory);
                     break;
                 }
-                case EventPhase::Counter:
+            case EventPhase::Counter:
                 {
                     CounterArgs counterArgs;
                     counterArgs.m_name = eventPhaseArgs.m_name;
@@ -445,9 +478,9 @@ namespace AZ::Metrics
                     recordOutcome = AZ::Metrics::Utility::RecordEvent(eventLoggerId, eventPhase, counterArgs, eventLoggerFactory);
                     break;
                 }
-                case EventPhase::AsyncStart:
-                case EventPhase::AsyncInstant:
-                case EventPhase::AsyncEnd:
+            case EventPhase::AsyncStart:
+            case EventPhase::AsyncInstant:
+            case EventPhase::AsyncEnd:
                 {
                     AsyncArgs asyncArgs;
                     asyncArgs.m_name = eventPhaseArgs.m_name;
@@ -466,10 +499,12 @@ namespace AZ::Metrics
                     recordOutcome = AZ::Metrics::Utility::RecordEvent(eventLoggerId, eventPhase, asyncArgs, eventLoggerFactory);
                     break;
                 }
-                }
-                return recordOutcome.IsSuccess();
-            };
+            }
+            return recordOutcome.IsSuccess();
+        };
 
+        static void ReflectRecordEvent(AZ::BehaviorContext& behaviorContext)
+        {
             // Add a default argument for the IEventLoggerFactory parameter in the BehaviorCont3ext
             AZStd::array<AZ::BehaviorParameterOverrides, AZStd::function_traits<decltype(RecordEvent)>::arity>
                 recordEventOverrides;

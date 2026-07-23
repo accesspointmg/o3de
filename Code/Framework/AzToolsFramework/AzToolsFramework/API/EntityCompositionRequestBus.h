@@ -7,14 +7,15 @@
  */
 #pragma once
 
-#include <AzCore/base.h>
-#include <AzCore/EBus/EBus.h>
 #include <AzCore/Serialization/SerializeContext.h>
 #include <AzCore/Component/Component.h>
 #include <AzCore/Component/Entity.h>
 #include <AzCore/Outcome/Outcome.h>
 #include <AzToolsFramework/API/ToolsApplicationAPI.h>
 #include <AzToolsFramework/UI/PropertyEditor/PropertyEditorAPI_Internals.h>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
+
+class QMimeData;
 
 namespace AzToolsFramework
 {
@@ -153,6 +154,9 @@ namespace AzToolsFramework
         */
         virtual void PasteComponentsToEntity(AZ::EntityId entityId) = 0;
 
+        //! Pastes components from the given mime data to the entity without reading the clipboard (used by duplicate).
+        virtual void PasteComponentsToEntityFromMimeData([[maybe_unused]] AZ::EntityId entityId, [[maybe_unused]] const QMimeData* mimeData) {}
+
         /*!
         * Checks if there is component data available to paste into an entity
         * \return true if paste is available, false otherwise
@@ -222,7 +226,7 @@ namespace AzToolsFramework
                     if (attribPair.first == AZ::Edit::Attributes::AppearsInAddComponentMenu)
                     {
                         PropertyAttributeReader reader(nullptr, attribPair.second);
-                        AZ::Crc32 classEntityType = 0;
+                        AZ::Crc32 classEntityType;
                         AZStd::vector<AZ::Crc32> classEntityTypes;
 
                         if (reader.Read<AZ::Crc32>(classEntityType))

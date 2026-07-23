@@ -11,9 +11,7 @@
 
 #include "TrackViewExportKeyTimeDlg.h"
 
-AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <ui_TrackViewExportKeyTimeDlg.h>
-AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
 //////////////////////////////////////////////////////////////////////////
 CTrackViewExportKeyTimeDlg::CTrackViewExportKeyTimeDlg(QWidget* parent)
@@ -39,4 +37,3 @@ bool CTrackViewExportKeyTimeDlg::IsSoundExportChecked() const
     return m_ui->m_soundTimeExport->isChecked();
 }
 
-#include <moc_TrackViewExportKeyTimeDlg.cpp>

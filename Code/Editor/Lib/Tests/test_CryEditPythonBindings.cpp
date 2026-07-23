@@ -66,7 +66,6 @@ namespace CryEditPythonBindingsUnitTests
         EXPECT_TRUE(behaviorContext->m_methods.find("get_current_view_rotation") != behaviorContext->m_methods.end());
         EXPECT_TRUE(behaviorContext->m_methods.find("set_current_view_position") != behaviorContext->m_methods.end());
         EXPECT_TRUE(behaviorContext->m_methods.find("set_current_view_rotation") != behaviorContext->m_methods.end());
-        EXPECT_TRUE(behaviorContext->m_methods.find("export_to_engine") != behaviorContext->m_methods.end());
         EXPECT_TRUE(behaviorContext->m_methods.find("get_config_platform") != behaviorContext->m_methods.end());
         EXPECT_TRUE(behaviorContext->m_methods.find("set_result_to_success") != behaviorContext->m_methods.end());
         EXPECT_TRUE(behaviorContext->m_methods.find("set_result_to_failure") != behaviorContext->m_methods.end());
@@ -105,7 +104,7 @@ namespace CryEditPythonBindingsUnitTests
         const unsigned int framesToWait = 5;
         AZStd::array<AZ::BehaviorArgument, 1> args;
         args[0].Set(&framesToWait);
-        behaviorContext->m_methods.find("idle_wait_frames")->second->Call(args.begin(), static_cast<unsigned int>(args.size()));
+        behaviorContext->m_methods.find("idle_wait_frames")->second->Call(args.data(), static_cast<unsigned int>(args.size()));
         loop.disconnect(&timer);
         timer.stop();
         EXPECT_EQ(numTicks, framesToWait);

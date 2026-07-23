@@ -453,6 +453,9 @@ namespace UnitTest
         EXPECT_THAT(v1.GetProjectedOnNormal(AZ::Vector3(1.0f, 0.0f, 0.0f)), IsClose(AZ::Vector3(1.0f, 0.0f, 0.0f)));
     }
 
+    
+    // use of infinity with fast math is simply not supported
+#if !defined(O3DE_USING_FAST_MATH)
     TEST(MATH_Vector3, TestIsFinite)
     {
         //IsFinite
@@ -460,6 +463,7 @@ namespace UnitTest
         const float infinity = std::numeric_limits<float>::infinity();
         EXPECT_FALSE(AZ::Vector3(infinity, infinity, infinity).IsFinite());
     }
+#endif
 
     struct Vector3AngleTestArgs
     {
@@ -482,7 +486,7 @@ namespace UnitTest
         EXPECT_NEAR(param.current.AngleSafe(param.target), param.angle, Constants::SimdTolerance);
     }
 
-    INSTANTIATE_TEST_CASE_P(
+    INSTANTIATE_TEST_SUITE_P(
         MATH_Vector3,
         Vector3AngleTestFixture,
         ::testing::Values(
@@ -507,7 +511,7 @@ namespace UnitTest
         EXPECT_NEAR(param.current.AngleSafeDeg(param.target), param.angle, Constants::SimdToleranceAngleDeg);
     }
 
-    INSTANTIATE_TEST_CASE_P(
+    INSTANTIATE_TEST_SUITE_P(
         MATH_Vector3,
         Vector3AngleDegTestFixture,
         ::testing::Values(
@@ -532,7 +536,7 @@ namespace UnitTest
         EXPECT_FLOAT_EQ(param.current.AngleSafeDeg(param.target), param.angle);
     }
 
-    INSTANTIATE_TEST_CASE_P(
+    INSTANTIATE_TEST_SUITE_P(
         MATH_Vector3,
         AngleSafeInvalidVector3AngleTestFixture,
         ::testing::Values(

@@ -35,8 +35,7 @@ namespace UnitTest
      * template <class T> struct has_nothrow_constructor;
      * template <class T> struct has_nothrow_copy;
      * template <class T> struct has_nothrow_assign;
-     * template <class T> struct is_pod;
-     * template <class T> struct is_abstract;
+          * template <class T> struct is_abstract;
      * \endcond
      */
     TEST(TypeTraits, All)
@@ -218,12 +217,6 @@ namespace UnitTest
         static_assert(is_volatile<volatile MyStruct>::value == true);
         static_assert(is_volatile<volatile float>::value == true);
 
-        // is_pod
-        static_assert(is_pod<MyStruct>::value == true);
-        static_assert(is_pod<int>::value == true);
-        static_assert(is_pod<const MyClass>::value == false);
-        static_assert((is_pod< aligned_storage<30, 32>::type >::value) == true);
-
         // is_empty
         static_assert(is_empty<MyStruct>::value == false);
         static_assert(is_empty<MyEmptyStruct>::value == true);
@@ -397,7 +390,7 @@ namespace UnitTest
     {};
 }
 
-namespace AZStd
+namespace std
 {
     template <template <class> class TQual, template <class> class UQual>
     struct basic_common_reference<UnitTest::CommonReferenceSpecializationTest, int, TQual, UQual>

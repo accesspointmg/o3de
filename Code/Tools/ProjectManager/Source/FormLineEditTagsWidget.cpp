@@ -8,6 +8,7 @@
 
 #include <AzQtComponents/Components/Widgets/LineEdit.h>
 #include <AzQtComponents/Components/StyledLineEdit.h>
+#include <AzCore/Debug/Trace.h>
 
 
 #include <FormLineEditTagsWidget.h>
@@ -34,7 +35,9 @@ namespace O3DE::ProjectManager
     void FormLineEditTagsWidget::setupCompletionTags()
     {
         QFile completionTagFile(":/ProjectManager/text/ProjectManagerCompletionTags.txt");
-        completionTagFile.open(QFile::ReadOnly);
+        [[maybe_unused]] const bool res = completionTagFile.open(QFile::ReadOnly);
+        AZ_Assert(res, "Failed to open completion tags file");
+
         while(!completionTagFile.atEnd())
         {
             m_completionTags << completionTagFile.readLine().trimmed();
@@ -72,7 +75,8 @@ namespace O3DE::ProjectManager
          * stylesheet proved very difficult, so a stop-gap measure of hard-coding the stylesheet was used.
          */
         QFile popupStyleSheetFile(":/ProjectManager/style/ProjectManagerCompleterPopup.qss");
-        popupStyleSheetFile.open(QFile::ReadOnly);
+        [[maybe_unused]] const bool res = popupStyleSheetFile.open(QFile::ReadOnly);
+        AZ_Assert(res, "Failed to open project manager style");
         QString popupStyleSheet = QLatin1String(popupStyleSheetFile.readAll());
 
         m_completer->popup()->setStyleSheet(popupStyleSheet);
@@ -85,7 +89,7 @@ namespace O3DE::ProjectManager
         m_dropdownButton = new QPushButton(QIcon(":/CarrotArrowDown.svg"), "", this);
         m_dropdownButton->setObjectName("dropDownButton");
         m_frameLayout->addWidget(m_dropdownButton);
-        connect(m_dropdownButton, &QPushButton::clicked, this, [=]([[maybe_unused]]bool ignore){ m_lineEdit->completer()->complete(QRect()); });
+        connect(m_dropdownButton, &QPushButton::clicked, this, [this]([[maybe_unused]]bool ignore){ m_lineEdit->completer()->complete(QRect()); });
 
         //section of form for showing tags
         m_tagFrame = new QFrame(this);
@@ -140,7 +144,7 @@ namespace O3DE::ProjectManager
             QCheckBox* tagCheckbox = new QCheckBox(tag, this);
             tagCheckbox->setLayoutDirection(Qt::RightToLeft);
             // connect the checked signal to a good slot
-            connect(tagCheckbox, &QCheckBox::stateChanged, this, &FormLineEditTagsWidget::processTagDelete);
+            connect(tagCheckbox, &QCheckBox::checkStateChanged, this, &FormLineEditTagsWidget::processTagDelete);
             layout->addWidget(tagCheckbox);
         }
 

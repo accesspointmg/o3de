@@ -16,6 +16,7 @@
 #include <AzCore/Serialization/SerializeContext.h>
 
 #include <AzCore/Debug/Trace.h>
+#include <AzFramework/Translation/TranslationDef.h>
 
 namespace LmbrCentral
 {
@@ -32,14 +33,16 @@ namespace LmbrCentral
             auto editContext = serializeContext->GetEditContext();
             if (editContext)
             {
-                editContext->Class<AudioProxyComponent>("Audio Proxy", "The Audio Proxy component is a required dependency when you add other audio components to an entity")
+                editContext->Class<AudioProxyComponent>(
+                    QT_TRANSLATE_NOOP("LmbrCentral", "Audio Proxy"),
+                    QT_TRANSLATE_NOOP("LmbrCentral", "The Audio Proxy component is a required dependency when you add other audio components to an entity"))
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                         ->Attribute(AZ::Edit::Attributes::Category, "Audio")
                         ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/AudioProxy.svg")
                         ->Attribute(AZ::Edit::Attributes::ViewportIcon, "Icons/Components/Viewport/AudioProxy.svg")
                         ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                         ->Attribute(AZ::Edit::Attributes::AddableByUser, true)
-                        ->Attribute(AZ::Edit::Attributes::HelpPageURL, "https://o3de.org/docs/user-guide/components/reference/audio/proxy/")
+                        ->Attribute(AZ::Edit::Attributes::HelpPageURL, "https://www.o3de.org/docs/user-guide/components/reference/audio/proxy/")
                     ;
             }
         }

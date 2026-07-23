@@ -74,6 +74,7 @@
 #include <AzFramework/Visibility/VisibleGeometryBus.h>
 #include <AzFramework/Viewport/ViewportBus.h>
 #include <AzFramework/Physics/HeightfieldProviderBus.h>
+#include <AzFramework/Math/EasingCurve.h>
 
 #include "Application.h"
 #include <AzNetworking/AzNetworkingModule.h>
@@ -90,7 +91,6 @@ namespace AzFramework
     {
         static constexpr const char s_editorModeFeedbackKey[] = "/Amazon/Preferences/EnableEditorModeFeedback";
         static constexpr const char s_prefabWipSystemKey[] = "/Amazon/Preferences/EnablePrefabSystemWipFeatures";
-        static constexpr const char s_legacySlicesAssertKey[] = "/Amazon/Preferences/ShouldAssertForLegacySlicesUsage";
         static constexpr const char* DeprecatedFileIOAliasesRoot = "/O3DE/AzCore/FileIO/DeprecatedAliases";
         static constexpr const char* DeprecatedFileIOAliasesOldAliasKey = "OldAlias";
         static constexpr const char* DeprecatedFileIOAliasesNewAliasKey = "NewAlias";
@@ -247,12 +247,19 @@ namespace AzFramework
                 using AssetCatalogBus = AZ::Data::AssetCatalogRequestBus;
                 AssetCatalogBus::Broadcast(AZStd::move(StartMonitoringAssetsAndLoadCatalog));
             }
+
 #if defined(ENABLE_REMOTE_TOOLS)
-            IRemoteTools* remoteTools = RemoteToolsInterface::Get();
-            if (remoteTools)
+            AZ::ApplicationTypeQuery appType;
+            AZ::ComponentApplicationBus::Broadcast(&AZ::ComponentApplicationBus::Events::QueryApplicationType, appType);
+            if (appType.IsEditor() || appType.IsGame())
             {
-                remoteTools->RegisterToolingServiceClient(
-                    AzFramework::LuaToolsKey, AzFramework::LuaToolsName, AzFramework::LuaToolsPort);
+                if (IRemoteTools* remoteTools = RemoteToolsInterface::Get())
+                {
+                    remoteTools->RegisterToolingServiceClient(
+                        AzFramework::LuaToolsKey, AzFramework::LuaToolsName, AzFramework::LuaToolsPort);
+                    remoteTools->RegisterToolingServiceClient(
+                        AzFramework::ScriptCanvasToolsKey, AzFramework::ScriptCanvasToolsName, AzFramework::ScriptCanvasToolsPort);
+                }
             }
 #endif
         }
@@ -299,6 +306,7 @@ namespace AzFramework
             azrtti_typeid<AZ::UserSettingsComponent>(),
             azrtti_typeid<AZ::SliceComponent>(),
             azrtti_typeid<AZ::SliceSystemComponent>(),
+            azrtti_typeid<AZ::TaskGraphSystemComponent>(),
 
             azrtti_typeid<AzFramework::AssetCatalogComponent>(),
             azrtti_typeid<AzFramework::CustomAssetTypeComponent>(),
@@ -340,6 +348,7 @@ namespace AzFramework
         AzFramework::PaintBrushSettings::Reflect(context);
         AzFramework::VisibleGeometry::Reflect(context);
         AzFramework::VisibleGeometryRequests::Reflect(context);
+        AzFramework::EasingCurve::Reflect(context);
 
         Physics::ReflectionUtils::ReflectPhysicsApi(context);
         AzFramework::SurfaceData::SurfaceTagWeight::Reflect(context);
@@ -793,16 +802,6 @@ namespace AzFramework
     {
         AZ_WarningOnce("Application", false, "'IsPrefabSystemForLevelsEnabled' is deprecated, the editor only supports prefabs for level editing.");
         return true;
-    }
-
-    bool Application::ShouldAssertForLegacySlicesUsage() const
-    {
-        bool value = false;
-        if (auto* registry = AZ::SettingsRegistry::Get())
-        {
-            registry->Get(value, ApplicationInternal::s_legacySlicesAssertKey);
-        }
-        return value;
     }
 
 } // namespace AzFramework

@@ -7,12 +7,11 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <QMainWindow>
 #include <QPointer>
+
 #include <AzCore/IO/Path/Path.h>
 #include <ScreenDefs.h>
-#endif
 
 namespace O3DE::ProjectManager
 {
@@ -26,6 +25,9 @@ namespace O3DE::ProjectManager
     public:
         explicit ProjectManagerWindow(QWidget* parent, const AZ::IO::PathView& projectPath,
             ProjectManagerScreen startScreen = ProjectManagerScreen::Projects);
+
+    private:
+        void closeEvent(QCloseEvent* event) override;
 
     private:
         QPointer<DownloadController> m_downloadController;

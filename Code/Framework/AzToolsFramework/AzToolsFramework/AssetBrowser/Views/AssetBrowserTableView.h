@@ -7,18 +7,18 @@
  */
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/std/containers/vector.h>
 #include <AzToolsFramework/AssetBrowser/AssetBrowserBus.h>
 
 #include <AzToolsFramework/AssetBrowser/AssetBrowserEntry.h>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 
 #include <QItemSelection>
 #include <QWidget>
 #include <QAbstractItemView>
 #include <QStyledItemDelegate>
-#endif
+
 
 namespace AzQtComponents
 {
@@ -36,7 +36,7 @@ namespace AzToolsFramework
         class AssetBrowserTreeToTableProxyModel;
         class AssetBrowserModel;
 
-        class TableViewDelegate
+        class AZTF_API TableViewDelegate
             : public QStyledItemDelegate
         {
             Q_OBJECT
@@ -51,7 +51,7 @@ namespace AzToolsFramework
             void renameTableEntry(const QString& value) const;
         };
 
-        class AssetBrowserTableView
+        class AZTF_API AssetBrowserTableView
             : public QWidget
         {
             Q_OBJECT

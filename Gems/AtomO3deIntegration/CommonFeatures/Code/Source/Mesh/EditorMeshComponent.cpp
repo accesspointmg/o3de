@@ -8,10 +8,13 @@
 
 #include <Mesh/EditorMeshComponent.h>
 #include <AzCore/RTTI/BehaviorContext.h>
+#include <AzToolsFramework/API/EntityCompositionRequestBus.h>
 #include <AzToolsFramework/API/ToolsApplicationAPI.h>
 #include <AzToolsFramework/Entity/EditorEntityInfoBus.h>
-#include <AzToolsFramework/API/EntityCompositionRequestBus.h>
+#include <AzToolsFramework/ToolsComponents/EditorVisibilityBus.h>
 #include <AtomO3deIntegration/CommonFeatures/Material/MaterialComponentConstants.h>
+
+#include <AzFramework/Translation/TranslationDef.h>
 
 namespace AZ
 {
@@ -39,21 +42,26 @@ namespace AZ
                 if (AZ::EditContext* editContext = serializeContext->GetEditContext())
                 {
                     editContext->Class<EditorMeshComponent>(
-                        "Mesh", "The mesh component is the primary method of adding visual geometry to entities")
+                        QT_TRANSLATE_NOOP("AtomO3deIntegration", "Mesh"),
+                        QT_TRANSLATE_NOOP("AtomO3deIntegration", "The mesh component is the primary method of adding visual geometry to entities"))
                         ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                             ->Attribute(AZ::Edit::Attributes::Category, "Graphics/Mesh")
                             ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Mesh.svg")
                             ->Attribute(AZ::Edit::Attributes::ViewportIcon, "Icons/Components/Viewport/Mesh.svg")
                             ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                             ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                            ->Attribute(AZ::Edit::Attributes::HelpPageURL, "https://o3de.org/docs/user-guide/components/reference/atom/mesh/")
+                            ->Attribute(AZ::Edit::Attributes::HelpPageURL, "https://www.o3de.org/docs/user-guide/components/reference/atom/mesh/")
                             ->Attribute(AZ::Edit::Attributes::PrimaryAssetType, AZ::AzTypeInfo<RPI::ModelAsset>::Uuid())
-                        ->UIElement(AZ::Edit::UIHandlers::Button, "Add Material Component", "Add Material Component")
+                        ->UIElement(AZ::Edit::UIHandlers::Button,
+                            QT_TRANSLATE_NOOP("AtomO3deIntegration", "Add Material Component"),
+                            QT_TRANSLATE_NOOP("AtomO3deIntegration", "Add Material Component"))
                             ->Attribute(AZ::Edit::Attributes::NameLabelOverride, "")
-                            ->Attribute(AZ::Edit::Attributes::ButtonText, "Add Material Component")
+                            ->Attribute(AZ::Edit::Attributes::ButtonText,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Add Material Component"))
                             ->Attribute(AZ::Edit::Attributes::ChangeNotify, &EditorMeshComponent::AddEditorMaterialComponent)
                             ->Attribute(AZ::Edit::Attributes::Visibility, &EditorMeshComponent::GetEditorMaterialComponentVisibility)
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &EditorMeshComponent::m_stats, "Model Stats", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &EditorMeshComponent::m_stats,
+                            QT_TRANSLATE_NOOP("AtomO3deIntegration", "Model Stats"), "")
                             ->Attribute(AZ::Edit::Attributes::AutoExpand, false)
                         ;
 
@@ -61,7 +69,8 @@ namespace AZ
                         "MeshComponentController", "")
                         ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                             ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                        ->DataElement(AZ::Edit::UIHandlers::Default, &MeshComponentController::m_configuration, "Configuration", "")
+                        ->DataElement(AZ::Edit::UIHandlers::Default, &MeshComponentController::m_configuration,
+                            QT_TRANSLATE_NOOP("AtomO3deIntegration", "Configuration"), "")
                             ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                         ;
 
@@ -69,46 +78,75 @@ namespace AZ
                         "MeshComponentConfig", "")
                         ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                             ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                            ->DataElement(AZ::Edit::UIHandlers::Default, &MeshComponentConfig::m_modelAsset, "Model Asset", "Model asset reference", "Mesh Asset")
+                            ->DataElement(AZ::Edit::UIHandlers::Default, &MeshComponentConfig::m_modelAsset,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Model Asset"),
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Model asset reference"),
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Mesh Asset"))
                                 ->Attribute(AZ_CRC_CE("EditButton"), "")
-                                ->Attribute(AZ_CRC_CE("EditDescription"), "Open in Scene Settings")
+                                ->Attribute(AZ_CRC_CE("EditDescription"),
+                                    QT_TRANSLATE_NOOP("AtomO3deIntegration", "Open in Scene Settings"))
                                 ->Attribute(AZ_CRC_CE("DisableEditButtonWhenNoAssetSelected"), true)
-                            ->DataElement(AZ::Edit::UIHandlers::Default, &MeshComponentConfig::m_sortKey, "Sort Key", "Transparent meshes are first drawn by sort key, then depth. Use this to force certain transparent meshes to draw before or after others.")
-                            ->DataElement(AZ::Edit::UIHandlers::CheckBox, &MeshComponentConfig::m_excludeFromReflectionCubeMaps, "Exclude from reflection cubemaps", "Model will not be visible in baked reflection probe cubemaps")
+                            ->DataElement(AZ::Edit::UIHandlers::Default, &MeshComponentConfig::m_sortKey,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Sort Key"),
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Transparent meshes are first drawn by sort key, then depth. Use this to force certain transparent meshes to draw before or after others."))
+                            ->DataElement(AZ::Edit::UIHandlers::CheckBox, &MeshComponentConfig::m_excludeFromReflectionCubeMaps,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Exclude from reflection cubemaps"),
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Model will not be visible in baked reflection probe cubemaps"))
                                 ->Attribute(AZ::Edit::Attributes::ChangeNotify, Edit::PropertyRefreshLevels::ValuesOnly)
-                            ->DataElement(AZ::Edit::UIHandlers::CheckBox, &MeshComponentConfig::m_useForwardPassIblSpecular, "Use Forward Pass IBL Specular",
-                                "Renders image-based lighting (IBL) specular reflections in the forward pass, by using only the most influential probe (based on the position of the entity) and the global IBL cubemap. It can reduce rendering costs, but is only recommended for static objects that are affected by at most one reflection probe.  Note that this will also disable SSR on the mesh.")
+                            ->DataElement(AZ::Edit::UIHandlers::CheckBox, &MeshComponentConfig::m_useForwardPassIblSpecular,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Use Forward Pass IBL Specular"),
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Renders image-based lighting (IBL) specular reflections in the forward pass, by using only the most influential probe (based on the position of the entity) and the global IBL cubemap. It can reduce rendering costs, but is only recommended for static objects that are affected by at most one reflection probe.  Note that this will also disable SSR on the mesh."))
                                 ->Attribute(AZ::Edit::Attributes::ChangeNotify, Edit::PropertyRefreshLevels::ValuesOnly)
-                            ->DataElement(AZ::Edit::UIHandlers::CheckBox, &MeshComponentConfig::m_isRayTracingEnabled, "Use ray tracing",
-                                "Includes this mesh in ray tracing calculations.")
+                            ->DataElement(AZ::Edit::UIHandlers::CheckBox, &MeshComponentConfig::m_isRayTracingEnabled,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Use ray tracing"),
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Includes this mesh in ray tracing calculations."))
                                 ->Attribute(AZ::Edit::Attributes::ChangeNotify, Edit::PropertyRefreshLevels::ValuesOnly)
-                            ->DataElement(AZ::Edit::UIHandlers::CheckBox, &MeshComponentConfig::m_enableRayIntersection, "Support ray intersection",
-                                "Set to true when the entity has UiCanvasOnMeshComponent")
+                            ->DataElement(AZ::Edit::UIHandlers::CheckBox, &MeshComponentConfig::m_enableRayIntersection,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Support ray intersection"),
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Set to true when the entity has UiCanvasOnMeshComponent"))
                                 ->Attribute(AZ::Edit::Attributes::ChangeNotify, Edit::PropertyRefreshLevels::ValuesOnly)
-                            ->DataElement(AZ::Edit::UIHandlers::CheckBox, &MeshComponentConfig::m_isAlwaysDynamic, "Always Moving", "Forces this mesh to be considered to always be moving, even if the transform didn't update. Useful for meshes with vertex shader animation.")
-                            ->DataElement(AZ::Edit::UIHandlers::ComboBox, &MeshComponentConfig::m_lodType, "Lod Type", "Determines how level of detail (LOD) will be selected during rendering.")
-                                ->Attribute(AZ::Edit::Attributes::NameLabelOverride, "LOD Type")
-                                ->EnumAttribute(RPI::Cullable::LodType::Default, "Default")
-                                ->EnumAttribute(RPI::Cullable::LodType::ScreenCoverage, "Screen Coverage")
-                                ->EnumAttribute(RPI::Cullable::LodType::SpecificLod, "Specific LOD")
+                            ->DataElement(AZ::Edit::UIHandlers::CheckBox, &MeshComponentConfig::m_isAlwaysDynamic,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Always Moving"),
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Forces this mesh to be considered to always be moving, even if the transform didn't update. Useful for meshes with vertex shader animation."))
+                            ->DataElement(AZ::Edit::UIHandlers::ComboBox, &MeshComponentConfig::m_lodType,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Lod Type"),
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Determines how level of detail (LOD) will be selected during rendering."))
+                                ->Attribute(AZ::Edit::Attributes::NameLabelOverride,
+                                    QT_TRANSLATE_NOOP("AtomO3deIntegration", "LOD Type"))
+                                ->EnumAttribute(RPI::Cullable::LodType::Default,
+                                    QT_TRANSLATE_NOOP("AtomO3deIntegration", "Default"))
+                                ->EnumAttribute(RPI::Cullable::LodType::ScreenCoverage,
+                                    QT_TRANSLATE_NOOP("AtomO3deIntegration", "Screen Coverage"))
+                                ->EnumAttribute(RPI::Cullable::LodType::SpecificLod,
+                                    QT_TRANSLATE_NOOP("AtomO3deIntegration", "Specific LOD"))
                                 ->Attribute(AZ::Edit::Attributes::ChangeNotify, Edit::PropertyRefreshLevels::EntireTree)
-                            ->DataElement(AZ::Edit::UIHandlers::Default, &MeshComponentConfig::m_lightingChannelConfig, "Lighting Channels", "")
+                            ->DataElement(AZ::Edit::UIHandlers::Default, &MeshComponentConfig::m_lightingChannelConfig,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Lighting Channels"), "")
                                 ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::AttributesAndValues)
-                        ->ClassElement(AZ::Edit::ClassElements::Group, "Lod Configuration")
-                            ->Attribute(AZ::Edit::Attributes::NameLabelOverride, "LOD Configuration")
+                        ->ClassElement(AZ::Edit::ClassElements::Group,
+                            QT_TRANSLATE_NOOP("AtomO3deIntegration", "Lod Configuration"))
+                            ->Attribute(AZ::Edit::Attributes::NameLabelOverride,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "LOD Configuration"))
                             ->Attribute(AZ::Edit::Attributes::AutoExpand, false)
                             ->Attribute(AZ::Edit::Attributes::Visibility, &MeshComponentConfig::ShowLodConfig)
-                            ->DataElement(AZ::Edit::UIHandlers::ComboBox, &MeshComponentConfig::m_lodOverride, "Lod Override", "Specifies the LOD to render, overriding the automatic LOD calculations")
-                                ->Attribute(AZ::Edit::Attributes::NameLabelOverride, "LOD Override")
+                            ->DataElement(AZ::Edit::UIHandlers::ComboBox, &MeshComponentConfig::m_lodOverride,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Lod Override"),
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Specifies the LOD to render, overriding the automatic LOD calculations"))
+                                ->Attribute(AZ::Edit::Attributes::NameLabelOverride,
+                                    QT_TRANSLATE_NOOP("AtomO3deIntegration", "LOD Override"))
                                 ->Attribute(AZ::Edit::Attributes::EnumValues, &MeshComponentConfig::GetLodOverrideValues)
                                 ->Attribute(AZ::Edit::Attributes::Visibility, &MeshComponentConfig::LodTypeIsSpecificLOD)
-                            ->DataElement(AZ::Edit::UIHandlers::Slider, &MeshComponentConfig::m_minimumScreenCoverage, "Minimum Screen Coverage", "Minimum proportion of the screen that the entity will cover. If the entity is smaller than the minimum coverage, it is culled.")
+                            ->DataElement(AZ::Edit::UIHandlers::Slider, &MeshComponentConfig::m_minimumScreenCoverage,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Minimum Screen Coverage"),
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Minimum proportion of the screen that the entity will cover. If the entity is smaller than the minimum coverage, it is culled."))
                                 ->Attribute(AZ::Edit::Attributes::Min, 0.f)
                                 ->Attribute(AZ::Edit::Attributes::Max, 1.f)
-                                ->Attribute(AZ::Edit::Attributes::Suffix, " percent")
+                                ->Attribute(AZ::Edit::Attributes::Suffix,
+                                    QT_TRANSLATE_NOOP("AtomO3deIntegration", " percent"))
                                 ->Attribute(AZ::Edit::Attributes::Visibility, &MeshComponentConfig::LodTypeIsScreenCoverage)
-                            ->DataElement(AZ::Edit::UIHandlers::Slider, &MeshComponentConfig::m_qualityDecayRate, "Quality Decay Rate",
-                                "Rate at which the mesh quality decays. 0 - Always stays at highest quality LOD. 1 - Immediately falls off to lowest quality LOD.")
+                            ->DataElement(AZ::Edit::UIHandlers::Slider, &MeshComponentConfig::m_qualityDecayRate,
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Quality Decay Rate"),
+                                QT_TRANSLATE_NOOP("AtomO3deIntegration", "Rate at which the mesh quality decays. 0 - Always stays at highest quality LOD. 1 - Immediately falls off to lowest quality LOD."))
                                 ->Attribute(AZ::Edit::Attributes::Min, 0.f)
                                 ->Attribute(AZ::Edit::Attributes::Max, 1.f)
                                 ->Attribute(AZ::Edit::Attributes::Visibility, &MeshComponentConfig::LodTypeIsScreenCoverage)
@@ -133,6 +171,11 @@ namespace AZ
 
         void EditorMeshComponent::Activate()
         {
+            using EditorVisibilityRequestBus = AzToolsFramework::EditorVisibilityRequestBus;
+            bool isVisible = true;
+            EditorVisibilityRequestBus::EventResult(isVisible, GetEntityId(), &EditorVisibilityRequestBus::Events::GetVisibilityFlag);
+            m_controller.SetVisibility(isVisible);
+
             m_controller.m_configuration.m_editorRayIntersection = true;
             BaseClass::Activate();
             AzToolsFramework::EditorComponentSelectionRequestsBus::Handler::BusConnect(GetEntityId());
@@ -247,10 +290,16 @@ namespace AZ
                 EditorMeshStatsForLod stats;
                 const auto& meshes = lodAsset->GetMeshes();
                 stats.m_meshCount = static_cast<AZ::u32>(meshes.size());
+                stats.m_subMeshStatsForLod.reserve(stats.m_meshCount);
                 for (const auto& mesh : meshes)
                 {
-                    stats.m_vertCount += mesh.GetVertexCount();
-                    stats.m_triCount += mesh.GetIndexCount() / 3;
+                    const auto vertexCount = mesh.GetVertexCount();
+                    const auto triCount = mesh.GetIndexCount() / 3;
+                    stats.m_subMeshStatsForLod.push_back({});
+                    stats.m_subMeshStatsForLod.back().m_vertCount = vertexCount;
+                    stats.m_subMeshStatsForLod.back().m_triCount = triCount;
+                    stats.m_vertCount += vertexCount;
+                    stats.m_triCount += triCount;
                 }
                 m_stats.m_meshStatsForLod.emplace_back(AZStd::move(stats));
             }

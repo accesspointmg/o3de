@@ -16,6 +16,7 @@
 #include <AzToolsFramework/Prefab/Instance/InstanceUpdateExecutorInterface.h>
 #include <AzToolsFramework/Prefab/PrefabDomTypes.h>
 #include <AzToolsFramework/Prefab/PrefabIdTypes.h>
+#include <AzToolsFramework/AzToolsFrameworkAPI.h>
 
 namespace AzToolsFramework
 {
@@ -26,7 +27,7 @@ namespace AzToolsFramework
         class TemplateInstanceMapperInterface;
         class InstanceDomGeneratorInterface;
 
-        class InstanceUpdateExecutor
+        class AZTF_API InstanceUpdateExecutor
             : public InstanceUpdateExecutorInterface
         {
         public:
@@ -37,7 +38,11 @@ namespace AzToolsFramework
 
             void AddInstanceToQueue(InstanceOptionalReference instance) override;
             void AddTemplateInstancesToQueue(TemplateId instanceTemplateId, InstanceOptionalConstReference instanceToExclude = AZStd::nullopt) override;
+
+            // Note, this function destroys and re-creates Entity* and Component*, do not assume your pointers are still good after this.
             bool UpdateTemplateInstancesInQueue() override;
+            bool IsUpdatingTemplateInstancesInQueue() const override;
+
             void RemoveTemplateInstanceFromQueue(Instance* instance) override;
             void QueueRootPrefabLoadedNotificationForNextPropagation() override;
 

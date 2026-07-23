@@ -8,7 +8,6 @@
 
 #pragma once
 
-#if !defined(Q_MOC_RUN)
 #include <AzQtComponents/AzQtComponentsAPI.h>
 #include <AzQtComponents/Components/DockMainWindow.h>
 #include <AzQtComponents/Components/DockTabWidget.h>
@@ -27,9 +26,7 @@
 #include <QScreen>
 #include <QSize>
 #include <QApplication>
-#endif
 
-class QDesktopWidget;
 class QTimer;
 
 namespace AzQtComponents
@@ -147,7 +144,7 @@ namespace AzQtComponents
         void setupDropZones(QWidget* dock, const QPoint& globalPos = QPoint());
         void raiseDockWidgets();
         void dropDockWidget(QDockWidget* dock, QWidget* onto, Qt::DockWidgetArea area);
-        QMainWindow* createFloatingMainWindow(const QString& name, const QRect& geometry, bool skipTitleBarDrawing = false);
+        QMainWindow* createFloatingMainWindow(const QString& name, const QRect& geometry);
         QString getUniqueDockWidgetName(const QString& prefix);
         void destroyIfUseless(QMainWindow* mw);
         void clearDraggingState();
@@ -181,7 +178,6 @@ namespace AzQtComponents
         bool WidgetContainsPoint(QWidget* widget, const QPoint& pos) const;
 
         QMainWindow* m_mainWindow;
-        AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
         QList<QScreen*> m_desktopScreens;
 
 #ifdef AZ_PLATFORM_WINDOWS
@@ -193,7 +189,6 @@ namespace AzQtComponents
         QWidget* m_emptyWidget;
 
         FancyDockingDropZoneState m_dropZoneState;
-        AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
         // When a user hovers over a drop zone, we will fade it in using this timer
         QTimer* m_dropZoneHoverFadeInTimer;
@@ -236,11 +231,8 @@ namespace AzQtComponents
         private:
             QPointer<QScreen> m_placeholderScreen;
             QRect m_placeholder;
-        AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
         } m_state;
-        AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
-        AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
         // map QDockWidget name with its last floating dock.
         QMap<QString, QString> m_placeholders;
         // map floating dock name with it's serialization and the geometry
@@ -258,7 +250,6 @@ namespace AzQtComponents
         QList<FancyDockingDropZoneWidget*> m_activeDropZoneWidgets;
 
         QList<QString> m_orderedFloatingDockWidgetNames;
-        AZ_POP_DISABLE_DLL_EXPORT_MEMBER_WARNING
 
         QString m_floatingWindowIdentifierPrefix;
         QString m_tabContainerIdentifierPrefix;
