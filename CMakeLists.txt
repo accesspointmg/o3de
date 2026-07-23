@@ -54,6 +54,11 @@ if(NOT o3de_engine_subdirs_added)
 endif()
 
 if(O3DE_ENGINE_IS_TOPLEVEL)
+    # Engine-centric builds: add every top-level gem indexed in the resolved
+    # manifest. Project-centric builds do this from Project.cmake with the
+    # project tree excluded; the per-gem idempotence guard makes both safe.
+    o3de_add_manifest_gem_subdirectories("")
+
     # Call the post processing macro
     o3de_engine_post_processing()
 endif()
