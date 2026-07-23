@@ -18,6 +18,7 @@ add_subdirectory(SerializeContextTools)
 add_subdirectory(AssetBundler)
 add_subdirectory(LuaIDE)
 add_subdirectory(TestImpactFramework)
-add_subdirectory(ProjectManager)
+# ProjectManager retired: replaced by o3de-pilot (its python bindings depended
+# on the object-management scripts now owned by o3de-cli)
 add_subdirectory(BundleLauncher)
 add_subdirectory(Android)
