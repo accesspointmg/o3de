@@ -894,6 +894,12 @@ class O3deObject:
                     except json.JSONDecodeError as e:
                         logger.error(f'{self.cache_file} failed to load: {str(e)}')
 
+        # A missing or unparseable object json must not abort the crawl —
+        # fall back to empty data so the object is simply treated as invalid.
+        if not hasattr(self, 'json_data') or self.json_data is None:
+            logger.warning(f'No valid json data for {self.object_uri}; treating as empty object')
+            self.json_data = {}
+
         # get the schema version
         self.schema_version = schema.get_schema_version(self.json_data)
 
