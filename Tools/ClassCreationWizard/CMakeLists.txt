@@ -21,8 +21,8 @@ add_custom_target(ClassWizard
 
 # Launch the wizard GUI through the engine's bundled Python.
 set(class_wizard_args "\"${CMAKE_CURRENT_SOURCE_DIR}/ClassWizard.py\" --engine-path \"${O3DE_ENGINE_PATH}\"")
-if(LY_DEFAULT_PROJECT_PATH)
-    string(APPEND class_wizard_args " --project-path \"${LY_DEFAULT_PROJECT_PATH}\"")
+if(O3DE_DEFAULT_PROJECT_PATH)
+    string(APPEND class_wizard_args " --project-path \"${O3DE_DEFAULT_PROJECT_PATH}\"")
 endif()
 
 set_target_properties(ClassWizard PROPERTIES
@@ -33,4 +33,4 @@ set_target_properties(ClassWizard PROPERTIES
 )
 
 # Ship the wizard with the installed SDK.
-ly_install_directory(DIRECTORIES .)
+o3de_install_directory(DIRECTORIES .)

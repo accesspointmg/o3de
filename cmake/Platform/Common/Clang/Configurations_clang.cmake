@@ -6,6 +6,17 @@
 #
 #
 
+
+# Compile-option variables consumed by 3rdParty Find modules (ported from upstream)
+set(O3DE_COMPILE_OPTION_ENABLE_EXCEPTIONS PUBLIC -fexceptions)
+set(O3DE_COMPILE_OPTION_EXPORT_SYMBOLS PRIVATE -fvisibility=default)
+set(O3DE_COMPILE_OPTION_DISABLE_WARNINGS PRIVATE -w)
+set(O3DE_COMPILE_OPTION_DISABLE_DEPRECATED_ENUM_ENUM_CONVERSION PRIVATE -Wno-deprecated-enum-enum-conversion -Wno-enum-enum-conversion)
+set(O3DE_COMPILE_OPTION_ENABLE_FAST_MATH -ffast-math)
+set(O3DE_COMPILE_OPTION_DISABLE_FAST_MATH -fno-fast-math)
+set(O3DE_TARGET_COMPILE_OPTION_ENABLE_FAST_MATH PRIVATE ${O3DE_COMPILE_OPTION_ENABLE_FAST_MATH})
+set(O3DE_TARGET_COMPILE_OPTION_DISABLE_FAST_MATH PRIVATE ${O3DE_COMPILE_OPTION_DISABLE_FAST_MATH})
+
 set(_cmake_Platform_Common_Clang_Configurations_clang_cmake ${CMAKE_CURRENT_LIST_DIR})
 include(${_cmake_Platform_Common_Clang_Configurations_clang_cmake}/../Configurations_common.cmake)
 
