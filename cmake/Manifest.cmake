@@ -95,7 +95,7 @@ set_property(GLOBAL PROPERTY O3DE_MANIFEST_RESOLVED_JSON_DATA ${O3DE_MANIFEST_RE
 message("Loading O3DE resolved manifest...")
 
 #manifest properties
-set(manifest_properties "country_code;default_engines_path;default_projects_path;default_gems_path;default_templates_path;default_repos_path;default_third_party_path")
+set(manifest_properties "country_code;default_engines_path;default_projects_path;default_gems_path;default_templates_path;default_repos_path;default_overlays_path;default_third_party_path")
 foreach(manifest_property IN LISTS manifest_properties)
     string(TOUPPER ${manifest_property} manifest_property_upper)
     o3de_get_json_key(O3DE_MANIFEST_${manifest_property_upper} ${O3DE_MANIFEST_RESOLVED_JSON_DATA} ${manifest_property})
@@ -104,7 +104,7 @@ endforeach()
 
 #manifest name arrays
 #note: these 'names' are "name==version" i.e. "org.o3de.template.assetgem==1.0.0"
-set(manifest_arrays "all_engine_names;all_project_names;all_gem_names;all_template_names;all_repo_names")
+set(manifest_arrays "all_engine_names;all_project_names;all_gem_names;all_template_names;all_repo_names;all_overlay_names")
 foreach(manifest_array IN LISTS manifest_arrays)
     string(TOUPPER ${manifest_array} manifest_array_upper)
     o3de_get_json_array(O3DE_MANIFEST_${manifest_array_upper} ${O3DE_MANIFEST_RESOLVED_JSON_DATA} ${manifest_array})
@@ -112,7 +112,7 @@ foreach(manifest_array IN LISTS manifest_arrays)
 endforeach()
 
 #manifest path arrays
-set(manifest_arrays "all_engine_paths;all_project_paths;all_gem_paths;all_template_paths;all_repo_paths")
+set(manifest_arrays "all_engine_paths;all_project_paths;all_gem_paths;all_template_paths;all_repo_paths;all_overlay_paths")
 foreach(manifest_array IN LISTS manifest_arrays)
     string(TOUPPER ${manifest_array} manifest_array_upper)
     o3de_get_json_array(O3DE_MANIFEST_${manifest_array_upper} ${O3DE_MANIFEST_RESOLVED_JSON_DATA} ${manifest_array})
@@ -436,6 +436,42 @@ foreach(manifest_array IN LISTS manifest_arrays)
                     set_property(GLOBAL PROPERTY O3DE_PATH_${path_entry}_${repo_array_upper} ${O3DE_PATH_${path_entry}_${repo_array_upper}})
                 endforeach()
             endif()
+
+        elseif(manifest_array STREQUAL "all_overlay_paths")
+            # Read the overlay object at this path. Overlays are composed into
+            # object trees by o3de-cli at workspace compose time; at configure
+            # time CMake only consumes their platform declarations so PAL can
+            # enumerate platforms delivered via overlays.
+            o3de_get_json_key(O3DE_PATH_${path_entry}_JSON_DATA ${O3DE_MANIFEST_RESOLVED_JSON_DATA} ${path_entry})
+            set_property(GLOBAL PROPERTY O3DE_PATH_${path_entry}_JSON_DATA ${O3DE_PATH_${path_entry}_JSON_DATA})
+
+            # Read the overlay properties
+            set(overlay_properties "name;version;display_name;description;type;id;copyright_year;copyright_text;extends;precedence")
+            foreach(overlay_property IN LISTS overlay_properties)
+                string(TOUPPER ${overlay_property} overlay_property_upper)
+                o3de_get_json_key(O3DE_PATH_${path_entry}_${overlay_property_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${overlay_property})
+                set_property(GLOBAL PROPERTY O3DE_PATH_${path_entry}_${overlay_property_upper} ${O3DE_PATH_${path_entry}_${overlay_property_upper}})
+
+                if(overlay_property STREQUAL "name")
+                    set(last_overlay_name ${O3DE_PATH_${path_entry}_NAME})
+                endif()
+
+                if(overlay_property STREQUAL "version")
+                    set(last_overlay_version ${O3DE_PATH_${path_entry}_VERSION})
+
+                    set(O3DE_OVERLAY_${last_overlay_name}_${last_overlay_version} ${path_entry})
+                    set_property(GLOBAL PROPERTY O3DE_OVERLAY_${last_overlay_name}_${last_overlay_version} ${O3DE_OVERLAY_${last_overlay_name}_${last_overlay_version}})
+                endif()
+            endforeach()
+
+            # Read the overlay arrays
+            set(overlay_arrays "canonical_tags;user_tags;platforms;platform_maps;platform_wart_maps;parent_json_paths")
+            foreach(overlay_array IN LISTS overlay_arrays)
+                string(TOUPPER ${overlay_array} overlay_array_upper)
+                o3de_get_json_array(O3DE_PATH_${path_entry}_${overlay_array_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${overlay_array})
+                list(REMOVE_DUPLICATES O3DE_PATH_${path_entry}_${overlay_array_upper})
+                set_property(GLOBAL PROPERTY O3DE_PATH_${path_entry}_${overlay_array_upper} ${O3DE_PATH_${path_entry}_${overlay_array_upper}})
+            endforeach()
 
         endif()
     endforeach()

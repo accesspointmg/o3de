@@ -248,6 +248,14 @@ macro(o3de_project_setup)
     foreach(platform ${O3DE_ENGINE_PLATFORMS})
         o3de_add_pal_platform_name(${platform})
     endforeach()
+    # These are all the platforms delivered via overlay objects
+    get_property(O3DE_MANIFEST_ALL_OVERLAY_PATHS GLOBAL PROPERTY O3DE_MANIFEST_ALL_OVERLAY_PATHS)
+    foreach(overlay_json_path IN LISTS O3DE_MANIFEST_ALL_OVERLAY_PATHS)
+        get_property(overlay_platform_names GLOBAL PROPERTY O3DE_PATH_${overlay_json_path}_PLATFORMS)
+        foreach(overlay_platform_name ${overlay_platform_names})
+            o3de_add_pal_platform_name(${overlay_platform_name})
+        endforeach()
+    endforeach()
 
     # Now that we have all possible PAL platforms, include all pal platform cmake files
     get_property(O3DE_ALL_PAL_PLATFORM_NAMES GLOBAL PROPERTY O3DE_ALL_PAL_PLATFORM_NAMES)

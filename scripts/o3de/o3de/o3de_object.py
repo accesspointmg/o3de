@@ -816,12 +816,14 @@ class O3deObject:
         self.childGemObjects = []
         self.childTemplateObjects = []
         self.childRepoObjects = []
+        self.childOverlayObjects = []
 
         self.remoteEngineObjects = []
         self.remoteProjectObjects = []
         self.remoteGemObjects = []
         self.remoteTemplateObjects = []
         self.remoteRepoObjects = []
+        self.remoteOverlayObjects = []
         
         # traversed is a set of traversed URIs to avoid circular references
         if traversed is None:
@@ -945,6 +947,7 @@ class O3deObject:
             'gems': ('gem.json', self.childGemObjects, O3deGem),
             'templates': ('template.json', self.childTemplateObjects, O3deTemplate),
             'repos': ('repo.json', self.childRepoObjects, O3deRepo),
+            'overlays': ('overlay.json', self.childOverlayObjects, O3deOverlay),
         }
         
         # Process children section
@@ -976,6 +979,7 @@ class O3deObject:
             'gems': ('gem.json', self.remoteGemObjects, O3deGem),
             'templates': ('template.json', self.remoteTemplateObjects, O3deTemplate),
             'repos': ('repo.json', self.remoteRepoObjects, O3deRepo),
+            'overlays': ('overlay.json', self.remoteOverlayObjects, O3deOverlay),
         }
         
         # Process remote section
@@ -1766,6 +1770,7 @@ class O3deObject:
             'gem': self.childGemObjects,
             'template': self.childTemplateObjects,
             'repo': self.childRepoObjects,
+            'overlay': self.childOverlayObjects,
         }
         
         # First check the primary collection for the requested type
@@ -2049,6 +2054,7 @@ class O3deObject:
             'gem': self.childGemObjects,
             'template': self.childTemplateObjects,
             'repo': self.childRepoObjects,
+            'overlay': self.childOverlayObjects,
         }
     
         full_paths = []
@@ -2098,6 +2104,11 @@ class O3deObject:
         return self._get_child_objects('repo', recurse, traversed)
 
 
+    def get_child_overlay_objects(self, recurse=False, traversed=None):
+        """Get the list of child overlays."""
+        return self._get_child_objects('overlay', recurse, traversed)
+
+
     
     def get_all_child_objects(self, recurse=False, traversed=None):
         """Get all child objects of all types."""
@@ -2113,6 +2124,7 @@ class O3deObject:
             self.childGemObjects,
             self.childTemplateObjects,
             self.childRepoObjects,
+            self.childOverlayObjects,
         ]
         
         for collection in collections:
@@ -2779,6 +2791,11 @@ class O3deManifest(O3deObject):
         return self.json_data['default']['repos_path']
     
 
+    def get_default_overlays_path(self):
+        """Returns the default overlays path for o3de_manifest"""
+        return self.json_data.get('default', {}).get('overlays_path', (get_user_dot_o3de_path() / 'Overlays').as_posix())
+
+
     def get_default_third_party_path(self):
         """Returns the default third party path for o3de_manifest"""
         return self.json_data['default']['third_party_path']
@@ -2914,6 +2931,37 @@ class O3deRepo(O3deObject):
         :param repo_json_data: JSON data of the repo object
         """
         super().__init__('repo', repo_uri, traversed, repo_json_data)
+
+class O3deOverlay(O3deObject):
+    def __init__(self, overlay_uri: str, traversed: set, overlay_json_data: dict = None):
+        """
+        Initialize the O3DE overlay object.
+        Overlays extend a base object with additional/replacement files
+        (platform code, NDA platforms, local patches) applied at workspace
+        compose time.
+        :param overlay_uri: URI of the overlay file
+        :param traversed: Set of traversed URIs
+        :param overlay_json_data: JSON data of the overlay object
+        """
+        super().__init__('overlay', overlay_uri, traversed, overlay_json_data)
+
+    def get_extends(self):
+        """Name (with optional version specifier) of the object this overlay extends."""
+        return self.json_data.get('extends', '')
+
+    def get_precedence(self):
+        """Application order among overlays extending the same base (higher wins)."""
+        return self.json_data.get('precedence', 0)
+
+    def get_platforms(self):
+        """Platform names this overlay delivers (may be empty for non-platform overlays)."""
+        return self.json_data.get('platforms', [])
+
+    def get_platform_maps(self):
+        return self.json_data.get('platform_maps', [])
+
+    def get_platform_wart_maps(self):
+        return self.json_data.get('platform_wart_maps', [])
 
 # Load the o3de manifest
 manifest = O3deManifest()        
@@ -3333,6 +3381,7 @@ def _resolve(args: argparse) -> int:
     manifest_all_child_gem_json_paths, manifest_all_child_gem_objects = manifest.get_child_gem_objects(True)
     manifest_all_child_template_json_paths, manifest_all_child_template_objects = manifest.get_child_template_objects(True)
     manifest_all_child_repo_json_paths, manifest_all_child_repo_objects = manifest.get_child_repo_objects(True)
+    manifest_all_child_overlay_json_paths, manifest_all_child_overlay_objects = manifest.get_child_overlay_objects(True)
 
     manifest_all_engine_names = []
     for engine in manifest_all_child_engine_objects:
@@ -3369,6 +3418,13 @@ def _resolve(args: argparse) -> int:
         name_with_version = f'{name}=={version}'
         manifest_all_repo_names.append(name_with_version)
 
+    manifest_all_overlay_names = []
+    for overlay in manifest_all_child_overlay_objects:
+        name = overlay.get_header().get_name()
+        version = overlay.get_header().get_version()
+        name_with_version = f'{name}=={version}'
+        manifest_all_overlay_names.append(name_with_version)
+
 
     # ==== ADVANCED DEPENDENCY RESOLUTION USING RESOLVELIB ====
     print("Resolving dependency constraints using ResolveLib...")
@@ -3389,6 +3445,7 @@ def _resolve(args: argparse) -> int:
         resolver.add_objects('gem', manifest_all_child_gem_objects)
         resolver.add_objects('template', manifest_all_child_template_objects)
         resolver.add_objects('repo', manifest_all_child_repo_objects)
+        resolver.add_objects('overlay', manifest_all_child_overlay_objects)
         
         # Process each Engine as a root
         for engine in manifest_all_child_engine_objects:
@@ -3474,6 +3531,7 @@ def _resolve(args: argparse) -> int:
     resolved['default_gems_path'] = manifest.get_default_gems_path()
     resolved['default_templates_path'] = manifest.get_default_templates_path()
     resolved['default_repos_path'] = manifest.get_default_repos_path()
+    resolved['default_overlays_path'] = manifest.get_default_overlays_path()
     resolved['default_third_party_path'] = manifest.get_default_third_party_path()
 
     resolved['all_engine_paths'] = manifest_all_child_engine_json_paths
@@ -3481,12 +3539,14 @@ def _resolve(args: argparse) -> int:
     resolved['all_gem_paths'] = manifest_all_child_gem_json_paths
     resolved['all_template_paths'] = manifest_all_child_template_json_paths
     resolved['all_repo_paths'] = manifest_all_child_repo_json_paths
+    resolved['all_overlay_paths'] = manifest_all_child_overlay_json_paths
 
     resolved['all_engine_names'] = manifest_all_engine_names
     resolved['all_project_names'] = manifest_all_project_names
     resolved['all_gem_names'] = manifest_all_gem_names
     resolved['all_template_names'] = manifest_all_template_names
     resolved['all_repo_names'] = manifest_all_repo_names
+    resolved['all_overlay_names'] = manifest_all_overlay_names
 
     # query all objects from the the point of view of the engine object
     for engine in manifest_all_child_engine_objects:
@@ -3746,6 +3806,33 @@ def _resolve(args: argparse) -> int:
             'dependent_gems': dependent_gems,
             'dependent_templates': dependent_templates,
             'dependent_repos': dependent_repos,
+        }
+
+    # emit overlay objects: extends/precedence/platform info consumed by
+    # workspace composition and by CMake PAL platform-name enumeration
+    for overlay in manifest_all_child_overlay_objects:
+        parent_json_paths, parent_objects = overlay.get_parent(True)
+
+        resolved[overlay.get_object_uri()] = {
+            'name': overlay.get_header().get_name(),
+            'version': overlay.get_header().get_version(),
+            'display_name': overlay.get_header().get_display_name(),
+            'description': overlay.get_header().get_description(),
+            'type': overlay.get_header().get_type(),
+            'id': overlay.get_header().get_id(),
+            'copyright_year': overlay.get_header().get_copyright_year(),
+            'copyright_text': overlay.get_header().get_copyright_text(),
+
+            'extends': overlay.get_extends(),
+            'precedence': overlay.get_precedence(),
+
+            'canonical_tags': overlay.get_canonical_tags(),
+            'user_tags': overlay.get_user_tags(),
+            'platforms': overlay.get_platforms(),
+            'platform_maps': overlay.get_platform_maps(),
+            'platform_wart_maps': overlay.get_platform_wart_maps(),
+
+            'parent_json_paths': parent_json_paths,
         }
 
     # write the resolved dictionary to a JSON file
