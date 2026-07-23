@@ -40,10 +40,10 @@ namespace PassCanvas
 {
     static const char* GetBuildTargetName()
     {
-#if !defined(LY_CMAKE_TARGET)
-#error "LY_CMAKE_TARGET must be defined in order to add this source file to a CMake executable target"
+#if !defined(O3DE_CMAKE_TARGET)
+#error "O3DE_CMAKE_TARGET must be defined in order to add this source file to a CMake executable target"
 #endif
-        return LY_CMAKE_TARGET;
+        return O3DE_CMAKE_TARGET;
     }
 
     PassCanvasApplication::PassCanvasApplication(int* argc, char*** argv)

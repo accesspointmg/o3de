@@ -139,6 +139,7 @@ namespace O3DE::ProjectManager
         pybind11::handle m_projectManagerInterface;
         pybind11::handle m_download;
         pybind11::handle m_repo;
+        pybind11::handle m_cache;
         pybind11::handle m_pathlib;
 
         bool m_requestCancelDownload = false;

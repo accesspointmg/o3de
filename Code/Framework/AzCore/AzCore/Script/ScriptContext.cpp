@@ -3500,7 +3500,7 @@ LUA_API const Node* lua_getDummyNode()
                     return 0;
                 }
 
-                // there's no limit inherently in BehaviorContext (as there is no document limit in C++), but the LY supported limits default to 40 for Lua, ScriptCanvas, and ScriptEvents.
+                // there's no limit inherently in BehaviorContext (as there is no document limit in C++), but the O3DE supported limits default to 40 for Lua, ScriptCanvas, and ScriptEvents.
                 // this limit of 40 is however implicit, for now.
                 BehaviorArgument arguments[40];
                 BehaviorArgument result;

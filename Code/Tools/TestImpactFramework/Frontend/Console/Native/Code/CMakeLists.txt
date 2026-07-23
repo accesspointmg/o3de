@@ -6,19 +6,19 @@
 #
 #
 
-if(LY_MONOLITHIC_GAME)
+if(O3DE_MONOLITHIC_GAME)
     return()
 endif()
 
 set(common_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
-ly_add_target(
+o3de_add_target(
     NAME TestImpact.Frontend.Console.Native.Static STATIC
     NAMESPACE AZ
     FILES_CMAKE
         testimpactframework_frontend_console_native_static_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${common_dir}/${PAL_TRAIT_COMPILER_ID}/testimpactframework_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+        ${common_dir}/${O3DE_PAL_TRAIT_COMPILER_ID}/testimpactframework_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
@@ -30,14 +30,14 @@ ly_add_target(
             AZ::TestImpact.Frontend.Console.Common.Headers
 )
 
-ly_add_target(
+o3de_add_target(
     NAME TestImpact.Frontend.Console.Native EXECUTABLE
     OUTPUT_NAME tiaf_native
     NAMESPACE AZ
     FILES_CMAKE
         testimpactframework_frontend_console_native_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${common_dir}/${PAL_TRAIT_COMPILER_ID}/testimpactframework_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+        ${common_dir}/${O3DE_PAL_TRAIT_COMPILER_ID}/testimpactframework_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             Source

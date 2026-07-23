@@ -6,7 +6,7 @@
 #
 #
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -26,8 +26,8 @@ ly_add_target(
         Gem::Atom_RPI.Private
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         barrierinput_shared_files.cmake
@@ -42,7 +42,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/BarrierInputModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -51,4 +51,4 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # Barrier Input is only needed for the client:
-ly_create_alias(NAME ${gem_name}.Clients  NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients  NAMESPACE Gem TARGETS Gem::${gem_name})

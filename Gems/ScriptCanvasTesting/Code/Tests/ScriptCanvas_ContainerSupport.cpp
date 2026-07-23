@@ -14,20 +14,20 @@ using namespace ScriptCanvas;
 
 TEST_F(ScriptCanvasTestFixture, AZStdArray)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_AZStdArray", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_AZStdArray", ExecutionMode::Interpreted);
 }
 
 TEST_F(ScriptCanvasTestFixture, ForEachNode)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_ForEachNode", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_ForEachNode", ExecutionMode::Interpreted);
 }
 
 TEST_F(ScriptCanvasTestFixture, MapContainerStringVec3)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_MapContainerStringVec3", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_MapContainerStringVec3", ExecutionMode::Interpreted);
 }
 
 TEST_F(ScriptCanvasTestFixture, VectorContainerVector3)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_VectorContainerVector3", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_VectorContainerVector3", ExecutionMode::Interpreted);
 }

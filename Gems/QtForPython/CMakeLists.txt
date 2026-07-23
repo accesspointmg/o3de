@@ -6,9 +6,9 @@
 #
 #
 
-o3de_gem_setup("QtForPython")
+o3de_gem_setup()
 
-ly_add_external_target_path(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
+o3de_add_external_target_path(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
 
 add_subdirectory(Code)
 

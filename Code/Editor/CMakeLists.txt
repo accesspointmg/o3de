@@ -6,20 +6,23 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
 add_subdirectory(Plugins)
 
-ly_add_target(
+o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Editor/Platform/${O3DE_PAL_PLATFORM_NAME} pal_core_editor_path)
+set(common_core_editor_path ${O3DE_ENGINE_PATH}/Code/Editor/Platform/Common)
+
+o3de_add_target(
     NAME EditorCore SHARED
     NAMESPACE Legacy
     AUTOMOC
     AUTOUIC
     FILES_CMAKE
         editor_core_files.cmake
-        Platform/${PAL_PLATFORM_NAME}/editor_core_files_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
+        ${pal_core_editor_path}/editor_core_files_${O3DE_PAL_PLATFORM_WART}.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             Include
@@ -42,7 +45,7 @@ ly_add_target(
 
 # Header only target to prevent linkage against editor libraries when is not needed. Eventually the targets that depend
 # on editor headers should cleanup dependencies and interact with the editor through buses or other mechanisms
-ly_add_target(
+o3de_add_target(
     NAME Editor.Headers HEADERONLY
     NAMESPACE Legacy
     FILES_CMAKE
@@ -60,16 +63,16 @@ ly_add_target(
 ################################################################################
 # EditorLib
 ################################################################################
-set(pal_cmake_files "")
-foreach(enabled_platform ${LY_PAL_TOOLS_ENABLED})
-    string(TOLOWER ${enabled_platform} enabled_platform_lowercase)
-    o3de_pal_dir(pal_cmake_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${enabled_platform} ${O3DE_ENGINE_RESTRICTED_PATH} ${LY_ROOT_FOLDER})
-    list(APPEND pal_cmake_files ${pal_cmake_dir}/editor_lib_${enabled_platform_lowercase}_files.cmake)
+set(pal_tool_paths "")
+set(pal_tool_files "")
+foreach(enabled_platform ${O3DE_PAL_TOOLS_ENABLED})
+    o3de_pal_platform_name_wart(${enabled_platform} pal_wart)
+    o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Editor/Platform/${enabled_platform} pal_tool_path)
+    list(APPEND pal_tool_paths ${pal_tool_path})
+    list(APPEND pal_tool_files ${pal_tool_path}/editor_lib_${pal_wart}_files.cmake})
 endforeach()
 
-ly_get_pal_tool_dirs(pal_tool_dirs ${CMAKE_CURRENT_LIST_DIR}/Platform)
-
-ly_add_target(
+o3de_add_target(
     NAME EditorLib SHARED
     NAMESPACE Legacy
     AUTOMOC
@@ -77,11 +80,11 @@ ly_add_target(
     AUTORCC
     FILES_CMAKE
         editor_lib_files.cmake
-        Platform/${PAL_PLATFORM_NAME}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_core_editor_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        Platform/${PAL_PLATFORM_NAME}/editor_lib_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
-        Platform/Common/${PAL_TRAIT_COMPILER_ID}/editor_lib_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
-        ${pal_cmake_files}
+        ${pal_core_editor_path}/editor_lib_${O3DE_PAL_PLATFORM_WART}.cmake
+        ${common_core_editor_path}/${O3DE_PAL_TRAIT_COMPILER_ID}/editor_lib_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+        ${pal_tool_files}
     INCLUDE_DIRECTORIES
         PUBLIC
             Include
@@ -89,11 +92,11 @@ ly_add_target(
             .
             ..
             AssetBrowser/AssetTypes/Character
-            ${pal_tool_dirs}
+            ${pal_tool_paths}
     COMPILE_DEFINITIONS
         PRIVATE
             SANDBOX_EXPORTS
-            ${LY_LEGACY_TERRAIN_EDITOR_DEFINES}
+            ${O3DE_LEGACY_TERRAIN_EDITOR_DEFINES}
         INTERFACE
             SANDBOX_IMPORTS
     BUILD_DEPENDENCIES
@@ -122,42 +125,57 @@ ly_add_target(
     RUNTIME_DEPENDENCIES
         Legacy::EditorCommon
 )
-ly_add_source_properties(
+# O3DE_COPYRIGHT_YEAR / O3DE_INSTALL_BUILD_VERSION are only set by installer
+# builds; fall back to the engine globals, then sane defaults, so the compile
+# definitions below never expand empty (empty defines break CryEdit.cpp).
+if(NOT O3DE_COPYRIGHT_YEAR)
+    get_property(O3DE_COPYRIGHT_YEAR GLOBAL PROPERTY O3DE_ENGINE_COPYRIGHT_YEAR)
+endif()
+if(NOT O3DE_COPYRIGHT_YEAR)
+    string(TIMESTAMP O3DE_COPYRIGHT_YEAR "%Y")
+endif()
+if(NOT O3DE_INSTALL_BUILD_VERSION)
+    get_property(O3DE_INSTALL_BUILD_VERSION GLOBAL PROPERTY O3DE_ENGINE_BUILD)
+endif()
+if(NOT O3DE_INSTALL_BUILD_VERSION)
+    set(O3DE_INSTALL_BUILD_VERSION 0)
+endif()
+o3de_add_source_properties(
     SOURCES CryEdit.cpp
     PROPERTY COMPILE_DEFINITIONS 
     VALUES 
         O3DE_COPYRIGHT_YEAR=${O3DE_COPYRIGHT_YEAR}
         O3DE_BUILD_VERSION=${O3DE_INSTALL_BUILD_VERSION}
-        ${LY_PAL_TOOLS_DEFINES}
+        ${O3DE_PAL_TOOLS_DEFINES}
 )
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         MainWindow.cpp
     PROPERTY COMPILE_DEFINITIONS 
-    VALUES ${LY_PAL_TOOLS_DEFINES}
+    VALUES ${O3DE_PAL_TOOLS_DEFINES}
 )
 
-get_property(editor_plugins GLOBAL PROPERTY LY_EDITOR_PLUGINS)
+get_property(editor_plugins GLOBAL PROPERTY O3DE_EDITOR_PLUGINS)
 string (REPLACE ";" "," editor_plugins "${editor_plugins}")
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES PluginManager.cpp
     PROPERTY COMPILE_DEFINITIONS 
-    VALUES LY_EDITOR_PLUGINS="${editor_plugins}"
+    VALUES O3DE_EDITOR_PLUGINS="${editor_plugins}"
 )
 
 ################################################################################
 # Editor
 ################################################################################
-ly_add_target(
+o3de_add_target(
     NAME Editor APPLICATION
     NAMESPACE Legacy
     AUTORCC
     FILES_CMAKE
         editor_files.cmake
     PLATFORM_INCLUDE_FILES
-        Platform/${PAL_PLATFORM_NAME}/editor_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
+        ${pal_core_editor_path}/editor_${O3DE_PAL_PLATFORM_WART}.cmake
     TARGET_PROPERTIES
-        LY_INSTALL_GENERATE_RUN_TARGET TRUE
+        O3DE_INSTALL_GENERATE_RUN_TARGET TRUE
     BUILD_DEPENDENCIES
         PRIVATE
             3rdParty::Qt::Core
@@ -168,32 +186,34 @@ ly_add_target(
         ProjectManager
 )
 
-ly_set_gem_variant_to_load(TARGETS Editor VARIANTS Tools)
+o3de_set_gem_variant_to_load(TARGETS Editor VARIANTS Tools)
 set_property(SOURCE
     CryEdit.cpp
     APPEND PROPERTY
-        COMPILE_DEFINITIONS LY_CMAKE_TARGET="Editor"
+        COMPILE_DEFINITIONS O3DE_CMAKE_TARGET="Editor"
 )
-ly_add_translations(
-    TARGETS Editor
-    PREFIX Translations
-    FILES
-        Translations/editor_en-us.ts 
-        Translations/assetbrowser_en-us.ts 
-)
-ly_add_dependencies(Editor AssetProcessor)
+# o3de_add_translations is not implemented (dead code upstream too —
+# ly_add_translations is commented out in upstream Editor/CMakeLists.txt)
+# o3de_add_translations(
+#     TARGETS Editor
+#     PREFIX Translations
+#     FILES
+#         Translations/editor_en-us.ts 
+#         Translations/assetbrowser_en-us.ts 
+# )
+o3de_add_dependencies(Editor AssetProcessor)
 
-if(LY_DEFAULT_PROJECT_PATH)
-    set_property(TARGET Editor APPEND PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS "--project-path=\"${LY_DEFAULT_PROJECT_PATH}\"")
+if(O3DE_DEFAULT_PROJECT_PATH)
+    set_property(TARGET Editor APPEND PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS "--project-path=\"${O3DE_DEFAULT_PROJECT_PATH}\"")
 endif()
 
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-    ly_add_target(
-        NAME EditorCore.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME EditorCore.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Legacy
         AUTOMOC
         FILES_CMAKE
@@ -210,13 +230,13 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 Legacy::CryCommon
                 AZ::AzCore
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Legacy::EditorCore.Tests
         LABELS REQUIRES_tiaf
     )
 
-    ly_add_target(
-        NAME EditorLib.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME EditorLib.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Legacy
         AUTOMOC
         FILES_CMAKE
@@ -227,7 +247,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 .
         COMPILE_DEFINITIONS
             PRIVATE
-                ${LY_LEGACY_TERRAIN_EDITOR_DEFINES}
+                ${O3DE_LEGACY_TERRAIN_EDITOR_DEFINES}
         BUILD_DEPENDENCIES
             PRIVATE
                 AZ::AzTest
@@ -247,7 +267,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             Gem::LmbrCentral
     )
 
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Legacy::EditorLib.Tests
         LABELS REQUIRES_tiaf
     )

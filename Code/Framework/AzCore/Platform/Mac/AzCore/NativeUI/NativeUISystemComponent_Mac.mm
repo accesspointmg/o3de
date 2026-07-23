@@ -12,7 +12,7 @@
 
 namespace
 {
-// NSAlertStyle enum constant names were changed in MacOS 10.12, but our min-spec is still 10.10
+// NSAlertStyle enum constant names were changed in Mac 10.12, but our min-spec is still 10.10
 #if __MAC_OS_X_VERSION_MAX_ALLOWED < 101200 // __MAC_10_12 may not be defined by all earlier sdks
     static const NSAlertStyle NSAlertStyleWarning = NSWarningAlertStyle;
 #endif // __MAC_OS_VERSION_MAX_ALLOWED < __MAC_10_12

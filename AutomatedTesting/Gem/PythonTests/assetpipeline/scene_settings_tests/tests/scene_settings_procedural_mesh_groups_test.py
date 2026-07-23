@@ -22,7 +22,7 @@ def Scene_Settings_Procedural_Mesh_Groups_Test():
         from PySide2 import QtWidgets
         import azlmbr.bus as bus
         import azlmbr.legacy.general as general
-        import ly_test_tools.o3de.pipeline_utils as utils
+        import o3de_test_tools.o3de.pipeline_utils as utils
         import scene_settings_test_messages as tm
         import scene_settings_test_helpers as scene_test_helpers
         general.idle_enable(True)

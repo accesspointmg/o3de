@@ -17,7 +17,7 @@
 #include <Vegetation/Ebuses/ModifierRequestBus.h>
 #include <Vegetation/Ebuses/SystemConfigurationBus.h>
 #include <LmbrCentral/Shape/ShapeComponentBus.h>
-#include <AtomLyIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
+#include <AtomO3deIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
 #include <AzCore/Math/Random.h>
 #include <GradientSignal/Ebuses/GradientRequestBus.h>
 #include <SurfaceData/SurfaceDataSystemRequestBus.h>

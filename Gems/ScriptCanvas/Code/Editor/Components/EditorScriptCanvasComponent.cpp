@@ -21,7 +21,7 @@
 #include <AzToolsFramework/API/ToolsApplicationAPI.h>
 #include <Builder/ScriptCanvasBuilder.h>
 #include <Core/ScriptCanvasBus.h>
-#include <LyViewPaneNames.h>
+#include <O3deViewPaneNames.h>
 #include <ScriptCanvas/Asset/RuntimeAsset.h>
 #include <ScriptCanvas/Asset/RuntimeAsset.h>
 #include <ScriptCanvas/Assets/ScriptCanvasFileHandling.h>

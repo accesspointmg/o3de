@@ -6,7 +6,7 @@
 #
 #
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -21,8 +21,8 @@ ly_add_target(
             AZ::AzCore
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         gamestate_shared_files.cmake
@@ -37,7 +37,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/GameStateModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -46,17 +46,17 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # Clients and Servers use the above module.  There is no editor or tools module required.
-ly_create_alias(NAME ${gem_name}.Clients  NAMESPACE Gem TARGETS ${gem_name})
-ly_create_alias(NAME ${gem_name}.Servers  NAMESPACE Gem TARGETS ${gem_name})
-ly_create_alias(NAME ${gem_name}.Unified  NAMESPACE Gem TARGETS ${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients  NAMESPACE Gem TARGETS ${gem_name})
+o3de_create_alias(NAME ${gem_name}.Servers  NAMESPACE Gem TARGETS ${gem_name})
+o3de_create_alias(NAME ${gem_name}.Unified  NAMESPACE Gem TARGETS ${gem_name})
 
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             gamestate_tests_files.cmake
@@ -69,7 +69,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzTest
                 Gem::${gem_name}.Static
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         LABELS REQUIRES_tiaf
     )

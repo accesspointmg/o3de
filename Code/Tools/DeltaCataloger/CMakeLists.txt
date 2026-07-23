@@ -6,12 +6,12 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-if(PAL_HOST_PLATFORM_NAME_LOWERCASE STREQUAL "windows")
-ly_add_target(
+if(O3DE_PAL_HOST_PLATFORM_NAME_LOWERCASE STREQUAL "windows")
+o3de_add_target(
     NAME DeltaCataloger EXECUTABLE
     NAMESPACE AZ
     FILES_CMAKE
@@ -24,7 +24,7 @@ ly_add_target(
             AZ::AzToolsFramework
 )
 else()
-ly_add_target(
+o3de_add_target(
     NAME DeltaCataloger EXECUTABLE
     NAMESPACE AZ
     FILES_CMAKE
@@ -37,10 +37,10 @@ ly_add_target(
 )
 endif()
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-    ly_add_target(
-        NAME DeltaCataloger.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME DeltaCataloger.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE AZ
         FILES_CMAKE
             deltacataloger_test_files.cmake
@@ -53,7 +53,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzToolsFrameworkTestCommon
     )
 
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME AZ::DeltaCataloger.Tests
         LABELS REQUIRES_tiaf
     )

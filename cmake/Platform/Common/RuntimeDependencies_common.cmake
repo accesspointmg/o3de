@@ -6,13 +6,13 @@
 #
 #
 
-set(LY_COPY_PERMISSIONS "OWNER_READ OWNER_WRITE OWNER_EXECUTE")
-set(LY_TARGET_TYPES_WITH_RUNTIME_OUTPUTS UTILITY MODULE_LIBRARY SHARED_LIBRARY EXECUTABLE APPLICATION)
+set(O3DE_COPY_PERMISSIONS "OWNER_READ OWNER_WRITE OWNER_EXECUTE")
+set(O3DE_TARGET_TYPES_WITH_RUNTIME_OUTPUTS UTILITY MODULE_LIBRARY SHARED_LIBRARY EXECUTABLE APPLICATION)
 
 # There are several dependencies to handle:
 # 1. Dependencies to 3rdparty libraries. This involves copying IMPORTED_LOCATION to the folder where the target is.
 #    Some 3rdParty may require to copy the IMPORTED_LOCATION to a relative folder to where the target is.
-# 2. Dependencies to files. This involves copying INTERFACE_LY_TARGET_FILES to the folder where the target is. In
+# 2. Dependencies to files. This involves copying INTERFACE_O3DE_TARGET_FILES to the folder where the target is. In
 #    this case, the files may include a relative folder to where the target is.
 # 3. In some platforms and types of targets, we also need to copy the MANUALLY_ADDED_DEPENDENCIES to the folder where the
 #    target is. This is because the target is not in the same folder as the added dependencies.
@@ -21,10 +21,10 @@ set(LY_TARGET_TYPES_WITH_RUNTIME_OUTPUTS UTILITY MODULE_LIBRARY SHARED_LIBRARY E
 # working output per target, so there will be duplication.
 # The Dependencies get stored in the following args:
 # \arg: COPY_DEPENDENCIES_VAR stores the encoded file dependency with the output subdirectory to copy the file dependency
-#        These dependencies are set via the `ly_add_target_files` command
+#        These dependencies are set via the `o3de_add_target_files` command
 # \arg: TARGET_DEPENDENCIES_VAR stores all MANUALLY_ADDED_DEPENDENCIES for the target by recursively visiting
 #       each target added dependencies
-#       These dependences are set via [add_dependencies](https://cmake.org/cmake/help/latest/command/add_dependencies.html)
+#       These dependencies are set via [add_dependencies](https://cmake.org/cmake/help/latest/command/add_dependencies.html)
 # \arg: LINK_DEPENDENCIES_VAR stores all link library dependencies found by recursing the LINK_LIBRARIES TARGET property
 #       These are dependencies specified to the [target_link_libraries](https://cmake.org/cmake/help/latest/command/target_link_libraries.html?highlight=target_link_libraries) command
 # \arg: IMPORTED_DEPENDENCIES_VAR populated with the IMPORTED_LOCATION(_<config>) or INTERFACE_IMPORTED_LOCATION(_<config>) property of the TARGET
@@ -46,13 +46,13 @@ function(o3de_get_dependencies_for_target)
     # and if so, activate it.  This also calls find_package so there is no reason
     # to do so later.
 
-    ly_parse_third_party_dependencies(${target})
+    o3de_parse_third_party_dependencies(${target})
     # The above needs to be done before the below early out of this function!
     if(NOT TARGET ${target})
         return() # Nothing to do
     endif()
 
-    ly_de_alias_target(${target} target)
+    o3de_de_alias_target(${target} target)
 
     # To optimize the search, we are going to cache the dependencies for the targets we already walked through.
     # To do so, we will create several variables named target} which will contain a list
@@ -116,7 +116,7 @@ function(o3de_get_dependencies_for_target)
 
         if(TARGET ${link_dependency})
             get_target_property(is_imported ${link_dependency} IMPORTED)
-            get_target_property(is_system_library ${link_dependency} LY_SYSTEM_LIBRARY)
+            get_target_property(is_system_library ${link_dependency} O3DE_SYSTEM_LIBRARY)
             if(is_imported AND is_system_library)
                 continue()
             endif()
@@ -124,7 +124,7 @@ function(o3de_get_dependencies_for_target)
             # If the link dependency target has runtime outputs itself then
             # add it as a runtime dependency as well.
             get_target_property(link_dependency_type ${link_dependency} TYPE)
-            if(link_dependency_type IN_LIST LY_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
+            if(link_dependency_type IN_LIST O3DE_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
                 list(APPEND all_link_dependencies ${link_dependency})
             endif()
         endif()
@@ -169,7 +169,7 @@ function(o3de_get_dependencies_for_target)
                 list(APPEND all_link_dependencies ${dependent_link_dependencies})
                 list(APPEND all_imported_dependencies ${dependent_imported_dependencies})
 
-                # Append the current manuallly added dependency to the end
+                # Append the current manually added dependency to the end
                 list(APPEND all_target_dependencies ${manual_dependency})
             endif()
         endforeach()
@@ -241,8 +241,8 @@ function(o3de_get_dependencies_for_target)
 
     endif()
 
-    # Add target files (these are the ones added with ly_add_target_files)
-    get_target_property(interface_target_files ${target} INTERFACE_LY_TARGET_FILES)
+    # Add target files (these are the ones added with o3de_add_target_files)
+    get_target_property(interface_target_files ${target} INTERFACE_O3DE_TARGET_FILES)
     if(interface_target_files)
         list(APPEND all_copy_dependencies ${interface_target_files})
     endif()
@@ -310,7 +310,7 @@ function(o3de_get_command_for_dependency)
     if(TARGET ${dependency})
 
         get_target_property(target_type ${dependency} TYPE)
-        if(NOT target_type IN_LIST LY_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
+        if(NOT target_type IN_LIST O3DE_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
             return()
         endif()
 
@@ -320,7 +320,7 @@ function(o3de_get_command_for_dependency)
             file(RELATIVE_PATH target_directory ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ${runtime_directory})
         endif()
 
-        # Query the SOURCE TYPE from the Target and pass it to the ly_copy command below
+        # Query the SOURCE TYPE from the Target and pass it to the o3de_copy command below
         get_property(source_type TARGET ${dependency} PROPERTY TYPE)
         # Also query if the source target is a gem module as well
         get_property(source_gem_module TARGET ${dependency} PROPERTY GEM_MODULE)
@@ -341,7 +341,7 @@ function(o3de_get_command_for_dependency)
     # including the ones we are building, need to be copied over. However, we add a check to prevent copying something
     # over itself. This detection cannot happen now because the target we are copying for varies.
     unset(runtime_command)
-    string(APPEND runtime_command "ly_copy(\"${source_file}\" \"${target_directory}\" TARGET_FILE_DIR \"@target_file_dir@\""
+    string(APPEND runtime_command "o3de_copy(\"${source_file}\" \"${target_directory}\" TARGET_FILE_DIR \"@target_file_dir@\""
         " SOURCE_TYPE \"${source_type}\" SOURCE_GEM_MODULE \"${source_gem_module}\")\n")
 
     set_property(GLOBAL PROPERTY O3DE_COMMAND_FOR_DEPENDENCY_${dependency} "${runtime_command}")
@@ -370,7 +370,7 @@ function(o3de_get_file_from_dependency)
     unset(source_file)
     if(TARGET ${dependency})
         get_property(target_type TARGET ${dependency} PROPERTY TYPE)
-        if(NOT target_type IN_LIST LY_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
+        if(NOT target_type IN_LIST O3DE_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
             return()
         endif()
 
@@ -413,24 +413,24 @@ function(o3de_transform_dependencies_to_files)
     endif()
 endfunction()
 
-function(ly_delayed_generate_runtime_dependencies)
+function(o3de_delayed_generate_runtime_dependencies)
 
-    get_property(additional_module_paths GLOBAL PROPERTY LY_ADDITIONAL_MODULE_PATH)
+    get_property(additional_module_paths GLOBAL PROPERTY O3DE_ADDITIONAL_MODULE_PATH)
     list(APPEND CMAKE_MODULE_PATH ${additional_module_paths})
 
-    get_property(all_targets GLOBAL PROPERTY LY_ALL_TARGETS)
+    get_property(all_targets GLOBAL PROPERTY O3DE_ALL_TARGETS)
     foreach(aliased_target IN LISTS all_targets)
 
         unset(target)
-        ly_de_alias_target(${aliased_target} target)
+        o3de_de_alias_target(${aliased_target} target)
 
-        # Exclude targets that dont produce runtime outputs
+        # Exclude targets that don't produce runtime outputs
         get_target_property(target_type ${target} TYPE)
-        if(NOT target_type IN_LIST LY_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
+        if(NOT target_type IN_LIST O3DE_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
             continue()
         endif()
 
-        unset(LY_COPY_COMMANDS)
+        unset(O3DE_COPY_COMMANDS)
         unset(runtime_depends)
 
         unset(target_copy_dependencies)
@@ -472,11 +472,11 @@ function(ly_delayed_generate_runtime_dependencies)
             o3de_get_command_for_dependency(COMMAND_VAR runtime_command
                 FILE_DEPENDENCY_VAR runtime_depend
                 DEPENDENCY "${dependency_for_target}")
-            string(APPEND LY_COPY_COMMANDS ${runtime_command})
+            string(APPEND O3DE_COPY_COMMANDS ${runtime_command})
             list(APPEND runtime_depends ${runtime_depend})
         endforeach()
 
-        # Generate the output file, note the STAMP_OUTPUT_FILE need to match with the one defined in LYWrappers.cmake
+        # Generate the output file, note the STAMP_OUTPUT_FILE need to match with the one defined in O3deWrappers.cmake
         set(STAMP_OUTPUT_FILE ${CMAKE_BINARY_DIR}/runtime_dependencies/$<CONFIG>/${target}.stamp)
 
         unset(target_file_dir)
@@ -507,11 +507,11 @@ function(ly_delayed_generate_runtime_dependencies)
         set(PYTHON_PACKAGES_ROOT_PATH "${PYTHON_ROOT_PATH}/packages")
         cmake_path(NORMAL_PATH PYTHON_PACKAGES_ROOT_PATH )
 
-        set(LY_CURRENT_PYTHON_PACKAGE_PATH "${PYTHON_PACKAGES_ROOT_PATH}/${LY_PYTHON_PACKAGE_NAME}")
-        cmake_path(NORMAL_PATH LY_CURRENT_PYTHON_PACKAGE_PATH )
+        set(O3DE_CURRENT_PYTHON_PACKAGE_PATH "${PYTHON_PACKAGES_ROOT_PATH}/${O3DE_PYTHON_PACKAGE_NAME}")
+        cmake_path(NORMAL_PATH O3DE_CURRENT_PYTHON_PACKAGE_PATH )
 
-        ly_file_read(${LY_RUNTIME_DEPENDENCIES_TEMPLATE} template_file)
-        string(CONFIGURE "${LY_COPY_COMMANDS}" LY_COPY_COMMANDS @ONLY)
+        o3de_file_read(${O3DE_RUNTIME_DEPENDENCIES_TEMPLATE} template_file)
+        string(CONFIGURE "${O3DE_COPY_COMMANDS}" O3DE_COPY_COMMANDS @ONLY)
         string(CONFIGURE "${template_file}" configured_template_file @ONLY)
         file(GENERATE
             OUTPUT ${CMAKE_BINARY_DIR}/runtime_dependencies/$<CONFIG>/${target}.cmake

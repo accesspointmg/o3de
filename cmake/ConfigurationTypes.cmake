@@ -8,7 +8,7 @@
 
 include_guard(GLOBAL)
 
-# By default, CMAKE_CONFIGURATION_TYPES = LY_CONFIGURATION_TYPES, but in installed SDKs, this
+# By default, CMAKE_CONFIGURATION_TYPES = O3DE_CONFIGURATION_TYPES, but in installed SDKs, this
 # file will be replaced with cmake/install/ConfigurationTypes.cmake and discover configurations
 # that are available from the SDK
-set(CMAKE_CONFIGURATION_TYPES ${LY_CONFIGURATION_TYPES} CACHE STRING "" FORCE)
+set(CMAKE_CONFIGURATION_TYPES ${O3DE_CONFIGURATION_TYPES} CACHE STRING "" FORCE)

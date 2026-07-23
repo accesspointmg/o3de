@@ -70,12 +70,12 @@ def Material_EmptyLibraryUsesDefault():
     import azlmbr.bus as bus
     import azlmbr.components
     import azlmbr.physics
-    import azlmbr.math as lymath
+    import azlmbr.math as o3demath
 
     from editor_python_test_tools.utils import Report
     from editor_python_test_tools.utils import TestHelper as helper
 
-    FORCE_IMPULSE = lymath.Vector3(5.0, 0.0, 0.0)
+    FORCE_IMPULSE = o3demath.Vector3(5.0, 0.0, 0.0)
     TIMEOUT = 3.0
     DISTANCE_TOLERANCE = 0.001
 
@@ -164,7 +164,7 @@ def Material_EmptyLibraryUsesDefault():
     Report.result(Tests.empty_sphere_bounced, empty_sphere.reached_max_bounce)
 
     # 4) Compare 'default_sphere' to 'empty_sphere'
-    sphere_bounces_equal = lymath.Math_IsClose(default_sphere.max_bounce, empty_sphere.max_bounce, DISTANCE_TOLERANCE)
+    sphere_bounces_equal = o3demath.Math_IsClose(default_sphere.max_bounce, empty_sphere.max_bounce, DISTANCE_TOLERANCE)
     Report.result(Tests.default_sphere_equals_empty, sphere_bounces_equal)
 
     # 5) Push the boxes and wait for them to come to rest
@@ -176,7 +176,7 @@ def Material_EmptyLibraryUsesDefault():
     # 6) Compare 'default_box' to 'empty_box'
     default_distance = default_box.position.GetDistance(default_box.start_position)
     empty_distance = empty_box.position.GetDistance(empty_box.start_position)
-    box_distances_equal = lymath.Math_IsClose(default_distance, empty_distance, DISTANCE_TOLERANCE)
+    box_distances_equal = o3demath.Math_IsClose(default_distance, empty_distance, DISTANCE_TOLERANCE)
     Report.result(Tests.default_box_equals_empty, box_distances_equal)
 
     # 7) Exit game mode and close editor

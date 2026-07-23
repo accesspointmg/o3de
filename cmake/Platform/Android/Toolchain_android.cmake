@@ -6,24 +6,24 @@
 #
 #
 
-if(LY_TOOLCHAIN_NDK_API_LEVEL)
+if(O3DE_TOOLCHAIN_NDK_API_LEVEL)
   return()
 endif()
 
 # Verify that the NDK environment is set and points to the support NDK
-if(NOT LY_NDK_DIR)
-    if(DEFINED ENV{LY_NDK_DIR})
-        set(LY_NDK_DIR $ENV{LY_NDK_DIR})
+if(NOT O3DE_NDK_DIR)
+    if(DEFINED ENV{O3DE_NDK_DIR})
+        set(O3DE_NDK_DIR $ENV{O3DE_NDK_DIR})
     endif()
 endif()
-file(TO_CMAKE_PATH "${LY_NDK_DIR}" LY_NDK_DIR)
-if(NOT LY_NDK_DIR)
+file(TO_CMAKE_PATH "${O3DE_NDK_DIR}" O3DE_NDK_DIR)
+if(NOT O3DE_NDK_DIR)
     message(FATAL_ERROR "Environment and cache var for NDK is empty. Could not find the NDK installation folder")
 endif()
 
-set(LY_ANDROID_NDK_TOOLCHAIN ${LY_NDK_DIR}/build/cmake/android.toolchain.cmake)
-if(NOT LY_NDK_DIR)
-    message(FATAL_ERROR "Invalid NDK Environment. Unable to locate android toolchain file: " ${LY_NDK_DIR})
+set(O3DE_ANDROID_NDK_TOOLCHAIN ${O3DE_NDK_DIR}/build/cmake/android.toolchain.cmake)
+if(NOT O3DE_NDK_DIR)
+    message(FATAL_ERROR "Invalid NDK Environment. Unable to locate android toolchain file: " ${O3DE_NDK_DIR})
 endif()
 
 
@@ -52,7 +52,7 @@ set(ANDROID_PLATFORM android-${ANDROID_NATIVE_API_LEVEL})
 # Make a backup of the CMAKE_FIND_ROOT_PATH since it will be altered by the NDK toolchain file and needs to be restored after the input
 set(BACKUP_CMAKE_FIND_ROOT_PATH ${CMAKE_FIND_ROOT_PATH})
 
-include(${LY_ANDROID_NDK_TOOLCHAIN})
+include(${O3DE_ANDROID_NDK_TOOLCHAIN})
 
 set(CMAKE_FIND_ROOT_PATH ${BACKUP_CMAKE_FIND_ROOT_PATH})
 
@@ -70,30 +70,30 @@ set(CMAKE_CXX_STANDARD_LIBRARIES "")
 # We need to pass down the Android API Level, and the Package Revision's Major and Minor number as preprocessor values.
 # We will extract them from 'ANDROID_NDK_SOURCE_PROPERTIES' which will read from the NDK's properties file.
 # (note: we cannot use 'ANDROID_NDK_REVISION' because the toolchain combines the Major and Minor revisions
-string(REGEX MATCHALL "Pkg.Revision = (([0-9]+).([0-9]+).[0-9]+)" LY_NDK_PKG_REVISION_LINE ${ANDROID_NDK_SOURCE_PROPERTIES})
-set(LY_TOOLCHAIN_NDK_PKG_MAJOR ${CMAKE_MATCH_2})
-set(LY_TOOLCHAIN_NDK_PKG_MINOR ${CMAKE_MATCH_3})
-set(LY_TOOLCHAIN_NDK_API_LEVEL ${ANDROID_PLATFORM_LEVEL})
+string(REGEX MATCHALL "Pkg.Revision = (([0-9]+).([0-9]+).[0-9]+)" O3DE_NDK_PKG_REVISION_LINE ${ANDROID_NDK_SOURCE_PROPERTIES})
+set(O3DE_TOOLCHAIN_NDK_PKG_MAJOR ${CMAKE_MATCH_2})
+set(O3DE_TOOLCHAIN_NDK_PKG_MINOR ${CMAKE_MATCH_3})
+set(O3DE_TOOLCHAIN_NDK_API_LEVEL ${ANDROID_PLATFORM_LEVEL})
 
 set(MIN_NDK_VERSION 21)
 
-if(${LY_TOOLCHAIN_NDK_PKG_MAJOR} VERSION_LESS ${MIN_NDK_VERSION})
-    message(FATAL_ERROR "Unsupported NDK Version ${LY_TOOLCHAIN_NDK_PKG_MAJOR}.${LY_TOOLCHAIN_NDK_PKG_MINOR}. Must be version ${MIN_NDK_VERSION} or above")
+if(${O3DE_TOOLCHAIN_NDK_PKG_MAJOR} VERSION_LESS ${MIN_NDK_VERSION})
+    message(FATAL_ERROR "Unsupported NDK Version ${O3DE_TOOLCHAIN_NDK_PKG_MAJOR}.${O3DE_TOOLCHAIN_NDK_PKG_MINOR}. Must be version ${MIN_NDK_VERSION} or above")
 else()
-    message(STATUS "Detected NDK Version ${LY_TOOLCHAIN_NDK_PKG_MAJOR}.${LY_TOOLCHAIN_NDK_PKG_MINOR}")
+    message(STATUS "Detected NDK Version ${O3DE_TOOLCHAIN_NDK_PKG_MAJOR}.${O3DE_TOOLCHAIN_NDK_PKG_MINOR}")
 endif()
 
-list(APPEND CMAKE_TRY_COMPILE_PLATFORM_VARIABLES LY_NDK_DIR)
+list(APPEND CMAKE_TRY_COMPILE_PLATFORM_VARIABLES O3DE_NDK_DIR)
 
 
 # The Native Activity Glue source file needs to be included in any project that will be loaded
 # through the android launcher APK. This source file resides directly in the NDK source folder structure
-# based on the configured NDK Path set with ${LY_NDK_DIR}
+# based on the configured NDK Path set with ${O3DE_NDK_DIR}
 
 
 # Locate and verify the source folder based on the NDK path
-set(LY_NDK_NATIVE_APP_GLUE_SRC_DIR "${LY_NDK_DIR}/sources/android/native_app_glue")
-file(TO_CMAKE_PATH ${LY_NDK_NATIVE_APP_GLUE_SRC_DIR} LY_NDK_NATIVE_APP_GLUE_SRC_DIR)
-if(NOT IS_DIRECTORY "${LY_NDK_NATIVE_APP_GLUE_SRC_DIR}")
-    message(FATAL_ERROR "Could not find android native app glue directory: ${LY_NDK_NATIVE_APP_GLUE_SRC_DIR}")
+set(O3DE_NDK_NATIVE_APP_GLUE_SRC_DIR "${O3DE_NDK_DIR}/sources/android/native_app_glue")
+file(TO_CMAKE_PATH ${O3DE_NDK_NATIVE_APP_GLUE_SRC_DIR} O3DE_NDK_NATIVE_APP_GLUE_SRC_DIR)
+if(NOT IS_DIRECTORY "${O3DE_NDK_NATIVE_APP_GLUE_SRC_DIR}")
+    message(FATAL_ERROR "Could not find android native app glue directory: ${O3DE_NDK_NATIVE_APP_GLUE_SRC_DIR}")
 endif()

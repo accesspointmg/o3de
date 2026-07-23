@@ -6,81 +6,100 @@
 #
 
 include_guard()
-
-include(${LY_ROOT_FOLDER}/cmake/LySet.cmake)
+set(_cmake_3rdPartyPackages_cmake ${CMAKE_CURRENT_LIST_DIR})
 
 # OVERVIEW:
 # this is the Open 3D Engine Package system.
 # It allows you to host a package on a server and download it as needed when a target
 # requests that specific package, or manually whenever you want to do so.
-# Most users will just call ly_associate_package(...) to associate a package with a target
+# Most users will just call o3de_associate_package(...) to associate a package with a target
 # and the system will automatically get that package when a target asks for it as a 
-# dependency.  If you want to manually activate a package, you can use ly_download_associated_package
+# dependency.  If you want to manually activate a package, you can use o3de_download_associated_package
 # to bring its find* scripts into scope (and download if needs be)
-# and you can also use ly_set_package_download_location(..) to change it to install
+# and you can also use o3de_set_package_download_location(..) to change it to install
 # somewhere besides the default install location.
 
 # cache variables:
 
-# LY_PACKAGE_SERVER_URLS:
+# O3DE_PACKAGE_SERVER_URLS:
 # missing packages are downloaded from this list of URLS, first one to match wins.
 # Besides normal http and https URLs, you can also use FILE urls,
-# for example "file:///mnt/d/lyengine/packageSource/packages;file:///d:/lyengine/packageSource/packages"
+# for example "file:///mnt/d/o3deengine/packageSource/packages;file:///d:/o3deengine/packageSource/packages"
 # also allowed:
-# "s3://bucketname" (it will use LYPackage_S3Downloader.cmake to download it from a s3 bucket)
+# "s3://bucketname" (it will use O3dePackage_S3Downloader.cmake to download it from a s3 bucket)
 
-set(LY_PACKAGE_SERVER_URLS "https://d3t6xeg4fgfoum.cloudfront.net" CACHE STRING "Server URLS to fetch packages from")
-# Note: if you define the "LY_PACKAGE_SERVER_URLS" environment variable
+set(O3DE_PACKAGE_SERVER_URLS "https://d3t6xeg4fgfoum.cloudfront.net" CACHE STRING "Server URLS to fetch packages from")
+# Note: if you define the "O3DE_PACKAGE_SERVER_URLS" environment variable
 # it will be added to this value in the front, so that users can set
 # an env var and use that as an "additional" set of servers beyond the default set.
-if (DEFINED ENV{LY_PACKAGE_SERVER_URLS})
-    set(LY_PACKAGE_SERVER_URLS $ENV{LY_PACKAGE_SERVER_URLS} ${LY_PACKAGE_SERVER_URLS})
+if (DEFINED ENV{O3DE_PACKAGE_SERVER_URLS})
+    set(O3DE_PACKAGE_SERVER_URLS $ENV{O3DE_PACKAGE_SERVER_URLS} ${O3DE_PACKAGE_SERVER_URLS})
+endif()
+
+# Resolve the third-party root before it is baked into the cache paths:
+# 1. explicit -DO3DE_3RDPARTY_PATH
+# 2. legacy -DLY_3RDPARTY_PATH (upstream name, still used by tooling)
+# 3. the manifest's default_third_party_path
+# 4. ~/.o3de/3rdParty
+if(NOT O3DE_3RDPARTY_PATH)
+    if(LY_3RDPARTY_PATH)
+        set(O3DE_3RDPARTY_PATH ${LY_3RDPARTY_PATH})
+    else()
+        get_property(o3de_manifest_third_party GLOBAL PROPERTY O3DE_MANIFEST_DEFAULT_THIRD_PARTY_PATH)
+        if(o3de_manifest_third_party)
+            set(O3DE_3RDPARTY_PATH ${o3de_manifest_third_party})
+        else()
+            o3de_get_user_home_path(o3de_user_home)
+            set(O3DE_3RDPARTY_PATH ${o3de_user_home}/.o3de/3rdParty)
+        endif()
+    endif()
+    file(TO_CMAKE_PATH "${O3DE_3RDPARTY_PATH}" O3DE_3RDPARTY_PATH)
 endif()
 
 # If you keep packages after downloading, then they can be moved to a network share
 # or checked into source control so that others on the same project can avoid re-downloading
-set(LY_PACKAGE_KEEP_AFTER_DOWNLOADING TRUE CACHE BOOL "If enabled, packages will be kept after downloading them for later re-use")
-set(LY_PACKAGE_DOWNLOAD_CACHE_LOCATION @LY_3RDPARTY_PATH@/downloaded_packages CACHE PATH "Download location for packages (Defaults to @LY_3RDPARTY_PATH@/downloaded_packages)")
-if (DEFINED ENV{LY_PACKAGE_DOWNLOAD_CACHE_LOCATION})
-    set(LY_PACKAGE_DOWNLOAD_CACHE_LOCATION $ENV{LY_PACKAGE_DOWNLOAD_CACHE_LOCATION})
+set(O3DE_PACKAGE_KEEP_AFTER_DOWNLOADING TRUE CACHE BOOL "If enabled, packages will be kept after downloading them for later re-use")
+set(O3DE_PACKAGE_DOWNLOAD_CACHE_LOCATION @O3DE_3RDPARTY_PATH@/downloaded_packages CACHE PATH "Download location for packages (Defaults to @O3DE_3RDPARTY_PATH@/downloaded_packages)")
+if (DEFINED ENV{O3DE_PACKAGE_DOWNLOAD_CACHE_LOCATION})
+    set(O3DE_PACKAGE_DOWNLOAD_CACHE_LOCATION $ENV{O3DE_PACKAGE_DOWNLOAD_CACHE_LOCATION})
 endif()
-string(CONFIGURE ${LY_PACKAGE_DOWNLOAD_CACHE_LOCATION} LY_PACKAGE_DOWNLOAD_CACHE_LOCATION @ONLY)
+string(CONFIGURE ${O3DE_PACKAGE_DOWNLOAD_CACHE_LOCATION} O3DE_PACKAGE_DOWNLOAD_CACHE_LOCATION @ONLY)
 
-# LY_PACKAGE_UNPACK_LOCATION - you can change this to any path reachable.
-set(LY_PACKAGE_UNPACK_LOCATION @LY_3RDPARTY_PATH@/packages CACHE PATH "Unpack location of downloaded packages (Defaults to @LY_3RDPARTY_PATH@/packages)")
-if (DEFINED ENV{LY_PACKAGE_UNPACK_LOCATION})
-    set(LY_PACKAGE_UNPACK_LOCATION $ENV{LY_PACKAGE_UNPACK_LOCATION})
+# O3DE_PACKAGE_UNPACK_LOCATION - you can change this to any path reachable.
+set(O3DE_PACKAGE_UNPACK_LOCATION @O3DE_3RDPARTY_PATH@/packages CACHE PATH "Unpack location of downloaded packages (Defaults to @O3DE_3RDPARTY_PATH@/packages)")
+if (DEFINED ENV{O3DE_PACKAGE_UNPACK_LOCATION})
+    set(O3DE_PACKAGE_UNPACK_LOCATION $ENV{O3DE_PACKAGE_UNPACK_LOCATION})
 endif()
-string(CONFIGURE ${LY_PACKAGE_UNPACK_LOCATION} LY_PACKAGE_UNPACK_LOCATION @ONLY)
+string(CONFIGURE ${O3DE_PACKAGE_UNPACK_LOCATION} O3DE_PACKAGE_UNPACK_LOCATION @ONLY)
 
 # while developing you can set one or both to true to force auto downloads from your local cache
-set(LY_PACKAGE_VALIDATE_CONTENTS FALSE CACHE BOOL "If enabled, will fully validate every file in every package based on the SHA256SUMS file from the package")
-set(LY_PACKAGE_VALIDATE_PACKAGE FALSE CACHE BOOL "If enabled, will validate that the downloaded package files hash matches the expected hash even if already downloaded and verified before.")
+set(O3DE_PACKAGE_VALIDATE_CONTENTS FALSE CACHE BOOL "If enabled, will fully validate every file in every package based on the SHA256SUMS file from the package")
+set(O3DE_PACKAGE_VALIDATE_PACKAGE FALSE CACHE BOOL "If enabled, will validate that the downloaded package files hash matches the expected hash even if already downloaded and verified before.")
 
 # you can also enable verbose/debug logging from the package system.
-set(LY_PACKAGE_DEBUG FALSE CACHE BOOL "If enabled, will output detailed information during package operations" )
+set(O3DE_PACKAGE_DEBUG FALSE CACHE BOOL "If enabled, will output detailed information during package operations" )
 
 # ---- below this line, no cache variables or tweakables ---------
 
-ly_set(LY_PACKAGE_EXT              ".tar.xz")
-ly_set(LY_PACKAGE_HASH_EXT         ".tar.xz.SHA256SUMS")
-ly_set(LY_PACKAGE_CONTENT_HASH_EXT ".tar.xz.content.SHA256SUMS")
+o3de_set(O3DE_PACKAGE_EXT              ".tar.xz")
+o3de_set(O3DE_PACKAGE_HASH_EXT         ".tar.xz.SHA256SUMS")
+o3de_set(O3DE_PACKAGE_CONTENT_HASH_EXT ".tar.xz.content.SHA256SUMS")
 
-set(LY_PACKAGE_DOWNLOAD_RETRY_COUNT 3 CACHE STRING "3")
+set(O3DE_PACKAGE_DOWNLOAD_RETRY_COUNT 3 CACHE STRING "3")
 
 # accounts for it being undefined or blank
-if ("${LY_PACKAGE_DOWNLOAD_CACHE_LOCATION}" STREQUAL "")
-    message(FATAL_ERROR "ly_package: LY_PACKAGE_DOWNLOAD_CACHE_LOCATION must be defined.")
+if ("${O3DE_PACKAGE_DOWNLOAD_CACHE_LOCATION}" STREQUAL "")
+    message(FATAL_ERROR "o3de_package: O3DE_PACKAGE_DOWNLOAD_CACHE_LOCATION must be defined.")
 endif()
 
-# used to send messages and hide them unless the LY_PACKAGE_DEBUG var is true
-macro(ly_package_message)
-    if (LY_PACKAGE_DEBUG)
+# used to send messages and hide them unless the O3DE_PACKAGE_DEBUG var is true
+macro(o3de_package_message)
+    if (O3DE_PACKAGE_DEBUG)
         message(${ARGN})
     endif()
 endmacro()
 
-include(${LY_ROOT_FOLDER}/cmake/LYPackage_S3Downloader.cmake)
+include(${_cmake_3rdPartyPackages_cmake}/O3dePackage_S3Downloader.cmake)
 
 # Attempts one time to download a file.
 # sets should_retry to true if the caller should retry due to an intermittent problem
@@ -114,10 +133,10 @@ function(download_file_internal)
     unset(${download_file_internal_SHOULD_RETRY} PARENT_SCOPE)
     
     # note that below "results" is a local variable and download_file_internal_RESULTS will be set to it before exit.
-    ly_is_s3_url(${download_file_internal_URL} result_is_s3_bucket)
+    o3de_is_s3_url(${download_file_internal_URL} result_is_s3_bucket)
 
     if (result_is_s3_bucket)
-        ly_s3_download("${download_file_internal_URL}" ${download_file_internal_TARGET_FILE} results)
+        o3de_s3_download("${download_file_internal_URL}" ${download_file_internal_TARGET_FILE} results)
     else()
         file(DOWNLOAD "${download_file_internal_URL}" ${download_file_internal_TARGET_FILE} STATUS results TLS_VERIFY ON LOG logic)
         list(APPEND results ${log})
@@ -132,7 +151,7 @@ function(download_file_internal)
         if(target_size EQUAL 0)
             if(code_returned EQUAL 0)
                 # the server said "OK" but gave us a bad file.  Change this to not OK!
-                ly_package_message("Server gave us a zero byte file but still said ${results}, retrying...")
+                o3de_package_message("Server gave us a zero byte file but still said ${results}, retrying...")
                 set(code_returned 22)
                 set(results "22;\nThe requested URL returned error: 500 Internal Error - Zero byte file returned despite good exit code\n")
                 set(${download_file_internal_SHOULD_RETRY} TRUE PARENT_SCOPE)
@@ -141,7 +160,7 @@ function(download_file_internal)
     else()
         # the file was not created.  If the server still returned OK then we need to change this to not OK
         if (code_returned EQUAL 0)
-            ly_package_message("Server gave us no file, but said ${results}, retrying...") 
+            o3de_package_message("Server gave us no file, but said ${results}, retrying...") 
             set(code_returned 22)
             set(results "22;\nThe requested URL returned error: 500 Internal Error - Zero byte file returned despite good exit code\n")
             set(${download_file_internal_SHOULD_RETRY} TRUE PARENT_SCOPE)
@@ -172,7 +191,7 @@ function(download_file_internal)
             string(REGEX MATCH "The requested URL returned error\\:([^\n]*)[\n]" found_string "${results}")
             if (found_string)
                 # message the log before you replace it for debugging
-                ly_package_message("${results}")
+                o3de_package_message("${results}")
                 # replace it.
                 set(results ${code_returned} ${found_string})
                 # if we get here, 'found_string' contains the one line response code from the server
@@ -180,7 +199,7 @@ function(download_file_internal)
                 # for example, ' 404 - Not Found'.  It will only contain this one line.
                 # See if its a 500 or 503 code specifically, if so, we need to retry.
                 if (found_string MATCHES "500" OR found_string MATCHES "503")
-                    ly_package_message("500 or 503 code returned from server, will retry...")
+                    o3de_package_message("500 or 503 code returned from server, will retry...")
                     set(${download_file_internal_SHOULD_RETRY} TRUE PARENT_SCOPE)
                 endif()
             endif()
@@ -220,53 +239,53 @@ function(download_file)
 
     set(${download_file_RESULTS} "-1;unknown_error" PARENT_SCOPE)
 
-    foreach(retry_count RANGE 0 ${LY_PACKAGE_DOWNLOAD_RETRY_COUNT})
+    foreach(retry_count RANGE 0 ${O3DE_PACKAGE_DOWNLOAD_RETRY_COUNT})
         download_file_internal( URL ${download_file_URL} TARGET_FILE ${download_file_TARGET_FILE} RESULTS results EXPECTED_HASH ${download_file_EXPECTED_HASH} SHOULD_RETRY should_retry)
         if (NOT should_retry)
             break()
         endif()
-        ly_package_message("${retry_count} / ${LY_PACKAGE_DOWNLOAD_RETRY_COUNT} download retry attempts.")
+        o3de_package_message("${retry_count} / ${O3DE_PACKAGE_DOWNLOAD_RETRY_COUNT} download retry attempts.")
     endforeach()
 
     set(${download_file_RESULTS} ${results} PARENT_SCOPE)
 endfunction()
 
 
-#! ly_package_internal_download_package - note, the list of 3rd party urls is a list!
+#! o3de_package_internal_download_package - note, the list of 3rd party urls is a list!
 # given a package name it will loop over the servers in the list and try each one
 # until one has the file AND has the correct hash for that file.
-function(ly_package_internal_download_package package_name url_variable)
+function(o3de_package_internal_download_package package_name url_variable)
     unset(${url_variable} PARENT_SCOPE)
 
     unset(error_messages)
     
     # to avoid spamming with useless repeated warnings, we save
     # a global that indicates we already failed to find it
-    if (NOT LY_PACKAGE_SERVER_URLS)
-        message(SEND_ERROR "ly_package:     - LY_PACKAGE_SERVER_URLS is empty, cannot download packages.  enable LY_PACKAGE_DEBUG for details")
+    if (NOT O3DE_PACKAGE_SERVER_URLS)
+        message(SEND_ERROR "o3de_package:     - O3DE_PACKAGE_SERVER_URLS is empty, cannot download packages.  enable O3DE_PACKAGE_DEBUG for details")
         return()
     endif()
 
-    ly_get_package_expected_hash(${package_name} package_expected_hash)
+    o3de_get_package_expected_hash(${package_name} package_expected_hash)
 
-    foreach(server_url ${LY_PACKAGE_SERVER_URLS})
-        set(download_url ${server_url}/${package_name}${LY_PACKAGE_EXT})
+    foreach(server_url ${O3DE_PACKAGE_SERVER_URLS})
+        set(download_url ${server_url}/${package_name}${O3DE_PACKAGE_EXT})
 
-        ly_package_get_target_cache(${package_name} package_download_cache_location)
+        o3de_package_get_target_cache(${package_name} package_download_cache_location)
 
-        set(download_target ${package_download_cache_location}/${package_name}${LY_PACKAGE_EXT})
+        set(download_target ${package_download_cache_location}/${package_name}${O3DE_PACKAGE_EXT})
 
         file(REMOVE ${download_target})
 
-        ly_package_message(STATUS "ly_package: trying to download ${download_url} to ${download_target}")
-        ly_get_package_expected_hash(${package_name} expected_package_hash)
+        o3de_package_message(STATUS "o3de_package: trying to download ${download_url} to ${download_target}")
+        o3de_get_package_expected_hash(${package_name} expected_package_hash)
 
         download_file(URL ${download_url} TARGET_FILE ${download_target} EXPECTED_HASH ${expected_package_hash} RESULTS results)
         list(GET results 0 status_code)
         
         if (${status_code} EQUAL 0 AND EXISTS ${download_target})
             set(${url_variable} ${server_url} PARENT_SCOPE)
-            ly_package_message(STATUS "ly_package:     - downloaded ${server_url} for package ${package_name}")
+            o3de_package_message(STATUS "o3de_package:     - downloaded ${server_url} for package ${package_name}")
             return()
         else()
             # remove the status code and treat the rest of the list as the error.
@@ -281,9 +300,9 @@ function(ly_package_internal_download_package package_name url_variable)
     endforeach()
     # note that we FATAL_ERROR here because otherwise, some of the packages we provide would fall through
     # and use unknown versions possibly present somewhere in the user's system - but if we wanted that to happen
-    # we wouldn't have used a ly-package-association in the first place!  Continuing from there would just cause
+    # we wouldn't have used a o3de-package-association in the first place!  Continuing from there would just cause
     # a cascade of errors even harder to track down.
-    set(final_error_message "ly_package:     - Unable to get package ${package_name} from any download server.  Enable LY_PACKAGE_DEBUG to debug.")
+    set(final_error_message "o3de_package:     - Unable to get package ${package_name} from any download server.  Enable O3DE_PACKAGE_DEBUG to debug.")
     foreach(error_message ${error_messages})
         set(final_error_message "${final_error_message}\n${error_message}")
     endforeach()
@@ -321,17 +340,17 @@ function(parse_sha256sums_line input_hash_line output_hash output_file_name)
     endif()
 endfunction()
 
-# ly_validate_sha256sums_file -- internal function
+# o3de_validate_sha256sums_file -- internal function
 # given the path to a SHA256SUMS file and a working directory,
 # verifies the hashes based on the current settings.
 # --- sets HASH_WAS_VALID TRUE on parent scope if valid, FALSE otherwise.
 # Note that it does not currently check if extra files are present, only that
 # each file that is supposed to be there, is there and has the right hash.
-function(ly_validate_sha256sums_file working_directory path_to_sha256sums_file)
+function(o3de_validate_sha256sums_file working_directory path_to_sha256sums_file)
     set(HASH_WAS_VALID FALSE PARENT_SCOPE)
 
     if (NOT EXISTS ${path_to_sha256sums_file})
-        ly_package_message(STATUS "ly_package: Could not find SHA256SUMS file: ${path_to_sha256sums_file}")
+        o3de_package_message(STATUS "o3de_package: Could not find SHA256SUMS file: ${path_to_sha256sums_file}")
         return()
     endif()
 
@@ -350,78 +369,78 @@ function(ly_validate_sha256sums_file working_directory path_to_sha256sums_file)
         parse_sha256sums_line("${hash_line}" expected_file_hash file_name)
 
         if (NOT expected_file_hash OR NOT file_name)
-            message(SEND_ERROR "ly_package: Invalid format SHA256SUMS file: ${path_to_sha256sums_file} line ${hash_line} - cannot verify hashes.  Enable LY_PACKAGE_DEBUG to debug.")
+            message(SEND_ERROR "o3de_package: Invalid format SHA256SUMS file: ${path_to_sha256sums_file} line ${hash_line} - cannot verify hashes.  Enable O3DE_PACKAGE_DEBUG to debug.")
             return()
         endif() 
 
         if (EXISTS ${working_directory}/${file_name})
-            if (LY_PACKAGE_VALIDATE_CONTENTS)
+            if (O3DE_PACKAGE_VALIDATE_CONTENTS)
                 file(SHA256 ${working_directory}/${file_name} existing_hash)
                 if (NOT "${existing_hash}" STREQUAL "${expected_file_hash}" )
-                    ly_package_message(STATUS "ly_package: File hash mismatch: ${working_directory}/${file_name}")
+                    o3de_package_message(STATUS "o3de_package: File hash mismatch: ${working_directory}/${file_name}")
                     set(ANY_HASH_MISMATCHES TRUE)
                 else()
-                    ly_package_message(STATUS "ly_package: File hash matches: ${expected_file_hash} - ${file_name}")
+                    o3de_package_message(STATUS "o3de_package: File hash matches: ${expected_file_hash} - ${file_name}")
                 endif()
             endif()
         else()
-            ly_package_message(STATUS "ly_package: Expected file was not found: ${working_directory}/${file_name}")
+            o3de_package_message(STATUS "o3de_package: Expected file was not found: ${working_directory}/${file_name}")
             set(ANY_HASH_MISMATCHES TRUE)
         endif()
     endforeach()
 
     if (${ANY_HASH_MISMATCHES})
-        ly_package_message(STATUS "ly_package: Validation failed - files were missing, or had hash mismatches.")
+        o3de_package_message(STATUS "o3de_package: Validation failed - files were missing, or had hash mismatches.")
     else()
         set(HASH_WAS_VALID TRUE PARENT_SCOPE)
     endif()
 endfunction()
 
-function(ly_package_get_target_folder package_name output_variable_name)
+function(o3de_package_get_target_folder package_name output_variable_name)
     # is it grafted onto the tree elsewhere?
-    get_property(overridden_location GLOBAL PROPERTY LY_PACKAGE_DOWNLOAD_LOCATION_${package_name})
+    get_property(overridden_location GLOBAL PROPERTY O3DE_PACKAGE_DOWNLOAD_LOCATION_${package_name})
     if (overridden_location)
         set(${output_variable_name} ${overridden_location} PARENT_SCOPE)
-    elseif(NOT "${LY_PACKAGE_UNPACK_LOCATION}" STREQUAL "")
-        set(${output_variable_name} ${LY_PACKAGE_UNPACK_LOCATION} PARENT_SCOPE)
+    elseif(NOT "${O3DE_PACKAGE_UNPACK_LOCATION}" STREQUAL "")
+        set(${output_variable_name} ${O3DE_PACKAGE_UNPACK_LOCATION} PARENT_SCOPE)
     else()
-        message(WARNING "ly_package: Could not locate the LY_PACKAGE_UNPACK_LOCATION variable"
-                    "'${LY_PACKAGE_UNPACK_LOCATION}' please fill it in!"
+        message(WARNING "o3de_package: Could not locate the O3DE_PACKAGE_UNPACK_LOCATION variable"
+                    "'${O3DE_PACKAGE_UNPACK_LOCATION}' please fill it in!"
                     " To compensate, this script will unpack into the build folder")
         set(${output_variable_name} ${CMAKE_BINARY_DIR} PARENT_SCOPE)
     endif()
 endfunction()
 
 #! Get the target cache folder
-function(ly_package_get_target_cache package_name output_variable_name)
-    get_property(overridden_location GLOBAL PROPERTY LY_PACKAGE_DOWNLOAD_CACHE_LOCATION_${package_name})
+function(o3de_package_get_target_cache package_name output_variable_name)
+    get_property(overridden_location GLOBAL PROPERTY O3DE_PACKAGE_DOWNLOAD_CACHE_LOCATION_${package_name})
     if (overridden_location)
         set(${output_variable_name} ${overridden_location} PARENT_SCOPE)
     else()
-        set(${output_variable_name} ${LY_PACKAGE_DOWNLOAD_CACHE_LOCATION} PARENT_SCOPE)
+        set(${output_variable_name} ${O3DE_PACKAGE_DOWNLOAD_CACHE_LOCATION} PARENT_SCOPE)
     endif()
 endfunction()
 
 #! given the name of a package, validate that all files are present and match as appropriate
-function(ly_validate_package package_name)
-    ly_package_message(STATUS "ly_package: Validating ${package_name}...")
+function(o3de_validate_package package_name)
+    o3de_package_message(STATUS "o3de_package: Validating ${package_name}...")
     unset(${package_name}_VALIDATED PARENT_SCOPE)
 
-    ly_package_get_target_folder(${package_name} DOWNLOAD_LOCATION)
+    o3de_package_get_target_folder(${package_name} DOWNLOAD_LOCATION)
 
     if (NOT EXISTS "${DOWNLOAD_LOCATION}/${package_name}")
-        ly_package_message(STATUS "ly_package:     - ${package_name} is missing from ${DOWNLOAD_LOCATION}")
+        o3de_package_message(STATUS "o3de_package:     - ${package_name} is missing from ${DOWNLOAD_LOCATION}")
         return()
     endif()
     
     set(hash_file_name ${DOWNLOAD_LOCATION}/${package_name}/SHA256SUMS)
     set(json_file_name ${DOWNLOAD_LOCATION}/${package_name}/PackageInfo.json)
     if (NOT EXISTS ${hash_file_name})
-        ly_package_message(STATUS "Hash file missing from package ${package_name} (or package does not exist at all)")
+        o3de_package_message(STATUS "Hash file missing from package ${package_name} (or package does not exist at all)")
         return()
     endif()
     if (NOT EXISTS ${json_file_name})
-        ly_package_message(STATUS "Package info file missing from package: ${json_file_name}")
+        o3de_package_message(STATUS "Package info file missing from package: ${json_file_name}")
         return()
     endif()
 
@@ -431,75 +450,75 @@ function(ly_validate_package package_name)
         # In order to avoid re-downloading the package we react to a missing stamp file by creating a new one.
         # This will cause any logic that wants to do things if the package is 'newer' to re-run, which is
         # safer than the alternative of not running things that do need to run when packages are downloaded.
-        ly_package_message(STATUS "ly_package: Stamp file was missing, restoring: ${package_stamp_file_name}")
+        o3de_package_message(STATUS "o3de_package: Stamp file was missing, restoring: ${package_stamp_file_name}")
         file(TOUCH ${package_stamp_file_name})
     endif()
 
-    if (LY_PACKAGE_VALIDATE_PACKAGE)
+    if (O3DE_PACKAGE_VALIDATE_PACKAGE)
         # this message is unconditional because its not the default to do this and also its much slower.
         # The package hash is always checked automatically on first downloard regardless of the value of this
         # variable, so if this variable is true, a user explicitly asked to do this.
-        message(STATUS "Checking downloaded package ${package_name} because LY_PACKAGE_VALIDATE_PACKAGE is TRUE")
-        ly_package_get_target_cache(${package_name} package_download_cache_location)
-        set(temp_download_target ${package_download_cache_location}/${package_name}${LY_PACKAGE_EXT})
-        ly_get_package_expected_hash(${package_name} expected_package_hash)
+        message(STATUS "Checking downloaded package ${package_name} because O3DE_PACKAGE_VALIDATE_PACKAGE is TRUE")
+        o3de_package_get_target_cache(${package_name} package_download_cache_location)
+        set(temp_download_target ${package_download_cache_location}/${package_name}${O3DE_PACKAGE_EXT})
+        o3de_get_package_expected_hash(${package_name} expected_package_hash)
         if (EXISTS ${temp_download_target})
             file(SHA256 ${temp_download_target} existing_hash)
         endif()
 
         if (NOT "${existing_hash}" STREQUAL "${expected_package_hash}" )
             # either the hash doesn't match or the file doesn't exist.  Either way, we need to force download it again
-            ly_package_message(STATUS "LY_PACKAGE_VALIDATE_PACKAGE : $[package_name}${LY_PACKAGE_EXT} is either missing or has the wrong hash, re-downloading")
+            o3de_package_message(STATUS "O3DE_PACKAGE_VALIDATE_PACKAGE : $[package_name}${O3DE_PACKAGE_EXT} is either missing or has the wrong hash, re-downloading")
             return()
         endif()
     endif()
 
-    if (NOT LY_PACKAGE_VALIDATE_CONTENTS)
-        ly_package_message(STATUS "Basic validation checks performed only becuase LY_PACKAGE_VALIDATE_CONTENTS is not enabled.")
+    if (NOT O3DE_PACKAGE_VALIDATE_CONTENTS)
+        o3de_package_message(STATUS "Basic validation checks performed only becuase O3DE_PACKAGE_VALIDATE_CONTENTS is not enabled.")
         set(${package_name}_VALIDATED TRUE PARENT_SCOPE)
-        ly_package_message(STATUS "ly_package: Validated ${package_name} - Basic Validation OK")
+        o3de_package_message(STATUS "o3de_package: Validated ${package_name} - Basic Validation OK")
         return()
     endif()
 
-    ly_validate_sha256sums_file(
+    o3de_validate_sha256sums_file(
             ${DOWNLOAD_LOCATION}/${package_name} 
             ${DOWNLOAD_LOCATION}/${package_name}/SHA256SUMS)
     
     if (HASH_WAS_VALID)
         set(${package_name}_VALIDATED TRUE PARENT_SCOPE)
-        ly_package_message(STATUS "ly_package: Validated ${package_name} - Full Validation OK")
+        o3de_package_message(STATUS "o3de_package: Validated ${package_name} - Full Validation OK")
     endif()
 endfunction()
 
-# ly_force_download_package 
+# o3de_force_download_package 
 # forces the download of a third party library regardless of current situation
 # package_name is like 'zlib-1.2.8-platform', not a file name or URL.
 # ---> Sets ${package_name}_VALIDATED on parent scope.  TRUE only if the package
 # was successfully validated, including hash of contents.
 
-function(ly_force_download_package package_name)
+function(o3de_force_download_package package_name)
     unset(${package_name}_FOUND PARENT_SCOPE)
     unset(${package_name}_VALIDATED PARENT_SCOPE)
 
-    ly_package_get_target_folder(${package_name} DOWNLOAD_LOCATION)
+    o3de_package_get_target_folder(${package_name} DOWNLOAD_LOCATION)
 
     # this function contains a REMOVE_RECURSE.  Because of that, we're going to do extra
     # validation on the inputs.
     # its not good enough for the variable to just exist but be empty, so we build strings
     if ("${package_name}" STREQUAL "" OR "${DOWNLOAD_LOCATION}" STREQUAL "")
-        message(FATAL_ERROR "ly_package: ly_force_download_package called with invalid params!  Enable LY_PACKAGE_DEBUG to debug.")
+        message(FATAL_ERROR "o3de_package: o3de_force_download_package called with invalid params!  Enable O3DE_PACKAGE_DEBUG to debug.")
     endif()
 
     set(final_folder ${DOWNLOAD_LOCATION}/${package_name})
 
     # is the package already present in the download cache, with the correct hash?
-    ly_package_get_target_cache(${package_name} package_download_cache_location)
-    set(temp_download_target ${package_download_cache_location}/${package_name}${LY_PACKAGE_EXT})
-    ly_get_package_expected_hash(${package_name} expected_package_hash)
+    o3de_package_get_target_cache(${package_name} package_download_cache_location)
+    set(temp_download_target ${package_download_cache_location}/${package_name}${O3DE_PACKAGE_EXT})
+    o3de_get_package_expected_hash(${package_name} expected_package_hash)
 
     # can we reuse the download we already have in our download cache?
     if (EXISTS ${temp_download_target})
-        ly_package_message(STATUS "The target ${temp_download_target} exists")
+        o3de_package_message(STATUS "The target ${temp_download_target} exists")
         file(SHA256 ${temp_download_target} existing_hash)
     endif()
 
@@ -509,9 +528,9 @@ function(ly_force_download_package package_name)
         # can take time and we only get here if its missing in the first place, so 
         # this should happen once on the very first configure
         message(STATUS "Downloading package into ${final_folder}")
-        ly_package_message(STATUS "ly_package:     - downloading package '${package_name}' to '${final_folder}'")
+        o3de_package_message(STATUS "o3de_package:     - downloading package '${package_name}' to '${final_folder}'")
 
-        ly_package_internal_download_package(${package_name} ${temp_download_target})
+        o3de_package_internal_download_package(${package_name} ${temp_download_target})
         # The above function will try every download location, with retries, so by the time we get here, the
         # operation is either done, or has completely failed.
         if (NOT EXISTS ${temp_download_target})
@@ -519,22 +538,22 @@ function(ly_force_download_package package_name)
             return()
         endif()
     else()
-        ly_package_message(STATUS "ly_package:     - package already correct hash ${temp_download_target}, re-using")
+        o3de_package_message(STATUS "o3de_package:     - package already correct hash ${temp_download_target}, re-using")
     endif()
 
     if (EXISTS ${DOWNLOAD_LOCATION}/${package_name})
-        ly_package_message(STATUS "ly_package:     - removing folder ${DOWNLOAD_LOCATION}/${package_name} to replace it...")
+        o3de_package_message(STATUS "o3de_package:     - removing folder ${DOWNLOAD_LOCATION}/${package_name} to replace it...")
         file(REMOVE_RECURSE ${DOWNLOAD_LOCATION}/${package_name})
 
         if (EXISTS ${DOWNLOAD_LOCATION}/${package_name})
-            message(SEND_ERROR "ly_package:     -folder ${DOWNLOAD_LOCATION}/${package_name} could not be removed.  Check if some program has it open (VSCode, VS, Terminal windows, ...).   Enable LY_PACKAGE_DEBUG to debug.")
+            message(SEND_ERROR "o3de_package:     -folder ${DOWNLOAD_LOCATION}/${package_name} could not be removed.  Check if some program has it open (VSCode, VS, Terminal windows, ...).   Enable O3DE_PACKAGE_DEBUG to debug.")
             return()
         endif()
     endif()
     
     file(MAKE_DIRECTORY ${DOWNLOAD_LOCATION}/${package_name})
     
-    ly_package_message(STATUS "ly_package:    - unpacking package...")
+    o3de_package_message(STATUS "o3de_package:    - unpacking package...")
     execute_process(COMMAND ${CMAKE_COMMAND} -E tar xf ${temp_download_target} 
          WORKING_DIRECTORY ${final_folder} COMMAND_ECHO STDOUT OUTPUT_VARIABLE unpack_result)
 
@@ -545,21 +564,21 @@ function(ly_force_download_package package_name)
     file(TOUCH_NOCREATE ${package_files})
 
     if (NOT ${unpack_result} EQUAL 0)
-        message(SEND_ERROR "ly_package: required package {package_name} could not be unpacked.  Compile may fail!  Enable LY_PACKAGE_DEBUG to debug.")
+        message(SEND_ERROR "o3de_package: required package {package_name} could not be unpacked.  Compile may fail!  Enable O3DE_PACKAGE_DEBUG to debug.")
         return()
     else()
-        if (NOT LY_PACKAGE_KEEP_AFTER_DOWNLOADING)
-            ly_package_message(STATUS "ly_package: Removing package after unpacking (LY_PACKAGE_KEEP_AFTER_DOWNLOADING is ${LY_PACKAGE_KEEP_AFTER_DOWNLOADING})")
+        if (NOT O3DE_PACKAGE_KEEP_AFTER_DOWNLOADING)
+            o3de_package_message(STATUS "o3de_package: Removing package after unpacking (O3DE_PACKAGE_KEEP_AFTER_DOWNLOADING is ${O3DE_PACKAGE_KEEP_AFTER_DOWNLOADING})")
             file(REMOVE ${temp_download_target})
         endif()
     endif()
     
     # because we just downloaded this file, we are going to force full hashing validation.
     # future runs will use the setting or default, which is a quicker validation
-    set(LY_PACKAGE_VALIDATE_CONTENTS_old ${LY_PACKAGE_VALIDATE_CONTENTS})
-    set(LY_PACKAGE_VALIDATE_CONTENTS TRUE)
-    ly_validate_package(${package_name})
-    set(LY_PACKAGE_VALIDATE_CONTENTS ${LY_PACKAGE_VALIDATE_CONTENTS_old})
+    set(O3DE_PACKAGE_VALIDATE_CONTENTS_old ${O3DE_PACKAGE_VALIDATE_CONTENTS})
+    set(O3DE_PACKAGE_VALIDATE_CONTENTS TRUE)
+    o3de_validate_package(${package_name})
+    set(O3DE_PACKAGE_VALIDATE_CONTENTS ${O3DE_PACKAGE_VALIDATE_CONTENTS_old})
     set(${package_name}_VALIDATED ${package_name}_VALIDATED PARENT_SCOPE)
 
     set(package_stamp_file_name ${DOWNLOAD_LOCATION}/${package_name}.stamp)
@@ -574,16 +593,16 @@ function(ly_force_download_package package_name)
 
 endfunction()
 
-#! ly_enable_package:  low-level function - adds a package to the auto package download system
+#! o3de_enable_package:  low-level function - adds a package to the auto package download system
 # Calling this will immediately make sure the package is present locally
 # and will add the local cache path to the additional module path (CMAKE_MODULE_PATH)
 # so that findxxxxx works
 # note that package_name here is the actual package name, not the association name.
-function(ly_enable_package package_name)
+function(o3de_enable_package package_name)
     # you can call this function as many times as you want, it will only try to validate the property once.
     
     # is it grafted onto the tree elsewhere?
-    ly_package_get_target_folder(${package_name} DOWNLOAD_LOCATION)
+    o3de_package_get_target_folder(${package_name} DOWNLOAD_LOCATION)
 
     # add it to the prefixes so that we search here first
     # we add it in front so it can override any later paths, so "last one to declare" wins
@@ -591,21 +610,21 @@ function(ly_enable_package package_name)
         set(CMAKE_MODULE_PATH ${DOWNLOAD_LOCATION}/${package_name} ${CMAKE_MODULE_PATH} PARENT_SCOPE)
     endif()
 
-    get_property(existing_state GLOBAL PROPERTY LY_${package_name}_VALIDATED SET)
+    get_property(existing_state GLOBAL PROPERTY O3DE_${package_name}_VALIDATED SET)
 
     if(NOT ${existing_state}) # note - check is for whether its SET, not whether its TRUE
         # if we get here, its not SET, so set it to FALSE pre-emptively so that
         # we don't try to download over and over, if the attempt to download fails.
-        set_property(GLOBAL PROPERTY LY_${package_name}_VALIDATED FALSE)
+        set_property(GLOBAL PROPERTY O3DE_${package_name}_VALIDATED FALSE)
         
-        ly_validate_package(${package_name}) # sets VALIDATED in this scope.
+        o3de_validate_package(${package_name}) # sets VALIDATED in this scope.
         if (NOT ${package_name}_VALIDATED)
             # this will also validate it and set VALIDATED in this scope
-            ly_force_download_package(${package_name})
+            o3de_force_download_package(${package_name})
         endif()
         
         if(${package_name}_VALIDATED)
-            set_property(GLOBAL PROPERTY LY_${package_name}_VALIDATED TRUE)
+            set_property(GLOBAL PROPERTY O3DE_${package_name}_VALIDATED TRUE)
             # this message is unconditional as it will help prove that the package even was
             # attempted to be mounted using our package system.  In the absence of this message
             # its going to be difficult to know why a package is missing in the logs
@@ -622,48 +641,48 @@ function(ly_enable_package package_name)
 endfunction()
 
 
-#! ly_associate_package - Main public function
+#! o3de_associate_package - Main public function
 # - allows you to associate an actual package name ('zlib-1.2.8-multiplatform')
 # with any number of targets that are expected to be inside the package.
 # Associating packages with targets will cause cmake to download the package (if necessary),
 # and ensure the path to the package root is added to the find_package search paths.
 # For example
-# ly_associate_package(TARGETS zlib PACKAGE_NAME zlib-1.2.8-multiplatform PACKAGE_HASH e6f34b8ac16acf881e3d666ef9fd0c1aee94c3f69283fb6524d35d6f858eebbb)
+# o3de_associate_package(TARGETS zlib PACKAGE_NAME zlib-1.2.8-multiplatform PACKAGE_HASH e6f34b8ac16acf881e3d666ef9fd0c1aee94c3f69283fb6524d35d6f858eebbb)
 # - this will cause it to automatically download and activate this package if it finds a target that
 # depends on '3rdParty::zlib' in its runtime or its build time dependency list.
 # - note that '3rdParty' is implied, do not specify it in the TARGETS list.
-function(ly_associate_package)
+function(o3de_associate_package)
     set(_oneValueArgs PACKAGE_NAME PACKAGE_HASH)
     set(_multiValueArgs TARGETS)
-    cmake_parse_arguments(ly_associate_package "" "${_oneValueArgs}" "${_multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(o3de_associate_package "" "${_oneValueArgs}" "${_multiValueArgs}" ${ARGN})
     
-    if(NOT ly_associate_package_TARGETS)
-        message(FATAL_ERROR "ly_associate_package was called without the TARGETS argument, at least one target is required")
+    if(NOT o3de_associate_package_TARGETS)
+        message(FATAL_ERROR "o3de_associate_package was called without the TARGETS argument, at least one target is required")
     endif()
     
-    if(NOT ly_associate_package_PACKAGE_NAME)
-        message(FATAL_ERROR "ly_associate_package was called without the PACKAGE_NAME argument, this is required")
+    if(NOT o3de_associate_package_PACKAGE_NAME)
+        message(FATAL_ERROR "o3de_associate_package was called without the PACKAGE_NAME argument, this is required")
     endif()
     
-    if(NOT ly_associate_package_PACKAGE_HASH)
-        message(FATAL_ERROR "ly_associate_package was called without the PACKAGE_HASH argument, this is required")
+    if(NOT o3de_associate_package_PACKAGE_HASH)
+        message(FATAL_ERROR "o3de_associate_package was called without the PACKAGE_HASH argument, this is required")
     endif()
     
-    foreach(find_package_name ${ly_associate_package_TARGETS})
-        set_property(GLOBAL PROPERTY LY_PACKAGE_ASSOCIATION_${find_package_name} ${ly_associate_package_PACKAGE_NAME})
-        set_property(GLOBAL PROPERTY LY_PACKAGE_HASH_${ly_associate_package_PACKAGE_NAME} ${ly_associate_package_PACKAGE_HASH})
+    foreach(find_package_name ${o3de_associate_package_TARGETS})
+        set_property(GLOBAL PROPERTY O3DE_PACKAGE_ASSOCIATION_${find_package_name} ${o3de_associate_package_PACKAGE_NAME})
+        set_property(GLOBAL PROPERTY O3DE_PACKAGE_HASH_${o3de_associate_package_PACKAGE_NAME} ${o3de_associate_package_PACKAGE_HASH})
     endforeach()
 
-    set_property(GLOBAL APPEND PROPERTY LY_PACKAGE_NAMES ${ly_associate_package_PACKAGE_NAME})
-    set_property(GLOBAL PROPERTY LY_PACKAGE_TARGETS_${ly_associate_package_PACKAGE_NAME} ${ly_associate_package_TARGETS})
+    set_property(GLOBAL APPEND PROPERTY O3DE_PACKAGE_NAMES ${o3de_associate_package_PACKAGE_NAME})
+    set_property(GLOBAL PROPERTY O3DE_PACKAGE_TARGETS_${o3de_associate_package_PACKAGE_NAME} ${o3de_associate_package_TARGETS})
 endfunction()
 
 #!  Given a package find_package name (eg, 'zlib' not the actual package name)
 # will set output_variable to the package id iff the package has a package
 # association declared, otherwise will unset it.
-function(ly_get_package_association find_package_name output_variable)
+function(o3de_get_package_association find_package_name output_variable)
     unset(${output_variable})
-    get_property(is_associated GLOBAL PROPERTY LY_PACKAGE_ASSOCIATION_${find_package_name})
+    get_property(is_associated GLOBAL PROPERTY O3DE_PACKAGE_ASSOCIATION_${find_package_name})
     if (is_associated)
         set(${output_variable} ${is_associated} PARENT_SCOPE)
     endif()
@@ -671,74 +690,74 @@ endfunction()
 
 # given a package name (as in, the actual name of the package, not its associated find libraries)
 # return the expected download package hash.
-macro(ly_get_package_expected_hash actual_package_name output_variable)
+macro(o3de_get_package_expected_hash actual_package_name output_variable)
     unset(${output_variable})
-    get_property(package_hash_found GLOBAL PROPERTY LY_PACKAGE_HASH_${actual_package_name})
+    get_property(package_hash_found GLOBAL PROPERTY O3DE_PACKAGE_HASH_${actual_package_name})
     if (package_hash_found)
         set(${output_variable} ${package_hash_found})
     else()
         # This is a fatal error because it is a programmer error and ignoring hashes
         # could be a security problem.
-        message(FATAL_ERROR "ly_get_package_expected_hash could not find a hash for package ${actual_package_name}")
+        message(FATAL_ERROR "o3de_get_package_expected_hash could not find a hash for package ${actual_package_name}")
     endif()
 endmacro()
 
 
-# ly_set_package_download_location - OPTIONAL.
+# o3de_set_package_download_location - OPTIONAL.
 # by default, packages are downloaded to the package root
-# at LY_PACKAGE_UNPACK_LOCATION - but if a package needs to be placed
+# at O3DE_PACKAGE_UNPACK_LOCATION - but if a package needs to be placed
 # elsewhere, use this.
 # note that package_name is expected to be the actual package name, not 
 # the find_package(...)  name!
-macro(ly_set_package_download_location package_name download_location)
-    set_property(GLOBAL PROPERTY LY_PACKAGE_DOWNLOAD_LOCATION_${package_name} ${download_location})
+macro(o3de_set_package_download_location package_name download_location)
+    set_property(GLOBAL PROPERTY O3DE_PACKAGE_DOWNLOAD_LOCATION_${package_name} ${download_location})
 endmacro()
 
-# ly_set_package_download_cache_location - OPTIONAL.
-# Similar to ly_set_package_download_location, this set the download 
+# o3de_set_package_download_cache_location - OPTIONAL.
+# Similar to o3de_set_package_download_location, this set the download 
 # cache location for a particular package.
 # note that package_name is expected to be the actual package name, not 
 # the find_package(...)  name!
-macro(ly_set_package_download_cache_location package_name download_location)
-    set_property(GLOBAL PROPERTY LY_PACKAGE_DOWNLOAD_CACHE_LOCATION_${package_name} ${download_location})
+macro(o3de_set_package_download_cache_location package_name download_location)
+    set_property(GLOBAL PROPERTY O3DE_PACKAGE_DOWNLOAD_CACHE_LOCATION_${package_name} ${download_location})
 endmacro()
 
 
-# ly_download_associated_package  - main public function
+# o3de_download_associated_package  - main public function
 # this just checks to see if the find_library_name (like 'zlib', not a package name)
 # is associated with a package, as above.  If it is, it makes sure that the package
 # is brought into scope (and if necessary, downloaded.)
-macro(ly_download_associated_package find_library_name)
+macro(o3de_download_associated_package find_library_name)
     unset(package_name)
-    ly_get_package_association(${find_library_name} package_name)
+    o3de_get_package_association(${find_library_name} package_name)
     if (package_name)
         # it is an associated package.
-        ly_enable_package(${package_name})
+        o3de_enable_package(${package_name})
     endif()
 endmacro()
 
-# ly_package_is_newer_than(package_name reference output_variable)
+# o3de_package_is_newer_than(package_name reference output_variable)
 # will set output_variable to TRUE if and only if the package was downloaded
 # more recently than the reference file's timestamp.
-function(ly_package_is_newer_than package_name reference_file output_variable)
+function(o3de_package_is_newer_than package_name reference_file output_variable)
     unset(${output_variable} PARENT_SCOPE)
-    ly_package_get_target_folder(${package_name} DOWNLOAD_LOCATION)
+    o3de_package_get_target_folder(${package_name} DOWNLOAD_LOCATION)
     set(package_stamp_file_name ${DOWNLOAD_LOCATION}/${package_name}.stamp)
     if (EXISTS ${package_stamp_file_name} AND ${package_stamp_file_name} IS_NEWER_THAN ${reference_file})
         set(${output_variable} TRUE PARENT_SCOPE)
     endif()
 endfunction()
 
-# if we're in script mode, we dont want to declare package associations
+# if we're in script mode, we don't want to declare package associations
 if (NOT CMAKE_SCRIPT_MODE_FILE)
     # include the built in 3rd party packages that are for every platform.
     # you can put your package associations anywhere, but this provides
     # a good starting point.
-    include(${LY_ROOT_FOLDER}/cmake/3rdParty/BuiltInPackages.cmake)
+    include(${_cmake_3rdPartyPackages_cmake}/3rdParty/BuiltInPackages.cmake)
 endif()
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    include(${LY_ROOT_FOLDER}/cmake/LYWrappers.cmake)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    include(${_cmake_3rdPartyPackages_cmake}/O3deWrappers.cmake)
     # Importing this globally to handle AUTOMOC, AUTOUIC, AUTORCC
-    ly_parse_third_party_dependencies(3rdParty::Qt)
+    o3de_parse_third_party_dependencies(3rdParty::Qt)
 endif()

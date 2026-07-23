@@ -313,7 +313,7 @@ def test_sync_layout_vfs_success(tmpdir, existing_temp_vfs_folder, existing_gems
         hasher = hashlib.md5()
         hasher.update(test_project_path.encode('UTF-8'))
         result = hasher.hexdigest()
-        tmp_folder_subfolder = 'ly-layout-{}'.format(result)
+        tmp_folder_subfolder = 'o3de-layout-{}'.format(result)
         test_layout_folder = str(tmpdir.join('{}/vfs/foo'.format(tmp_folder_subfolder)).realpath())
         test_layout_config_folder = str(tmpdir.join('{}/vfs/foo/config'.format(tmp_folder_subfolder)).realpath())
         test_override_pak_folder = ''

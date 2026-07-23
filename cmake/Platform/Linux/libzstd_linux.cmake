@@ -8,6 +8,7 @@
 
 # Use system default zstd library instead of maintaining an O3DE version for Linux
 
+set(_cmake_Platform_Linux_libzstd_linux_cmake ${CMAKE_CURRENT_LIST_DIR})
 find_package(PkgConfig REQUIRED)
 # ask pkg-config to find the libzstd library and prepare an imported target
 pkg_check_modules(zstd IMPORTED_TARGET libzstd)
@@ -18,14 +19,14 @@ else()
    add_library(3rdParty::zstd ALIAS PkgConfig::zstd)
    set_target_properties(PkgConfig::zstd
                          PROPERTIES
-                             LY_SYSTEM_LIBRARY TRUE)
+                             O3DE_SYSTEM_LIBRARY TRUE)
 
-   # include Install.cmake to get access to the ly_install function
-   include(cmake/Install.cmake)
+   # include Install.cmake to get access to the o3de_install function
+   include(${_cmake_Platform_Linux_libzstd_linux_cmake}/../../Install.cmake)
 
    # Copies over the libzstd_linux.cmake to the same location in the SDK layout.
-   cmake_path(RELATIVE_PATH CMAKE_CURRENT_LIST_DIR BASE_DIRECTORY ${LY_ROOT_FOLDER} OUTPUT_VARIABLE libzstd_linux_cmake_rel_directory)
-   ly_install(FILES "${CMAKE_CURRENT_LIST_FILE}"
+   cmake_path(RELATIVE_PATH CMAKE_CURRENT_LIST_DIR BASE_DIRECTORY ${O3DE_ENGINE_PATH} OUTPUT_VARIABLE libzstd_linux_cmake_rel_directory)
+   o3de_install(FILES "${CMAKE_CURRENT_LIST_FILE}"
        DESTINATION "${libzstd_linux_cmake_rel_directory}"
        COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME}
    )

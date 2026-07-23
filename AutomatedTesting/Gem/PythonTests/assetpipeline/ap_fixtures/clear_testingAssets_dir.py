@@ -11,8 +11,8 @@ Fixture for clearing "testingAssets" directory from <build>/dev/<project>
 import os
 import pytest
 
-# Import LyTestTools
-import ly_test_tools.environment.file_system as fs
+# Import O3deTestTools
+import o3de_test_tools.environment.file_system as fs
 
 # Import fixtures
 from ..ap_fixtures.ap_setup_fixture import ap_setup_fixture as ap_setup_fixture

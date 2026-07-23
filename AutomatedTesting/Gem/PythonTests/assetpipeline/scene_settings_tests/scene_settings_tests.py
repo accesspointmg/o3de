@@ -8,8 +8,8 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 import os
 import pytest
 import shutil
-import ly_test_tools.environment.file_system as file_system
-from ly_test_tools.o3de.editor_test import EditorTestSuite, EditorSingleTest
+import o3de_test_tools.environment.file_system as file_system
+from o3de_test_tools.o3de.editor_test import EditorTestSuite, EditorSingleTest
 import tempfile
 
 

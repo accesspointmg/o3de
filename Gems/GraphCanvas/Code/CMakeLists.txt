@@ -6,10 +6,10 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         ${gem_name}_game_files.cmake
@@ -23,7 +23,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/GraphCanvasGameModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -31,7 +31,7 @@ ly_add_source_properties(
             O3DE_GEM_NAME=${gem_name}
             O3DE_GEM_VERSION=${gem_version})
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}Widgets STATIC
     NAMESPACE Gem
     AUTOMOC
@@ -58,7 +58,7 @@ ly_add_target(
             3rdParty::Qt::Widgets
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Editor GEM_MODULE
     NAMESPACE Gem
     AUTOMOC
@@ -85,7 +85,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/GraphCanvasEditorModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -94,19 +94,19 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # Load the "Gem::${gem_name}" module in Builders and Tools
-ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
-ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 
 endif()
 
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    if(PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 
-        ly_add_target(
-            NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+        o3de_add_target(
+            NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
             NAMESPACE Gem
             FILES_CMAKE
                 graphcanvas_tests_files.cmake
@@ -119,7 +119,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                     AZ::AzTest
                     Gem::${gem_name}Widgets
         )
-        ly_add_googletest(
+        o3de_add_googletest(
             NAME Gem::${gem_name}.Tests
             LABELS REQUIRES_tiaf
         )

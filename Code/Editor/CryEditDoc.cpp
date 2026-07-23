@@ -1079,7 +1079,7 @@ void CCryEditDoc::Fetch(const QString& holdName, const QString& relativeHoldPath
         CFileUtil::Deltree(holdPath.toUtf8().data(), true);
         break;
 
-    case FetchPolicy::DELETE_LY_FILE:
+    case FetchPolicy::DELETE_O3DE_FILE:
         CFileUtil::DeleteFile(holdFilename);
         break;
 

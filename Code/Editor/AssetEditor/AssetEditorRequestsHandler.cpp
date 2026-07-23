@@ -47,7 +47,7 @@ void AssetEditorRequestsHandler::NotifyRegisterViews()
 void AssetEditorRequestsHandler::CreateNewAsset(const AZ::Data::AssetType& assetType, const AZ::Uuid& observerId)
 {
     using namespace AzToolsFramework::AssetEditor;
-    AzToolsFramework::OpenViewPane(LyViewPane::AssetEditor);
+    AzToolsFramework::OpenViewPane(O3deViewPane::AssetEditor);
 
     AssetEditorWidgetRequestsBus::Broadcast(&AssetEditorWidgetRequests::CreateAsset, assetType, observerId);
 }
@@ -57,7 +57,7 @@ void AssetEditorRequestsHandler::OpenAssetEditor(const AZ::Data::Asset<AZ::Data:
     using namespace AzToolsFramework::AssetEditor;
 
     // Open the AssetEditor if it isn't open already.
-    QtViewPaneManager::instance()->OpenPane(LyViewPane::AssetEditor, QtViewPane::OpenMode::RestoreLayout);
+    QtViewPaneManager::instance()->OpenPane(O3deViewPane::AssetEditor, QtViewPane::OpenMode::RestoreLayout);
 
     AssetEditorWidgetRequestsBus::Broadcast(&AssetEditorWidgetRequests::OpenAsset, asset);
 }

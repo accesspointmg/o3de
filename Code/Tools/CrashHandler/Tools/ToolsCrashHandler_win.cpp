@@ -6,7 +6,7 @@
  *
  */
 
-// LY Editor Crashpad Hook - Windows
+// O3DE Editor Crashpad Hook - Windows
 
 #include <ToolsCrashHandler.h>
 #include <AzCore/PlatformIncl.h>

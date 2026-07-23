@@ -8,10 +8,10 @@
 
 message(STATUS "Executing packaging postbuild...")
 
-# ly_is_s3_url
+# o3de_is_s3_url
 # if the given URL is a s3 url of thr form "s3://(stuff)" then sets
 # the output_variable_name to TRUE otherwise unsets it.
-function (ly_is_s3_url download_url output_variable_name)
+function (o3de_is_s3_url download_url output_variable_name)
     if ("${download_url}" MATCHES "s3://.*")
         set(${output_variable_name} TRUE PARENT_SCOPE)
     else()
@@ -19,10 +19,10 @@ function (ly_is_s3_url download_url output_variable_name)
     endif()
 endfunction()
 
-function(ly_upload_to_url in_url in_local_path in_file_regex)
+function(o3de_upload_to_url in_url in_local_path in_file_regex)
 
     message(STATUS "Uploading ${in_local_path}/${in_file_regex} artifacts to ${in_url}")
-    ly_is_s3_url(${in_url} _is_s3_bucket)
+    o3de_is_s3_url(${in_url} _is_s3_bucket)
     if(NOT _is_s3_bucket)
         message(FATAL_ERROR "Only S3 installer uploading is supported at this time")
     endif()
@@ -36,10 +36,10 @@ function(ly_upload_to_url in_url in_local_path in_file_regex)
 
     set(_extra_args [[{"ACL":"bucket-owner-full-control"}]])
 
-    file(TO_NATIVE_PATH "${LY_ROOT_FOLDER}/scripts/build/tools/upload_to_s3.py" _upload_script)
+    file(TO_NATIVE_PATH "${O3DE_ENGINE_PATH}/scripts/build/tools/upload_to_s3.py" _upload_script)
 
     set(_upload_command
-        ${CPACK_LY_PYTHON_CMD} -s
+        ${CPACK_O3DE_PYTHON_CMD} -s
         -u ${_upload_script}
         --base_dir ${in_local_path}
         --file_regex="${in_file_regex}"
@@ -67,7 +67,7 @@ function(ly_upload_to_url in_url in_local_path in_file_regex)
     endif()
 endfunction()
 
-function(ly_upload_to_latest in_url in_path)
+function(o3de_upload_to_latest in_url in_path)
 
     message(STATUS "Updating latest tagged build")
 
@@ -101,7 +101,7 @@ function(ly_upload_to_latest in_url in_path)
         latest_upload_url ${in_url}
     )
 
-    ly_upload_to_url(
+    o3de_upload_to_url(
         ${latest_upload_url}
         ${temp_dir}
         ".*(${non_versioned_in_path_filename}|build_tag.txt)$"

@@ -6,11 +6,11 @@
 #
 #
 
-if (NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if (NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -25,8 +25,8 @@ ly_add_target(
             Legacy::CryCommon
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         sceneloggingexample_shared_files.cmake
@@ -39,7 +39,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         SceneLoggingExampleModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -48,5 +48,5 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # the ${gem_name} module above is only used in Builders and Tools by default.
-ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name})

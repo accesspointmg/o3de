@@ -6,7 +6,7 @@
 #
 #
 
-ly_add_target(
+o3de_add_target(
     NAME Atom_Utils.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -29,9 +29,9 @@ ly_add_target(
             Gem::ProfilerImGui
 )
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 
-    ly_add_target(
+    o3de_add_target(
         NAME Atom_Utils.TestUtils.Static STATIC
         NAMESPACE Gem
         FILES_CMAKE
@@ -53,17 +53,18 @@ endif()
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-    o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+    o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
+    set(pal_common_code_path ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
-    ly_add_target(
-        NAME Atom_Utils.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME Atom_Utils.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             atom_utils_tests_files.cmake
         PLATFORM_INCLUDE_FILES
-            ${pal_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
+            ${pal_code_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
         INCLUDE_DIRECTORIES
             PRIVATE
                 Tests
@@ -73,7 +74,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzFramework
                 Gem::Atom_Utils.Static
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::Atom_Utils.Tests
         LABELS REQUIRES_tiaf
     )

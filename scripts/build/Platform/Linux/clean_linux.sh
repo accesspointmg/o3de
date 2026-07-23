@@ -21,7 +21,7 @@ fi
 
 if [[ -n "$CLEAN_ASSETS" ]]; then
     echo "[ci_build] CLEAN_ASSETS option set"
-    for project in $(echo $CMAKE_LY_PROJECTS | sed "s/;/ /g")
+    for project in $(echo $CMAKE_O3DE_PROJECTS | sed "s/;/ /g")
     do
         if [[ -d "$project/Cache" ]]; then
             echo "[ci_build] Deleting \"$project/Cache\""

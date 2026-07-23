@@ -358,7 +358,7 @@ def get_git_provider(parsed_uri: ParseResult):
     """
     Returns a git provider if one exists given the passed uri
     :param parsed_uri: uniform resource identifier of a possible git repository
-    :return: A git provider implementation providing functions to get infomration about or clone a repository, see gitproviderinterface
+    :return: A git provider implementation providing functions to get information about or clone a repository, see gitproviderinterface
     """
     # check for providers with unique APIs first
     git_provider = github_utils.get_github_provider(parsed_uri)
@@ -383,13 +383,26 @@ def download_file(parsed_uri: ParseResult, download_path: pathlib.Path, force_ov
 
     if parsed_uri.scheme in ['http', 'https', 'ftp', 'ftps']:
         try:
-            current_request = urllib.request.Request(parsed_uri.geturl())
+            # Create headers that mimic a browser because some web servers
+            # will deny requests that don't look like a browser
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9'
+            }
+
+            current_request = urllib.request.Request(parsed_uri.geturl(), headers=headers)
             resume_position = 0
             if file_exists and not force_overwrite:
                 resume_position = os.path.getsize(download_path)
                 current_request.add_header("If-Range", "bytes=%d-" % resume_position)
 
-            with urllib.request.urlopen(current_request) as s:
+            import ssl
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+
+            with urllib.request.urlopen(current_request, context=ctx) as s:
                 download_file_size = int(s.headers.get('content-length',0))
 
                 # if the server does not return a content length we also have to assume we would be replacing a complete file
@@ -710,6 +723,18 @@ def get_object_name_and_version_specifier(input:str) -> (str, str) or None:
     
     return match.group("object_name").strip(), match.group("version_specifier").strip()
 
+def has_version_specifier(input:str) -> bool:
+    """
+    Returns True if the input string has a version specifier
+    :param input: The input string
+    """
+    try:
+        _, specifier = get_object_name_and_version_specifier(input)
+        if specifier:
+            return True
+        return False
+    except (InvalidObjectNameException, InvalidVersionSpecifierException):
+        return False
 
 def object_name_found(input:str, match:str) -> bool:
     """
@@ -841,3 +866,28 @@ def remove_link(link:pathlib.PurePath):
                 shutil.rmtree(link, onerror=remove_readonly)
             except shutil.Error as shutil_error:
                 raise RuntimeError(f'Error trying remove directory {link}: {shutil_error}', shutil_error.errno)
+            
+#determine this computers current 2 digit country code
+def determine_country_code():
+    try:
+        # Try IP-based detection first
+        import requests
+        response = requests.get('https://ipinfo.io/country', timeout=5)
+        if response.status_code == 200:
+            country_code = response.text.strip()
+            if len(country_code) == 2 and country_code.isalpha():
+                return country_code.upper()
+    except (requests.RequestException, requests.Timeout):
+        pass
+    
+    # Fallback to system locale
+    try:
+        import locale
+        loc = locale.getdefaultlocale()[0]
+        if loc and '_' in loc:
+            return loc.split('_')[1].upper()
+    except:
+        pass
+        
+    # Final fallback
+    return 'US'

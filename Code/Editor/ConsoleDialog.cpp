@@ -16,7 +16,7 @@
 
 // Editor
 #include "Controls/ConsoleSCB.h"    // For CConsoleSCB
-#include "LyViewPaneNames.h"        // for LyViewPane::
+#include "O3deViewPaneNames.h"        // for O3deViewPane::
 
 
 CConsoleDialog::CConsoleDialog(QWidget* parent)
@@ -27,7 +27,7 @@ CConsoleDialog::CConsoleDialog(QWidget* parent)
     outterLayout->addWidget(m_consoleWidget);
     outterLayout->setMargin(0);
 
-    setWindowTitle(LyViewPane::Console);
+    setWindowTitle(O3deViewPane::Console);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     resize(842, 480);
 }

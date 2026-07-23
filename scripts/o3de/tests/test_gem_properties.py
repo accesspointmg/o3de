@@ -70,7 +70,7 @@ class TestEditGemProperties:
                      'Apache 2.0', 'https://www.apache.org/licenses/LICENSE-2.0', "https://github.com/o3de/o3de.git", '1.2.3', 
                      ['o3de>=1.0',"o3de-sdk~=1.0"], None, None, ['o3de-sdk==1.2.3','o3de>=1.0',"o3de-sdk~=1.0"],
                      ['Physics', 'Rendering', 'Scripting'], None, None, ['TestGem', 'OtherTag', 'Physics', 'Rendering', 'Scripting'],
-                     ['Windows', 'MacOS', 'Linux'], None, None, ['Windows', 'MacOS', 'Linux'],
+                     ['Windows', 'Mac', 'Linux'], None, None, ['Windows', 'Mac', 'Linux'],
                      ['editor==2.3.4'], None, None, ['framework==1.2.3','editor==2.3.4'],
                      0),
         pytest.param(None,
@@ -79,7 +79,7 @@ class TestEditGemProperties:
                      'Apache 2.0', 'https://www.apache.org/licenses/LICENSE-2.0', None, '1.2.3', 
                      None, ['o3de-sdk==1.2.3'], None, [],
                      None, ['TestGem'], None, ['OtherTag'], 
-                     ['Windows', 'MacOS'], ['Linux'], None, ['Windows', 'MacOS'],
+                     ['Windows', 'Mac'], ['Linux'], None, ['Windows', 'Mac'],
                      ['launcher==3.4.5'], ['framework==1.2.3'], None, ['launcher==3.4.5'],
                      0),
         pytest.param(None,
@@ -88,7 +88,7 @@ class TestEditGemProperties:
                      'Apache 2.0', 'https://www.apache.org/licenses/LICENSE-2.0', "https://github.com/o3de/o3de.git", '1.2.3', 
                      None, None, ['o3de>=1.2.3'], ['o3de>=1.2.3'],
                      None, None, ['Animation', 'TestGem'], ['Animation', 'TestGem'],
-                     ['Windows'], None, ['MacOS', 'Linux'], ['MacOS', 'Linux'],
+                     ['Windows'], None, ['Mac', 'Linux'], ['Mac', 'Linux'],
                      None, None, ['framework==9.8.7'], ['framework==9.8.7'],
                      0),
         pytest.param(None,
@@ -97,7 +97,7 @@ class TestEditGemProperties:
                      'Apache 2.0', 'https://www.apache.org/licenses/LICENSE-2.0', "https://github.com/o3de/o3de.git",'1.2.3', 
                      None, None, ['INVALID'], [], # invalid version specifier
                      None, None, ['Animation', 'TestGem'], ['Animation', 'TestGem'],
-                     ['Windows'], None, ['MacOS', 'Linux'], ['MacOS', 'Linux'],
+                     ['Windows'], None, ['Mac', 'Linux'], ['Mac', 'Linux'],
                      None, None, None, ['framework==1.2.3'],
                      1),
         # can replace all existing tags with empty list
@@ -107,7 +107,7 @@ class TestEditGemProperties:
                      'Apache 2.0', 'https://www.apache.org/licenses/LICENSE-2.0', "https://github.com/o3de/o3de.git", '1.2.3', 
                      None, None, ['o3de>=1.2.3'], ['o3de>=1.2.3'],
                      None, None, [], [],
-                     ['Windows'], None, ['MacOS', 'Linux'], ['MacOS', 'Linux'],
+                     ['Windows'], None, ['Mac', 'Linux'], ['Mac', 'Linux'],
                      None, None, ['framework==9.8.7'], ['framework==9.8.7'],
                      0),
         ]
@@ -129,7 +129,7 @@ class TestEditGemProperties:
         def get_gem_path(gem_name: str) -> pathlib.Path:
             return pathlib.Path('D:/TestProject')
 
-        def save_o3de_manifest(new_gem_data: dict, gem_path: pathlib.Path) -> bool:
+        def save_o3de_manifest_json_data(new_gem_data: dict, gem_path: pathlib.Path) -> bool:
             self.gem_json.data = new_gem_data
             return True
 

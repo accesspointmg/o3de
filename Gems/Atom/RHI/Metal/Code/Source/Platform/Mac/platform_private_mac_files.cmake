@@ -18,7 +18,7 @@ set(FILES
     RHI/Conversions_Mac.h
 )
 
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES Source/Platform/Mac/RHI/MetalView_Mac.mm
     PROPERTY COMPILE_OPTIONS
     VALUES -xobjective-c++

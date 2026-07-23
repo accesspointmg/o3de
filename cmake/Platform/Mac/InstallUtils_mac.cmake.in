@@ -39,10 +39,10 @@ function(fixup_python_framework framework_path)
 
     file(REMOVE_RECURSE
         "${framework_path}/Versions/Current"
-        "${framework_path}/Versions/@LY_PYTHON_VERSION_MAJOR_MINOR@/Headers"
-        "${framework_path}/Versions/@LY_PYTHON_VERSION_MAJOR_MINOR@/lib/Python"
-        "${framework_path}/Versions/@LY_PYTHON_VERSION_MAJOR_MINOR@/lib/python@LY_PYTHON_VERSION_MAJOR_MINOR@/test"
-        "${framework_path}/Versions/@LY_PYTHON_VERSION_MAJOR_MINOR@/lib/python@LY_PYTHON_VERSION_MAJOR_MINOR@/site-packages/scipy/io/tests"
+        "${framework_path}/Versions/@O3DE_PYTHON_VERSION_MAJOR_MINOR@/Headers"
+        "${framework_path}/Versions/@O3DE_PYTHON_VERSION_MAJOR_MINOR@/lib/Python"
+        "${framework_path}/Versions/@O3DE_PYTHON_VERSION_MAJOR_MINOR@/lib/python@O3DE_PYTHON_VERSION_MAJOR_MINOR@/test"
+        "${framework_path}/Versions/@O3DE_PYTHON_VERSION_MAJOR_MINOR@/lib/python@O3DE_PYTHON_VERSION_MAJOR_MINOR@/site-packages/scipy/io/tests"
         "${framework_path}/Python"
         "${framework_path}/Resources"
         "${framework_path}/Headers"
@@ -52,10 +52,10 @@ function(fixup_python_framework framework_path)
     if(exe_file_list)
         file(REMOVE_RECURSE ${exe_file_list})
     endif()
-    execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink include/python@LY_PYTHON_VERSION_MAJOR_MINOR@m Headers
-        WORKING_DIRECTORY "${framework_path}/Versions/@LY_PYTHON_VERSION_MAJOR_MINOR@"
+    execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink include/python@O3DE_PYTHON_VERSION_MAJOR_MINOR@m Headers
+        WORKING_DIRECTORY "${framework_path}/Versions/@O3DE_PYTHON_VERSION_MAJOR_MINOR@"
     )
-    execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink @LY_PYTHON_VERSION_MAJOR_MINOR@ Current
+    execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink @O3DE_PYTHON_VERSION_MAJOR_MINOR@ Current
         WORKING_DIRECTORY "${framework_path}/Versions/"
     )
     execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink Versions/Current/Python Python
@@ -75,19 +75,19 @@ endfunction()
 
 function(codesign_file file entitlement_file)
 
-    if (NOT @LY_ENABLE_HARDENED_RUNTIME@)
+    if (NOT @O3DE_ENABLE_HARDENED_RUNTIME@)
         return()
     endif()
 
     if(EXISTS "${entitlement_file}")
 
-        execute_process(COMMAND "/usr/bin/codesign" "--force" "--sign" "@LY_CODE_SIGN_IDENTITY@" "--deep" "-o" "runtime" "--timestamp" "--entitlements" "${entitlement_file}" "${file}"
+        execute_process(COMMAND "/usr/bin/codesign" "--force" "--sign" "@O3DE_CODE_SIGN_IDENTITY@" "--deep" "-o" "runtime" "--timestamp" "--entitlements" "${entitlement_file}" "${file}"
             TIMEOUT 300
             OUTPUT_VARIABLE codesign_out
             RESULT_VARIABLE codesign_ret
         )
     else()
-        execute_process(COMMAND "/usr/bin/codesign" "--force" "--sign" "@LY_CODE_SIGN_IDENTITY@" "--deep" "-o" "runtime" "--timestamp" "${file}"
+        execute_process(COMMAND "/usr/bin/codesign" "--force" "--sign" "@O3DE_CODE_SIGN_IDENTITY@" "--deep" "-o" "runtime" "--timestamp" "${file}"
             TIMEOUT 300
             OUTPUT_VARIABLE codesign_out
             RESULT_VARIABLE codesign_ret
@@ -102,7 +102,7 @@ endfunction()
 
 function(codesign_python_framework_binaries framework_path)
 
-    if (NOT @LY_ENABLE_HARDENED_RUNTIME@)
+    if (NOT @O3DE_ENABLE_HARDENED_RUNTIME@)
         return()
     endif()
 
@@ -110,9 +110,9 @@ function(codesign_python_framework_binaries framework_path)
     # We need to codesign all the binaries that the "--deep" flag will miss.
     file(GLOB_RECURSE files
         LIST_DIRECTORIES false
-        "${framework_path}/Versions/@LY_PYTHON_VERSION_MAJOR_MINOR@/bin/**"
-        "${framework_path}/Versions/@LY_PYTHON_VERSION_MAJOR_MINOR@/lib/**"
-        "${framework_path}/Versions/@LY_PYTHON_VERSION_MAJOR_MINOR@/Resources/**")
+        "${framework_path}/Versions/@O3DE_PYTHON_VERSION_MAJOR_MINOR@/bin/**"
+        "${framework_path}/Versions/@O3DE_PYTHON_VERSION_MAJOR_MINOR@/lib/**"
+        "${framework_path}/Versions/@O3DE_PYTHON_VERSION_MAJOR_MINOR@/Resources/**")
 
     foreach(file ${files})
         if(NOT EXISTS "${file}")
@@ -129,13 +129,13 @@ function(codesign_python_framework_binaries framework_path)
             set(should_codesign TRUE)
         endif()
         if(${should_codesign})
-            codesign_file("${file}" "@LY_ROOT_FOLDER@/python/Platform/Mac/PythonEntitlements.plist")
+            codesign_file("${file}" "@O3DE_ENGINE_PATH@/python/Platform/Mac/PythonEntitlements.plist")
         endif()
     endforeach()
 
 endfunction()
 
-function(ly_copy source_files relative_target_directory)
+function(o3de_copy source_files relative_target_directory)
     set(options)
     set(oneValueArgs TARGET_FILE_DIR SOURCE_TYPE SOURCE_GEM_MODULE)
     set(multiValueArgs)
@@ -160,7 +160,7 @@ function(ly_copy source_files relative_target_directory)
         if("${source_file}" IS_NEWER_THAN "${target_file}")
             message(STATUS "Copying ${source_file} to ${full_target_directory}...")
             file(MAKE_DIRECTORY "${full_target_directory}")
-            file(COPY "${source_file}" DESTINATION "${full_target_directory}" FILE_PERMISSIONS @LY_COPY_PERMISSIONS@ FOLLOW_SYMLINK_CHAIN)
+            file(COPY "${source_file}" DESTINATION "${full_target_directory}" FILE_PERMISSIONS @O3DE_COPY_PERMISSIONS@ FOLLOW_SYMLINK_CHAIN)
             file(TOUCH_NOCREATE "${target_file}")
 
             # Our Qt and Python frameworks aren't in the correct bundle format to be codesigned.
@@ -179,15 +179,15 @@ function(ly_copy source_files relative_target_directory)
     endforeach()
 endfunction()
 
-function(ly_download_and_codesign_sdk_python)
+function(o3de_download_and_codesign_sdk_python)
     execute_process(COMMAND "${CMAKE_COMMAND}" -DPAL_PLATFORM_NAME=Mac "-DLY_3RDPARTY_PATH=${CMAKE_INSTALL_PREFIX}/python" -P "${CMAKE_INSTALL_PREFIX}/python/get_python.cmake"
         WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
     )
-    fixup_python_framework("${CMAKE_INSTALL_PREFIX}/python/runtime/@LY_PYTHON_PACKAGE_NAME@/Python.framework")
-    codesign_python_framework_binaries("${CMAKE_INSTALL_PREFIX}/python/runtime/@LY_PYTHON_PACKAGE_NAME@/Python.framework")
-    codesign_file("${CMAKE_INSTALL_PREFIX}/python/runtime/@LY_PYTHON_PACKAGE_NAME@/Python.framework" "@LY_ROOT_FOLDER@/python/Platform/Mac/PythonEntitlements.plist")
+    fixup_python_framework("${CMAKE_INSTALL_PREFIX}/python/runtime/@O3DE_PYTHON_PACKAGE_NAME@/Python.framework")
+    codesign_python_framework_binaries("${CMAKE_INSTALL_PREFIX}/python/runtime/@O3DE_PYTHON_PACKAGE_NAME@/Python.framework")
+    codesign_file("${CMAKE_INSTALL_PREFIX}/python/runtime/@O3DE_PYTHON_PACKAGE_NAME@/Python.framework" "@O3DE_ENGINE_PATH@/python/Platform/Mac/PythonEntitlements.plist")
 endfunction()
 
-function(ly_codesign_sdk)
-    codesign_file("${LY_INSTALL_PATH_ORIGINAL}/O3DE_SDK.app" "none")
+function(o3de_codesign_sdk)
+    codesign_file("${O3DE_INSTALL_PATH_ORIGINAL}/O3DE_SDK.app" "none")
 endfunction()

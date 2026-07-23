@@ -18,7 +18,7 @@ import azlmbr.bus as bus
 import azlmbr.math as azmath
 import azlmbr.paths
 
-import ly_test_tools.environment.file_system as fs
+import o3de_test_tools.environment.file_system as fs
 
 from Atom.atom_utils.atom_constants import (
     AtomToolsDocumentRequestBusEvents, AtomToolsDocumentSystemRequestBusEvents, AtomToolsMainWindowRequestBusEvents,

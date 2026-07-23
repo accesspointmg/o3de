@@ -26,7 +26,7 @@ namespace ImGui
         Visible
     };
 
-    // Notes:   LockToResolution - Lock ImGui Render to a supplied resolution, regardless of LY Render Resolution
+    // Notes:   LockToResolution - Lock ImGui Render to a supplied resolution, regardless of O3DE Render Resolution
     //          MatchRenderResolution - Render ImGui at Render Resolution
     //          MatchToMaxRenderResolution - Render ImGui at Render Resolution, up to some maximum resolution, then Render at that max resolution.
     enum class ImGuiResolutionMode

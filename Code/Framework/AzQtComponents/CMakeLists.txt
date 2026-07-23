@@ -6,13 +6,16 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${PAL_PLATFORM_NAME} ${O3DE_ENGINE_RESTRICTED_PATH} ${LY_ROOT_FOLDER})
+o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Framework/AzQtComponents/Platform/${O3DE_PAL_PLATFORM_NAME} pal_core_framework_azqtcomponents_path)
+# The per-platform source file list lives in the nested AzQtComponents/Platform dir
+o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Framework/AzQtComponents/AzQtComponents/Platform/${O3DE_PAL_PLATFORM_NAME} pal_nested_azqtcomponents_path)
+#set(common_core_framework_azqtcomponents_path ${O3DE_ENGINE_PATH}/Code/Framework/AzQtComponents/Platform/Common)
 
-ly_add_target(
+o3de_add_target(
     NAME AzQtComponents SHARED
     NAMESPACE AZ
     AUTOMOC
@@ -20,15 +23,15 @@ ly_add_target(
     AUTORCC
     FILES_CMAKE
         AzQtComponents/azqtcomponents_files.cmake
-        AzQtComponents/Platform/${PAL_PLATFORM_NAME}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_nested_azqtcomponents_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        Platform/${PAL_PLATFORM_NAME}/platform_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
+        ${pal_core_framework_azqtcomponents_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             AzQtComponents
         PUBLIC
             .
-            ${pal_dir}
+            ${pal_core_framework_azqtcomponents_path}
     COMPILE_DEFINITIONS
         PRIVATE
             AZ_QT_COMPONENTS_EXPORT_SYMBOLS
@@ -44,7 +47,7 @@ ly_add_target(
             AZ::AzCore
 )
 
-ly_add_target(
+o3de_add_target(
     NAME O3DEQtControlGallery APPLICATION
     NAMESPACE AZ
     AUTOMOC
@@ -56,7 +59,7 @@ ly_add_target(
             .
             AzQtComponents
             AzQtComponents/Gallery
-            ${pal_dir}
+            ${pal_core_framework_azqtcomponents_path}
     BUILD_DEPENDENCIES
         PRIVATE
             3rdParty::Qt::Svg
@@ -65,7 +68,7 @@ ly_add_target(
             AZ::AzToolsFramework
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ReflectedPropertyEditorStandalone APPLICATION
     NAMESPACE AZ
     FILES_CMAKE
@@ -76,7 +79,7 @@ ly_add_target(
             AZ::AzToolsFramework
 )
 
-ly_add_target(
+o3de_add_target(
     NAME DPEDebugViewStandalone APPLICATION
     NAMESPACE AZ
     FILES_CMAKE
@@ -93,10 +96,10 @@ ly_add_target(
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-    ly_add_target(
-        NAME AzQtComponents.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME AzQtComponents.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE AZ
         FILES_CMAKE
             AzQtComponents/azqtcomponents_testing_files.cmake
@@ -104,13 +107,13 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             PRIVATE
                 Tests
                 AzQtComponents
-                ${pal_dir}
+                ${pal_core_framework_azqtcomponents_path}
         BUILD_DEPENDENCIES
             PRIVATE
                 AZ::AzQtComponents
                 AZ::AzTest
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME AZ::AzQtComponents.Tests
         LABELS REQUIRES_tiaf
     )

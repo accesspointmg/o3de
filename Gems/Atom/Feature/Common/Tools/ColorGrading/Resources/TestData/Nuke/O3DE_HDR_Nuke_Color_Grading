@@ -32,7 +32,7 @@ define_window_layout_xml {<?xml version="1.0" encoding="UTF-8"?>
 }
 Root {
  inputs 0
- name C:/Depot/o3de-engine/Gems/AtomLyIntegration/CommonFeatures/Tools/ColorGrading/TestData/Nuke/O3DE_HDR_Nuke_Color_Grading
+ name C:/Depot/o3de-engine/Gems/AtomO3deIntegration/CommonFeatures/Tools/ColorGrading/TestData/Nuke/O3DE_HDR_Nuke_Color_Grading
  project_directory "\[python \{nuke.script_directory()\}]"
  label "This is a Nuke project template used to validate HDR / ACES color grading workflow in Nuke to generate 'Look Modification' (LMT) Luts for Oopen 3D Engine."
  format "2048 1556 0 0 2048 1556 1 2K_Super_35(full-ap)"

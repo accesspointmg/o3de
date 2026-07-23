@@ -10,7 +10,7 @@
 
 #include <AzCore/Component/Component.h>
 
-#include <AtomLyIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
+#include <AtomO3deIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
 
 #include <Components/ClothConfiguration.h>
 #include <Components/ClothComponentMesh/ClothComponentMesh.h>

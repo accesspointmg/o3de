@@ -11,7 +11,7 @@
 #include <RHI/WSISurface.h>
 #include <Atom/RHI.Reflect/VkAllocator.h>
 
-#if PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#if O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
 #include <AzFramework/XcbConnectionManager.h>
 #endif
 
@@ -23,7 +23,7 @@ namespace AZ
         {
             Instance& instance = Instance::GetInstance();
 
-#if PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#if O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
 
             xcb_connection_t* xcb_connection = nullptr;
             if (auto xcbConnectionManager = AzFramework::XcbConnectionManagerInterface::Get();
@@ -43,13 +43,13 @@ namespace AZ
             AssertSuccess(result);
 
             return ConvertResult(result);
-#elif PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND
+#elif O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND
             #error "Linux Window Manager Wayland not supported."
             return RHI::ResultCode::Unimplemented;
 #else
             #error "Linux Window Manager not recognized."
             return RHI::ResultCode::Unimplemented;
-#endif // PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#endif // O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
         }
     }
 }

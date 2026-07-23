@@ -6,5 +6,5 @@
 #
 #
 
-# MacOS 10.14 deprecates OpenGL. This silences the warnings for now.
+# Mac 10.14 deprecates OpenGL. This silences the warnings for now.
 set(OPENGLINTERFACE_COMPILE_DEFINITIONS GL_SILENCE_DEPRECATION)

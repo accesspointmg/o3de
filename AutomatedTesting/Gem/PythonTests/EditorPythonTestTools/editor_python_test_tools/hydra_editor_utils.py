@@ -339,10 +339,10 @@ def get_set_test(entity: object, component_index: int, path: str, value: object)
     return entity.get_set_test(component_index, path, value)
 
 
-def get_set_property_test(ly_object: object, attribute_name: str, value: object, expected_result: object = None) -> bool:
+def get_set_property_test(o3de_object: object, attribute_name: str, value: object, expected_result: object = None) -> bool:
     """
     Used to set and validate BehaviorContext property changes in Open 3D Engine objects
-    :param ly_object: The Open 3D Engine object to test
+    :param o3de_object: The Open 3D Engine object to test
     :param attribute_name: property (attribute) name in the BehaviorContext
     :param value: new value for the variable being changed in the component
     :param expected_result: (optional) check the result against a specific expected value other than the one set
@@ -352,37 +352,37 @@ def get_set_property_test(ly_object: object, attribute_name: str, value: object,
         expected_result = value
 
     # Test Get/Set (get old value, set new value, check that new value was set correctly)
-    print(f"Attempting to set {ly_object.typename}.{attribute_name} = {value} (expected result is {expected_result})")
+    print(f"Attempting to set {o3de_object.typename}.{attribute_name} = {value} (expected result is {expected_result})")
 
-    if hasattr(ly_object, attribute_name):
-        print(f"SUCCESS: Located attribute {attribute_name} for {ly_object.typename}")
+    if hasattr(o3de_object, attribute_name):
+        print(f"SUCCESS: Located attribute {attribute_name} for {o3de_object.typename}")
     else:
-        print(f"FAILURE: Failed to find attribute {attribute_name} in {ly_object.typename}")
+        print(f"FAILURE: Failed to find attribute {attribute_name} in {o3de_object.typename}")
         return False
 
-    old_value = getattr(ly_object, attribute_name)
+    old_value = getattr(o3de_object, attribute_name)
 
     if old_value is not None:
-        print(f"SUCCESS: Retrieved existing value {old_value} for {attribute_name} in {ly_object.typename}")
+        print(f"SUCCESS: Retrieved existing value {old_value} for {attribute_name} in {o3de_object.typename}")
     else:
-        print(f"FAILURE: Failed to retrieve value for {attribute_name} in {ly_object.typename}")
+        print(f"FAILURE: Failed to retrieve value for {attribute_name} in {o3de_object.typename}")
         return False
 
     if old_value == expected_result:
         print((f"WARNING: get_set_test on {attribute_name} is setting the same value that already exists ({old_value})."
                 "The 'set' result for the test will be inconclusive."))
 
-    setattr(ly_object, attribute_name, expected_result)
+    setattr(o3de_object, attribute_name, expected_result)
 
-    new_value = getattr(ly_object, attribute_name)
+    new_value = getattr(o3de_object, attribute_name)
 
     if new_value is not None:
-        print(f"SUCCESS: Retrieved new value {new_value} for {attribute_name} in {ly_object.typename}")
+        print(f"SUCCESS: Retrieved new value {new_value} for {attribute_name} in {o3de_object.typename}")
     else:
-        print(f"FAILURE: Failed to retrieve value for {attribute_name} in {ly_object.typename}")
+        print(f"FAILURE: Failed to retrieve value for {attribute_name} in {o3de_object.typename}")
         return False
 
-    return compare_values(new_value, expected_result, f"{ly_object.typename}.{attribute_name}")
+    return compare_values(new_value, expected_result, f"{o3de_object.typename}.{attribute_name}")
 
 
 def has_components(entity_id: object, component_list: list) -> bool:

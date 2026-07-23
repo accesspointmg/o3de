@@ -22,7 +22,7 @@ if [[ ! -e $ASSET_PROCESSOR_BINARY ]]; then
     exit 1
 fi
 
-for project in $(echo $CMAKE_LY_PROJECTS | sed "s/;/ /g")
+for project in $(echo $CMAKE_O3DE_PROJECTS | sed "s/;/ /g")
 do
     echo  [ci_build] ${ASSET_PROCESSOR_BINARY} $ASSET_PROCESSOR_OPTIONS --project-path=$SOURCE_DIRECTORY/$project --platforms=$ASSET_PROCESSOR_PLATFORMS
     ${ASSET_PROCESSOR_BINARY} $ASSET_PROCESSOR_OPTIONS --project-path=$SOURCE_DIRECTORY/$project --platforms=$ASSET_PROCESSOR_PLATFORMS

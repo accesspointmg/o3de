@@ -6,6 +6,8 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_create_alias(NAME AtomContent.Builders NAMESPACE Gem TARGETS Gem::ReferenceMaterials.Builders Gem::Sponza.Builders)
+o3de_gem_setup()
+
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_create_alias(NAME AtomContent.Builders NAMESPACE Gem TARGETS Gem::ReferenceMaterials.Builders Gem::Sponza.Builders)
 endif()

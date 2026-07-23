@@ -6,19 +6,20 @@
 #
 #
 
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/source/Platform/${PAL_PLATFORM_NAME} ${O3DE_ENGINE_RESTRICTED_PATH} ${LY_ROOT_FOLDER})
+o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Tools/AWSNativeSDKInit/source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_tools_awsnativeinit_source_path)
+set(common_code_tools_awsnativeinit_source_path ${O3DE_ENGINE_PATH}/Code/Tools/AWSNativeSDKInit/source/Platform/Common)
 
-ly_add_target(
+o3de_add_target(
     NAME AWSNativeSDKInit STATIC
     NAMESPACE AZ
     FILES_CMAKE
         aws_native_sdk_init_files.cmake
-        ${pal_source_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_tools_awsnativeinit_source_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             include
         PRIVATE
-            ${pal_dir}
+            ${pal_code_tools_awsnativeinit_source_path}
     BUILD_DEPENDENCIES
         PRIVATE
             3rdParty::AWSNativeSDK::AWSCore
@@ -28,8 +29,8 @@ ly_add_target(
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
         NAME AWSNativeSDKTestLibs STATIC
         NAMESPACE AZ
         FILES_CMAKE
@@ -47,8 +48,8 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzTest
     )
 
-    ly_add_target(
-        NAME AWSNativeSDKInit.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME AWSNativeSDKInit.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE AZ
         FILES_CMAKE
             aws_native_sdk_init_tests_files.cmake
@@ -65,7 +66,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AWSNativeSDKInit
                 3rdParty::AWSNativeSDK::Core
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME AZ::AWSNativeSDKInit.Tests
         LABELS REQUIRES_tiaf
     )

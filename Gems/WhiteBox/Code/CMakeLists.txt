@@ -6,14 +6,14 @@
 #
 #
 
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
 set(common_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
-include(${pal_source_dir}/PAL_${PAL_PLATFORM_NAME_LOWERCASE}.cmake)
+include(${pal_source_dir}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)
 
-if(NOT PAL_TRAIT_WHITEBOX_SUPPORTED)
-    ly_add_target(
-        NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+if(NOT O3DE_PAL_TRAIT_WHITEBOX_SUPPORTED)
+    o3de_add_target(
+        NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             whitebox_unsupported_files.cmake
@@ -26,8 +26,8 @@ if(NOT PAL_TRAIT_WHITEBOX_SUPPORTED)
             PRIVATE
                 AZ::AzCore
     )
-    if(PAL_TRAIT_BUILD_HOST_TOOLS)
-        ly_add_target(
+    if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+        o3de_add_target(
             NAME ${gem_name}.Editor GEM_MODULE
             NAMESPACE Gem
             FILES_CMAKE
@@ -49,7 +49,7 @@ if(NOT PAL_TRAIT_WHITEBOX_SUPPORTED)
     endif()
 
     # Inject the gem name into the Unsupported Module source file
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES
             Source/WhiteBoxModuleUnsupported.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -59,7 +59,7 @@ if(NOT PAL_TRAIT_WHITEBOX_SUPPORTED)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -78,8 +78,8 @@ ly_add_target(
             Legacy::CryCommon
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         whitebox_shared_files.cmake
@@ -94,7 +94,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/WhiteBoxModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -103,19 +103,19 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # use the above ${gem_name} module in runtimes:
-ly_create_alias(NAME ${gem_name}.Clients  NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Servers  NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Unified  NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients  NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Servers  NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Unified  NAMESPACE Gem TARGETS Gem::${gem_name})
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
         NAME ${gem_name}.Editor.Static STATIC
         NAMESPACE Gem
         FILES_CMAKE
             whitebox_editor_supported_files.cmake
         PLATFORM_INCLUDE_FILES
-            ${pal_source_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_tools.cmake
-            ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common/${PAL_TRAIT_COMPILER_ID}/whitebox_editor_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+            ${pal_source_dir}/platform_${O3DE_PAL_PLATFORM_WART}_tools.cmake
+            ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common/${O3DE_PAL_TRAIT_COMPILER_ID}/whitebox_editor_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
         INCLUDE_DIRECTORIES
             PRIVATE
                 Source
@@ -136,7 +136,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::${gem_name}.Static
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
 
         NAMESPACE Gem
@@ -153,7 +153,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # Inject the gem name into the Module source file
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES
             Source/${gem_name}EditorModule.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -162,8 +162,8 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 O3DE_GEM_VERSION=${gem_version})
 
     # use the above ${gem_name}.Editor module in dev tools:
-    ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
-    ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 
 
 endif()
@@ -171,9 +171,9 @@ endif()
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             whitebox_tests_supported_files.cmake
@@ -188,14 +188,14 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 Gem::${gem_name}.Static
     )
 
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         LABELS REQUIRES_tiaf
     )
 
-    if (PAL_TRAIT_BUILD_HOST_TOOLS)
-        ly_add_target(
-            NAME ${gem_name}.Editor.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    if (O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+        o3de_add_target(
+            NAME ${gem_name}.Editor.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
             NAMESPACE Gem
             FILES_CMAKE
                 whitebox_editor_tests_supported_files.cmake
@@ -210,12 +210,12 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                     Gem::${gem_name}.Editor.Static
         )
 
-        ly_add_googletest(
+        o3de_add_googletest(
             NAME Gem::${gem_name}.Editor.Tests
         )
 
-        ly_add_target(
-            NAME ${gem_name}.Editor.Physics.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+        o3de_add_target(
+            NAME ${gem_name}.Editor.Physics.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
             NAMESPACE Gem
             FILES_CMAKE
                 whitebox_editor_physics_tests_supported_files.cmake
@@ -232,7 +232,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 Gem::PhysX.Editor
         )
 
-        ly_add_googletest(
+        o3de_add_googletest(
             NAME Gem::${gem_name}.Editor.Physics.Tests
             LABELS REQUIRES_tiaf
         )

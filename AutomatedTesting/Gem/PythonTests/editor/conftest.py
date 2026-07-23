@@ -30,18 +30,18 @@ def set_editor_registry_defaults(request):
     # Records editor settings at start, sets to default, then returns to original at teardown.
     logger.debug('Executing an Editor settings fixture. If not executing an Editor test, this may be in error.')
 
-    layout['original'] = reg.get_ly_registry_value(layout['path'], layout['value'])
-    restore_camera['original'] = reg.get_ly_registry_value(restore_camera['path'], restore_camera['value'])
+    layout['original'] = reg.get_o3de_registry_value(layout['path'], layout['value'])
+    restore_camera['original'] = reg.get_o3de_registry_value(restore_camera['path'], restore_camera['value'])
 
     # Deleting current layout value to restore defaults
-    reg.delete_ly_registry_value(layout['path'], layout['value'])
+    reg.delete_o3de_registry_value(layout['path'], layout['value'])
 
     # Setting restore camera dialog to not display
-    reg.set_ly_registry_value(restore_camera['path'], restore_camera['value'], restore_camera['new'])
+    reg.set_o3de_registry_value(restore_camera['path'], restore_camera['value'], restore_camera['new'])
 
     # Revert settings to original values
     def teardown():
-        reg.set_ly_registry_value(layout['path'], layout['value'], layout['original'], value_type=winreg.REG_BINARY)
-        reg.set_ly_registry_value(restore_camera['path'], restore_camera['value'], restore_camera['original'])
+        reg.set_o3de_registry_value(layout['path'], layout['value'], layout['original'], value_type=winreg.REG_BINARY)
+        reg.set_o3de_registry_value(restore_camera['path'], restore_camera['value'], restore_camera['original'])
 
     request.addfinalizer(teardown)

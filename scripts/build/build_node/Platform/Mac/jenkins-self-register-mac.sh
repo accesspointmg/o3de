@@ -42,7 +42,7 @@ cat <<EOF | java -jar ~/jenkins-cli.jar -auth "${CONTROLLER_USERNAME}:${CONTROLL
 <slave>
   <name>${NODE_NAME}</name>
   <description>Ext IP: ${INSTANCE_PUBLIC_IP}</description>
-  <remoteFS>/Users/lybuilder/jenkins</remoteFS>
+  <remoteFS>/Users/o3debuilder/jenkins</remoteFS>
   <numExecutors>1</numExecutors>
   <mode>EXCLUSIVE</mode>
   <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>

@@ -9,7 +9,7 @@
 import o3de.command_utils as command_utils
 import o3de.export_project as exp
 import export_utility as eutil
-import o3de.manifest as manifest
+import o3de.o3de_object as o3de_object
 
 from o3de import android, android_support
 
@@ -45,7 +45,7 @@ def export_source_android_project(ctx: exp.O3DEScriptExportContext,
         logger = logging.getLogger()
         logger.setLevel(logging.ERROR)
 
-    is_installer_sdk = manifest.is_sdk_engine(engine_path=ctx.engine_path)
+    is_installer_sdk = o3de_object.is_sdk_engine(engine_path=ctx.engine_path)
 
     # For installed SDKs, only the release monolithic android artifacts are installed with the SDK
     if is_installer_sdk:

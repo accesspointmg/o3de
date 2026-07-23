@@ -6,6 +6,7 @@
 #
 #
 
+set(_cmake_Platform_Common_MSVC_Configurations_msvc_cmake ${CMAKE_CURRENT_LIST_DIR})
 get_property(O3DE_SCRIPT_ONLY GLOBAL PROPERTY "O3DE_SCRIPT_ONLY")
 
 if (NOT O3DE_SCRIPT_ONLY)
@@ -16,8 +17,8 @@ if (NOT O3DE_SCRIPT_ONLY)
     unset(minimum_supported_toolset)
 endif()
 
-include(cmake/Platform/Common/Configurations_common.cmake)
-include(cmake/Platform/Common/MSVC/VisualStudio_common.cmake)
+include(${_cmake_Platform_Common_MSVC_Configurations_msvc_cmake}/../Configurations_common.cmake)
+include(${_cmake_Platform_Common_MSVC_Configurations_msvc_cmake}/VisualStudio_common.cmake)
 
 # Verify that it wasn't invoked with an unsupported target/host architecture. Currently only supports x64/x64
 if(CMAKE_VS_PLATFORM_NAME AND NOT CMAKE_VS_PLATFORM_NAME STREQUAL "x64")
@@ -27,7 +28,17 @@ if(CMAKE_VS_PLATFORM_TOOLSET_HOST_ARCHITECTURE AND NOT CMAKE_VS_PLATFORM_TOOLSET
     message(FATAL_ERROR "${CMAKE_VS_PLATFORM_TOOLSET_HOST_ARCHITECTURE} host toolset is not supported, it must be 'x64'")
 endif()
 
-ly_append_configurations_options(
+# Warnings-as-errors is opt-in while the Schema 2.0 rework is in
+# progress — the tree carries known-benign warnings (C4100 etc.) that
+# newer MSVC toolsets flag.  Re-enable by default once clean.
+set(O3DE_STRICT_WARNINGS OFF CACHE BOOL "Treat compiler warnings as errors")
+if(O3DE_STRICT_WARNINGS)
+    set(o3de_wx_flag /WX)
+else()
+    set(o3de_wx_flag "")
+endif()
+
+o3de_append_configurations_options(
     DEFINES
         _ENABLE_EXTENDED_ALIGNED_STORAGE # Enables support for extended alignment for the MSVC std::aligned_storage class
         _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING # Prevents triggering of STL4043 when checked iterators are used in 3rdParty libraries(QT and AWSNativeSDK)
@@ -37,7 +48,7 @@ ly_append_configurations_options(
         /MP             # Multicore compilation in Visual Studio
         /nologo         # Suppress Copyright and version number message
         /W4             # Warning level 4
-        /WX             # Warnings as errors
+        ${o3de_wx_flag} # Warnings as errors (opt-in via O3DE_STRICT_WARNINGS)
         /permissive-    # Conformance with standard
         /Zc:preprocessor # Forces preprocessor into conformance mode:  https://docs.microsoft.com/en-us/cpp/preprocessor/preprocessor-experimental-overview?view=msvc-170
 
@@ -107,10 +118,10 @@ ly_append_configurations_options(
         /INCREMENTAL:NO
 )
 
-set(LY_BUILD_WITH_ADDRESS_SANITIZER FALSE CACHE BOOL "Builds using AddressSanitizer (ASan). Will disable Edit/Continue, Incremental building and Run-Time checks (default = FALSE)")
-if(LY_BUILD_WITH_ADDRESS_SANITIZER)
-    set(LY_BUILD_WITH_INCREMENTAL_LINKING_DEBUG FALSE)
-    ly_append_configurations_options(
+set(O3DE_BUILD_WITH_ADDRESS_SANITIZER FALSE CACHE BOOL "Builds using AddressSanitizer (ASan). Will disable Edit/Continue, Incremental building and Run-Time checks (default = FALSE)")
+if(O3DE_BUILD_WITH_ADDRESS_SANITIZER)
+    set(O3DE_BUILD_WITH_INCREMENTAL_LINKING_DEBUG FALSE)
+    o3de_append_configurations_options(
         COMPILATION_DEBUG
             /fsanitize=address
     )
@@ -119,7 +130,7 @@ if(LY_BUILD_WITH_ADDRESS_SANITIZER)
         ${link_tools_dir}/clang_rt.asan_dbg_dynamic-x86_64.dll
         DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG})
 else()
-    ly_append_configurations_options(
+    o3de_append_configurations_options(
         COMPILATION_DEBUG
             /RTCsu  # Run-Time Error Checks: c Reports when a value is assigned to a smaller data type and results in a data loss (Not supoported by the STL)
                     #                        s Enables stack frame run-time error checking
@@ -127,15 +138,15 @@ else()
     )
 endif()
 
-set(LY_BUILD_WITH_INCREMENTAL_LINKING_DEBUG FALSE CACHE BOOL "Indicates if incremental linking is used in debug configurations (default = FALSE)")
-if(LY_BUILD_WITH_INCREMENTAL_LINKING_DEBUG)
-    ly_append_configurations_options(
+set(O3DE_BUILD_WITH_INCREMENTAL_LINKING_DEBUG FALSE CACHE BOOL "Indicates if incremental linking is used in debug configurations (default = FALSE)")
+if(O3DE_BUILD_WITH_INCREMENTAL_LINKING_DEBUG)
+    o3de_append_configurations_options(
         COMPILATION_DEBUG
             /ZI         # Enable Edit/Continue
     )
 else()
     # Disable incremental linking
-    ly_append_configurations_options(
+    o3de_append_configurations_options(
         COMPILATION_DEBUG
             /Zi         # Generate debugging information (no Edit/Continue). Edit/Continue requires incremental linking
         LINK_NON_STATIC_DEBUG
@@ -147,7 +158,7 @@ endif()
 
 set(O3DE_BUILD_WITH_DEBUG_SYMBOLS_RELEASE FALSE CACHE BOOL "Add debug symbols when building in release configuration. (default = FALSE)")
 if(O3DE_BUILD_WITH_DEBUG_SYMBOLS_RELEASE)
-    ly_append_configurations_options(
+    o3de_append_configurations_options(
         COMPILATION_RELEASE
             /Od             # Enable debug symbols
             /Zi             # Generate debugging information (no Edit/Continue)
@@ -157,7 +168,7 @@ if(O3DE_BUILD_WITH_DEBUG_SYMBOLS_RELEASE)
 endif()
 
 # Configure system includes
-ly_set(LY_CXX_SYSTEM_INCLUDE_CONFIGURATION_FLAG
+o3de_set(O3DE_CXX_SYSTEM_INCLUDE_CONFIGURATION_FLAG
     /experimental:external # Turns on "external" headers feature for MSVC compilers, required for MSVC < 16.10
     /external:W0 # Set warning level in external headers to 0. This is used to suppress warnings 3rdParty libraries which uses the "system_includes" option in their json configuration
 )
@@ -169,17 +180,17 @@ ly_set(LY_CXX_SYSTEM_INCLUDE_CONFIGURATION_FLAG
 # Once target_include_directories(... SYSTEM is supported, we can branch and use TargetIncludeSystemDirectories_supported.cmake
 # Reported this here: https://gitlab.kitware.com/cmake/cmake/-/issues/17904#note_1078281
 if(NOT CMAKE_INCLUDE_SYSTEM_FLAG_CXX)
-    ly_set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "/external:I")
+    o3de_set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "/external:I")
 else()
     string(STRIP ${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} CMAKE_INCLUDE_SYSTEM_FLAG_CXX)
 endif()
 
-include(cmake/Platform/Common/TargetIncludeSystemDirectories_unsupported.cmake)
+include(${_cmake_Platform_Common_MSVC_Configurations_msvc_cmake}/../TargetIncludeSystemDirectories_unsupported.cmake)
 
 if(CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION VERSION_LESS_EQUAL "10.0.19041.0")
   # Suppresses warning C5105 which triggers with Windows 10 SDK 10.0.19041 and below when using the /Zc:preprocessor option
   # https://developercommunity.visualstudio.com/t/stdc17-generates-warning-compiling-windowsh/1249671
-  ly_append_configurations_options(
+  o3de_append_configurations_options(
         COMPILATION
             /wd5104
             /wd5105

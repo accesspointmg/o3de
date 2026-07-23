@@ -27,11 +27,11 @@ class AndroidEmuError(Exception):
 
 def get_android_sdk_path():
     try:
-        android_sdk_path = pathlib.Path(os.getenv('LY_ANDROID_SDK'))
+        android_sdk_path = pathlib.Path(os.getenv('O3DE_ANDROID_SDK'))
         if not android_sdk_path:
-            raise AndroidEmuError(f"LY_ANDROID_SDK environment variable is not set")
+            raise AndroidEmuError(f"O3DE_ANDROID_SDK environment variable is not set")
         if not android_sdk_path.is_dir():
-            raise AndroidEmuError(f"Android SDK Path ('{android_sdk_path}') set with the LY_ANDROID_SDK variable is invalid")
+            raise AndroidEmuError(f"Android SDK Path ('{android_sdk_path}') set with the O3DE_ANDROID_SDK variable is invalid")
         #TODO: Sanity check on necessary files
         return android_sdk_path
     except Exception as err:
@@ -115,7 +115,7 @@ class Command(object):
 
 class AndroidEmulatorManager(object):
 
-    UNIT_TEST_AVD_NAME = "LY_UNITTEST_AVD"
+    UNIT_TEST_AVD_NAME = "O3DE_UNITTEST_AVD"
 
     UNIT_TEST_SYSTEM_IMAGE_PACKAGE = "android-30;google_apis;x86_64"
 

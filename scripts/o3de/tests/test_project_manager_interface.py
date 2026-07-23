@@ -11,7 +11,7 @@ from unittest.mock import patch
 from inspect import signature
 import pathlib
 
-from o3de import manifest, engine_properties, register, engine_template, enable_gem, disable_gem, project_properties, repo, download
+from o3de import engine_properties, o3de_object, register, engine_template, enable_gem, disable_gem, project_properties, repo, download
 
 # If any tests are failing in this, this means the interface Project Manager depends on has changed.
 # This likely means that some Project Manager functionality has been broken.
@@ -21,7 +21,7 @@ from o3de import manifest, engine_properties, register, engine_template, enable_
 
 # manifest interface
 def test_get_engine_json_data():
-    sig = signature(manifest.get_engine_json_data)
+    sig = signature(o3de_object.get_engine_json_data)
     assert len(sig.parameters) >= 2
 
     engine_path = list(sig.parameters.values())[1]
@@ -30,48 +30,48 @@ def test_get_engine_json_data():
 
     assert sig.return_annotation == dict
 
-def test_load_o3de_manifest():
-    sig = signature(manifest.load_o3de_manifest)
+def test_get_o3de_manifest_json_data():
+    sig = signature(o3de_object.load_o3de_manifest)
 
     assert sig.return_annotation == dict
 
-def test_get_o3de_gems_folder():
-    sig = signature(manifest.get_o3de_gems_folder)
+def test_get_user_o3de_gems_path():
+    sig = signature(o3de_object.get_user_o3de_gems_path)
 
     assert sig.return_annotation == pathlib.Path
 
-def test_get_o3de_projects_folder():
-    sig = signature(manifest.get_o3de_projects_folder)
+def test_get_user_o3de_projects_path():
+    sig = signature(o3de_object.get_user_o3de_projects_path)
 
     assert sig.return_annotation == pathlib.Path
 
-def test_get_o3de_restricted_folder():
-    sig = signature(manifest.get_o3de_restricted_folder)
+def test_get_user_o3de_restricted_path():
+    sig = signature(o3de_object.get_user_o3de_restricted_path)
 
     assert sig.return_annotation == pathlib.Path
 
-def test_get_o3de_templates_folder():
-    sig = signature(manifest.get_o3de_templates_folder)
+def test_get_user_o3de_templates_path():
+    sig = signature(o3de_object.get_user_o3de_templates_path)
 
     assert sig.return_annotation == pathlib.Path
 
-def test_get_o3de_third_party_folder():
-    sig = signature(manifest.get_o3de_third_party_folder)
+def test_get_user_o3de_third_party_path():
+    sig = signature(o3de_object.get_user_o3de_third_party_path)
 
     assert sig.return_annotation == pathlib.Path
 
-def test_get_manifest_engines():
-    sig = signature(manifest.get_manifest_engines)
+def test_get_manifest_child_engines():
+    sig = signature(o3de_object.get_manifest_engines)
 
     assert sig.return_annotation == list
 
 def test_get_this_engine_path():
-    sig = signature(manifest.get_this_engine_path)
+    sig = signature(o3de_object.get_this_engine_path)
 
     assert sig.return_annotation == pathlib.Path
 
 def test_get_registered():
-    sig = signature(manifest.get_registered)
+    sig = signature(o3de_object.get_registered)
     assert len(sig.parameters) >= 1
 
     engine_name = list(sig.parameters.values())[0]
@@ -81,12 +81,12 @@ def test_get_registered():
     assert sig.return_annotation == pathlib.Path
 
 def test_get_engine_gems():
-    sig = signature(manifest.get_engine_gems)
+    sig = signature(o3de_object.get_engine_gems)
 
     assert sig.return_annotation == list
 
 def test_get_all_gems():
-    sig = signature(manifest.get_all_gems)
+    sig = signature(o3de_object.get_all_gems)
     assert len(sig.parameters) >= 1
 
     project_path = list(sig.parameters.values())[0]
@@ -96,7 +96,7 @@ def test_get_all_gems():
     assert sig.return_annotation == list
 
 def test_get_gem_json_data():
-    sig = signature(manifest.get_gem_json_data)
+    sig = signature(o3de_object.get_gem_json_data)
     assert len(sig.parameters) >= 3
 
     parameters = list(sig.parameters.values())
@@ -110,7 +110,7 @@ def test_get_gem_json_data():
     assert sig.return_annotation == dict
 
 def test_get_project_json_data():
-    sig = signature(manifest.get_project_json_data)
+    sig = signature(o3de_object.get_project_json_data)
     assert len(sig.parameters) >= 2
 
     project_path = list(sig.parameters.values())[1]
@@ -119,18 +119,18 @@ def test_get_project_json_data():
 
     assert sig.return_annotation == dict
 
-def test_get_manifest_projects():
-    sig = signature(manifest.get_manifest_projects)
+def test_get_manifest_child_projects():
+    sig = signature(o3de_object.get_manifest_projects)
 
     assert sig.return_annotation == list
 
 def test_get_engine_projects():
-    sig = signature(manifest.get_engine_projects)
+    sig = signature(o3de_object.get_engine_projects)
 
     assert sig.return_annotation == list
 
 def test_get_template_json_data():
-    sig = signature(manifest.get_template_json_data)
+    sig = signature(o3de_object.get_template_json_data)
     assert len(sig.parameters) >= 3
 
     parameters = list(sig.parameters.values())
@@ -144,12 +144,12 @@ def test_get_template_json_data():
     assert sig.return_annotation == dict
 
 def test_get_templates_for_project_creation():
-    sig = signature(manifest.get_templates_for_project_creation)
+    sig = signature(o3de_object.get_templates_for_project_creation)
 
     assert sig.return_annotation == list
 
 def test_get_repo_json_data():
-    sig = signature(manifest.get_repo_json_data)
+    sig = signature(o3de_object.get_repo_json_data)
     assert len(sig.parameters) >= 1
 
     repo_uri = list(sig.parameters.values())[0]
@@ -159,7 +159,7 @@ def test_get_repo_json_data():
     assert sig.return_annotation == dict
 
 def test_get_repo_path():
-    sig = signature(manifest.get_repo_path)
+    sig = signature(o3de_object.get_repo_path)
     assert len(sig.parameters) >= 1
 
     repo_uri = list(sig.parameters.values())[0]
@@ -168,8 +168,8 @@ def test_get_repo_path():
 
     assert sig.return_annotation == pathlib.Path
 
-def test_get_manifest_repos():
-    sig = signature(manifest.get_manifest_repos)
+def test_get_manifest_child_repos():
+    sig = signature(o3de_object.get_manifest_repos)
 
     assert sig.return_annotation == list
 
@@ -249,7 +249,7 @@ def test_remove_invalid_o3de_projects():
 
 # cmake interface
 def test_get_enabled_gem_cmake_file():
-    sig = signature(manifest.get_enabled_gem_cmake_file)
+    sig = signature(o3de_object.get_enabled_gem_cmake_file)
     assert len(sig.parameters) >= 2
 
     project_path = list(sig.parameters.values())[1]
@@ -259,7 +259,7 @@ def test_get_enabled_gem_cmake_file():
     assert sig.return_annotation == pathlib.Path
 
 def test_get_enabled_gems():
-    sig = signature(manifest.get_enabled_gems)
+    sig = signature(o3de_object.get_enabled_gems)
     assert len(sig.parameters) >= 1
 
     cmake_file = list(sig.parameters.values())[0]

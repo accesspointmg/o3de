@@ -6,7 +6,7 @@
 #
 #
 
-set(LY_COMPILE_OPTIONS
+set(O3DE_COMPILE_OPTIONS
     PRIVATE
         -fexceptions # QtForPythonSystemComponent uses a try catch block
 )

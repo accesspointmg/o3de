@@ -20,11 +20,11 @@ AzAssetBrowserWindow* AzAssetBrowserMultiWindow::OpenNewAssetBrowserWindow()
 
     while (id < MaxWindowAmount)
     {
-        QString candidateName = QString("%1 (%2)").arg(LyViewPane::AssetBrowser).arg(id);
+        QString candidateName = QString("%1 (%2)").arg(O3deViewPane::AssetBrowser).arg(id);
         if (id == 1)
         {
             // Special case, no trailing id.
-            candidateName = QString("%1").arg(LyViewPane::AssetBrowser);
+            candidateName = QString("%1").arg(O3deViewPane::AssetBrowser);
         }
 
         QtViewPane* pane = QtViewPaneManager::instance()->GetPane(candidateName);
@@ -39,7 +39,7 @@ AzAssetBrowserWindow* AzAssetBrowserMultiWindow::OpenNewAssetBrowserWindow()
             AzToolsFramework::ViewPaneOptions options;
             options.preferedDockingArea = Qt::BottomDockWidgetArea;
             options.showInMenu = false;
-            AzToolsFramework::RegisterViewPane<AzAssetBrowserWindow>(qPrintable(candidateName), LyViewPane::CategoryTools, options);
+            AzToolsFramework::RegisterViewPane<AzAssetBrowserWindow>(qPrintable(candidateName), O3deViewPane::CategoryTools, options);
             return qobject_cast<AzAssetBrowserWindow*>(QtViewPaneManager::instance()->OpenPane(candidateName)->Widget());
         }
 
@@ -55,11 +55,11 @@ bool AzAssetBrowserMultiWindow::IsAnyAssetBrowserWindowOpen()
 
     while (id < MaxWindowAmount)
     {
-        QString candidateName = QString("%1 (%2)").arg(LyViewPane::AssetBrowser).arg(id);
+        QString candidateName = QString("%1 (%2)").arg(O3deViewPane::AssetBrowser).arg(id);
         if (id == 1)
         {
             // Special case, no trailing id.
-            candidateName = QString("%1").arg(LyViewPane::AssetBrowser);
+            candidateName = QString("%1").arg(O3deViewPane::AssetBrowser);
         }
 
         QtViewPane* pane = QtViewPaneManager::instance()->GetPane(candidateName);

@@ -6,11 +6,11 @@
 #
 #
 
-set(LY_PIX_PATH "${LY_3RDPARTY_PATH}/winpixeventruntime" CACHE PATH "Path to the Windows Pix Event Runtime.")
+set(O3DE_PIX_PATH "${O3DE_3RDPARTY_PATH}/winpixeventruntime" CACHE PATH "Path to the Windows Pix Event Runtime.")
 
-ly_add_external_target(
+o3de_add_external_target(
     NAME pix
-    3RDPARTY_ROOT_DIRECTORY ${LY_PIX_PATH}
+    3RDPARTY_ROOT_DIRECTORY ${O3DE_PIX_PATH}
     VERSION
     INCLUDE_DIRECTORIES Include
     COMPILE_DEFINITIONS USE_PIX

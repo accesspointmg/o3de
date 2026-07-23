@@ -6,7 +6,7 @@
 #
 #
 
-ly_install_files(FILES ../o3de.sh PROGRAMS
+o3de_install_files(FILES ../o3de.sh PROGRAMS
     DESTINATION scripts
 )
 

@@ -182,7 +182,7 @@ namespace EMotionFX::MotionMatching
 
     void MotionMatchingEditorSystemComponent::OnTick(float deltaTime, AZ::ScriptTimePoint time)
     {
-        // Draw the debug visualizations to the Animation Editor as well as the LY Editor viewport.
+        // Draw the debug visualizations to the Animation Editor as well as the O3DE Editor viewport.
         AZ::s32 animationEditorViewportId = -1;
         EMStudio::ViewportPluginRequestBus::BroadcastResult(animationEditorViewportId, &EMStudio::ViewportPluginRequestBus::Events::GetViewportId);
 

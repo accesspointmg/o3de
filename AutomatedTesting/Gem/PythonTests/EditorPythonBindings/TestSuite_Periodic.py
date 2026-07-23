@@ -8,7 +8,7 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 import pytest
 import sys
 
-from ly_test_tools.o3de.editor_test import EditorTestSuite, EditorBatchedTest, EditorSingleTest
+from o3de_test_tools.o3de.editor_test import EditorTestSuite, EditorBatchedTest, EditorSingleTest
 
 
 @pytest.mark.SUITE_periodic

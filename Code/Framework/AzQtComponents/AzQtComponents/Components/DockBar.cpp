@@ -20,7 +20,7 @@ static const char* g_dockBarFontFamily = "Open Sans";
 // Constant for the dock bar text point size
 static const int g_dockBarFontPointSize = 8;
 // Constant for application icon path
-static const char* g_applicationIconPath = ":/stylesheet/img/ly_application_icon.png";
+static const char* g_applicationIconPath = ":/stylesheet/img/o3de_application_icon.png";
 // Constant for dock bar tear handle icon path
 static const char* g_dockBarTearIconPath = ":/stylesheet/img/titlebar_tear.png";
 

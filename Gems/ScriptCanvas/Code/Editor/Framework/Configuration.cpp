@@ -15,7 +15,7 @@
 #include <AzFramework/Asset/AssetSystemBus.h>
 #include <AzToolsFramework/API/EditorAssetSystemAPI.h>
 #include <AzToolsFramework/API/ToolsApplicationAPI.h>
-#include <LyViewPaneNames.h>
+#include <O3deViewPaneNames.h>
 #include <ScriptCanvas/Assets/ScriptCanvasFileHandling.h>
 #include <Editor/Framework/Configuration.h>
 #include <ScriptCanvas/Components/EditorUtils.h>
@@ -155,7 +155,7 @@ namespace ScriptCanvasEditor
 
     void Configuration::OpenEditor([[maybe_unused]] const AZ::Data::AssetId& assetId, const AZ::Data::AssetType&)
     {
-        AzToolsFramework::OpenViewPane(LyViewPane::ScriptCanvas);
+        AzToolsFramework::OpenViewPane(O3deViewPane::ScriptCanvas);
 
         if (m_sourceHandle.IsDescriptionValid())
         {

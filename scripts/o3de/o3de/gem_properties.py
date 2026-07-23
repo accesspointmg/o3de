@@ -11,7 +11,7 @@ import pathlib
 import sys
 import logging
 
-from o3de import manifest, utils
+from o3de import o3de_object, utils
 
 logger = logging.getLogger('o3de.gem_properties')
 logging.basicConfig(format=utils.LOG_FORMAT)
@@ -78,13 +78,13 @@ def edit_gem_props(gem_path: pathlib.Path = None,
         logger.error(f'Either a gem path or a gem name must be supplied to lookup gem.json')
         return 1
     if not gem_path:
-        gem_path = manifest.get_registered(gem_name=gem_name)
+        gem_path = o3de_object.get_registered(gem_name=gem_name)
 
     if not gem_path:
         logger.error(f'Error unable locate gem path: No gem with name {gem_name} is registered in any manifest')
         return 1
 
-    gem_json_data = manifest.get_gem_json_data(gem_path=gem_path)
+    gem_json_data = o3de_object.get_gem_json_data(gem_path=gem_path)
     if not gem_json_data:
         return 1
 
@@ -148,7 +148,7 @@ def edit_gem_props(gem_path: pathlib.Path = None,
 
     gem_json_data.update(update_key_dict)
 
-    return 0 if manifest.save_o3de_manifest(gem_json_data, pathlib.Path(gem_path) / 'gem.json') else 1
+    return 0 if o3de_object.save_o3de_manifest_json_data(gem_json_data, pathlib.Path(gem_path) / 'gem.json') else 1
 
 
 def _edit_gem_props(args: argparse) -> int:
@@ -181,13 +181,23 @@ def _edit_gem_props(args: argparse) -> int:
                           )
 
 
-def add_parser_args(parser):
-    group = parser.add_mutually_exclusive_group(required=True)
+def add_args(subparsers) -> None:
+    """
+    add_args is called to add subparsers arguments to each command such that it can be
+    a central python file such as o3de.py.
+    It can be run from the o3de.py script as follows
+    call add_args and execute: python o3de.py edit-gem-properties --engine-path "C:/o3de"
+    :param subparsers: the caller instantiates subparsers and passes it in here
+    """
+    enable_gem_props_subparser = subparsers.add_parser('edit-gem-properties')
+
+    group = enable_gem_props_subparser.add_mutually_exclusive_group(required=True)
     group.add_argument('-gp', '--gem-path', type=pathlib.Path, required=False,
                        help='The path to the gem.')
     group.add_argument('-gn', '--gem-name', type=str, required=False,
                        help='The name of the gem.')
-    group = parser.add_argument_group('properties', 'arguments for modifying individual gem properties.')
+    
+    group = enable_gem_props_subparser.add_argument_group('properties', 'arguments for modifying individual gem properties.')
     group.add_argument('-gnn', '--gem-new-name', type=str, required=False,
                        help='Sets the name for the gem.')
     group.add_argument('-gd', '--gem-display', type=str, required=False,
@@ -210,21 +220,24 @@ def add_parser_args(parser):
                        help='Sets the url for the license of the gem.')
     group.add_argument('-gv', '--gem-version', type=str, required=False,
                        help='Sets the version of the gem.')
-    group = parser.add_mutually_exclusive_group(required=False)
+    
+    group = enable_gem_props_subparser.add_mutually_exclusive_group(required=False)
     group.add_argument('-aev', '--add-compatible-engines', type=str, nargs='*', required=False,
                        help='Add engine version(s) this gem is compatible with. Can be specified multiple times.')
     group.add_argument('-dev', '--remove-compatible-engines', type=str, nargs='*', required=False,
                        help='Removes engine version(s) from the compatible_engines property. Can be specified multiple times.')
     group.add_argument('-rev', '--replace-compatible-engines', type=str, nargs='*', required=False,
                        help='Replace engine version(s) in the compatible_engines property. Can be specified multiple times.')
-    group = parser.add_mutually_exclusive_group(required=False)
+    
+    group = enable_gem_props_subparser.add_mutually_exclusive_group(required=False)
     group.add_argument('-aav', '--add-engine-api-dependencies', type=str, nargs='*', required=False,
                        help='Add engine api dependency version(s) this gem is compatible with. Can be specified multiple times.')
     group.add_argument('-dav', '--remove-engine-api-dependencies', type=str, nargs='*', required=False,
                        help='Removes engine api dependency version(s) from the compatible_engines property. Can be specified multiple times.')
     group.add_argument('-rav', '--replace-engine-api-dependencies', type=str, nargs='*', required=False,
                        help='Replace engine api dependency(s) in the compatible_engines property. Can be specified multiple times.')
-    group = parser.add_mutually_exclusive_group(required=False)
+    
+    group = enable_gem_props_subparser.add_mutually_exclusive_group(required=False)
     group.add_argument('-at', '--add-tags', type=str, nargs='*', required=False,
                        help='Adds tag(s) to user_tags property. Can be specified multiple times.')
     group.add_argument('-dt', '--remove-tags', type=str, nargs='*', required=False,
@@ -237,21 +250,5 @@ def add_parser_args(parser):
                        help='Removes platform(s) from the platforms property. Can be specified multiple times.')
     group.add_argument('-rpl', '--replace-platforms', type=str, nargs='*', required=False,
                        help='Replace platform(s) in platforms property. Can be specified multiple times.')
-    parser.set_defaults(func=_edit_gem_props)
-
-
-def add_args(subparsers) -> None:
-    enable_gem_props_subparser = subparsers.add_parser('edit-gem-properties')
-    add_parser_args(enable_gem_props_subparser)
-
-
-def main():
-    the_parser = argparse.ArgumentParser()
-    add_parser_args(the_parser)
-    the_args = the_parser.parse_args()
-    ret = the_args.func(the_args) if hasattr(the_args, 'func') else 1
-    sys.exit(ret)
-
-
-if __name__ == "__main__":
-    main()
+    
+    enable_gem_props_subparser.set_defaults(func=_edit_gem_props)

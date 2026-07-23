@@ -17,7 +17,7 @@
 #include <AzToolsFramework/AssetBrowser/AssetBrowserEntry.h>
 #include <AzToolsFramework/ToolsComponents/ToolsAssetCatalogBus.h>
 #include <Builder/ScriptCanvasBuilderWorker.h>
-#include <LyViewPaneNames.h>
+#include <O3deViewPaneNames.h>
 
  // Undo this
 AZ_PUSH_DISABLE_WARNING(4251 4800 4244, "-Wunknown-warning-option")

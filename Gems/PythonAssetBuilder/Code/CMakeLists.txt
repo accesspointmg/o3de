@@ -6,17 +6,17 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
         pythonassetbuilder_common_files.cmake
     PLATFORM_INCLUDE_FILES
-        Source/Platform/Common/${PAL_TRAIT_COMPILER_ID}/pythonassetbuilder_static_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+        Source/Platform/Common/${O3DE_PAL_TRAIT_COMPILER_ID}/pythonassetbuilder_static_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             .
@@ -33,7 +33,7 @@ ly_add_target(
             AZ::AzToolsFramework
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Editor GEM_MODULE
 
     NAMESPACE Gem
@@ -41,7 +41,7 @@ ly_add_target(
         pythonassetbuilder_editor_files.cmake
         pythonassetbuilder_shared_files.cmake
     PLATFORM_INCLUDE_FILES
-        Source/Platform/Common/${PAL_TRAIT_COMPILER_ID}/pythonassetbuilder_static_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+        Source/Platform/Common/${O3DE_PAL_TRAIT_COMPILER_ID}/pythonassetbuilder_static_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             .
@@ -57,7 +57,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/PythonAssetBuilderModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -67,20 +67,20 @@ ly_add_source_properties(
 
 # the above target is used in both builders like AssetProcessor and Tools like the Editor
 # but is not used in clients or servers
-ly_create_alias(NAME ${gem_name}.Tools     NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
-ly_create_alias(NAME ${gem_name}.Builders  NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+o3de_create_alias(NAME ${gem_name}.Tools     NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+o3de_create_alias(NAME ${gem_name}.Builders  NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
         NAME ${gem_name}.Tests MODULE
         NAMESPACE Gem
         FILES_CMAKE
             pythonassetbuilder_tests_files.cmake
         PLATFORM_INCLUDE_FILES
-            Source/Platform/Common/${PAL_TRAIT_COMPILER_ID}/pythonassetbuilder_tests_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+            Source/Platform/Common/${O3DE_PAL_TRAIT_COMPILER_ID}/pythonassetbuilder_tests_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
         INCLUDE_DIRECTORIES
             PRIVATE
                 .
@@ -91,7 +91,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzTest
                 Gem::${gem_name}.Static
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         LABELS REQUIRES_tiaf
     )

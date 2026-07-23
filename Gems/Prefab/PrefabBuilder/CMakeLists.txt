@@ -6,15 +6,13 @@
 #
 #
 
-# Queries the "gem_name" "version" values from the gem.json file for this gem
-# They are set in the ${gem_name} and ${gem_version} variables
-o3de_gem_setup("${Name}")
+o3de_gem_setup()
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     INCLUDE_DIRECTORIES
@@ -32,7 +30,7 @@ ly_add_target(
             3rdParty::RapidJSON
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Builders GEM_MODULE
     NAMESPACE Gem
     INCLUDE_DIRECTORIES
@@ -46,7 +44,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         PrefabBuilderModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -55,12 +53,12 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # create an alias for the tool version
-ly_create_alias(NAME ${gem_name}.Tools NAMESPACE Gem TARGETS Gem::${gem_name}.Builders)
+o3de_create_alias(NAME ${gem_name}.Tools NAMESPACE Gem TARGETS Gem::${gem_name}.Builders)
 
 # we automatically add this gem, if it is present, to all our known set of builder applications:
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             prefabbuilder_tests_files.cmake
@@ -73,7 +71,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzToolsFrameworkTestCommon
                 Gem::${gem_name}.Static
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         LABELS REQUIRES_tiaf
     )

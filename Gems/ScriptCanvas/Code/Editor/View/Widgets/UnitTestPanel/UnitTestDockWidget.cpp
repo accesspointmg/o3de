@@ -52,7 +52,7 @@
 #include <ScriptCanvas/Data/DataRegistry.h>
 #include <ScriptCanvas/GraphCanvas/NodeDescriptorBus.h>
 #include <ScriptCanvas/Components/EditorUtils.h>
-#include <LyViewPaneNames.h>
+#include <O3deViewPaneNames.h>
 
 namespace ScriptCanvasEditor
 {
@@ -427,7 +427,7 @@ namespace ScriptCanvasEditor
 
     void UnitTestDockWidget::OpenScriptInEditor(AZ::Uuid sourceUuid)
     {
-        AzToolsFramework::OpenViewPane(LyViewPane::ScriptCanvas);
+        AzToolsFramework::OpenViewPane(O3deViewPane::ScriptCanvas);
         AZ::Data::AssetId sourceAssetId(sourceUuid, 0);
 
         AZ::Outcome<int, AZStd::string> openOutcome = AZ::Failure(AZStd::string());

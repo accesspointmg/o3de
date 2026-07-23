@@ -15,7 +15,7 @@ namespace AzToolsFramework
     // The type used internally by Qt for widget values    
     using QtWidgetValueType = int;
 
-    // All LY widget types and values will be clamped so as to not exceed the range of QtWidgetValueType
+    // All O3DE widget types and values will be clamped so as to not exceed the range of QtWidgetValueType
     template<typename SourceType>
     using QtWidgetLimits = AZ::ClampedIntegralLimits<SourceType, QtWidgetValueType>;
 } // AzToolsFramework

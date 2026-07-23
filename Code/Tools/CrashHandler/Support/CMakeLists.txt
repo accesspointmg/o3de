@@ -6,12 +6,12 @@
 #
 #
 
-ly_add_target(
+o3de_add_target(
     NAME CrashSupport STATIC
     NAMESPACE AZ
     FILES_CMAKE
         crash_handler_support_files.cmake
-        Platform/${PAL_PLATFORM_NAME}/crash_handler_support_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        Platform/${O3DE_PAL_PLATFORM_NAME}/crash_handler_support_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             include

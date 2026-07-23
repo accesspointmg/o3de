@@ -599,7 +599,7 @@ class AndroidProjectGenerator(object):
             'MIN_SDK_VER': self.android_sdk_platform,
             'NDK_VERSION': self.android_ndk_version,
             'SDK_BUILD_TOOL_VER': self.android_sdk_build_tool_version,
-            'LY_ENGINE_ROOT': common.normalize_path_for_settings(self.engine_root)
+            'O3DE_ENGINE_ROOT': common.normalize_path_for_settings(self.engine_root)
         }
         # Generate the gradle build script
         self.create_file_from_project_template(src_template_file='root.build.gradle.in',

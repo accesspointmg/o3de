@@ -234,7 +234,7 @@ class TestRegisterGem:
     def test_register_gem_auto_detects_manifest_update(self, gem_path, expected_manifest_file, dry_run,
      force_o3de_manifest_register, expected_result):
 
-        def save_o3de_manifest(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
+        def save_o3de_manifest_json_data(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
             if manifest_path == pathlib.Path(TestRegisterGem.ancestor_gem_path).resolve() / 'gem.json':
                 self.ancestor_gem_data = manifest_data
             if manifest_path == pathlib.Path(TestRegisterGem.project_path).resolve() / 'project.json':
@@ -245,7 +245,7 @@ class TestRegisterGem:
                 self.o3de_manifest_data = manifest_data
             return True
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             if manifest_path == TestRegisterGem.ancestor_gem_path:
                 return self.ancestor_gem_data
             if manifest_path == TestRegisterGem.project_path:
@@ -368,7 +368,7 @@ class TestRegisterProject:
                                 project_gems, project_compatible_engines, project_engine_api_dependencies,
                                 gem_compatible_engines, gem_engine_api_dependencies,
                                 force, dry_run, expected_result):
-        def save_o3de_manifest(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
+        def save_o3de_manifest_json_data(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
             if manifest_path == pathlib.Path(TestRegisterProject.project_path).resolve() / 'project.json':
                 self.project_data = manifest_data
             elif manifest_path == pathlib.Path(TestRegisterProject.engine_path).resolve() / 'engine.json':
@@ -377,7 +377,7 @@ class TestRegisterProject:
                 self.o3de_manifest_data = manifest_data
             return True
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             if manifest_path == TestRegisterProject.project_path:
                 return self.project_data
             elif manifest_path == TestRegisterProject.engine_path:

@@ -242,7 +242,7 @@ TEST_F(ScriptCanvasTestFixture, FixtureSanity)
 
 TEST_F(ScriptCanvasTestFixture, AddFailure)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_AddFailure");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_AddFailure");
     
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -266,7 +266,7 @@ TEST_F(ScriptCanvasTestFixture, AddFailure)
 
 TEST_F(ScriptCanvasTestFixture, AddSuccess)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_AddSuccess");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_AddSuccess");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -290,7 +290,7 @@ TEST_F(ScriptCanvasTestFixture, AddSuccess)
 
 TEST_F(ScriptCanvasTestFixture, ExpectTrueFail)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectTrueFail");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectTrueFail");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -305,7 +305,7 @@ TEST_F(ScriptCanvasTestFixture, ExpectTrueFail)
  
 TEST_F(ScriptCanvasTestFixture, ExpectTrueSucceed)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectTrueSucceed");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectTrueSucceed");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -320,7 +320,7 @@ TEST_F(ScriptCanvasTestFixture, ExpectTrueSucceed)
 
 TEST_F(ScriptCanvasTestFixture, ExpectEqualFail)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectEqualFail");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectEqualFail");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -337,7 +337,7 @@ TEST_F(ScriptCanvasTestFixture, ExpectEqualFail)
 
 TEST_F(ScriptCanvasTestFixture, ExpectEqualSucceed)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectEqualSucceed");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectEqualSucceed");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -354,7 +354,7 @@ TEST_F(ScriptCanvasTestFixture, ExpectEqualSucceed)
 
 TEST_F(ScriptCanvasTestFixture, ExpectNotEqualFail)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectNotEqualFail");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectNotEqualFail");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -371,7 +371,7 @@ TEST_F(ScriptCanvasTestFixture, ExpectNotEqualFail)
 
 TEST_F(ScriptCanvasTestFixture, ExpectNotEqualSucceed)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectNotEqualSucceed");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectNotEqualSucceed");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -388,7 +388,7 @@ TEST_F(ScriptCanvasTestFixture, ExpectNotEqualSucceed)
 
 TEST_F(ScriptCanvasTestFixture, MarkCompleteFail)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_MarkCompleteFail");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_MarkCompleteFail");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -404,7 +404,7 @@ TEST_F(ScriptCanvasTestFixture, MarkCompleteFail)
 
 TEST_F(ScriptCanvasTestFixture, MarkCompleteSucceed)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_MarkCompleteSucceed");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_MarkCompleteSucceed");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -420,7 +420,7 @@ TEST_F(ScriptCanvasTestFixture, MarkCompleteSucceed)
 
 TEST_F(ScriptCanvasTestFixture, ExpectGreaterThanFail)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectGreaterThanFail");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectGreaterThanFail");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -437,7 +437,7 @@ TEST_F(ScriptCanvasTestFixture, ExpectGreaterThanFail)
 
 TEST_F(ScriptCanvasTestFixture, ExpectGreaterThanSucceed)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectGreaterThanSucceed");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectGreaterThanSucceed");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -454,7 +454,7 @@ TEST_F(ScriptCanvasTestFixture, ExpectGreaterThanSucceed)
 
 TEST_F(ScriptCanvasTestFixture, ExpectGreaterThanEqualFail)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectGreaterThanEqualFail");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectGreaterThanEqualFail");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -471,7 +471,7 @@ TEST_F(ScriptCanvasTestFixture, ExpectGreaterThanEqualFail)
 
 TEST_F(ScriptCanvasTestFixture, ExpectGreaterThanEqualSucceed)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectGreaterThanEqualSucceed");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectGreaterThanEqualSucceed");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -488,7 +488,7 @@ TEST_F(ScriptCanvasTestFixture, ExpectGreaterThanEqualSucceed)
 
 TEST_F(ScriptCanvasTestFixture,     ExpectLessThanFail)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectLessThanFail");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectLessThanFail");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -505,7 +505,7 @@ TEST_F(ScriptCanvasTestFixture,     ExpectLessThanFail)
 
 TEST_F(ScriptCanvasTestFixture, ExpectLessThanSucceed)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectLessThanSucceed");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectLessThanSucceed");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -522,7 +522,7 @@ TEST_F(ScriptCanvasTestFixture, ExpectLessThanSucceed)
 
 TEST_F(ScriptCanvasTestFixture, ExpectLessThanEqualFail)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectLessThanEqualFail");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectLessThanEqualFail");
 
     if (!reporter.GetScriptCanvasId().IsValid())
     {
@@ -539,7 +539,7 @@ TEST_F(ScriptCanvasTestFixture, ExpectLessThanEqualFail)
 
 TEST_F(ScriptCanvasTestFixture, ExpectLessThanEqualSucceed)
 {
-    MetaReporter reporter = MetaRunUnitTestGraph("LY_SC_UnitTest_Meta_ExpectLessThanEqualSucceed");
+    MetaReporter reporter = MetaRunUnitTestGraph("O3DE_SC_UnitTest_Meta_ExpectLessThanEqualSucceed");
     
     if (!reporter.GetScriptCanvasId().IsValid())
     {

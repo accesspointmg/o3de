@@ -11,9 +11,8 @@ set(FILES
     ../Common/Clang/Configurations_clang.cmake
     Configurations_mac.cmake
     Install_mac.cmake
-    LYTestWrappers_mac.cmake
-    LYWrappers_mac.cmake
+    O3deTestWrappers_mac.cmake
+    O3deWrappers_mac.cmake
     PAL_mac.cmake
-    PALDetection_mac.cmake
     RPathChange.cmake
 )

@@ -14,7 +14,7 @@ from ..ap_fixtures.asset_processor_fixture import asset_processor as asset_proce
 from ..ap_fixtures.ap_setup_fixture import ap_setup_fixture as ap_setup_fixture
 
 # Import LyShared
-import ly_test_tools.o3de.pipeline_utils as utils
+import o3de_test_tools.o3de.pipeline_utils as utils
 
 # Use the following logging pattern to hook all test logging together:
 logger = logging.getLogger(__name__)

@@ -7,8 +7,8 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import psutil
 
-import ly_test_tools.environment.waiter as waiter
-from ly_remote_console.remote_console_commands import send_command_and_expect_response
+import o3de_test_tools.environment.waiter as waiter
+from o3de_remote_console.remote_console_commands import send_command_and_expect_response
 
 
 def run_launcher_tests(launcher, levels, remote_console_instance, null_renderer=False,

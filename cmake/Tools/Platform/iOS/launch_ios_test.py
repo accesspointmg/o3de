@@ -132,7 +132,7 @@ def launch_ios_test(build_dir, target_dev_name, test_target, timeout_secs, test_
         test_report_json_path = pathlib.Path(test_report_json_file)
         test_timestamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.localtime())
         result_dict = {
-            'index': 'ly_platforms.test',
+            'index': 'o3de_platforms.test',
             'payload': {
                 'Git Success': True,
                 'Build Success': True,

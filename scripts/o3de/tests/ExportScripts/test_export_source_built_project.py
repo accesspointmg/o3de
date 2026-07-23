@@ -805,10 +805,10 @@ def test_export_standalone_parse_args_should_require_output(tmpdir):
     test_project_name, test_project_path, test_engine_path = setup_local_export_config_test(tmpdir)
     
     #this should run fine, note that all parameters are considered optional except for project-path now
-    with patch('o3de.manifest.get_o3de_folder') as mock_get_o3de_folder,\
+    with patch('o3de.manifest.get_user_dot_o3de_path') as mock_get_user_dot_o3de_path,\
          patch('o3de.export_project.get_default_asset_platform', return_value='pc') as mock_get_asset_platform:
         
-        mock_get_o3de_folder.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
+        mock_get_user_dot_o3de_path.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
 
         mock_ctx = create_autospec(O3DEScriptExportContext)
         mock_ctx.project_path = test_project_path
@@ -853,11 +853,11 @@ def test_export_standalone_single(tmpdir, dum_fail_asset_err, dum_build_tools, d
             build_game_launcher=dum_build_game, build_server_launcher=dum_build_server, build_headless_server_launcher=dum_build_headless_server, build_unified_launcher=dum_build_unified,
             engine_centric=dum_engine_centric, monolithic=dum_monolithic, allow_reg_overrides=dum_reg_override)
     
-    with patch('o3de.manifest.get_o3de_folder') as mock_get_o3de_folder,\
+    with patch('o3de.manifest.get_user_dot_o3de_path') as mock_get_user_dot_o3de_path,\
          patch('o3de.export_project.get_default_asset_platform', return_value='pc') as mock_get_asset_platform,\
          patch('export_source_built_project.export_standalone_project') as mock_export_func:
         
-        mock_get_o3de_folder.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
+        mock_get_user_dot_o3de_path.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
 
         mock_ctx = create_autospec(O3DEScriptExportContext)
         mock_ctx.project_path = test_project_path
@@ -1120,11 +1120,11 @@ def test_export_standalone_multipart_args(tmpdir, seedlists, seedfiles, levelnam
 
     test_project_name, test_project_path, test_engine_path = setup_local_export_config_test(tmpdir)
     
-    with patch('o3de.manifest.get_o3de_folder') as mock_get_o3de_folder,\
+    with patch('o3de.manifest.get_user_dot_o3de_path') as mock_get_user_dot_o3de_path,\
          patch('o3de.export_project.get_default_asset_platform', return_value='pc') as mock_get_asset_platform,\
          patch('export_source_built_project.export_standalone_project') as mock_export_func:
         
-        mock_get_o3de_folder.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
+        mock_get_user_dot_o3de_path.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
 
         mock_ctx = create_autospec(O3DEScriptExportContext)
         mock_ctx.project_path = test_project_path

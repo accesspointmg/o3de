@@ -8,8 +8,8 @@
 
 if(NOT INSTALLED_ENGINE)
     # Add all cmake files in a project so they can be handled from within the IDE
-    ly_include_cmake_file_list(cmake/cmake_files.cmake)
+    o3de_append_cmake_file_list_to_ALLFILES(${O3DE_ENGINE_CMAKE_PATH}/cmake_files.cmake)
     add_custom_target(CMakeFiles SOURCES ${ALLFILES})
-    ly_source_groups_from_folders("${ALLFILES}")
+    o3de_source_groups_from_folders("${ALLFILES}")
     unset(ALLFILES)
 endif()

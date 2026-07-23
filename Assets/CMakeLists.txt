@@ -6,4 +6,4 @@
 #
 #
 
-ly_install_directory(DIRECTORIES .)
+o3de_install_directory(DIRECTORIES .)

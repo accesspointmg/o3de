@@ -6,7 +6,7 @@
 #
 #
 
-# ly_target_include_system_directories: adds a system include to the target.
+# o3de_target_include_system_directories: adds a system include to the target.
 # This allows for platform-specific handling of how system includes are added
 # to the target. This common implementation just calls
 #
@@ -16,23 +16,23 @@
 # All other unrecognized arguments are passed unchanged to
 # target_include_directories
 #
-function(ly_target_include_system_directories)
+function(o3de_target_include_system_directories)
 
     set(options)
     set(oneValueArgs TARGET)
     set(multiValueArgs)
 
-    cmake_parse_arguments(ly_target_include_system_directories "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(o3de_target_include_system_directories "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    if(NOT ly_target_include_system_directories_TARGET)
+    if(NOT o3de_target_include_system_directories_TARGET)
         message(FATAL_ERROR "Target not provided")
     endif()
 
-    target_compile_options(${ly_target_include_system_directories_TARGET}
+    target_compile_options(${o3de_target_include_system_directories_TARGET}
         INTERFACE
-            ${LY_CXX_SYSTEM_INCLUDE_CONFIGURATION_FLAG}
+            ${O3DE_CXX_SYSTEM_INCLUDE_CONFIGURATION_FLAG}
     )
 
-    target_include_directories(${ly_target_include_system_directories_TARGET} SYSTEM ${ly_target_include_system_directories_UNPARSED_ARGUMENTS})
+    target_include_directories(${o3de_target_include_system_directories_TARGET} SYSTEM ${o3de_target_include_system_directories_UNPARSED_ARGUMENTS})
 
 endfunction()

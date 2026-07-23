@@ -28,7 +28,7 @@ namespace AzToolsFramework
     {
         ViewPaneOptions opts;
         opts.paneRect = QRect(100, 100, 700, 600);
-        RegisterViewPane<CvarDPE>(LyViewPane::ConsoleVariables, LyViewPane::CategoryOther, opts);
+        RegisterViewPane<CvarDPE>(O3deViewPane::ConsoleVariables, O3deViewPane::CategoryOther, opts);
     }
 
 } // namespace AzToolsFramework

@@ -256,7 +256,7 @@ namespace AZ
         * Retrieve the argc passed into the application class on startup, if any was passed in.
         * Note that this could return nullptr if the application was not initialized with any such parameter.
         * This is important to have because different operating systems have different level of access to the command line args
-        * and on some operating systems (MacOS) its fairly difficult to reliably retrieve them without resorting to NS libraries
+        * and on some operating systems (Mac) its fairly difficult to reliably retrieve them without resorting to NS libraries
         * and making some assumptions. Instead, we allow you to pass your args in from the main(...) function.
         * Another thing to notice here is that these are non-const pointers to the argc and argv values
         * instead of int, char**, these are int*, char***.

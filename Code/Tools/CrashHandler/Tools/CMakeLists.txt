@@ -6,17 +6,17 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME ToolsCrashHandler STATIC
     NAMESPACE AZ
     AUTOMOC
     FILES_CMAKE
         tools_crash_handler_files.cmake
-        Platform/${PAL_PLATFORM_NAME}/tools_crash_handler_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        Platform/${O3DE_PAL_PLATFORM_NAME}/tools_crash_handler_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             .
@@ -28,14 +28,14 @@ ly_add_target(
             AZ::AzToolsFramework
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ToolsCrashUploader APPLICATION
     NAMESPACE AZ
     AUTOMOC
     AUTOUIC
     FILES_CMAKE
         tools_crash_uploader_files.cmake
-        Platform/${PAL_PLATFORM_NAME}/tools_crash_uploader_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        Platform/${O3DE_PAL_PLATFORM_NAME}/tools_crash_uploader_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             Uploader

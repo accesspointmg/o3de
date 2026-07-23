@@ -6,16 +6,17 @@
 #
 #
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
+set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
-include(${pal_dir}/PAL_${PAL_PLATFORM_NAME_LOWERCASE}.cmake) #for PAL_TRAIT_NVCLOTH Traits
+include(${pal_code_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake) #for O3DE_PAL_TRAIT_NVCLOTH Traits
 
-if(PAL_TRAIT_NVCLOTH_USE_STUB)
+if(O3DE_PAL_TRAIT_NVCLOTH_USE_STUB)
     include(nvcloth_stub.cmake)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -33,8 +34,8 @@ ly_add_target(
             Gem::EMotionFXStaticLib
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     OUTPUT_NAME ${gem_name}.Gem
     FILES_CMAKE
@@ -52,7 +53,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/Module.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -61,16 +62,16 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # use the NvCloth module in clients and servers:
-ly_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Unified NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Unified NAMESPACE Gem TARGETS Gem::${gem_name})
 
 # Add each "dependencies" entry from the NvCloth gem.json as a dependency to the
 # NvCloth Clients, Servers and Unified targets
 o3de_add_variant_dependencies_for_gem_dependencies(GEM_NAME ${gem_name} VARIANTS Clients Servers Unified)
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
         NAME ${gem_name}.Editor.Static STATIC
         NAMESPACE Gem
         AUTOMOC
@@ -91,7 +92,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 AZ::SceneCore
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
         NAMESPACE Gem
         OUTPUT_NAME ${gem_name}.Editor.Gem
@@ -110,8 +111,8 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # use the NvCloth.Editor module in dev tools:
-    ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
-    ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 
     # Add each "dependencies" entry from the NvCloth gem.json as a dependency to the NvCloth Tools and Builders targets
     o3de_add_variant_dependencies_for_gem_dependencies(GEM_NAME ${gem_name} VARIANTS Tools Builders)
@@ -120,9 +121,9 @@ endif()
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         OUTPUT_NAME ${gem_name}.Tests.Gem
         FILES_CMAKE
@@ -142,14 +143,14 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         RUNTIME_DEPENDENCIES
             Gem::EMotionFX
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         LABELS REQUIRES_tiaf
     )
     
-    if(PAL_TRAIT_BUILD_HOST_TOOLS)
-        ly_add_target(
-            NAME ${gem_name}.Editor.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+        o3de_add_target(
+            NAME ${gem_name}.Editor.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
             NAMESPACE Gem
             OUTPUT_NAME ${gem_name}.Editor.Tests.Gem
             FILES_CMAKE
@@ -173,7 +174,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             RUNTIME_DEPENDENCIES
                 Gem::EMotionFX.Editor
         )
-        ly_add_googletest(
+        o3de_add_googletest(
             NAME Gem::${gem_name}.Editor.Tests
             LABELS REQUIRES_tiaf
         )

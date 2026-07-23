@@ -93,7 +93,7 @@ def Material_Restitution():
     import azlmbr
     import azlmbr.legacy.general as general
     import azlmbr.bus as bus
-    import azlmbr.math as lymath
+    import azlmbr.math as o3demath
 
     ZERO_RESTITUTION_BOUNCE_TOLERANCE = 0.001
     TIMEOUT = 5
@@ -209,7 +209,7 @@ def Material_Restitution():
         Report.result(box.peaked_test, helper.wait_for_condition(lambda: reached_max_height(box), TIMEOUT))
 
         # Freeze the box so it does not interfere with the other boxes
-        box.set_velocity(lymath.Vector3(0.0, 0.0, 0.0))
+        box.set_velocity(o3demath.Vector3(0.0, 0.0, 0.0))
         box.set_gravity_enabled(False)
 
     # 8) Special case: Assert the a box with zero restitution did not bounce

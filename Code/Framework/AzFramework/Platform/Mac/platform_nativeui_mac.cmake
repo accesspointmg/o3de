@@ -12,7 +12,7 @@ find_library(CARBON_LIBRARY Carbon)
 find_library(CORE_SERVICES_LIBRARY CoreServices)
 find_library(CORE_GRAPHICS_LIBRARY CoreGraphics)
 
-set(LY_BUILD_DEPENDENCIES
+set(O3DE_BUILD_DEPENDENCIES
     PRIVATE
         ${APPKIT_LIBRARY}
         ${GAME_CONTROLLER_LIBRARY}

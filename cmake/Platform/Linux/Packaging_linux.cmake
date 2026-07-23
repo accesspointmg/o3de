@@ -16,7 +16,7 @@ if("$ENV{O3DE_PACKAGE_TYPE}" STREQUAL "SNAP")
 
     set(CPACK_GENERATOR External)
     set(CPACK_EXTERNAL_ENABLE_STAGING YES)
-    set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${LY_ROOT_FOLDER}/cmake/Platform/${PAL_PLATFORM_NAME}/Packaging_Snapcraft.cmake")
+    set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${O3DE_ENGINE_PATH}/cmake/Platform/${O3DE_PAL_PLATFORM_NAME}/Packaging_Snapcraft.cmake")
     set(CPACK_MONOLITHIC_INSTALL 1)
     set(CPACK_PACKAGING_INSTALL_PREFIX "/${CPACK_PACKAGE_NAME}/${CPACK_PACKAGE_VERSION}")
 
@@ -58,16 +58,16 @@ elseif("$ENV{O3DE_PACKAGE_TYPE}" STREQUAL "DEB")
     list(JOIN package_dependencies "," CPACK_DEBIAN_PACKAGE_DEPENDS)
 
     # Post-installation and pre/post removal scripts
-    configure_file("${LY_ROOT_FOLDER}/cmake/Platform/${PAL_PLATFORM_NAME}/Packaging/postinst.in"
-        "${CMAKE_BINARY_DIR}/cmake/Platform/${PAL_PLATFORM_NAME}/Packaging/postinst"
+    configure_file("${O3DE_ENGINE_PATH}/cmake/Platform/${O3DE_PAL_PLATFORM_NAME}/Packaging/postinst.in"
+        "${CMAKE_BINARY_DIR}/cmake/Platform/${O3DE_PAL_PLATFORM_NAME}/Packaging/postinst"
         @ONLY
     )
-    configure_file("${LY_ROOT_FOLDER}/cmake/Platform/${PAL_PLATFORM_NAME}/Packaging/prerm.in"
-        "${CMAKE_BINARY_DIR}/cmake/Platform/${PAL_PLATFORM_NAME}/Packaging/prerm"
+    configure_file("${O3DE_ENGINE_PATH}/cmake/Platform/${O3DE_PAL_PLATFORM_NAME}/Packaging/prerm.in"
+        "${CMAKE_BINARY_DIR}/cmake/Platform/${O3DE_PAL_PLATFORM_NAME}/Packaging/prerm"
         @ONLY
     )
-    configure_file("${LY_ROOT_FOLDER}/cmake/Platform/${PAL_PLATFORM_NAME}/Packaging/postrm.in"
-        "${CMAKE_BINARY_DIR}/cmake/Platform/${PAL_PLATFORM_NAME}/Packaging/postrm"
+    configure_file("${O3DE_ENGINE_PATH}/cmake/Platform/${O3DE_PAL_PLATFORM_NAME}/Packaging/postrm.in"
+        "${CMAKE_BINARY_DIR}/cmake/Platform/${O3DE_PAL_PLATFORM_NAME}/Packaging/postrm"
         @ONLY
     )
     set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA

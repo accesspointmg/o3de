@@ -179,7 +179,7 @@ is not the case, simply replace with the directory name of your active project.
             ]
 
 4. Add a build dependency on the meshlets gem - AtomSampleViewer/Gem/Code/CMakeLists.txt
-        ly_add_target(
+        o3de_add_target(
             NAME AtomSampleViewer.Private.Static STATIC
             ...
             BUILD_DEPENDENCIES

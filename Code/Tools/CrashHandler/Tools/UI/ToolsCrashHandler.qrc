@@ -1,5 +1,5 @@
 <RCC>
 	<qresource prefix="/Icons">
-		<file>lyeditor.ico</file>
+		<file>o3deeditor.ico</file>
 	</qresource>
 </RCC>

@@ -105,7 +105,7 @@ namespace Archive
     //! whether to allow updating an existing archive file at the same path, etc...
     //! NOTE: The relative file path will be lowercased by default based on the
     //! ArchiveFileCase enum
-    //! This due to the Archiving System supporting both case-preserving(Windows, MacOS)
+    //! This due to the Archiving System supporting both case-preserving(Windows, Mac)
     //! and case-sensitive systems such as Linux
     struct ArchiveWriterFileSettings
     {

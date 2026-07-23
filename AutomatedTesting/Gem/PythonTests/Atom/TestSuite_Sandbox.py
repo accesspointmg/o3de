@@ -9,7 +9,7 @@ import os
 
 import pytest
 
-from ly_test_tools.o3de.editor_test import EditorBatchedTest, EditorSharedTest, EditorTestSuite
+from o3de_test_tools.o3de.editor_test import EditorBatchedTest, EditorSharedTest, EditorTestSuite
 
 logger = logging.getLogger(__name__)
 TEST_DIRECTORY = os.path.join(os.path.dirname(__file__), "tests")

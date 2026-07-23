@@ -6,8 +6,8 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_pytest(
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS AND O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_pytest(
         NAME AutomatedTesting::Atom_TestSuite_Periodic_GPU
         TEST_SUITE periodic
         TEST_REQUIRES gpu
@@ -21,7 +21,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         COMPONENT
             Atom
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::Atom_Main_Null_Render_Level_Loads
         TEST_SUITE main
         PATH ${CMAKE_CURRENT_LIST_DIR}/TestSuite_Main_Null_Render_Level_Loads.py
@@ -35,7 +35,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             Atom
         LABELS REQUIRES_tiaf
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::Atom_Main_Null_Render_01
         TEST_SUITE main
         PATH ${CMAKE_CURRENT_LIST_DIR}/TestSuite_Main_Null_Render_Component_01.py
@@ -49,7 +49,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             Atom
         LABELS REQUIRES_tiaf
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::Atom_Main_Null_Render_02
         TEST_SUITE main
         PATH ${CMAKE_CURRENT_LIST_DIR}/TestSuite_Main_Null_Render_Component_02.py
@@ -63,7 +63,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             Atom
         LABELS REQUIRES_tiaf
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::Atom_Main_Null_Render_03
         TEST_SUITE main
         PATH ${CMAKE_CURRENT_LIST_DIR}/TestSuite_Main_Null_Render_Component_03.py
@@ -77,7 +77,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             Atom
         LABELS REQUIRES_tiaf
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::Atom_TestSuite_Sandbox
         TEST_SUITE sandbox
         PATH ${CMAKE_CURRENT_LIST_DIR}/TestSuite_Sandbox.py
@@ -90,7 +90,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         COMPONENT
             Atom
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::Atom_TestSuite_Smoke_GPU
         TEST_SUITE smoke
         TEST_REQUIRES gpu
@@ -103,7 +103,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         COMPONENT
             Atom
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::Atom_TestSuite_Main_GPU
         TEST_SUITE main
         TEST_REQUIRES gpu
@@ -117,7 +117,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         COMPONENT
             Atom
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::Atom_TestSuite_Benchmark_GPU
         TEST_SUITE benchmark
         TEST_REQUIRES gpu
@@ -131,7 +131,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         COMPONENT
             Atom
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::Atom_Main_Null_Render_MaterialEditor
         TEST_SUITE main
         TEST_SERIAL
@@ -145,7 +145,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             Atom
         LABELS REQUIRES_tiaf
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::Atom_Main_Null_Render_MaterialCanvas
         TEST_SUITE main
         TEST_SERIAL
@@ -159,7 +159,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             Atom
         LABELS REQUIRES_tiaf
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::Atom_Periodic_Null_Render_01
         TEST_SUITE periodic
         TEST_SERIAL
@@ -172,7 +172,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         COMPONENT
             Atom
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::Atom_Periodic_Null_Render_MaterialEditor
         TEST_SUITE periodic
         TEST_SERIAL
@@ -185,7 +185,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         COMPONENT
             Atom
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::RGATest 
         TEST_SUITE sandbox
         TIMEOUT 1200

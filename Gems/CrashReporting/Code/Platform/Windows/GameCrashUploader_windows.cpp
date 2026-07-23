@@ -22,10 +22,10 @@ namespace O3de
 #if AZ_TRAIT_USE_SECURE_CRT_FUNCTIONS
             char noConfirmation[64]{};
             size_t variableSize = 0;
-            getenv_s(&variableSize, noConfirmation, AZ_ARRAY_SIZE(noConfirmation), "LY_NO_CONFIRM");
+            getenv_s(&variableSize, noConfirmation, AZ_ARRAY_SIZE(noConfirmation), "O3DE_NO_CONFIRM");
             if (variableSize == 0)
 #else
-            const char* noConfirmation = getenv("LY_NO_CONFIRM");
+            const char* noConfirmation = getenv("O3DE_NO_CONFIRM");
             if (noConfirmation == nullptr)
 #endif
             

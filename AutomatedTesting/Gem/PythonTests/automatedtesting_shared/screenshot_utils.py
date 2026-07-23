@@ -9,10 +9,10 @@ import os
 import string
 
 from .file_utils import move_file
-from ly_test_tools.environment.waiter import wait_for
+from o3de_test_tools.environment.waiter import wait_for
 
-from ly_remote_console.remote_console_commands import capture_screenshot_command as capture_screenshot_command
-from ly_remote_console.remote_console_commands import send_command_and_expect_response as send_command_and_expect_response
+from o3de_remote_console.remote_console_commands import capture_screenshot_command as capture_screenshot_command
+from o3de_remote_console.remote_console_commands import send_command_and_expect_response as send_command_and_expect_response
 
 
 def get_next_screenshot_at_path(screenshot_path, prefix='screenshot', num_digits=4):

@@ -12,14 +12,14 @@ set(FILES
     Source/ImGuiColorDefines.h
     Source/ImGuiManager.h
     Source/ImGuiManager.cpp
-    Source/LYCommonMenu/ImGuiInputMonitor.h
-    Source/LYCommonMenu/ImGuiInputMonitor.cpp
-    Source/LYCommonMenu/ImGuiLYCommonMenu.h
-    Source/LYCommonMenu/ImGuiLYCommonMenu.cpp
-    Source/LYCommonMenu/ImGuiLYAssetExplorer.h
-    Source/LYCommonMenu/ImGuiLYAssetExplorer.cpp
-    Source/LYCommonMenu/ImGuiLYCameraMonitor.h
-    Source/LYCommonMenu/ImGuiLYCameraMonitor.cpp
-    Source/LYCommonMenu/ImGuiLYEntityOutliner.h
-    Source/LYCommonMenu/ImGuiLYEntityOutliner.cpp
+    Source/O3deCommonMenu/ImGuiInputMonitor.h
+    Source/O3deCommonMenu/ImGuiInputMonitor.cpp
+    Source/O3deCommonMenu/ImGuiO3deCommonMenu.h
+    Source/O3deCommonMenu/ImGuiO3deCommonMenu.cpp
+    Source/O3deCommonMenu/ImGuiO3deAssetExplorer.h
+    Source/O3deCommonMenu/ImGuiO3deAssetExplorer.cpp
+    Source/O3deCommonMenu/ImGuiO3deCameraMonitor.h
+    Source/O3deCommonMenu/ImGuiO3deCameraMonitor.cpp
+    Source/O3deCommonMenu/ImGuiO3deEntityOutliner.h
+    Source/O3deCommonMenu/ImGuiO3deEntityOutliner.cpp
 )

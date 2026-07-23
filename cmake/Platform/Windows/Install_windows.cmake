@@ -6,4 +6,5 @@
 #
 #
 
-include(cmake/Platform/Common/Install_common.cmake)
+set(_cmake_Platform_Windows_Install_windows_cmake ${CMAKE_CURRENT_LIST_DIR})
+include(${_cmake_Platform_Windows_Install_windows_cmake}/../Common/Install_common.cmake)

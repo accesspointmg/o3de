@@ -12,9 +12,8 @@ set(FILES
     ../Common/Install_common.cmake
     Configurations_android.cmake
     Install_android.cmake
-    LYTestWrappers_android.cmake
-    LYWrappers_android.cmake
+    O3deTestWrappers_android.cmake
+    O3deWrappers_android.cmake
     PAL_android.cmake
-    PALDetection_android.cmake
     Toolchain_android.cmake
 )

@@ -6,13 +6,13 @@
 #
 #
 
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES External/MaskedOcclusionCulling/MaskedOcclusionCullingAVX2.cpp
     PROPERTY COMPILE_OPTIONS
     VALUES -mavx2 -mfma
 )
 
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES External/MaskedOcclusionCulling/MaskedOcclusionCulling.cpp
     PROPERTY COMPILE_OPTIONS
     VALUES -mno-avx

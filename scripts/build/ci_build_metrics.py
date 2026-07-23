@@ -155,9 +155,9 @@ def gather_build_metrics(current_dir, build_config_filename, platform):
         folders_of_interest = [output_directory]
 
         # Clean the AP output
-        cmake_ly_projects = build_parameters['CMAKE_LY_PROJECTS'] if 'CMAKE_LY_PROJECTS' in build_parameters else None
-        if cmake_ly_projects:
-            projects = cmake_ly_projects.split(';')
+        cmake_o3de_projects = build_parameters['CMAKE_O3DE_PROJECTS'] if 'CMAKE_O3DE_PROJECTS' in build_parameters else None
+        if cmake_o3de_projects:
+            projects = cmake_o3de_projects.split(';')
             for project in projects:
                 folders_of_interest.append(os.path.join(project, 'user', 'AssetProcessorTemp'))
                 folders_of_interest.append(os.path.join(project, 'Cache'))
@@ -292,7 +292,7 @@ if __name__ == "__main__":
 
     # transfer
     upload_script = os.path.join(current_dir, 'tools', 'upload_to_s3.py')
-    upload_to_s3(upload_script, os.path.join(engine_dir, 'build_metrics'), 'ly-jenkins-cmake-metrics', args.jobname)
+    upload_to_s3(upload_script, os.path.join(engine_dir, 'build_metrics'), 'o3de-jenkins-cmake-metrics', args.jobname)
 
     # submit
     submit_report_document(metric_file_path)

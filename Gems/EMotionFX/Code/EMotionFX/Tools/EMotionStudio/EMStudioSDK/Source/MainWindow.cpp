@@ -74,7 +74,7 @@
 AZ_PUSH_DISABLE_WARNING(4267, "-Wconversion")
 #include <ISystem.h>
 AZ_POP_DISABLE_WARNING
-#include <LyViewPaneNames.h>
+#include <O3deViewPaneNames.h>
 
 #include <AzToolsFramework/API/ToolsApplicationAPI.h>
 #include <IEditor.h>
@@ -2576,7 +2576,7 @@ namespace EMStudio
 
     const char* MainWindow::GetEMotionFXPaneName()
     {
-        return LyViewPane::AnimationEditor;
+        return O3deViewPane::AnimationEditor;
     }
 
 

@@ -6,12 +6,15 @@
 #
 #
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
+#set(pal_common_code_path ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
-include(${pal_dir}/AtomRHITests_traits_${PAL_PLATFORM_NAME_LOWERCASE}.cmake)
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+#set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
-ly_add_target(
+include(${pal_code_path}/AtomRHITests_traits_${O3DE_PAL_PLATFORM_WART}.cmake)
+
+o3de_add_target(
     NAME ${gem_name}.Profiler STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -27,19 +30,19 @@ ly_add_target(
             AZ::AzFramework
 )
 
-if(PAL_TRAIT_BUILD_RENDERDOC_SUPPORTED)  
-    set(LY_RENDERDOC_ENABLED OFF CACHE BOOL "Enable RenderDoc integration. Use LY_RENDERDOC_PATH to specific the path to RenderDoc.")
-    if(LY_RENDERDOC_ENABLED)
+if(O3DE_PAL_TRAIT_BUILD_RENDERDOC_SUPPORTED)  
+    set(O3DE_RENDERDOC_ENABLED OFF CACHE BOOL "Enable RenderDoc integration. Use O3DE_RENDERDOC_PATH to specific the path to RenderDoc.")
+    if(O3DE_RENDERDOC_ENABLED)
         message(STATUS "Renderdoc found, enabling as a graphics debugger")
-        ly_add_target(
-            NAME ${gem_name}.Profiler.RenderDoc ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+        o3de_add_target(
+            NAME ${gem_name}.Profiler.RenderDoc ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
             NAMESPACE Gem
             FILES_CMAKE
                 atom_rhi_profiler_renderdoc_shared_files.cmake
             INCLUDE_DIRECTORIES
                 PRIVATE
                     Source
-                    ${pal_source_dir}
+                    ${pal_code_source_path}
                 PUBLIC
                     Include
             BUILD_DEPENDENCIES
@@ -54,18 +57,18 @@ if(PAL_TRAIT_BUILD_RENDERDOC_SUPPORTED)
     endif()
 endif()
 
-if(PAL_TRAIT_PROF_PIX_SUPPORTED)
-    if(LY_PIX_ENABLED)
-        ly_add_target(
-            NAME ${gem_name}.Profiler.PIX ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+if(O3DE_PAL_TRAIT_PROF_PIX_SUPPORTED)
+    if(O3DE_PIX_ENABLED)
+        o3de_add_target(
+            NAME ${gem_name}.Profiler.PIX ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
             NAMESPACE Gem
             FILES_CMAKE
                 atom_rhi_profiler_pix_shared_files.cmake
-                ${pal_source_dir}/platform_pix_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+                ${pal_code_source_path}/platform_pix_${O3DE_PAL_PLATFORM_WART}_files.cmake
             INCLUDE_DIRECTORIES
                 PRIVATE
                     Source
-                    ${pal_source_dir}
+                    ${pal_code_source_path}
                 PUBLIC
                     Include
             BUILD_DEPENDENCIES
@@ -80,7 +83,7 @@ if(PAL_TRAIT_PROF_PIX_SUPPORTED)
     endif()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Reflect STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -98,16 +101,16 @@ ly_add_target(
             AZ::AtomCore
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Public STATIC
     NAMESPACE Gem
     FILES_CMAKE
         atom_rhi_public_files.cmake
-        ${pal_source_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_source_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
-            ${pal_source_dir}
+            ${pal_code_source_path}
         PUBLIC
             Include
     BUILD_DEPENDENCIES
@@ -117,7 +120,7 @@ ly_add_target(
             Gem::${gem_name}.Reflect
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Private.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -135,8 +138,8 @@ ly_add_target(
             Gem::${gem_name}.Public
 )
 
-ly_add_target(
-    NAME ${gem_name}.Private ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name}.Private ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         atom_rhi_private_shared_files.cmake
@@ -156,7 +159,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/Module.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -164,9 +167,9 @@ ly_add_source_properties(
             O3DE_GEM_NAME=${gem_name}
             O3DE_GEM_VERSION=${gem_version})
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     if (ATOM_RHI_TRAIT_BUILD_SUPPORTS_EDIT)
-        ly_add_target(
+        o3de_add_target(
             NAME ${gem_name}.Edit STATIC
             NAMESPACE Gem
             FILES_CMAKE
@@ -188,11 +191,11 @@ endif()
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
     if (ATOM_RHI_TRAIT_BUILD_SUPPORTS_TEST)
-        ly_add_target(
-            NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+        o3de_add_target(
+            NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
             NAMESPACE Gem
             FILES_CMAKE
                 atom_rhi_tests_files.cmake
@@ -208,12 +211,12 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                     Gem::${gem_name}.Public
                     Gem::Atom_Feature_Common.Public
         )
-        ly_add_googletest(
+        o3de_add_googletest(
             NAME Gem::${gem_name}.Tests
             LABELS REQUIRES_tiaf
         )
 
-        ly_add_target_files(
+        o3de_add_target_files(
             TARGETS
                 ${gem_name}.Tests
             FILES

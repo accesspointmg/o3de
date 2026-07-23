@@ -6,7 +6,7 @@
 #
 #
 
-# Responsible for generating a settings registry file containing the moduleload dependencies of any ly_delayed_load_targets
+# Responsible for generating a settings registry file containing the moduleload dependencies of any o3de_delayed_load_targets
 # This is used for example, to allow Open 3D Engine Applications to know which set of gems have built for a particular project/target
 # combination
 
@@ -41,7 +41,7 @@ string(APPEND gem_name_template
 [=[            }]=]
 )
 
-#!ly_detect_cycle_through_visitation: Detects if there is a cycle based on a list of visited
+#!o3de_detect_cycle_through_visitation: Detects if there is a cycle based on a list of visited
 # items. If the passed item is in the list, then there is a cycle.
 # \arg:item - item being checked for the cycle
 # \arg:visited_items - list of visited items
@@ -50,7 +50,7 @@ string(APPEND gem_name_template
 #     to false). If there is a cycle a cycle dependency string detailing the sequence of items
 #     that produce a cycle, e.g. A --> B --> C --> A
 #
-function(ly_detect_cycle_through_visitation item visited_items visited_items_var cycle)
+function(o3de_detect_cycle_through_visitation item visited_items visited_items_var cycle)
     if(item IN_LIST visited_items)
         unset(dependency_cycle_loop)
         foreach(visited_item IN LISTS visited_items)
@@ -73,7 +73,7 @@ endfunction()
 # Visits through MANUALLY_ADDED_DEPENDENCIES of targets with a GEM_MODULE property
 # to determine which gems a target needs to load
 #
-# NOTE: ly_get_runtime_dependencies cannot be used as it will recurse through non-manually added dependencies
+# NOTE: o3de_get_runtime_dependencies cannot be used as it will recurse through non-manually added dependencies
 # to add manually added added which results in false load dependencies.
 # \arg:GEM_LOAD_DEPENDENCIES(name) - Output variable to be populated gem load dependencies
 # \arg:TARGET(TARGET) - CMake target to examine for dependencies
@@ -101,10 +101,10 @@ function(o3de_get_gem_load_dependencies)
     set(cycle_detection_targets ${o3de_get_gem_load_dependencies_CYCLE_DETECTION_SET})
 
     # Optimize the search by caching gem load dependencies
-    get_property(are_dependencies_cached GLOBAL PROPERTY "LY_GEM_LOAD_DEPENDENCIES,${target}" SET)
+    get_property(are_dependencies_cached GLOBAL PROPERTY "O3DE_GEM_LOAD_DEPENDENCIES,${target}" SET)
     if(are_dependencies_cached)
         # We already walked through this target
-        get_property(cached_dependencies GLOBAL PROPERTY "LY_GEM_LOAD_DEPENDENCIES,${target}")
+        get_property(cached_dependencies GLOBAL PROPERTY "O3DE_GEM_LOAD_DEPENDENCIES,${target}")
         set(${gem_load_dependencies_var} ${cached_dependencies} PARENT_SCOPE)
         message(DEBUG "${indent}Found cache load dependencies for Gem Target \"${target}\": ${cached_dependencies}")
         return()
@@ -114,7 +114,7 @@ function(o3de_get_gem_load_dependencies)
 
     # detect cycles
     unset(cycle_detected)
-    ly_detect_cycle_through_visitation(${target} "${cycle_detection_targets}" cycle_detection_targets cycle_detected)
+    o3de_detect_cycle_through_visitation(${target} "${cycle_detection_targets}" cycle_detection_targets cycle_detected)
     if(cycle_detected)
         message(FATAL_ERROR "Runtime dependency detected: ${cycle_detected}")
     endif()
@@ -134,7 +134,7 @@ function(o3de_get_gem_load_dependencies)
     list(REMOVE_DUPLICATES load_dependencies)
     foreach(load_dependency IN LISTS load_dependencies)
         # Skip wrapping produced when targets are not created in the same directory
-        ly_de_alias_target(${load_dependency} dealias_load_dependency)
+        o3de_de_alias_target(${load_dependency} dealias_load_dependency)
         get_property(is_gem_target TARGET ${dealias_load_dependency} PROPERTY GEM_MODULE SET)
         # If the dependency is a "gem module" then add it as a load dependencies
         # and recurse into its manually added dependencies
@@ -157,7 +157,7 @@ function(o3de_get_gem_load_dependencies)
     endforeach()
 
     list(REMOVE_DUPLICATES all_gem_load_dependencies)
-    set_property(GLOBAL PROPERTY "LY_GEM_LOAD_DEPENDENCIES,${target}" "${all_gem_load_dependencies}")
+    set_property(GLOBAL PROPERTY "O3DE_GEM_LOAD_DEPENDENCIES,${target}" "${all_gem_load_dependencies}")
     set(${gem_load_dependencies_var} ${all_gem_load_dependencies} PARENT_SCOPE)
     message(VERBOSE "${indent}Gem Target \"${target}\" has load dependencies of: ${all_gem_load_dependencies}")
 
@@ -185,14 +185,14 @@ function(o3de_get_gem_root_from_target output_gem_root output_gem_name gem_targe
     endif()
 endfunction()
 
-#!ly_populate_gem_objects: Creates a mapping of gem name -> structure of gem module targets and source paths
+#!o3de_populate_gem_objects: Creates a mapping of gem name -> structure of gem module targets and source paths
 #
 # \arg:output_gem_setreg_object- Variable to populate with configured gem_name_template for each gem dependency
-function(ly_populate_gem_objects output_gem_setreg_objects all_gem_dependencies)
+function(o3de_populate_gem_objects output_gem_setreg_objects all_gem_dependencies)
     unset(gem_name_list)
     foreach(gem_target ${all_gem_dependencies})
         unset(gem_relative_source_dir)
-        # Create path from the LY_ROOT_FOLDER to the the Gem directory
+        # Create path from the O3DE_ENGINE_PATH to the the Gem directory
         if (NOT TARGET ${gem_target})
             message(FATAL_ERROR "Dependency ${gem_target} from ${target} does not exist")
         endif()
@@ -208,7 +208,7 @@ function(ly_populate_gem_objects output_gem_setreg_objects all_gem_dependencies)
         endif()
 
         # De-alias namespace from gem targets before configuring them into the json template
-        ly_de_alias_target(${gem_target} stripped_gem_target)
+        o3de_de_alias_target(${gem_target} stripped_gem_target)
         string(CONFIGURE "${gem_module_template}" gem_module_json @ONLY)
 
         # Create a "mapping" of gem_name to gem module configured object
@@ -234,19 +234,19 @@ function(ly_populate_gem_objects output_gem_setreg_objects all_gem_dependencies)
     set(${output_gem_setreg_objects} ${root_setreg} PARENT_SCOPE)
 endfunction()
 
-#! ly_delayed_generate_settings_registry: Generates a .setreg file for each target with dependencies
-#  added to it via ly_add_target_dependencies
+#! o3de_delayed_generate_settings_registry: Generates a .setreg file for each target with dependencies
+#  added to it via o3de_add_target_dependencies
 #  The generated file contains the file to the each dependent targets
 #  This can be used for example to determine which list of gems to load with an application
-function(ly_delayed_generate_settings_registry)
+function(o3de_delayed_generate_settings_registry)
 
-    if(LY_MONOLITHIC_GAME) # No need to generate setregs for monolithic builds
-        set_property(GLOBAL PROPERTY LY_DELAYED_LOAD_DEPENDENCIES) # Clear out the load targets from the global load dependencies list
+    if(O3DE_MONOLITHIC_GAME) # No need to generate setregs for monolithic builds
+        set_property(GLOBAL PROPERTY O3DE_DELAYED_LOAD_DEPENDENCIES) # Clear out the load targets from the global load dependencies list
         return()
     endif()
 
-    get_property(ly_delayed_load_targets GLOBAL PROPERTY LY_DELAYED_LOAD_DEPENDENCIES)
-    foreach(prefix_target_variant ${ly_delayed_load_targets})
+    get_property(o3de_delayed_load_targets GLOBAL PROPERTY O3DE_DELAYED_LOAD_DEPENDENCIES)
+    foreach(prefix_target_variant ${o3de_delayed_load_targets})
         string(REPLACE "," ";" prefix_target_variant_list "${prefix_target_variant}")
         list(LENGTH prefix_target_variant_list prefix_target_variant_length)
         if(prefix_target_variant_length EQUAL 0)
@@ -261,7 +261,7 @@ function(ly_delayed_generate_settings_registry)
         list(POP_BACK prefix_target_variant_list variant)
 
         # Get the gem dependencies for the given project and target combination
-        get_property(target_load_dependencies GLOBAL PROPERTY LY_DELAYED_LOAD_"${prefix_target_variant}")
+        get_property(target_load_dependencies GLOBAL PROPERTY O3DE_DELAYED_LOAD_"${prefix_target_variant}")
         message(VERBOSE "prefix=${prefix},target=${target},variant=${variant} has direct load dependencies of ${target_load_dependencies}")
         list(REMOVE_DUPLICATES target_load_dependencies) # Strip out any duplicate load dependency CMake targets
         unset(all_gem_dependencies)
@@ -278,7 +278,7 @@ function(ly_delayed_generate_settings_registry)
         # de-namespace them
         unset(new_gem_dependencies)
         foreach(gem_target ${all_gem_dependencies})
-            ly_de_alias_target(${gem_target} stripped_gem_target)
+            o3de_de_alias_target(${gem_target} stripped_gem_target)
             list(APPEND new_gem_dependencies ${stripped_gem_target})
         endforeach()
         set(all_gem_dependencies ${new_gem_dependencies})
@@ -286,7 +286,7 @@ function(ly_delayed_generate_settings_registry)
 
         # Fill out the gem_setreg_objects variable with the json fields for each gem
         unset(gem_setreg_objects)
-        ly_populate_gem_objects(gem_load_dependencies_json "${all_gem_dependencies}")
+        o3de_populate_gem_objects(gem_load_dependencies_json "${all_gem_dependencies}")
 
         string(REPLACE "." "_" escaped_target ${target})
         string(JOIN "." specialization_name ${prefix} ${escaped_target})
@@ -307,13 +307,13 @@ function(ly_delayed_generate_settings_registry)
         endif()
         set(dependencies_setreg ${target_dir}/Registry/cmake_dependencies.${specialization_name}.setreg)
         file(GENERATE OUTPUT ${dependencies_setreg} CONTENT "${gem_load_dependencies_json}")
-        set_property(TARGET ${target} APPEND PROPERTY INTERFACE_LY_TARGET_FILES "${dependencies_setreg}\nRegistry")
+        set_property(TARGET ${target} APPEND PROPERTY INTERFACE_O3DE_TARGET_FILES "${dependencies_setreg}\nRegistry")
 
         # Clear out load dependencies for the prefix,target,variant combination
-        set_property(GLOBAL PROPERTY LY_DELAYED_LOAD_"${prefix_target_variant}")
+        set_property(GLOBAL PROPERTY O3DE_DELAYED_LOAD_"${prefix_target_variant}")
     endforeach()
 
     # Clear out the load targets from the global load dependencies list
-    set_property(GLOBAL PROPERTY LY_DELAYED_LOAD_DEPENDENCIES)
+    set_property(GLOBAL PROPERTY O3DE_DELAYED_LOAD_DEPENDENCIES)
 endfunction()
 

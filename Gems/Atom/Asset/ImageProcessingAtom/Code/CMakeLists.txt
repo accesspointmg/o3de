@@ -6,7 +6,7 @@
 #
 #
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Headers HEADERONLY
     NAMESPACE Gem
     FILES_CMAKE
@@ -16,27 +16,25 @@ ly_add_target(
             Include
 )
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-set(platform_tools_files)
+set(pal_tools_files)
 set(pal_tools_include_files)
 set(pal_tools_include_dirs)
-foreach(enabled_platform ${LY_PAL_TOOLS_ENABLED})
-    string(TOLOWER ${enabled_platform} enabled_platform_lowercase)
-
-    o3de_pal_dir(pal_tools_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${enabled_platform} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+foreach(enabled_platform ${O3DE_PAL_TOOLS_ENABLED})
+    o3de_pal_platform_name_wart(enabled_platform_wart ${enabled_platform})
+    o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${enabled_platform} pal_tools_source_dir)
     list(APPEND pal_tools_include_dirs ${pal_tools_source_dir})
-
-    list(APPEND platform_tools_files ${pal_tools_source_dir}/pal_tools_${enabled_platform_lowercase}.cmake)
-    list(APPEND pal_tools_include_files ${pal_tools_source_dir}/pal_tools_${enabled_platform_lowercase}_files.cmake)
+    list(APPEND pal_tools_files ${pal_tools_source_dir}/pal_tools_${enabled_platform_wart}.cmake)
+    list(APPEND pal_tools_include_files ${pal_tools_source_dir}/pal_tools_${enabled_platform_wart}_files.cmake)
 endforeach()
 
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
-set(common_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+set(common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Editor.Static STATIC
     NAMESPACE Gem
     AUTOMOC
@@ -45,15 +43,15 @@ ly_add_target(
     FILES_CMAKE
         imageprocessing_files.cmake
         ${pal_tools_include_files}
-        ${pal_source_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_source_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${pal_source_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
-        ${common_source_dir}/${PAL_TRAIT_COMPILER_ID}/imageprocessingatom_editor_static_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
-        ${platform_tools_files}
+        ${pal_code_source_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
+        ${common_code_source_path}/${O3DE_PAL_TRAIT_COMPILER_ID}/imageprocessingatom_editor_static_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+        ${pal_tools_files}
     INCLUDE_DIRECTORIES
         PUBLIC
             Include
-            ${pal_source_dir}
+            ${pal_code_source_path}
             ${pal_tools_include_dirs}
             .
             Source
@@ -78,15 +76,15 @@ ly_add_target(
             Gem::Atom_Utils.Static
 
 )
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/Processing/ImageConvert.cpp
         Source/BuilderSettings/BuilderSettingManager.cpp
     PROPERTY COMPILE_DEFINITIONS 
-    VALUES ${LY_PAL_TOOLS_DEFINES}
+    VALUES ${O3DE_PAL_TOOLS_DEFINES}
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Editor GEM_MODULE
 
     NAMESPACE Gem
@@ -103,7 +101,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/ImageProcessingModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -114,9 +112,9 @@ ly_add_source_properties(
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME ${gem_name}.Editor.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME ${gem_name}.Editor.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             imageprocessing_tests_files.cmake
@@ -128,7 +126,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzTest
                 Gem::${gem_name}.Editor.Static
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Editor.Tests
         LABELS REQUIRES_tiaf
     )

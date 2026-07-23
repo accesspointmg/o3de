@@ -90,7 +90,7 @@ popd
 
 :: dcc scripting interface gem path
 :: currently know relative path to this gem
-set DCCSIG_PATH=%O3DE_DEV%\Gems\AtomLyIntegration\TechnicalArt\DccScriptingInterface
+set DCCSIG_PATH=%O3DE_DEV%\Gems\AtomO3deIntegration\TechnicalArt\DccScriptingInterface
 echo     DCCSIG_PATH = %DCCSIG_PATH%
 
 :: per-dcc sdk path

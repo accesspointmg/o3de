@@ -12,7 +12,7 @@ import pytest
 import logging
 from typing import Optional, Any
 
-import ly_test_tools.o3de.pipeline_utils as utils
+import o3de_test_tools.o3de.pipeline_utils as utils
 
 logger = logging.getLogger(__name__)
 

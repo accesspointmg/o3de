@@ -15,16 +15,15 @@ set(FILES
     ../Common/MSVC/TestProject.props
     ../Common/MSVC/VisualStudio_common.cmake
     ../Common/Install_common.cmake
-    ../Common/LYWrappers_default.cmake
+    ../Common/O3deWrappers_default.cmake
     ../Common/PackagingPostBuild_common.cmake
     ../Common/PackagingPreBuild_common.cmake
     ../Common/TargetIncludeSystemDirectories_unsupported.cmake
     ../Common/Toolchain_scriptonly_common.cmake
     Configurations_windows.cmake
-    LYTestWrappers_windows.cmake
-    LYWrappers_windows.cmake
+    O3deTestWrappers_windows.cmake
+    O3deWrappers_windows.cmake
     PAL_windows.cmake
-    PALDetection_windows.cmake
     Install_windows.cmake
     Packaging_windows.cmake
     PackagingCodeSign_windows.cmake

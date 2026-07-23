@@ -6,13 +6,14 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${PAL_PLATFORM_NAME} ${O3DE_ENGINE_RESTRICTED_PATH} ${LY_ROOT_FOLDER})
+o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Tools/LuaIDE/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_tools_luaide_source_path)
+#set(common_code_tools_luaide_source_path ${O3DE_ENGINE_PATH}/Code/Tools/LuaIDE/Platform/Common)
 
-ly_add_target(
+o3de_add_target(
     NAME LuaIDE APPLICATION
     NAMESPACE AZ
     AUTOMOC
@@ -20,7 +21,7 @@ ly_add_target(
     AUTORCC
     FILES_CMAKE
         lua_ide_files.cmake
-        ${pal_dir}/lua_ide_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_tools_luaide_source_path}/lua_ide_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             .
@@ -40,5 +41,5 @@ ly_add_target(
             STANDALONETOOLS_ENABLE_LUA_IDE
 )
 
-ly_set_gem_variant_to_load(TARGETS LuaIDE VARIANTS LuaTools)
-ly_add_dependencies(Editor LuaIDE)
+o3de_set_gem_variant_to_load(TARGETS LuaIDE VARIANTS LuaTools)
+o3de_add_dependencies(Editor LuaIDE)

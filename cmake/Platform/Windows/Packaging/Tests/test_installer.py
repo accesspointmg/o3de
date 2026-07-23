@@ -24,7 +24,7 @@ import pytest
 import shutil
 from pathlib import Path
 from subprocess import TimeoutExpired
-from o3de import manifest
+from o3de import o3de_object
 
 @pytest.fixture(scope="session")
 def test_installer_fixture(context):
@@ -67,13 +67,13 @@ def test_o3de_registers_engine_fixture(test_installer_fixture, context):
         pass
 
     # a valid engine.json exists
-    engine_json_data = manifest.get_engine_json_data(engine_name=None, engine_path=context.install_root)
+    engine_json_data = o3de_object.get_engine_json_data(engine_name=None, engine_path=context.install_root)
     assert engine_json_data, f"Failed to get engine.json data for engine in {context.install_root}"
     assert 'engine_name' in engine_json_data, "Engine.json does not contain engine_name key"
 
     # the engine is registered
     engine_name = engine_json_data['engine_name']
-    engine_registered_path = manifest.get_registered(engine_name = engine_name)
+    engine_registered_path = o3de_object.get_registered(engine_name = engine_name)
 
     assert engine_registered_path, f"Failed to get registered engine path for {engine_name}"
     assert engine_registered_path.resolve() == context.install_root, f"{engine_name} is registered to {engine_registered_path} instead of {context.install_root}"
@@ -189,7 +189,7 @@ def test_uninstall_fixture(test_run_launcher_fixture, test_run_editor_fixture, c
     """ Uninstall succeeds and unregisters the engine. """
     assert context.installer_path.is_file(), f"Invalid installer path {context.installer_path}"
 
-    engine_json_data = manifest.get_engine_json_data(engine_name=None, engine_path=context.install_root)
+    engine_json_data = o3de_object.get_engine_json_data(engine_name=None, engine_path=context.install_root)
     assert engine_json_data, f"Failed to get engine.json data for engine in {context.install_root}"
     assert 'engine_name' in engine_json_data, "Engine.json does not contain the engine_name key"
 
@@ -201,7 +201,7 @@ def test_uninstall_fixture(test_run_launcher_fixture, test_run_editor_fixture, c
 
     # the engine is no longer registered
     engine_name = engine_json_data['engine_name']
-    engine_registered_path = manifest.get_registered(engine_name = engine_name)
+    engine_registered_path = o3de_object.get_registered(engine_name = engine_name)
     assert not engine_registered_path, f"{engine_name} is still registered with the path {engine_registered_path}"
 
 def test_installer(test_uninstall_fixture):

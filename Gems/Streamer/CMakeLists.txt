@@ -6,4 +6,4 @@
 #
 #
 
-# Placeholder to satistfy CMake.
+o3de_gem_setup()

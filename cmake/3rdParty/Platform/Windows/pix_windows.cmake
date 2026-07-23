@@ -6,7 +6,7 @@
 #
 #
 
-if(LY_MONOLITHIC_GAME)
+if(O3DE_MONOLITHIC_GAME)
     set(PIX_LIBS ${BASE_PATH}/bin/x64/WinPixEventRuntime.lib)
 else()
     set(PIX_LIBS ${BASE_PATH}/bin/x64/WinPixEventRuntime.lib)

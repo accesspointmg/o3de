@@ -80,7 +80,7 @@ To set up a project-centric source engine, complete the following steps. For oth
     1.  Select the local path of the repo under "Where is the source code".
     1.  Select a path where to build binaries under "Where to build the binaries".
     1.  Click **Add Entry** and add a cache entry for the <3rdParty package path> folder you created, using the following values:
-        1.  **Name:** LY_3RDPARTY_PATH
+        1.  **Name:** O3DE_3RDPARTY_PATH
         1.  **Type:** STRING
         1.  **Value:** `<3rdParty package path>`
     1.  Click **Configure**.

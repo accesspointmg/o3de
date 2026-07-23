@@ -6,11 +6,11 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME ComponentEntityEditorPlugin MODULE
     NAMESPACE Legacy
     OUTPUT_SUBDIRECTORY EditorPlugins
@@ -40,5 +40,5 @@ ly_add_target(
         Gem::LmbrCentral.Editor
 )
 
-ly_add_dependencies(Editor ComponentEntityEditorPlugin)
-set_property(GLOBAL APPEND PROPERTY LY_EDITOR_PLUGINS $<TARGET_FILE_NAME:Legacy::ComponentEntityEditorPlugin>)
+o3de_add_dependencies(Editor ComponentEntityEditorPlugin)
+set_property(GLOBAL APPEND PROPERTY O3DE_EDITOR_PLUGINS $<TARGET_FILE_NAME:Legacy::ComponentEntityEditorPlugin>)

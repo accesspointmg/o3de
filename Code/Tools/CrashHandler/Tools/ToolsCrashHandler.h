@@ -6,7 +6,7 @@
  *
  */
 
-// LY Editor Crashpad Hook
+// O3DE Editor Crashpad Hook
 
 #pragma once
 

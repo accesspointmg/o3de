@@ -37,7 +37,7 @@ endfunction()
 
 include(BundleUtilities)
 
-cmake_policy(SET CMP0012 NEW) # new policy for the if that evaluates a boolean out of the LY_BUILD_FIXUP_BUNDLE expansion
+cmake_policy(SET CMP0012 NEW) # new policy for the if that evaluates a boolean out of the O3DE_BUILD_FIXUP_BUNDLE expansion
 cmake_policy(SET CMP0009 NEW) # do not traverse symlinks on GLOB_RECURSE
 
 # Stores a set of executable, dylib and frameworks to ignore for fixup bundle
@@ -65,8 +65,8 @@ cmake_path(APPEND target_bundle_framework_dir "${target_bundle_content_dir}" "Fr
 unset(target_bundle_plugins_dir)
 cmake_path(APPEND target_bundle_plugins_dir "${target_bundle_content_dir}" "PlugIns")
 
-find_program(LY_INSTALL_NAME_TOOL install_name_tool)
-if (NOT LY_INSTALL_NAME_TOOL)
+find_program(O3DE_INSTALL_NAME_TOOL install_name_tool)
+if (NOT O3DE_INSTALL_NAME_TOOL)
     message(FATAL_ERROR "Unable to locate 'install_name_tool'")
 endif()
 
@@ -75,7 +75,7 @@ endif()
 # 2. Either file1 or file2 do not exist
 # 3. If both files have the same timestamp
 # We would like it to return false if the mod times are the same.
-function(ly_is_newer_than file1 file2 is_newer)
+function(o3de_is_newer_than file1 file2 is_newer)
 
     set(${is_newer} FALSE PARENT_SCOPE)
 
@@ -141,7 +141,7 @@ function(o3de_copy_file_to_bundle)
         cmake_path(COMPARE "${source_framework_filename}" EQUAL "Python.framework" is_python_framework)
         if(is_python_framework)
             set_property(SOURCE "${CMAKE_CURRENT_LIST_FILE}" PROPERTY DEPENDS_ON_PYTHON TRUE)
-            ly_is_newer_than("${source_framework_directory}" "${target_file}" is_python_newer)
+            o3de_is_newer_than("${source_framework_directory}" "${target_file}" is_python_newer)
 
             # If 3rdParty python is newer it needs to be removed before copying it to the bundle.
             # Otherwise the copy would file to do a previous invovation of this script
@@ -160,9 +160,9 @@ function(o3de_copy_file_to_bundle)
         endif()
     elseif("${source_file}" IN_LIST target_copy_files OR "${source_file}" IN_LIST target_imported_files)
         unset(target_file)
-        # copy the file dependencies to the directory relative to the <bundle-app>/Content/MacOS directory
+        # copy the file dependencies to the directory relative to the <bundle-app>/Content/Mac directory
         # imported dependencies refer to the IMPORTED_LOCATION property of the TARGET, so those
-        # should also be copied to the <bundle-dir>/Content/MacOS if they are not a dylib
+        # should also be copied to the <bundle-dir>/Content/Mac if they are not a dylib
         if(is_dylib)
             # fixup bundle expects raw .dylib files to be directly under the <bundle-app>/Content/Framework folder
             # So don't add relative_target_directory as part of the target file path
@@ -252,25 +252,25 @@ function(o3de_copy_file_to_filesystem)
 
         unset(is_source_newer)
 
-        # ly_is_newer_than will be true if:
+        # o3de_is_newer_than will be true if:
         # 1. The source library was rebuilt.
         # 2. The library is a 3rdParty lib and it was downloaded after the target was copied.
         # 3. The library is being copied over for the first time(target does not exist).
         # While downloaded 3rdParty libs will have the creation time set to when it was built,
         # their modification time will reflect the time it was downloaded.
-        ly_is_newer_than(${source_file} ${target_file} is_source_newer)
+        o3de_is_newer_than(${source_file} ${target_file} is_source_newer)
 
         if(${is_source_newer})
             message(STATUS "Copying \"${source_file}\" to \"${target_directory}\"...")
             file(MAKE_DIRECTORY "${target_directory}")
-            file(COPY "${source_file}" DESTINATION "${target_directory}" FILE_PERMISSIONS @LY_COPY_PERMISSIONS@ FOLLOW_SYMLINK_CHAIN)
+            file(COPY "${source_file}" DESTINATION "${target_directory}" FILE_PERMISSIONS @O3DE_COPY_PERMISSIONS@ FOLLOW_SYMLINK_CHAIN)
             file(TOUCH_NOCREATE "${target_file}")
             set_property(SOURCE "${CMAKE_CURRENT_LIST_FILE}" PROPERTY ANYTHING_NEW TRUE)
         endif()
     endif()
 endfunction()
 
-function(ly_copy source_files relative_target_directory)
+function(o3de_copy source_files relative_target_directory)
     set(options)
     set(oneValueArgs TARGET_FILE_DIR SOURCE_TYPE SOURCE_GEM_MODULE)
     set(multiValueArgs)
@@ -309,14 +309,14 @@ function(ly_copy source_files relative_target_directory)
     endforeach()
 endfunction()
 
-@LY_COPY_COMMANDS@
+@O3DE_COPY_COMMANDS@
 
-if(NOT @LY_BUILD_FIXUP_BUNDLE@)
+if(NOT @O3DE_BUILD_FIXUP_BUNDLE@)
     return()
 endif()
 
 if(target_bundle_content_dir)
-    # Use get_property(SOURCE) to query the variables set within the ly_copy function calls
+    # Use get_property(SOURCE) to query the variables set within the o3de_copy function calls
     # The PARENT_SCOPE option to set only applys to the immediate function scope
     # So a nested function call would prevent the variables from being set in this file scope
     get_property(anything_new SOURCE "${CMAKE_CURRENT_LIST_FILE}" PROPERTY ANYTHING_NEW)
@@ -326,7 +326,7 @@ if(target_bundle_content_dir)
 
     set(fixup_timestamp_file "${target_bundle_dir}.fixup.stamp")
     if(NOT anything_new)
-        ly_is_newer_than(${target_bundle_dir} ${fixup_timestamp_file} anything_new)
+        o3de_is_newer_than(${target_bundle_dir} ${fixup_timestamp_file} anything_new)
     endif()
     if(anything_new)
         # LYN-4502: Patch python bundle, it contains some windows executables, some files that fixup_bundle doesnt like and has
@@ -374,19 +374,19 @@ if(target_bundle_content_dir)
         # https://github.com/o3de/3p-package-source/blob/main/package-system/DirectXShaderCompiler/FindDirectXShaderCompilerDxc.cmake.Mac
         # file to make an IMPORTED SHARED target for the library file and to add an IMPORTED executable for the application
         # That way the dxc executable and library will be copied through the link dependencies correctly
-        # The [ly_add_target_files](https://github.com/o3de/3p-package-source/blob/main/package-system/DirectXShaderCompiler/FindDirectXShaderCompilerDxc.cmake.Mac#L24)
+        # The [o3de_add_target_files](https://github.com/o3de/3p-package-source/blob/main/package-system/DirectXShaderCompiler/FindDirectXShaderCompilerDxc.cmake.Mac#L24)
         # calls in that file should be removed as part resolving issue https://github.com/o3de/3p-package-source/issues/201
-        # Furthermore the ly_add_target_files method would benefit from an rpath change argument
+        # Furthermore the o3de_add_target_files method would benefit from an rpath change argument
         # to allow authors to correct the rpath after a copy
         cmake_path(SET dxc_path "${target_file_dir}/Builders/DirectXShaderCompiler/bin/dxc-3.7")
         if(EXISTS "${dxc_path}")
-            execute_process(COMMAND "${LY_INSTALL_NAME_TOOL}"
+            execute_process(COMMAND "${O3DE_INSTALL_NAME_TOOL}"
                 -add_rpath "@executable_path/../../../../Frameworks"
                 "${dxc_path}")
         endif()
         cmake_path(SET dxsc_path "${target_file_dir}/Builders/DirectXShaderCompiler/bin/dxsc-3.7")
         if(EXISTS "${dxsc_path}")
-            execute_process(COMMAND "${LY_INSTALL_NAME_TOOL}"
+            execute_process(COMMAND "${O3DE_INSTALL_NAME_TOOL}"
                 -add_rpath "@executable_path/../../../../Frameworks"
                 "${dxsc_path}")
         endif()

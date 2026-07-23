@@ -65,7 +65,7 @@ namespace MCore
     //! @deprecated use AZ::Quaternion::CreateFromEulerRadiansZYX
     AZ_FORCE_INLINE AZ::Quaternion AzEulerAnglesToAzQuat(float pitch, float yaw, float roll)
     {
-        // In the LY coordinate system, pitch: X, yaw: Z, roll: Y.
+        // In the O3DE coordinate system, pitch: X, yaw: Z, roll: Y.
         const float halfYaw = yaw * 0.5f;
         const float halfPitch = pitch * 0.5f;
         const float halfRoll = roll * 0.5f;

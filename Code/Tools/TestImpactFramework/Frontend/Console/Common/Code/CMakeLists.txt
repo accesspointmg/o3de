@@ -6,8 +6,8 @@
 #
 #
 
-set(common_dir "${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common/${PAL_TRAIT_COMPILER_ID}")
-ly_add_target(
+set(common_dir "${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common/${O3DE_PAL_TRAIT_COMPILER_ID}")
+o3de_add_target(
     NAME TestImpact.Frontend.Console.Common.Headers HEADERONLY
     NAMESPACE AZ
     FILES_CMAKE
@@ -20,13 +20,13 @@ ly_add_target(
             AZ::AzCore
 )
 
-ly_add_target(
+o3de_add_target(
     NAME TestImpact.Frontend.Console.Common.Static STATIC
     NAMESPACE AZ
     FILES_CMAKE
         testimpactframework_frontend_console_common_files.cmake
     PLATFORM_INCLUDE_FILES
-        "${common_dir}/testimpactframework_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake"
+        "${common_dir}/testimpactframework_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake"
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
@@ -34,7 +34,7 @@ ly_add_target(
             Include/Static
     COMPILE_DEFINITIONS
         PUBLIC
-            ${LY_TEST_IMPACT_CONFIG_FILE_PATH_DEFINITION}
+            ${O3DE_TEST_IMPACT_CONFIG_FILE_PATH_DEFINITION}
     BUILD_DEPENDENCIES
         PRIVATE
             AZ::TestImpact.Runtime.Common.Headers

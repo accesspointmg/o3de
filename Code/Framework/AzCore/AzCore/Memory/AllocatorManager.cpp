@@ -346,7 +346,7 @@ namespace AZ
     }
     AZ_CONSOLEFREEFUNC("sys_DumpAllocationRecordsToDevWriteStorage", DumpAllocationsForAllocatorToDevWriteStorage, AZ::ConsoleFunctorFlags::Null,
         "Write ALL individual allocations for the specified allocator to <dev-write-storage>/allocation_records/records.<iso8601-timestamp>.<process-id>.log.\n"
-        "On host plaforms such as Windows/Linux/MacOS, <dev-write-storage> is equivalent to <project-root>/user directory.\n"
+        "On host plaforms such as Windows/Linux/Mac, <dev-write-storage> is equivalent to <project-root>/user directory.\n"
         "On non-host platforms such as Android/iOS this folder is a writable directory based on those operating systems' Data container/storage APIs\n"
         "If no allocator is specified, then all allocations are dumped\n"
         "NOTE: This can be slow depending on the number of allocations\n"

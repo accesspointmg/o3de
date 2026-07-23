@@ -6,7 +6,7 @@
 #
 #
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -22,8 +22,8 @@ ly_add_target(
             Gem::LyShine.Clients.API
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         messagepopup_shared_files.cmake
@@ -38,7 +38,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/MessagePopupModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -47,5 +47,5 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # ${gem_name} is used only in client applications
-ly_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::UiBasics.Builders)
+o3de_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::UiBasics.Builders)

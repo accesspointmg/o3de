@@ -12,7 +12,7 @@ import pathlib
 import string
 from unittest.mock import patch
 
-from o3de import cmake, manifest
+from o3de import cmake, o3de_object
 
 class TestRemoveGemDependency:
     @pytest.mark.parametrize(
@@ -96,7 +96,7 @@ class TestRemoveGemDependency:
                 patch('pathlib.Path.open', side_effect=lambda mode: StringBufferIOWrapper()) as pathlib_open_mock:
 
             add_gem_return = cmake.remove_gem_dependency(pathlib.Path('enabled_gems.cmake'), gem_name=gem_name)
-            enabled_gems_set = manifest.get_enabled_gems(pathlib.Path('enabled_gems.cmake'))
+            enabled_gems_set = o3de_object.get_enabled_gems(pathlib.Path('enabled_gems.cmake'))
 
         assert add_gem_return == expected_return
         assert enabled_gems_set == expected_set

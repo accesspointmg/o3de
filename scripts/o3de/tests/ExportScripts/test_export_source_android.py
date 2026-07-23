@@ -29,10 +29,10 @@ def test_export_android_parse_args_should_run_with_output(tmpdir):
     
     test_project_name, test_project_path, test_engine_path = setup_local_export_config_test(tmpdir)
     #this should run fine however
-    with patch('o3de.manifest.get_o3de_folder') as mock_get_o3de_folder,\
+    with patch('o3de.manifest.get_user_dot_o3de_path') as mock_get_user_dot_o3de_path,\
          patch('o3de.export_project.get_default_asset_platform', return_value='pc') as mock_get_asset_platform:
         
-        mock_get_o3de_folder.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
+        mock_get_user_dot_o3de_path.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
 
         mock_ctx = create_autospec(O3DEScriptExportContext)
         mock_ctx.project_path = test_project_path
@@ -55,13 +55,13 @@ def test_export_standalone_multipart_args(tmpdir, seedlists, seedfiles, levelnam
 
     test_project_name, test_project_path, test_engine_path = setup_local_export_config_test(tmpdir)
     
-    with patch('o3de.manifest.get_o3de_folder') as mock_get_o3de_folder,\
+    with patch('o3de.manifest.get_user_dot_o3de_path') as mock_get_user_dot_o3de_path,\
          patch('o3de.export_project.get_default_asset_platform', return_value='pc') as mock_get_asset_platform,\
          patch('o3de.android.configure_android_options'),\
          patch('o3de.android.generate_android_project'),\
          patch('export_source_android.export_source_android_project') as mock_export_func:
         
-        mock_get_o3de_folder.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
+        mock_get_user_dot_o3de_path.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
 
         mock_ctx = create_autospec(O3DEScriptExportContext)
         mock_ctx.project_path = test_project_path
@@ -136,7 +136,7 @@ def test_export_standalone_single(tmpdir, dum_fail_asset_err, dum_build_tools, d
             fail_asset_errors=dum_fail_asset_err, build_assets=dum_build_assets, build_tools=dum_build_tools,
             engine_centric=dum_engine_centric)
     
-    with patch('o3de.manifest.get_o3de_folder') as mock_get_o3de_folder,\
+    with patch('o3de.manifest.get_user_dot_o3de_path') as mock_get_user_dot_o3de_path,\
          patch('o3de.export_project.get_default_asset_platform', return_value='pc') as mock_get_asset_platform,\
          patch('o3de.export_project.get_asset_processor_batch_path', return_value=tmpdir/'assetproc'),\
          patch('o3de.export_project.get_asset_bundler_batch_path', return_value=tmpdir/'assetbundles'),\
@@ -145,7 +145,7 @@ def test_export_standalone_single(tmpdir, dum_fail_asset_err, dum_build_tools, d
          patch('o3de.android.generate_android_project'),\
          patch('export_source_android.export_source_android_project') as mock_export_func:
         
-        mock_get_o3de_folder.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
+        mock_get_user_dot_o3de_path.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
 
         mock_ctx = create_autospec(O3DEScriptExportContext)
         mock_ctx.project_path = test_project_path

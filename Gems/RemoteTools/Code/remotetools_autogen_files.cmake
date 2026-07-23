@@ -7,9 +7,9 @@
 #
 
 set(FILES
-    ${LY_ROOT_FOLDER}/Code/Framework/AzNetworking/AzNetworking/AutoGen/AutoPackets_Header.jinja
-    ${LY_ROOT_FOLDER}/Code/Framework/AzNetworking/AzNetworking/AutoGen/AutoPackets_Inline.jinja
-    ${LY_ROOT_FOLDER}/Code/Framework/AzNetworking/AzNetworking/AutoGen/AutoPackets_Source.jinja
-    ${LY_ROOT_FOLDER}/Code/Framework/AzNetworking/AzNetworking/AutoGen/AutoPacketDispatcher_Header.jinja
-    ${LY_ROOT_FOLDER}/Code/Framework/AzNetworking/AzNetworking/AutoGen/AutoPacketDispatcher_Inline.jinja
+    ${O3DE_ENGINE_PATH}/Code/Framework/AzNetworking/AzNetworking/AutoGen/AutoPackets_Header.jinja
+    ${O3DE_ENGINE_PATH}/Code/Framework/AzNetworking/AzNetworking/AutoGen/AutoPackets_Inline.jinja
+    ${O3DE_ENGINE_PATH}/Code/Framework/AzNetworking/AzNetworking/AutoGen/AutoPackets_Source.jinja
+    ${O3DE_ENGINE_PATH}/Code/Framework/AzNetworking/AzNetworking/AutoGen/AutoPacketDispatcher_Header.jinja
+    ${O3DE_ENGINE_PATH}/Code/Framework/AzNetworking/AzNetworking/AutoGen/AutoPacketDispatcher_Inline.jinja
 )

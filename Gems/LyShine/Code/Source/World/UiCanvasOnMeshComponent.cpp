@@ -23,7 +23,7 @@
 
 
 #include <AzFramework/Render/GeometryIntersectionStructures.h>
-#include <AtomLyIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
+#include <AtomO3deIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Anonymous namespace

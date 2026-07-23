@@ -72,7 +72,7 @@ namespace StartingPointCamera
 
 
             // This is an internal Amazon gem, so register it's components for metrics tracking, otherwise the name of the component won't get sent back.
-            // IF YOU ARE A THIRDPARTY WRITING A GEM, DO NOT REGISTER YOUR COMPONENTS WITH EditorMetricsComponentRegistrationBus
+            // IF YOU ARE A 3RDPARTY WRITING A GEM, DO NOT REGISTER YOUR COMPONENTS WITH EditorMetricsComponentRegistrationBus
             AZStd::vector<AZ::Uuid> typeIds;
             typeIds.reserve(m_descriptors.size());
             for (AZ::ComponentDescriptor* descriptor : m_descriptors)

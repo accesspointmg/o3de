@@ -6,7 +6,7 @@
 #
 #
 
-ly_add_target(
+o3de_add_target(
     NAME AssetBuilder.Static STATIC
     NAMESPACE AZ
     FILES_CMAKE
@@ -22,12 +22,12 @@ ly_add_target(
                 AZ::AssetBuilderSDK
 )
 
-ly_add_target(
+o3de_add_target(
     NAME AssetBuilder EXECUTABLE
     NAMESPACE AZ
     FILES_CMAKE
         asset_builder_files.cmake
-        Platform/${PAL_PLATFORM_NAME}/asset_builder_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        Platform/${O3DE_PAL_PLATFORM_NAME}/asset_builder_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             .
@@ -42,31 +42,31 @@ ly_add_target(
             AZ::AzToolsFramework
 )
 
-if(LY_DEFAULT_PROJECT_PATH)
-    set_property(TARGET AssetBuilder APPEND PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS "--project-path=\"${LY_DEFAULT_PROJECT_PATH}\"")
+if(O3DE_DEFAULT_PROJECT_PATH)
+    set_property(TARGET AssetBuilder APPEND PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS "--project-path=\"${O3DE_DEFAULT_PROJECT_PATH}\"")
 endif()
 
-# Aggregates all combined AssetBuilders into a single LY_ASSET_BUILDERS #define
-get_property(asset_builders GLOBAL PROPERTY LY_ASSET_BUILDERS)
+# Aggregates all combined AssetBuilders into a single O3DE_ASSET_BUILDERS #define
+get_property(asset_builders GLOBAL PROPERTY O3DE_ASSET_BUILDERS)
 string (REPLACE ";" "," asset_builders "${asset_builders}")
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES AssetBuilderComponent.cpp
     PROPERTY COMPILE_DEFINITIONS 
-    VALUES LY_ASSET_BUILDERS="${asset_builders}"
+    VALUES O3DE_ASSET_BUILDERS="${asset_builders}"
 )
 
 if(TARGET AssetBuilder)
-    ly_set_gem_variant_to_load(TARGETS AssetBuilder VARIANTS Builders)
+    o3de_set_gem_variant_to_load(TARGETS AssetBuilder VARIANTS Builders)
     # Adds the AssetBuilder target as a C preprocessor define so that it can be used as a Settings Registry
     # specialization in order to look up the generated .setreg which contains the dependencies
-    # specified for the AssetBuilder in the <Project>/Gem/Code/CMakeLists via ly_add_project_dependencies
-    ly_add_source_properties(
+    # specified for the AssetBuilder in the <Project>/Gem/Code/CMakeLists via o3de_add_project_dependencies
+    o3de_add_source_properties(
         SOURCES AssetBuilderApplication.cpp
         PROPERTY COMPILE_DEFINITIONS
-        VALUES LY_CMAKE_TARGET="AssetBuilder"
+        VALUES O3DE_CMAKE_TARGET="AssetBuilder"
     )
 else()
-    message(FATAL_ERROR "Cannot set LY_CMAKE_TARGET define to AssetBuilder as the target doesn't exist anymore."
+    message(FATAL_ERROR "Cannot set O3DE_CMAKE_TARGET define to AssetBuilder as the target doesn't exist anymore."
         " Perhaps it has been renamed")
 endif()
 

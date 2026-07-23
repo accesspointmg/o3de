@@ -14,7 +14,7 @@ import re
 import pathlib
 import json
 
-from o3de import manifest, validation, utils
+from o3de import o3de_object, validation, utils
 
 logger = logging.getLogger('o3de.global_project')
 logging.basicConfig(format=utils.LOG_FORMAT)
@@ -54,7 +54,7 @@ def set_global_project(output_path: pathlib.Path,
 
     # if project name resolve it into a path
     if project_name and not project_path:
-        project_path = manifest.get_registered(project_name=project_name)
+        project_path = o3de_object.get_registered(project_name=project_name)
 
     if not project_path:
         logger.error(
@@ -142,35 +142,6 @@ def _run_set_global_project(args: argparse) -> int:
                                  args.project_path,
                                  args.force)
 
-
-def add_parser_args(get_project_parser, set_project_parser):
-    """
-        add_parser_args is called to add arguments to each command such that it can be
-        invoked locally or added by a central python file.
-        Ex. Directly run from this file alone with: python global_project.py --project-path "D:/TestProject"
-        :param parser: the caller passes an argparse parser like instance to this method
-    """
-
-    # get-current-project
-    get_project_parser.add_argument('-i', '--input-path', type=pathlib.Path, required=False, default=DEFAULT_BOOTSTRAP_SETREG,
-                        help=f'Optional path to file to read /{"/".join(PROJECT_PATH_KEY)} key from.'
-                             f' If not supplied, then {DEFAULT_BOOTSTRAP_SETREG} is used instead')
-    get_project_parser.set_defaults(func=_run_get_global_project)
-
-    # set-current-project
-    group = set_project_parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-pp', '--project-path', type=pathlib.Path, required=False,
-                       help='The path to the project.')
-    group.add_argument('-pn', '--project-name', type=str, required=False,
-                       help='The name of the project.')
-    set_project_parser.add_argument('-o', '--output-path', type=pathlib.Path, required=False,
-                                    default=DEFAULT_BOOTSTRAP_SETREG,
-                                    help=f'Optional path to output file to write project_path key to. '
-                                         f'If not supplied, then {DEFAULT_BOOTSTRAP_SETREG} is used instead')
-    set_project_parser.add_argument('-f', '--force', action='store_true', default=False,
-                                    help=f'Force the setting of the project path in the supplied setreg file')
-    set_project_parser.set_defaults(func=_run_set_global_project)
-
 def add_args(subparsers) -> None:
     """
     add_args is called to add subparsers arguments to each command such that it can be
@@ -179,34 +150,26 @@ def add_args(subparsers) -> None:
     call add_args and execute: python o3de.py set-global-project --project-path "D:/TestProject"
     :param subparsers: the caller instantiates subparsers and passes it in here
     """
+    # get-current-project
     get_project_subparser = subparsers.add_parser('get-global-project')
+    get_project_subparser.add_argument('-i', '--input-path', type=pathlib.Path, required=False, default=DEFAULT_BOOTSTRAP_SETREG,
+                        help=f'Optional path to file to read /{"/".join(PROJECT_PATH_KEY)} key from.'
+                             f' If not supplied, then {DEFAULT_BOOTSTRAP_SETREG} is used instead')
+    
+    get_project_subparser.set_defaults(func=_run_get_global_project)
+
+    # set-current-project
     set_project_subparser = subparsers.add_parser('set-global-project')
-    add_parser_args(get_project_subparser, set_project_subparser)
-
-
-def main():
-    """
-    Runs this script as standalone script
-    """
-    # parse the command line args
-    the_parser = argparse.ArgumentParser()
-
-    # add subparsers
-    project_subparsers = the_parser.add_subparsers(help="Commands for modifying the project path in the user's home"
-                                                        " setreg files")
-
-    # add args to the parser
-    add_args(project_subparsers)
-
-    # parse args
-    the_args = the_parser.parse_args()
-
-    # run
-    ret = the_args.func(the_args) if hasattr(the_args, 'func') else 1
-
-    # return
-    sys.exit(ret)
-
-
-if __name__ == "__main__":
-    main()
+    group = set_project_subparser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-pp', '--project-path', type=pathlib.Path, required=False,
+                       help='The path to the project.')
+    group.add_argument('-pn', '--project-name', type=str, required=False,
+                       help='The name of the project.')
+    set_project_subparser.add_argument('-o', '--output-path', type=pathlib.Path, required=False,
+                                    default=DEFAULT_BOOTSTRAP_SETREG,
+                                    help=f'Optional path to output file to write project_path key to. '
+                                         f'If not supplied, then {DEFAULT_BOOTSTRAP_SETREG} is used instead')
+    set_project_subparser.add_argument('-f', '--force', action='store_true', default=False,
+                                    help=f'Force the setting of the project path in the supplied setreg file')
+    
+    set_project_subparser.set_defaults(func=_run_set_global_project)

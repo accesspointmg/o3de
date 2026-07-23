@@ -6,7 +6,7 @@
  *
  */
 
-// LY Game Crashpad Hook - win
+// O3DE Game Crashpad Hook - win
 
 #include <CrashReporting/GameCrashHandler.h>
 

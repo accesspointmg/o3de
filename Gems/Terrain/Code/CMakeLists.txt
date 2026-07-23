@@ -5,7 +5,7 @@
 #
 #
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -28,8 +28,8 @@ ly_add_target(
             Gem::LmbrCentral.API
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         terrain_shared_files.cmake
@@ -47,7 +47,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/TerrainModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -56,14 +56,14 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # the above module is for use in all client/server types
-ly_create_alias(NAME ${gem_name}.Servers  NAMESPACE Gem TARGETS Gem::${gem_name} Gem::SurfaceData.Servers Gem::GradientSignal.Servers)
-ly_create_alias(NAME ${gem_name}.Clients  NAMESPACE Gem TARGETS Gem::${gem_name} Gem::SurfaceData.Clients Gem::GradientSignal.Clients)
-ly_create_alias(NAME ${gem_name}.Unified  NAMESPACE Gem TARGETS Gem::${gem_name} Gem::SurfaceData.Unified Gem::GradientSignal.Unified)
+o3de_create_alias(NAME ${gem_name}.Servers  NAMESPACE Gem TARGETS Gem::${gem_name} Gem::SurfaceData.Servers Gem::GradientSignal.Servers)
+o3de_create_alias(NAME ${gem_name}.Clients  NAMESPACE Gem TARGETS Gem::${gem_name} Gem::SurfaceData.Clients Gem::GradientSignal.Clients)
+o3de_create_alias(NAME ${gem_name}.Unified  NAMESPACE Gem TARGETS Gem::${gem_name} Gem::SurfaceData.Unified Gem::GradientSignal.Unified)
 
 # If we are on a host platform, we want to add the host tools targets like the ${gem_name}.Editor target which
 # will also depend on ${gem_name}.Static
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
         NAMESPACE Gem
         AUTOMOC
@@ -89,7 +89,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # Inject the gem name into the Module source file
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES
             Source/EditorTerrainModule.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -98,16 +98,16 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 O3DE_GEM_VERSION=${gem_version})
 
     # the above module is for use in dev tool situations
-    ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor Gem::SurfaceData.Builders Gem::GradientSignal.Builders)
-    ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor Gem::SurfaceData.Tools Gem::GradientSignal.Tools)
+    o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor Gem::SurfaceData.Builders Gem::GradientSignal.Builders)
+    o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor Gem::SurfaceData.Tools Gem::GradientSignal.Tools)
 endif()
 
 ################################################################################
 # Tests
 ################################################################################
 # See if globally, tests are supported
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
         NAME ${gem_name}.Mocks HEADERONLY
         NAMESPACE Gem
         FILES_CMAKE
@@ -116,8 +116,8 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             INTERFACE
                 Mocks
     )
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             terrain_tests_files.cmake
@@ -144,12 +144,12 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     )
 
     # Add ${gem_name}.Tests to googletest
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         LABELS REQUIRES_tiaf
     )
 
-    ly_add_googlebenchmark(
+    o3de_add_googlebenchmark(
         NAME Gem::${gem_name}.Benchmarks
         TARGET Gem::${gem_name}.Tests
     )

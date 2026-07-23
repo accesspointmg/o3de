@@ -14,7 +14,7 @@ import sys
 
 import o3de.export_project as exp
 import export_utility as eutil
-import o3de.manifest as manifest
+import o3de.o3de_object as o3de_object
 import o3de.command_utils as command_utils
 import pathlib
 
@@ -82,7 +82,7 @@ def export_standalone_project(ctx: exp.O3DEScriptExportContext,
     :param logger:                                  Optional logger to use to log the process and errors
     """
 
-    is_installer_sdk = manifest.is_sdk_engine(engine_path=ctx.engine_path)
+    is_installer_sdk = o3de_object.is_sdk_engine(engine_path=ctx.engine_path)
 
     # If the output path is a relative path, convert it to an absolute path using the project path as the base
     if not output_path.is_absolute():

@@ -6,7 +6,7 @@
  *
  */
 
-// LY Editor  Crashpad Upload Handler Extension
+// O3DE Editor  Crashpad Upload Handler Extension
 
 #pragma once
 

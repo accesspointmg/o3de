@@ -6,8 +6,8 @@
 #
 #
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         sceneprocessing_files.cmake
@@ -20,7 +20,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/SceneProcessingModuleStub.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -28,8 +28,8 @@ ly_add_source_properties(
             O3DE_GEM_NAME=${gem_name}
             O3DE_GEM_VERSION=${gem_version})
 
-if (PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
+if (O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
         NAME ${gem_name}.Editor.Static STATIC
         NAMESPACE Gem
         AUTOMOC
@@ -53,7 +53,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
                 AZ::AssetBuilderSDK
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
 
         NAMESPACE Gem
@@ -75,7 +75,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # Inject the gem name into the Module source file
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES
             Source/SceneProcessingModule.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -84,8 +84,8 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
                 O3DE_GEM_VERSION=${gem_version})
 
     # the ${gem_name}.Editor module above is only used in Builders and Tools.
-    ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
-    ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 
     # ${gem_name} Gem is only used in Tools and builders and is a requirement for the Editor and AssetProcessor
 endif()
@@ -93,10 +93,10 @@ endif()
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             sceneprocessing_tests_files.cmake
@@ -110,13 +110,13 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             Gem::${gem_name}
     )
     # Commented out as currently there are no ${gem_name} tests
-    # ly_add_googletest(
+    # o3de_add_googletest(
         # NAME Gem::${gem_name}.Tests
     # )
 
-    if (PAL_TRAIT_BUILD_HOST_TOOLS)
-        ly_add_target(
-            NAME ${gem_name}.Editor.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    if (O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+        o3de_add_target(
+            NAME ${gem_name}.Editor.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
             NAMESPACE Gem
             FILES_CMAKE
                 sceneprocessing_editor_tests_files.cmake
@@ -131,7 +131,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                     AZ::SceneData
                     AZ::AzToolsFrameworkTestCommon
         )
-        ly_add_googletest(
+        o3de_add_googletest(
             NAME Gem::${gem_name}.Editor.Tests
             LABELS REQUIRES_tiaf
         )

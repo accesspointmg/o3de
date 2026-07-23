@@ -18,7 +18,7 @@
 #include <AzCore/std/string/wildcard.h>
 #include <AzToolsFramework/API/ViewPaneOptions.h>
 
-#include <LyViewPaneNames.h>
+#include <O3deViewPaneNames.h>
 
 #include <QScreen>
 #include <QApplication>
@@ -97,7 +97,7 @@ namespace LyShineEditor
     void LyShineEditorSystemComponent::Deactivate()
     {
         AzToolsFramework::AssetBrowser::AssetBrowserInteractionNotificationBus::Handler::BusDisconnect();
-        AzToolsFramework::UnregisterViewPane(LyViewPane::UiEditor);
+        AzToolsFramework::UnregisterViewPane(O3deViewPane::UiEditor);
 
         CUiAnimViewSequenceManager::Destroy();
         LyShine::LyShineRequestBus::Handler::BusDisconnect();
@@ -142,7 +142,7 @@ namespace LyShineEditor
         opt.showOnToolsToolbar = true;
         opt.toolbarIcon = ":/Menu/ui_editor.svg";
         // opt.canHaveMultipleInstances = true; // uncomment this when CUiAnimViewSequenceManager::CanvasUnloading supports multiple canvases
-        AzToolsFramework::RegisterViewPane<EditorWindow>(LyViewPane::UiEditor, LyViewPane::CategoryTools, opt);
+        AzToolsFramework::RegisterViewPane<EditorWindow>(O3deViewPane::UiEditor, O3deViewPane::CategoryTools, opt);
 
         CUiAnimViewSequenceManager::Create();
 
@@ -159,7 +159,7 @@ namespace LyShineEditor
                 QIcon(),
                 [](const char* fullSourceFileNameInCallback, const AZ::Uuid& /*sourceUUID*/)
             {
-                AzToolsFramework::OpenViewPane(LyViewPane::UiEditor);
+                AzToolsFramework::OpenViewPane(O3deViewPane::UiEditor);
                 QString absoluteName = QString::fromUtf8(fullSourceFileNameInCallback);
                 UiEditorDLLBus::Broadcast(&UiEditorDLLInterface::OpenSourceCanvasFile, absoluteName);
             } });
@@ -184,7 +184,7 @@ namespace LyShineEditor
     ////////////////////////////////////////////////////////////////////////////////////////////////
     void LyShineEditorSystemComponent::EditUICanvas([[maybe_unused]] const AZStd::string_view& canvasPath)
     {
-        AzToolsFramework::OpenViewPane(LyViewPane::UiEditor);
+        AzToolsFramework::OpenViewPane(O3deViewPane::UiEditor);
         AZStd::string stringPath = canvasPath;
 
         if (!stringPath.empty())

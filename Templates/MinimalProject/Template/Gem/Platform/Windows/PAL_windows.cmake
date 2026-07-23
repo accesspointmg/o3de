@@ -6,4 +6,4 @@
 #
 # {END_LICENSE}
 
-set(PAL_TRAIT_${NameUpper}_SUPPORTED TRUE)
+set(O3DE_PAL_TRAIT_${NameUpper}_SUPPORTED TRUE)

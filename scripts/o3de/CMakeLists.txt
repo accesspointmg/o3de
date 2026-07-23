@@ -8,27 +8,27 @@
 
 add_subdirectory(tests)
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${PAL_PLATFORM_NAME} ${O3DE_ENGINE_RESTRICTED_PATH} ${LY_ROOT_FOLDER})
-include(${pal_dir}/o3de_install_${PAL_PLATFORM_NAME_LOWERCASE}.cmake)
+o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} ${O3DE_ENGINE_RESTRICTED_PATH} ${O3DE_ENGINE_PATH})
+include(${pal_dir}/o3de_install_${O3DE_PAL_PLATFORM_WART}.cmake)
 
-ly_install_files(FILES ../o3de.py 
+o3de_install_files(FILES ../o3de.py 
     DESTINATION scripts
 )
 
-ly_install_files(FILES setup.py PROGRAMS
+o3de_install_files(FILES setup.py PROGRAMS
     DESTINATION scripts/o3de
 )
-ly_install_files(FILES README.txt
+o3de_install_files(FILES README.txt
     DESTINATION scripts/o3de
 )
 
-ly_install_directory(
+o3de_install_directory(
     DIRECTORIES
         o3de.egg-info
     VERBATIM
 )
 
-ly_install_directory(DIRECTORIES .
+o3de_install_directory(DIRECTORIES .
     EXCLUDE_PATTERNS
         tests
         Platform

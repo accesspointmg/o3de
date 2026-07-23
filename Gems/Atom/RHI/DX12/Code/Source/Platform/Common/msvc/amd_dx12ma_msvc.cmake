@@ -6,7 +6,7 @@
 #
 #
 
-set(LY_COMPILE_OPTIONS
+set(O3DE_COMPILE_OPTIONS
     PRIVATE
         /wd4100 # unreferenced formal parameter
         /wd4189 # local variable is initialized but not referenced

@@ -13,9 +13,9 @@ Using the fixture at test level will stop asset processor after the test complet
 import pytest
 import logging
 
-# Import LyTestTools
-import ly_test_tools.o3de.asset_processor as asset_processor_commands
-import ly_test_tools.o3de.asset_processor_utils
+# Import O3deTestTools
+import o3de_test_tools.o3de.asset_processor as asset_processor_commands
+import o3de_test_tools.o3de.asset_processor_utils
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ def asset_processor(request: pytest.fixture, workspace: pytest.fixture) -> asset
     """
     Sets up usage of the asset proc
     :param request:
-    :return: ly_test_tools.03de.asset_processor.AssetProcessor
+    :return: o3de_test_tools.03de.asset_processor.AssetProcessor
     """
 
     # Initialize the Asset Processor
@@ -37,8 +37,8 @@ def asset_processor(request: pytest.fixture, workspace: pytest.fixture) -> asset
         ap.stop()
 
     request.addfinalizer(teardown)
-    for n in ly_test_tools.o3de.asset_processor_utils.processList:
-        assert not ly_test_tools.o3de.asset_processor_utils.check_ap_running(n), f"{n} process did not shutdown correctly."
+    for n in o3de_test_tools.o3de.asset_processor_utils.processList:
+        assert not o3de_test_tools.o3de.asset_processor_utils.check_ap_running(n), f"{n} process did not shutdown correctly."
 
 
     return ap

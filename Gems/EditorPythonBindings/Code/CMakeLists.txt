@@ -6,18 +6,18 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
         editorpythonbindings_common_files.cmake
     PLATFORM_INCLUDE_FILES
-        Source/Platform/${PAL_PLATFORM_NAME}/platform_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
-        Source/Platform/Common/${PAL_TRAIT_COMPILER_ID}/editorpythonbindings_static_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+        Source/Platform/${O3DE_PAL_PLATFORM_NAME}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
+        Source/Platform/Common/${O3DE_PAL_TRAIT_COMPILER_ID}/editorpythonbindings_static_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             .
@@ -33,7 +33,7 @@ ly_add_target(
             AZ::AzToolsFramework
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Editor GEM_MODULE
 
     NAMESPACE Gem
@@ -41,7 +41,7 @@ ly_add_target(
         editorpythonbindings_editor_files.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/${PAL_PLATFORM_NAME}
+            ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME}
         PRIVATE
             .
             Source
@@ -53,7 +53,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/EditorPythonBindingsModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -62,21 +62,21 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # builders and tools use EditorPythonBindings.Editor
-ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS ${gem_name}.Editor)
-ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS ${gem_name}.Editor)
+o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS ${gem_name}.Editor)
+o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS ${gem_name}.Editor)
 
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             editorpythonbindings_tests_files.cmake
         PLATFORM_INCLUDE_FILES
-            Source/Platform/${PAL_PLATFORM_NAME}/platform_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
-            Source/Platform/Common/${PAL_TRAIT_COMPILER_ID}/editorpythonbindings_tests_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+            Source/Platform/${O3DE_PAL_PLATFORM_NAME}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
+            Source/Platform/Common/${O3DE_PAL_TRAIT_COMPILER_ID}/editorpythonbindings_tests_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
         INCLUDE_DIRECTORIES
             PRIVATE
                 .
@@ -87,7 +87,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzTest
                 Gem::${gem_name}.Static
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         COMPONENT TestTools
         LABELS REQUIRES_tiaf

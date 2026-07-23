@@ -8,17 +8,17 @@
 
 # Based on the linux window manager trait, perform the appropriate additional build configurations
 # Only 'xcb' and 'wayland' are recognized
-if (${PAL_TRAIT_LINUX_WINDOW_MANAGER} STREQUAL "xcb")
+if (${O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER} STREQUAL "xcb")
 
-    set(LY_COMPILE_DEFINITIONS PUBLIC PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB)
-    set(LY_INCLUDE_DIRECTORIES
+    set(O3DE_COMPILE_DEFINITIONS PUBLIC O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB)
+    set(O3DE_INCLUDE_DIRECTORIES
         PUBLIC
             Platform/Common/Xcb
     )
-    set(LY_FILES_CMAKE
+    set(O3DE_FILES_CMAKE
         Platform/Common/Xcb/azframework_xcb_files.cmake
     )
-    set(LY_BUILD_DEPENDENCIES
+    set(O3DE_BUILD_DEPENDENCIES
         PRIVATE
             3rdParty::X11::xcb
             3rdParty::X11::xcb_xkb
@@ -28,12 +28,12 @@ if (${PAL_TRAIT_LINUX_WINDOW_MANAGER} STREQUAL "xcb")
             xcb-xinput
     )
 
-elseif(PAL_TRAIT_LINUX_WINDOW_MANAGER STREQUAL "wayland")
+elseif(O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER STREQUAL "wayland")
 
-    set(LY_COMPILE_DEFINITIONS PUBLIC PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND)
+    set(O3DE_COMPILE_DEFINITIONS PUBLIC O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND)
 
 else()
 
-    message(FATAL_ERROR, "Linux Window Manager ${PAL_TRAIT_LINUX_WINDOW_MANAGER} is not recognized")
+    message(FATAL_ERROR, "Linux Window Manager ${O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER} is not recognized")
 
 endif()

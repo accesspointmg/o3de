@@ -9,11 +9,11 @@ import logging
 import os
 import psutil
 
-import ly_test_tools.log.log_monitor
-import ly_test_tools.environment.process_utils as process_utils
-import ly_test_tools.environment.waiter as waiter
-from ly_remote_console.remote_console_commands import send_command_and_expect_response as send_command_and_expect_response
-from ly_test_tools.o3de.editor_test_utils import compile_test_case_name_from_request
+import o3de_test_tools.log.log_monitor
+import o3de_test_tools.environment.process_utils as process_utils
+import o3de_test_tools.environment.waiter as waiter
+from o3de_remote_console.remote_console_commands import send_command_and_expect_response as send_command_and_expect_response
+from o3de_test_tools.o3de.editor_test_utils import compile_test_case_name_from_request
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ def launch_and_validate_results(request, test_directory, editor, editor_script, 
         logger.debug(f"Done! log file <{editorlog_file}> exists.")
 
         # Initialize the log monitor and set time to wait for log creation
-        log_monitor = ly_test_tools.log.log_monitor.LogMonitor(launcher=editor, log_file_path=editorlog_file)
+        log_monitor = o3de_test_tools.log.log_monitor.LogMonitor(launcher=editor, log_file_path=editorlog_file)
         log_monitor.log_creation_max_wait_time = timeout
 
         # Check for expected/unexpected lines

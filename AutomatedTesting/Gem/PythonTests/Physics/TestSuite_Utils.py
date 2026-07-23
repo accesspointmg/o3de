@@ -8,7 +8,7 @@ import os
 import pytest
 import sys
 
-import ly_test_tools.environment.file_system as fs
+import o3de_test_tools.environment.file_system as fs
 from .utils.FileManagement import FileManagement as fm
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../automatedtesting_shared')
@@ -25,7 +25,7 @@ class TestUtils(TestAutomationBase):
     def test_FileManagement_FindingFiles(self, workspace, launcher_platform):
         """
         Tests the functionality of "searching for files" with FileManagement._find_files()
-        :param workspace: ly_test_tools workspace fixture
+        :param workspace: o3de_test_tools workspace fixture
         :return: None
         """
         # Set up known files and paths
@@ -96,7 +96,7 @@ class TestUtils(TestAutomationBase):
     def test_FileManagement_FileBackup(self, workspace, launcher_platform):
         """
         Tests the functionality of the file back up system via the FileManagement class
-        :param workspace: ly_test_tools workspace fixture
+        :param workspace: o3de_test_tools workspace fixture
         :return: None
         """
 
@@ -153,7 +153,7 @@ class TestUtils(TestAutomationBase):
     def test_FileManagement_FileRestoration(self, workspace, launcher_platform):
         """
         Tests the restore file system via the FileManagement class
-        :param workspace: ly_test_tools workspace fixture
+        :param workspace: o3de_test_tools workspace fixture
         :return: None
         """
 

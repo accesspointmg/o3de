@@ -12,7 +12,7 @@
 # is being avoided to prevent overriding functions declared in other targets platfrom
 # specific cmake files
 
-set(LY_BUILD_DEPENDENCIES
+set(O3DE_BUILD_DEPENDENCIES
     PRIVATE
         pthread
         3rdParty::unwind

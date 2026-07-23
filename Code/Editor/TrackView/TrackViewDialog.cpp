@@ -54,7 +54,7 @@
 #include "TrackViewNewSequenceDialog.h"
 #include "FBXExporterDialog.h"
 #include "CryEditDoc.h"
-#include "LyViewPaneNames.h"
+#include "O3deViewPaneNames.h"
 
 //////////////////////////////////////////////////////////////////////////
 inline namespace TrackViewInternal
@@ -116,8 +116,8 @@ void CTrackViewDialog::RegisterViewClass()
     IMovieSystem* movieSystem = AZ::Interface<IMovieSystem>::Get();
     if (movieSystem)
     {
-        AzToolsFramework::RegisterViewPane<CTrackViewDialog>(LyViewPane::TrackView, LyViewPane::CategoryTools, opts);
-        GetIEditor()->GetSettingsManager()->AddToolName(s_kTrackViewLayoutSection, LyViewPane::TrackView);
+        AzToolsFramework::RegisterViewPane<CTrackViewDialog>(O3deViewPane::TrackView, O3deViewPane::CategoryTools, opts);
+        GetIEditor()->GetSettingsManager()->AddToolName(s_kTrackViewLayoutSection, O3deViewPane::TrackView);
     }
 }
 
@@ -1219,7 +1219,7 @@ void CTrackViewDialog::OnDelSequence()
         return;
     }
 
-    if (QMessageBox::question(this, LyViewPane::TrackView, "Delete current sequence?") == QMessageBox::Yes)
+    if (QMessageBox::question(this, O3deViewPane::TrackView, "Delete current sequence?") == QMessageBox::Yes)
     {
         int sel = m_sequencesComboBox->currentIndex();
         if (sel != -1)

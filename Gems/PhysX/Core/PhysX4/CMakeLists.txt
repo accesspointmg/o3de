@@ -6,15 +6,16 @@
 #
 #
 
-o3de_gem_setup("PhysX")
+o3de_gem_setup()
 
-ly_add_external_target_path(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
+o3de_add_external_target_path(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
 
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
-include(${pal_source_dir}/PAL_${PAL_PLATFORM_NAME_LOWERCASE}.cmake) # for PAL_TRAIT_PHYSX_SUPPORTED
+include(${pal_code_source_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake) # for O3DE_PAL_TRAIT_PHYSX_SUPPORTED
 
-if(PAL_TRAIT_PHYSX_SUPPORTED)
+if(O3DE_PAL_TRAIT_PHYSX_SUPPORTED)
     set(physx_dependency 3rdParty::PhysX4)
     set(physx_files ../Code/physx_files.cmake)
     set(physx_module_files physx_module_files.cmake)
@@ -27,7 +28,7 @@ else()
     set(physx_editor_files ../Code/physx_unsupported_files.cmake)
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -41,7 +42,7 @@ ly_add_target(
         PUBLIC
             ../Code/.
             ../Code/Source
-            ${pal_source_dir}
+            ${pal_code_source_path}
             ../Code/Include
     BUILD_DEPENDENCIES
         PUBLIC
@@ -53,8 +54,8 @@ ly_add_target(
             Gem::LmbrCentral.API
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     OUTPUT_NAME ${gem_name}.Gem
     FILES_CMAKE
@@ -65,7 +66,7 @@ ly_add_target(
             PHYSX_ENABLE_MULTI_THREADING
     INCLUDE_DIRECTORIES
         PRIVATE
-            ${pal_source_dir}
+            ${pal_code_source_path}
         PUBLIC
             ../Code/Include
     BUILD_DEPENDENCIES
@@ -77,8 +78,8 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-if(PAL_TRAIT_PHYSX_SUPPORTED)
-    ly_add_source_properties(
+if(O3DE_PAL_TRAIT_PHYSX_SUPPORTED)
+    o3de_add_source_properties(
         SOURCES
             Source/Module.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -86,7 +87,7 @@ if(PAL_TRAIT_PHYSX_SUPPORTED)
                 O3DE_GEM_NAME=${gem_name}
                 O3DE_GEM_VERSION=${gem_version})
 else()
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES
             Source/ModuleUnsupported.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -96,13 +97,13 @@ else()
 endif()
 
 # use the ${gem_name} module in clients and servers:
-ly_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Unified NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Unified NAMESPACE Gem TARGETS Gem::${gem_name})
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor.Static STATIC
         NAMESPACE Gem
         AUTOMOC
@@ -110,7 +111,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
         FILES_CMAKE
             ${physx_editor_files}
         PLATFORM_INCLUDE_FILES
-            ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common/${PAL_TRAIT_COMPILER_ID}/physx_editor_static_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+            ${pal_common_code_source_path}/${O3DE_PAL_TRAIT_COMPILER_ID}/physx_editor_static_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
         COMPILE_DEFINITIONS
             PUBLIC
                 PHYSX_EDITOR
@@ -119,7 +120,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
             PRIVATE
                 ../Code/.
                 ../Code/Source
-                ${pal_source_dir}
+                ${pal_code_source_path}
             PUBLIC
                 ../Code/Include
         BUILD_DEPENDENCIES
@@ -143,7 +144,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::SceneCore
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
         NAMESPACE Gem
         OUTPUT_NAME ${gem_name}.Editor.Gem
@@ -157,7 +158,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
             PRIVATE
                 ../Code/.
                 ../Code/Source
-                ${pal_source_dir}
+                ${pal_code_source_path}
             PUBLIC
                 ../Code/Include
         BUILD_DEPENDENCIES
@@ -166,17 +167,17 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # use the ${gem_name}.Editor module in dev tools:
-    ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
-    ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 
 endif()
 
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         OUTPUT_NAME ${gem_name}.Tests.Gem
         FILES_CMAKE
@@ -194,7 +195,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             Gem::LmbrCentral
     )
 
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         LABELS REQUIRES_tiaf
     )
@@ -202,8 +203,8 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     # Only add the physx benchmarks if this flag is set. The benchmark code is still built, as it is part of the ${gem_name}.Tests project.
     # Currently jenkins has a 1500sec(25min) timeout, our benchmarks can sometimes take over 1500sec and cause a build failure for timeout.
     # Jenkins currently doesn't upload the results of the benchmarks, so this is ok.
-    if(LY_PHYSX_ENABLE_RUNNING_BENCHMARKS)
-        ly_add_googlebenchmark(
+    if(O3DE_PHYSX_ENABLE_RUNNING_BENCHMARKS)
+        o3de_add_googlebenchmark(
             NAME Gem::${gem_name}.Benchmarks
             TARGET Gem::${gem_name}.Tests
         )
@@ -211,9 +212,9 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
     list(APPEND testTargets ${gem_name}.Tests)
     
-    if (PAL_TRAIT_BUILD_HOST_TOOLS)
-        ly_add_target(
-            NAME ${gem_name}.Editor.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    if (O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+        o3de_add_target(
+            NAME ${gem_name}.Editor.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
             NAMESPACE Gem
             OUTPUT_NAME ${gem_name}.Editor.Tests.Gem
             FILES_CMAKE
@@ -237,7 +238,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             RUNTIME_DEPENDENCIES
                 Gem::LmbrCentral.Editor
         )
-        ly_add_googletest(
+        o3de_add_googletest(
             NAME Gem::${gem_name}.Editor.Tests
             LABELS REQUIRES_tiaf
         )

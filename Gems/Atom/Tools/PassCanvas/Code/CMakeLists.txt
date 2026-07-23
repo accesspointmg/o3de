@@ -6,33 +6,34 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
-include(${pal_source_dir}/PAL_${PAL_PLATFORM_NAME_LOWERCASE}.cmake) # PAL_TRAIT_ATOM_PASS_CANVAS_APPLICATION_SUPPORTED
+include(${pal_code_source_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake) # O3DE_PAL_TRAIT_ATOM_PASS_CANVAS_APPLICATION_SUPPORTED
 
-if(NOT PAL_TRAIT_ATOM_PASS_CANVAS_APPLICATION_SUPPORTED)
+if(NOT O3DE_PAL_TRAIT_ATOM_PASS_CANVAS_APPLICATION_SUPPORTED)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME PassCanvas APPLICATION
     NAMESPACE Gem
     AUTOMOC
     AUTORCC
     FILES_CMAKE
         passcanvas_files.cmake
-        ${pal_source_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_source_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${pal_source_dir}/tool_dependencies_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
+        ${pal_code_source_path}/tool_dependencies_${O3DE_PAL_PLATFORM_WART}.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             .
             Source
-            ${pal_source_dir}
+            ${pal_code_source_path}
         PUBLIC
             Include
     BUILD_DEPENDENCIES
@@ -43,15 +44,15 @@ ly_add_target(
         Gem::AtomToolsFramework.Editor
 )
 
-ly_set_gem_variant_to_load(TARGETS PassCanvas VARIANTS Tools)
+o3de_set_gem_variant_to_load(TARGETS PassCanvas VARIANTS Tools)
 
 # Add a 'builders' alias to allow the PassCanvas root gem path to be added to the generated
 # cmake_dependencies.<project>.assetprocessor.setreg to allow the asset scan folder for it to be added
-ly_create_alias(NAME PassCanvas.Builders NAMESPACE Gem)
+o3de_create_alias(NAME PassCanvas.Builders NAMESPACE Gem)
 
 # Add build dependency to Editor for the PassCanvas application since
 # Editor opens up the PassCanvas
-ly_add_dependencies(Editor Gem::PassCanvas)
+o3de_add_dependencies(Editor Gem::PassCanvas)
 
 # Inject the project path into the PassCanvas VS debugger command arguments if the build system being invoked
 # in a project centric view
@@ -67,9 +68,9 @@ if(TARGET PassCanvas)
         Source/PassCanvasApplication.cpp
         PROPERTIES
             COMPILE_DEFINITIONS
-                LY_CMAKE_TARGET="PassCanvas"
+                O3DE_CMAKE_TARGET="PassCanvas"
     )
 else()
-    message(FATAL_ERROR "Cannot set LY_CMAKE_TARGET define to PassCanvas as the target doesn't exist anymore."
+    message(FATAL_ERROR "Cannot set O3DE_CMAKE_TARGET define to PassCanvas as the target doesn't exist anymore."
         " Perhaps it has been renamed")
 endif()

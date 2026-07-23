@@ -6,7 +6,7 @@
 #
 #
 
-ly_add_target(
+o3de_add_target(
     NAME PhysX.NumericalMethods STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -24,9 +24,9 @@ ly_add_target(
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME PhysX.NumericalMethods.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME PhysX.NumericalMethods.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             numericalmethods_tests_files.cmake
@@ -40,7 +40,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 Gem::PhysX.NumericalMethods
                 AZ::AzFramework
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::PhysX.NumericalMethods.Tests
         LABELS REQUIRES_tiaf
     )

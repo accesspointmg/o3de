@@ -12,7 +12,7 @@ set(FILES
     Debug/ITrace.cpp
 )
 
-if(NOT LY_MONOLITHIC_GAME)
+if(NOT O3DE_MONOLITHIC_GAME)
     list(APPEND FILES 
         std/hash.cpp
     )

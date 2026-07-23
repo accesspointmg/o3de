@@ -15,9 +15,9 @@ import subprocess
 import re
 from typing import List, Optional, Dict
 
-# Import LyTestTools
-import ly_test_tools.environment.file_system as fs
-import ly_test_tools.environment.waiter as waiter
+# Import O3deTestTools
+import o3de_test_tools.environment.file_system as fs
+import o3de_test_tools.environment.waiter as waiter
 
 from ..ap_fixtures.ap_setup_fixture import ap_setup_fixture as ap_setup_fixture
 from ..ap_fixtures.asset_processor_fixture import asset_processor
@@ -29,8 +29,8 @@ from ..ap_fixtures.bundler_batch_setup_fixture \
 from ..ap_fixtures.ap_config_backup_fixture import ap_config_backup_fixture as config_backup
 
 # Import LyShared
-import ly_test_tools.o3de.pipeline_utils as utils
-from ly_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
+import o3de_test_tools.o3de.pipeline_utils as utils
+from o3de_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
 
 # Just some platforms for filename computation (doesn't matter which)
 platforms = {}
@@ -39,8 +39,8 @@ for key, value in ASSET_PROCESSOR_PLATFORM_MAP.items():
 
 # Use the following logging pattern to hook all test logging together:
 logger = logging.getLogger(__name__)
-# Configuring the logging is done in ly_test_tools at the following location:
-# ~/dev/Tools/LyTestTools/ly_test_tools/log/py_logging_util.py
+# Configuring the logging is done in o3de_test_tools at the following location:
+# ~/dev/Tools/O3deTestTools/o3de_test_tools/log/py_logging_util.py
 
 # Helper: variables we will use for parameter values in the test:
 targetProjects = ["AutomatedTesting"]

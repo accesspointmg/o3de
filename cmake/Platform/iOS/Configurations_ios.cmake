@@ -7,44 +7,45 @@
 #
 
 
+set(_cmake_Platform_iOS_Configurations_ios_cmake ${CMAKE_CURRENT_LIST_DIR})
 if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 
-    include(cmake/Platform/Common/Clang/Configurations_clang.cmake)
+    include(${_cmake_Platform_iOS_Configurations_ios_cmake}/../Common/Clang/Configurations_clang.cmake)
 
-    ly_append_configurations_options(
+    o3de_append_configurations_options(
         DEFINES
             APPLE
             IOS
             MOBILE
             APPLE_BUNDLE
         COMPILATION
-            -miphoneos-version-min=${LY_IOS_DEPLOYMENT_TARGET}
+            -miphoneos-version-min=${O3DE_IOS_DEPLOYMENT_TARGET}
             -Wno-shorten-64-to-32
             -fno-aligned-allocation
         LINK_NON_STATIC
 
             -Wl,-dead_strip
-            -miphoneos-version-min=${LY_IOS_DEPLOYMENT_TARGET}
+            -miphoneos-version-min=${O3DE_IOS_DEPLOYMENT_TARGET}
 
             -lpthread
     )
-    ly_set(CMAKE_CXX_EXTENSIONS OFF)
+    o3de_set(CMAKE_CXX_EXTENSIONS OFF)
 else()
 
-    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} not supported in ${PAL_PLATFORM_NAME}")
+    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} not supported in ${O3DE_PAL_PLATFORM_NAME}")
 
 endif()
 
 # Signing
-ly_set(CMAKE_XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS --deep)
+o3de_set(CMAKE_XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS --deep)
 
 # Symbol Stripping
-ly_set(CMAKE_XCODE_ATTRIBUTE_DEPLOYMENT_POSTPROCESSING[variant=debug] "NO")
-ly_set(CMAKE_XCODE_ATTRIBUTE_DEPLOYMENT_POSTPROCESSING[variant=profile] "NO")
-ly_set(CMAKE_XCODE_ATTRIBUTE_DEPLOYMENT_POSTPROCESSING[variant=release] "YES")
+o3de_set(CMAKE_XCODE_ATTRIBUTE_DEPLOYMENT_POSTPROCESSING[variant=debug] "NO")
+o3de_set(CMAKE_XCODE_ATTRIBUTE_DEPLOYMENT_POSTPROCESSING[variant=profile] "NO")
+o3de_set(CMAKE_XCODE_ATTRIBUTE_DEPLOYMENT_POSTPROCESSING[variant=release] "YES")
 
 # Generate scheme files for Xcode
-ly_set(CMAKE_XCODE_GENERATE_SCHEME TRUE)
+o3de_set(CMAKE_XCODE_GENERATE_SCHEME TRUE)
 
 # Make modules have the dylib extension
-ly_set(CMAKE_SHARED_MODULE_SUFFIX .dylib)
+o3de_set(CMAKE_SHARED_MODULE_SUFFIX .dylib)

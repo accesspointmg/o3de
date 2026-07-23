@@ -25,8 +25,8 @@ namespace AzFramework::AssetSystem::Platform
     {
         AZ::IO::FixedMaxPath assetProcessorPath{ executableDirectory };
         // In Mac the Editor and game is within a bundle, so the path to the sibling app
-        // has to go up from the Contents/MacOS folder the binary is in
-        assetProcessorPath /= "../../../AssetProcessor.app/Contents/MacOS/AssetProcessor";
+        // has to go up from the Contents/Mac folder the binary is in
+        assetProcessorPath /= "../../../AssetProcessor.app/Contents/Mac/AssetProcessor";
         assetProcessorPath = assetProcessorPath.LexicallyNormal();
 
         if (!AZ::IO::SystemFile::Exists(assetProcessorPath.c_str()))
@@ -37,7 +37,7 @@ namespace AzFramework::AssetSystem::Platform
                     AZ::SettingsRegistryMergeUtils::FilePathKey_InstalledBinaryFolder))
             {
                 // Check for existence of one under a "bin" directory, i.e. engineRoot is an SDK structure.
-                assetProcessorPath = AZ::IO::FixedMaxPath{ engineRoot } / installedBinariesPath / "AssetProcessor.app/Contents/MacOS/AssetProcessor";
+                assetProcessorPath = AZ::IO::FixedMaxPath{ engineRoot } / installedBinariesPath / "AssetProcessor.app/Contents/Mac/AssetProcessor";
 
                 if (!AZ::IO::SystemFile::Exists(assetProcessorPath.c_str()))
                 {
@@ -45,7 +45,7 @@ namespace AzFramework::AssetSystem::Platform
                     constexpr const char* BuildPermutation = "Default";
 
                     assetProcessorPath = AZ::IO::FixedMaxPath{ engineRoot } / installedBinariesPath / BuildPermutation
-                        / "AssetProcessor.app/Contents/MacOS/AssetProcessor";
+                        / "AssetProcessor.app/Contents/Mac/AssetProcessor";
                 }
             }
 

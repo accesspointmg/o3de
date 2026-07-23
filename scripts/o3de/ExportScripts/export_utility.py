@@ -9,7 +9,7 @@
 
 import o3de.command_utils as command_utils
 import o3de.export_project as exp
-import o3de.manifest as manifest
+import o3de.o3de_object as o3de_object
 
 from o3de import android, android_support
 

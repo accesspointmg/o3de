@@ -6,6 +6,6 @@
 #
 #
 
-set(pal_dir ${LY_ROOT_FOLDER}/LauncherGenerator/Platform/${PAL_PLATFORM_NAME})
-include(${pal_dir}/LauncherUnified_traits_${PAL_PLATFORM_NAME_LOWERCASE}.cmake)
-include(${LY_ROOT_FOLDER}/LauncherGenerator/launcher_generator.cmake)
+set(pal_dir ${O3DE_ENGINE_PATH}/LauncherGenerator/Platform/${O3DE_PAL_PLATFORM_NAME})
+include(${pal_dir}/LauncherUnified_traits_${O3DE_PAL_PLATFORM_WART}.cmake)
+include(${O3DE_ENGINE_PATH}/LauncherGenerator/launcher_generator.cmake)

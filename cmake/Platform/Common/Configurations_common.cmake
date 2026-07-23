@@ -16,22 +16,22 @@ set(O3DE_EXTRA_C_FLAGS ""       CACHE STRING "Additional C Compiler flags to app
 set(O3DE_EXTRA_CXX_FLAGS ""     CACHE STRING "Additional Cxx Compiler flags to apply globally")
 set(O3DE_EXTRA_LINK_OPTIONS ""  CACHE STRING "Additional link options to apply globally")
 
-ly_set(CMAKE_C_FLAGS "${O3DE_EXTRA_C_FLAGS}")
-ly_set(CMAKE_CXX_FLAGS "${O3DE_EXTRA_CXX_FLAGS}")
-ly_set(LINK_OPTIONS "${O3DE_EXTRA_LINK_OPTIONS}")
+o3de_set(CMAKE_C_FLAGS "${O3DE_EXTRA_C_FLAGS}")
+o3de_set(CMAKE_CXX_FLAGS "${O3DE_EXTRA_CXX_FLAGS}")
+o3de_set(LINK_OPTIONS "${O3DE_EXTRA_LINK_OPTIONS}")
 foreach(conf ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${conf} UCONF)
     set(O3DE_EXTRA_C_FLAGS_${UCONF} ""       CACHE STRING "Additional C Compiler flags to add globally when compiling in ${conf}")
     set(O3DE_EXTRA_CXX_FLAGS_${UCONF} ""     CACHE STRING "Additional Cxx Compiler flags to add globally when compiling in ${conf}")
     set(O3DE_EXTRA_LINK_OPTIONS_${UCONF} ""  CACHE STRING "Additional link options to add globally when linking in ${conf}")
-    ly_set(CMAKE_C_FLAGS_${UCONF} "${O3DE_EXTRA_C_FLAGS_${UCONF}}")
-    ly_set(CMAKE_CXX_FLAGS_${UCONF} "${O3DE_EXTRA_CXX_FLAGS_${UCONF}}")
-    ly_set(LINK_OPTIONS_${UCONF} "${O3DE_EXTRA_LINK_OPTIONS_${UCONF}}")
-    ly_set(LY_BUILD_CONFIGURATION_TYPE_${UCONF} ${conf})
+    o3de_set(CMAKE_C_FLAGS_${UCONF} "${O3DE_EXTRA_C_FLAGS_${UCONF}}")
+    o3de_set(CMAKE_CXX_FLAGS_${UCONF} "${O3DE_EXTRA_CXX_FLAGS_${UCONF}}")
+    o3de_set(LINK_OPTIONS_${UCONF} "${O3DE_EXTRA_LINK_OPTIONS_${UCONF}}")
+    o3de_set(O3DE_BUILD_CONFIGURATION_TYPE_${UCONF} ${conf})
 endforeach()
 
 # Common configurations
-ly_append_configurations_options(
+o3de_append_configurations_options(
     DEFINES
         # Since we disable exceptions, we need to define _HAS_EXCEPTIONS=0 so the STD does not add exception handling 
         _HAS_EXCEPTIONS=0
@@ -40,34 +40,34 @@ ly_append_configurations_options(
         AZ_DEBUG_BUILD
         AZ_ENABLE_TRACING
         AZ_ENABLE_DEBUG_TOOLS
-        AZ_BUILD_CONFIGURATION_TYPE="${LY_BUILD_CONFIGURATION_TYPE_DEBUG}"
+        AZ_BUILD_CONFIGURATION_TYPE="${O3DE_BUILD_CONFIGURATION_TYPE_DEBUG}"
     DEFINES_PROFILE
         _PROFILE
         AZ_PROFILE_BUILD
         NDEBUG
         AZ_ENABLE_TRACING
         AZ_ENABLE_DEBUG_TOOLS
-        AZ_BUILD_CONFIGURATION_TYPE="${LY_BUILD_CONFIGURATION_TYPE_PROFILE}"
+        AZ_BUILD_CONFIGURATION_TYPE="${O3DE_BUILD_CONFIGURATION_TYPE_PROFILE}"
     DEFINES_RELEASE
         _RELEASE
         RELEASE
         AZ_RELEASE_BUILD
         NDEBUG
-        AZ_BUILD_CONFIGURATION_TYPE="${LY_BUILD_CONFIGURATION_TYPE_RELEASE}"
+        AZ_BUILD_CONFIGURATION_TYPE="${O3DE_BUILD_CONFIGURATION_TYPE_RELEASE}"
 )
 
 # Ninja: parallel compile and link pool settings
 if(CMAKE_GENERATOR MATCHES "Ninja")
-    set(LY_PARALLEL_COMPILE_JOBS "" CACHE STRING "Number of compile jobs to use (Defaults to not set)")
-    set(LY_PARALLEL_LINK_JOBS "" CACHE STRING "Number of link jobs to use (Defaults to not set)")
+    set(O3DE_PARALLEL_COMPILE_JOBS "" CACHE STRING "Number of compile jobs to use (Defaults to not set)")
+    set(O3DE_PARALLEL_LINK_JOBS "" CACHE STRING "Number of link jobs to use (Defaults to not set)")
 
-    if(LY_PARALLEL_COMPILE_JOBS)
-        set_property(GLOBAL APPEND PROPERTY JOB_POOLS compile_job_pool=${LY_PARALLEL_COMPILE_JOBS})
-        ly_set(CMAKE_JOB_POOL_COMPILE compile_job_pool)
+    if(O3DE_PARALLEL_COMPILE_JOBS)
+        set_property(GLOBAL APPEND PROPERTY JOB_POOLS compile_job_pool=${O3DE_PARALLEL_COMPILE_JOBS})
+        o3de_set(CMAKE_JOB_POOL_COMPILE compile_job_pool)
     endif()
-    if(LY_PARALLEL_LINK_JOBS)
-        set_property(GLOBAL APPEND PROPERTY JOB_POOLS link_job_pool=${LY_PARALLEL_LINK_JOBS})
-        ly_set(CMAKE_JOB_POOL_LINK link_job_pool)
+    if(O3DE_PARALLEL_LINK_JOBS)
+        set_property(GLOBAL APPEND PROPERTY JOB_POOLS link_job_pool=${O3DE_PARALLEL_LINK_JOBS})
+        o3de_set(CMAKE_JOB_POOL_LINK link_job_pool)
     endif()
 endif()
 

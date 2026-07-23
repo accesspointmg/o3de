@@ -12,7 +12,7 @@
 
 #include <AzToolsFramework/ToolsComponents/EditorComponentBase.h>
 
-#include <AtomLyIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
+#include <AtomO3deIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
 
 #include <Components/ClothConfiguration.h>
 

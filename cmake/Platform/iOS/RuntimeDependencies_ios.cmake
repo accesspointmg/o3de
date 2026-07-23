@@ -6,13 +6,13 @@
 #
 #
 
-ly_set(IOS_FRAMEWORK_TARGET_TYPES MODULE_LIBRARY SHARED_LIBRARY)
-ly_set(LY_TARGET_TYPES_WITH_RUNTIME_OUTPUTS MODULE_LIBRARY SHARED_LIBRARY EXECUTABLE)
+set(_cmake_Platform_iOS_RuntimeDependencies_ios_cmake ${CMAKE_CURRENT_LIST_DIR})
+o3de_set(IOS_FRAMEWORK_TARGET_TYPES MODULE_LIBRARY SHARED_LIBRARY)
+o3de_set(O3DE_TARGET_TYPES_WITH_RUNTIME_OUTPUTS MODULE_LIBRARY SHARED_LIBRARY EXECUTABLE)
 
-include(cmake/Platform/Common/RuntimeDependencies_common.cmake)
+include(${_cmake_Platform_iOS_RuntimeDependencies_ios_cmake}/../Common/RuntimeDependencies_common.cmake)
 
 function(o3de_get_filtered_dependencies_for_target dependencies target)
-    
     unset(filtered_dependencies)
     unset(target_copy_dependencies)
     unset(target_target_dependencies)
@@ -45,7 +45,7 @@ function(o3de_get_filtered_dependencies_for_target dependencies target)
             if (dealiased_targets)
                 foreach(dealiased_target ${dealiased_targets})
                     unset(dealiased_dependencies)
-                    ly_get_filtered_runtime_dependencies(dealiased_dependencies ${dealiased_target})
+                    o3de_get_filtered_runtime_dependencies(dealiased_dependencies ${dealiased_target})
                     list(APPEND filtered_dependencies ${dealiased_dependencies})
                 endforeach()
             endif()
@@ -56,10 +56,15 @@ function(o3de_get_filtered_dependencies_for_target dependencies target)
     set(${dependencies} ${filtered_dependencies} PARENT_SCOPE)
 endfunction()
 
-function(ly_delayed_generate_runtime_dependencies)
+function(o3de_o3de_get_filtered_dependencies_for_target)
+    # This function is deprecated, use o3de_get_filtered_dependencies_for_target instead
+    message(WARNING "o3de_o3de_get_filtered_dependencies_for_target is deprecated, use o3de_get_filtered_dependencies_for_target instead")
+    o3de_get_filtered_dependencies_for_target(${ARGN})
+endfunction()
 
+function(o3de_delayed_generate_runtime_dependencies)
     # For each (non-monolithic) game project, find runtime dependencies and tell XCode to embed/sign them
-    if(NOT LY_MONOLITHIC_GAME)
+    if(NOT O3DE_MONOLITHIC_GAME)
         get_property(project_names GLOBAL PROPERTY O3DE_PROJECTS_NAME)
         foreach(project_name IN LISTS project_names)
 
@@ -80,16 +85,16 @@ function(ly_delayed_generate_runtime_dependencies)
 
     endif()
 
-    get_property(all_targets GLOBAL PROPERTY LY_ALL_TARGETS)
+    get_property(all_targets GLOBAL PROPERTY O3DE_ALL_TARGETS)
     unset(test_runner_dependencies)
     foreach(aliased_target IN LISTS all_targets)
 
         unset(target)
-        ly_de_alias_target(${aliased_target} target)
+        o3de_de_alias_target(${aliased_target} target)
 
         # Exclude targets that dont produce runtime outputs
         get_target_property(target_type ${target} TYPE)
-        if(NOT target_type IN_LIST LY_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
+        if(NOT target_type IN_LIST O3DE_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
             continue()
         endif()
         
@@ -103,7 +108,7 @@ function(ly_delayed_generate_runtime_dependencies)
         endif()
     endforeach()
 
-    if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         add_dependencies("AzTestRunner" ${test_runner_dependencies})
         
         # We still need to add indirect dependencies(eg. 3rdParty)
@@ -120,4 +125,10 @@ function(ly_delayed_generate_runtime_dependencies)
         endif()
     endif()
 
+endfunction()
+
+function(o3de_delayed_generate_runtime_dependencies)
+    # This function is deprecated, use o3de_delayed_generate_runtime_dependencies instead
+    message(WARNING "o3de_delayed_generate_runtime_dependencies is deprecated, use o3de_delayed_generate_runtime_dependencies instead")
+    o3de_delayed_generate_runtime_dependencies()
 endfunction()

@@ -157,7 +157,7 @@
 #include <Editor/QtMetaTypes.h>
 #include <GraphCanvas/Components/SceneBus.h>
 
-#include <Editor/LyViewPaneNames.h>
+#include <Editor/O3deViewPaneNames.h>
 
 namespace ScriptCanvasEditor
 {

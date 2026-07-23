@@ -12,6 +12,6 @@ pushd .
 REM cd to o3de root dir, %~dp0 is the path to the folder that contains this script
 cd %~dp0/../..
 setlocal
-call python/python.cmd -s -B -m pytest -v --tb=short --show-capture=stdout -c pytest.ini --build-directory AutomatedTesting/build/bin/profile AutomatedTesting/Gem/PythonTests/Atom/TestSuite_Periodic_GPU.py --output-path AutomatedTesting/build/Testing/LyTestTools/AutomatedTesting_Atom_TestSuite_Periodic_GPU --junitxml=AutomatedTesting/build/Testing/Pytest/AutomatedTesting_Atom_TestSuite_Periodic_GPU.xml
+call python/python.cmd -s -B -m pytest -v --tb=short --show-capture=stdout -c pytest.ini --build-directory AutomatedTesting/build/bin/profile AutomatedTesting/Gem/PythonTests/Atom/TestSuite_Periodic_GPU.py --output-path AutomatedTesting/build/Testing/O3deTestTools/AutomatedTesting_Atom_TestSuite_Periodic_GPU --junitxml=AutomatedTesting/build/Testing/Pytest/AutomatedTesting_Atom_TestSuite_Periodic_GPU.xml
 endlocal
 popd

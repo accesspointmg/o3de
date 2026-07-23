@@ -6,18 +6,19 @@
 #
 #
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${PAL_PLATFORM_NAME} ${O3DE_ENGINE_RESTRICTED_PATH} ${LY_ROOT_FOLDER})
+o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Tools/RemoteConsole/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_tools_remoteconsole_source_path)
+#set(common_code_tools_remoteconsole_source_path ${O3DE_ENGINE_PATH}/Code/Tools/RemoteConsole/Platform/Common)
 
-ly_add_target(
+o3de_add_target(
     NAME RemoteConsoleCore STATIC
     NAMESPACE Legacy
     FILES_CMAKE
         Core/remoteconsolecore_files.cmake
-        ${pal_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_tools_remoteconsole_source_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             Core
-            ${pal_dir}
+            ${pal_code_tools_remoteconsole_source_path}
     BUILD_DEPENDENCIES
         PRIVATE
             AZ::AzCore

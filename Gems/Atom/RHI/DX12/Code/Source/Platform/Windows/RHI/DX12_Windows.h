@@ -24,7 +24,7 @@ AZ_POP_DISABLE_WARNING
 #include <d3dx12.h>
 #include <d3dcommon.h>
 
-// This define is enabled if LY_PIX_ENABLED is enabled during configure. You can use LY_PIX_PATH to point where pix is downloaded.
+// This define is enabled if O3DE_PIX_ENABLED is enabled during configure. You can use O3DE_PIX_PATH to point where pix is downloaded.
 // Enabling this define will allow the runtime code to add PIX markers which will help with pix and renderdoc gpu captures
 #ifdef USE_PIX
     #include <WinPixEventRuntime/pix3.h>

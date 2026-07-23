@@ -6,7 +6,7 @@
 #
 #
 
-ly_add_target(
+o3de_add_target(
     NAME CrySystem.XMLBinary STATIC
     NAMESPACE Legacy
     FILES_CMAKE

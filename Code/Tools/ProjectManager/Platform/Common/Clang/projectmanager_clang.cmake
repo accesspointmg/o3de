@@ -8,9 +8,9 @@
 
 # The macro PYBIND11_EMBEDDED_MODULE uses a try catch block
 if(MSVC)
-    set(LY_COMPILE_OPTIONS PRIVATE /EHsc)
+    set(O3DE_COMPILE_OPTIONS PRIVATE /EHsc)
 else()
-    set(LY_COMPILE_OPTIONS
+    set(O3DE_COMPILE_OPTIONS
     PRIVATE
         -fexceptions
     )

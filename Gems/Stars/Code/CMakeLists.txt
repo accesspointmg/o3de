@@ -6,7 +6,7 @@
 #
 #
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -25,7 +25,7 @@ ly_add_target(
             Gem::Atom_Utils.Static
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.API HEADERONLY
     NAMESPACE Gem
     FILES_CMAKE
@@ -35,8 +35,8 @@ ly_add_target(
             include
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         stars_shared_files.cmake
@@ -51,7 +51,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/StarsModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -59,10 +59,10 @@ ly_add_source_properties(
             O3DE_GEM_NAME=${gem_name}
             O3DE_GEM_VERSION=${gem_version})
 
-ly_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
         NAME ${gem_name}.Editor.Static STATIC
         NAMESPACE Gem
         FILES_CMAKE
@@ -79,7 +79,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::Atom_Feature_Common.Public
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
         NAMESPACE Gem
         AUTOMOC
@@ -96,7 +96,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # Inject the gem name into the Module source file
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES
             Source/EditorStarsModule.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -104,10 +104,10 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 O3DE_GEM_NAME=${gem_name}
                 O3DE_GEM_VERSION=${gem_version})
 
-    ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
     # A Builders alias must exist for Gem Assets to be seen by the Asset Processor.
     # A Builders alias target must exist for the Prefab .spawnable builder to be able to
     # load the .dll so the builder can serialize StarComponents to .spawnable files 
     # which are needed in the game launcher.
-    ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 endif()

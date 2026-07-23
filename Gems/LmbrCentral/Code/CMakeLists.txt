@@ -6,20 +6,20 @@
 #
 #
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
-set(common_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
+set(pal_common_code_path ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
         lmbrcentral_headers_files.cmake
         lmbrcentral_files.cmake
-        ${pal_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
-            ${pal_dir}
+            ${pal_code_path}
         PUBLIC
             include
     BUILD_DEPENDENCIES
@@ -30,7 +30,7 @@ ly_add_target(
             Gem::AudioSystem.API
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.API HEADERONLY
     NAMESPACE Gem
     FILES_CMAKE
@@ -40,15 +40,15 @@ ly_add_target(
             include
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         lmbrcentral_shared_files.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
-            ${pal_dir}
+            ${pal_code_path}
         PUBLIC
             include
     BUILD_DEPENDENCIES
@@ -59,7 +59,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/LmbrCentral.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -68,13 +68,13 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # by default, load the above "Gem::${gem_name}" module in Client and Server
-ly_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Unified NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Unified NAMESPACE Gem TARGETS Gem::${gem_name})
 
 
-if (PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
+if (O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
         NAME ${gem_name}.Editor.Static STATIC
         NAMESPACE Gem
         FILES_CMAKE
@@ -82,7 +82,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
         INCLUDE_DIRECTORIES
             PRIVATE
                 Source
-                ${pal_dir}
+                ${pal_code_path}
             PUBLIC
                 include
         COMPILE_DEFINITIONS
@@ -100,7 +100,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::AudioSystem.API
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
 
         NAMESPACE Gem
@@ -109,7 +109,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
         INCLUDE_DIRECTORIES
             PRIVATE
                 Source
-                ${pal_dir}
+                ${pal_code_path}
             PUBLIC
                 include
         BUILD_DEPENDENCIES
@@ -122,7 +122,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # Inject the gem name into the Module source file
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES
             Source/LmbrCentralEditor.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -130,16 +130,16 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
                 O3DE_GEM_NAME=${gem_name}
                 O3DE_GEM_VERSION=${gem_version})
 
-    include(${pal_dir}/lrelease_${PAL_PLATFORM_NAME_LOWERCASE}.cmake)
+    include(${pal_code_path}/lrelease_${O3DE_PAL_PLATFORM_WART}.cmake)
 
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS ${gem_name}.Editor
         FILES ${lrelease_files}
     )
 
     # by default, load the above "Gem::${gem_name}.Editor" module in dev tools
-    ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
-    ly_create_alias(NAME ${gem_name}.Tools NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Tools NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 
 endif()
 

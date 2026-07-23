@@ -31,7 +31,7 @@ namespace UnitTest
     AzFramework::Application* ScriptAutomationApplicationFixture::CreateApplication(const char* scriptPath, bool exitOnFinish)
     {
         // The ScriptAutomation gem uses the AssetManager to load the script assets. The AssetManager will try to make the asset path relative to 
-        // the cache root folder. If we pass in an abosolute path to the asset, the AssetManager ends up removing the leading slash on MacOS 
+        // the cache root folder. If we pass in an abosolute path to the asset, the AssetManager ends up removing the leading slash on Mac 
         // and Linux in the call to Application::MakePathRelative. So we need to override the cache path for these tests. First, we override 
         // the asset platform folder since we're going to be reading from the gem tests folder for all platforms.
         const auto cachePlatformOverride = 

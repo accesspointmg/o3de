@@ -6,16 +6,17 @@
 #
 #
 
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     PLATFORM_INCLUDE_FILES
-        ${pal_source_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
+        ${pal_code_source_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
     FILES_CMAKE
         achievements_files.cmake
-        ${pal_source_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_source_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             Include
@@ -27,8 +28,8 @@ ly_add_target(
             AZ::AzFramework
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         achievements_shared_files.cmake
@@ -43,7 +44,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/AchievementsModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -52,4 +53,4 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # we'll load the above "Gem::Achievements" module in clients only.
-ly_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})

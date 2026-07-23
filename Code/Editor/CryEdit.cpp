@@ -3064,25 +3064,25 @@ void CCryEditApp::OnSwitchcameraNext()
 //////////////////////////////////////////////////////////////////////////
 void CCryEditApp::OnOpenAssetBrowserView()
 {
-    QtViewPaneManager::instance()->OpenPane(LyViewPane::AssetBrowser);
+    QtViewPaneManager::instance()->OpenPane(O3deViewPane::AssetBrowser);
 }
 
 //////////////////////////////////////////////////////////////////////////
 void CCryEditApp::OnOpenTrackView()
 {
-    QtViewPaneManager::instance()->OpenPane(LyViewPane::TrackView);
+    QtViewPaneManager::instance()->OpenPane(O3deViewPane::TrackView);
 }
 
 //////////////////////////////////////////////////////////////////////////
 void CCryEditApp::OnOpenAudioControlsEditor()
 {
-    QtViewPaneManager::instance()->OpenPane(LyViewPane::AudioControlsEditor);
+    QtViewPaneManager::instance()->OpenPane(O3deViewPane::AudioControlsEditor);
 }
 
 //////////////////////////////////////////////////////////////////////////
 void CCryEditApp::OnOpenUICanvasEditor()
 {
-    QtViewPaneManager::instance()->OpenPane(LyViewPane::UiEditor);
+    QtViewPaneManager::instance()->OpenPane(O3deViewPane::UiEditor);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -3316,7 +3316,7 @@ void CCryEditApp::OnError(AzFramework::AssetSystem::AssetSystemErrors error)
 
 void CCryEditApp::OnOpenProceduralMaterialEditor()
 {
-    QtViewPaneManager::instance()->OpenPane(LyViewPane::SubstanceEditor);
+    QtViewPaneManager::instance()->OpenPane(O3deViewPane::SubstanceEditor);
 }
 
 namespace Editor
@@ -3324,10 +3324,10 @@ namespace Editor
     //! This function returns the build system target name
     AZStd::string_view GetBuildTargetName()
     {
-#if !defined (LY_CMAKE_TARGET)
-#error "LY_CMAKE_TARGET must be defined in order to add this source file to a CMake executable target"
+#if !defined (O3DE_CMAKE_TARGET)
+#error "O3DE_CMAKE_TARGET must be defined in order to add this source file to a CMake executable target"
 #endif
-        return AZStd::string_view{ LY_CMAKE_TARGET };
+        return AZStd::string_view{ O3DE_CMAKE_TARGET };
     }
 }
 

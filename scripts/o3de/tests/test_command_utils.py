@@ -26,16 +26,16 @@ def test_apply_default_values_create_new_settings_file(tmpdir):
                 command_utils.SettingsDescription("bar", "bar desc", "2")]
 
     # Mocks
-    with patch('o3de.manifest.get_o3de_folder') as mock_get_o3de_folder:
+    with patch('o3de.manifest.get_user_dot_o3de_path') as mock_get_user_dot_o3de_path:
 
-        mock_get_o3de_folder.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
+        mock_get_user_dot_o3de_path.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
 
         # Test the method
         result_settings_file = command_utils.O3DEConfig.apply_default_global_settings(settings_filename=settings_filename,
                                                                                       settings_section_name=settings_section_name,
                                                                                       settings_descriptions=settings)
         # Validation
-        mock_get_o3de_folder.assert_called()
+        mock_get_user_dot_o3de_path.assert_called()
         expected_settings_file_path = pathlib.Path(tmpdir.join(f'.o3de/{settings_filename}').realpath())
         assert result_settings_file == expected_settings_file_path
         assert pathlib.Path(expected_settings_file_path).is_file()
@@ -64,9 +64,9 @@ crew = 7
 """)
 
     # Mocks
-    with patch('o3de.manifest.get_o3de_folder') as mock_get_o3de_folder:
+    with patch('o3de.manifest.get_user_dot_o3de_path') as mock_get_user_dot_o3de_path:
 
-        mock_get_o3de_folder.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
+        mock_get_user_dot_o3de_path.return_value = pathlib.Path(tmpdir.join('.o3de').realpath())
 
         # Test the methods
         result_settings_file = command_utils.O3DEConfig.apply_default_global_settings(settings_filename=settings_filename,
@@ -74,7 +74,7 @@ crew = 7
                                                                                       settings_descriptions=settings)
         # Validation
         expected_settings_file_path = pathlib.Path(tmpdir.join(f'.o3de/{settings_filename}').realpath())
-        mock_get_o3de_folder.assert_called()
+        mock_get_user_dot_o3de_path.assert_called()
 
         assert expected_settings_file_path == expected_settings_file_path
         assert pathlib.Path(expected_settings_file_path).is_file()

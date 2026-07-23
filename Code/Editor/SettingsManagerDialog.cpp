@@ -22,7 +22,7 @@
 #include "MainWindow.h"
 #include "QtViewPaneManager.h"
 #include "Util/AutoDirectoryRestoreFileDialog.h"    // for CAutoDirectoryRestoreFileDialog
-#include "LyViewPaneNames.h"                        // for LyViewPane::
+#include "O3deViewPaneNames.h"                        // for O3deViewPane::
 
 AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include "ui_SettingsManagerDialog.h"
@@ -73,7 +73,7 @@ void CSettingsManagerDialog::RegisterViewClass()
     options.paneRect = QRect(5, 100, 210, 505);
     options.showInMenu = false;
 
-    AzToolsFramework::RegisterViewPane<CSettingsManagerDialog>(LyViewPane::EditorSettingsManager, LyViewPane::CategoryOther, options);
+    AzToolsFramework::RegisterViewPane<CSettingsManagerDialog>(O3deViewPane::EditorSettingsManager, O3deViewPane::CategoryOther, options);
 }
 
 
@@ -124,7 +124,7 @@ void CSettingsManagerDialog::OnExportBtnClick()
     {
         QString file = exportFileSelectionDialog.selectedFiles().first();
         GetIEditor()->GetSettingsManager()->SetExportFileName(file);
-        QtViewPaneManager::instance()->ClosePane(LyViewPane::EditorSettingsManager);
+        QtViewPaneManager::instance()->ClosePane(O3deViewPane::EditorSettingsManager);
         GetIEditor()->GetSettingsManager()->Export();
     }
 }

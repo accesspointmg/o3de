@@ -6,9 +6,10 @@
 #
 #
 
-include(cmake/Platform/Common/Configurations_common.cmake)
+set(_cmake_Platform_Common_MSVC_Configurations_clang_cmake ${CMAKE_CURRENT_LIST_DIR})
+include(${_cmake_Platform_Common_MSVC_Configurations_clang_cmake}/../Configurations_common.cmake)
 
-ly_append_configurations_options(
+o3de_append_configurations_options(
     DEFINES_PROFILE
         _FORTIFY_SOURCE=2
     DEFINES_RELEASE
@@ -78,8 +79,8 @@ ly_append_configurations_options(
         /INCREMENTAL:NO
 )
 
-if(LY_BUILD_WITH_ADDRESS_SANITIZER)
-    ly_append_configurations_options(
+if(O3DE_BUILD_WITH_ADDRESS_SANITIZER)
+    o3de_append_configurations_options(
         COMPILATION_DEBUG
             -fsanitize=address
             -fno-omit-frame-pointer
@@ -88,5 +89,5 @@ if(LY_BUILD_WITH_ADDRESS_SANITIZER)
             -fsanitize=address
     )
 endif()
-include(cmake/Platform/Common/TargetIncludeSystemDirectories_supported.cmake)
+include(${_cmake_Platform_Common_MSVC_Configurations_clang_cmake}/../TargetIncludeSystemDirectories_supported.cmake)
 

@@ -87,15 +87,15 @@ else
 fi
 
 if ! [ -x "$(command -v cmake)" ]; then
-    if [ -z ${LY_CMAKE_PATH} ]; then
-        echo "ERROR: Could not find cmake on the PATH and LY_CMAKE_PATH is not defined, cannot continue."
-        echo "Please add cmake to your PATH, or define LY_CMAKE_PATH"
+    if [ -z ${O3DE_CMAKE_PATH} ]; then
+        echo "ERROR: Could not find cmake on the PATH and O3DE_CMAKE_PATH is not defined, cannot continue."
+        echo "Please add cmake to your PATH, or define O3DE_CMAKE_PATH"
         exit 1
     fi
 
-    export PATH=$LY_CMAKE_PATH:$PATH
+    export PATH=$O3DE_CMAKE_PATH:$PATH
     if ! [ -x "$(command -v cmake)" ]; then
-        echo "ERROR: Could not find cmake on the PATH or at the known location: $LY_CMAKE_PATH"
+        echo "ERROR: Could not find cmake on the PATH or at the known location: $O3DE_CMAKE_PATH"
         echo "Please add cmake to the environment PATH or place it at the above known location."
         exit 1
     fi
@@ -106,18 +106,18 @@ echo $(cmake --version)
 
 cd ..
 
-if [ "$LY_3RDPARTY_PATH" == "" ]
+if [ "$O3DE_3RDPARTY_PATH" == "" ]
 then
-    LY_3RDPARTY_PATH=$HOME/.o3de/3rdParty
+    O3DE_3RDPARTY_PATH=$HOME/.o3de/3rdParty
 fi
-LY_ROOT_FOLDER=$DIR/..
+O3DE_ENGINE_PATH=$DIR/..
 
-cmake -DPAL_PLATFORM_NAME:string=$PAL -DLY_3RDPARTY_PATH:string=$LY_3RDPARTY_PATH -DLY_ROOT_FOLDER="$LY_ROOT_FOLDER" -DLY_HOST_ARCHITECTURE_NAME_EXTENSION=$PAL_ARCH -P $DIR/get_python.cmake
+cmake -DPAL_PLATFORM_NAME:string=$PAL -DLY_3RDPARTY_PATH:string=$O3DE_3RDPARTY_PATH -DLY_ROOT_FOLDER="$O3DE_ENGINE_PATH" -DLY_HOST_ARCHITECTURE_NAME_EXTENSION=$PAL_ARCH -P $DIR/get_python.cmake
 
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo Unable to fetch python using cmake.  
-    echo  - Is LY_PACKAGE_SERVER_URLS set?  
+    echo  - Is O3DE_PACKAGE_SERVER_URLS set?  
     echo  - Do you have permission to access the packages?
     exit $retVal
 fi

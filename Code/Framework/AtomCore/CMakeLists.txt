@@ -6,7 +6,7 @@
 #
 #
 
-ly_add_target(
+o3de_add_target(
     NAME AtomCore STATIC
     NAMESPACE AZ
     FILES_CMAKE
@@ -25,9 +25,9 @@ ly_add_target(
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME AtomCore.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME AtomCore.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE AZ
         FILES_CMAKE
             Tests/atomcore_tests_files.cmake
@@ -40,7 +40,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzTest
                 AZ::AtomCore
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME AZ::AtomCore.Tests
         LABELS REQUIRES_tiaf
     )

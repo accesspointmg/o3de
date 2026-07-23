@@ -19,13 +19,13 @@ from ..ap_fixtures.ap_setup_fixture import ap_setup_fixture as ap_setup_fixture
 
 # Import LyShared
 from automatedtesting_shared import file_utils as file_utils
-from ly_test_tools.o3de.ap_log_parser import APLogParser, APOutputParser
-import ly_test_tools.o3de.pipeline_utils as utils
+from o3de_test_tools.o3de.ap_log_parser import APLogParser, APOutputParser
+import o3de_test_tools.o3de.pipeline_utils as utils
 
 # Use the following logging pattern to hook all test logging together:
 logger = logging.getLogger(__name__)
-# Configuring the logging is done in ly_test_tools at the following location:
-# ~/dev/Tools/LyTestTools/ly_test_tools/log/py_logging_util.py
+# Configuring the logging is done in o3de_test_tools at the following location:
+# ~/dev/Tools/O3deTestTools/o3de_test_tools/log/py_logging_util.py
 
 # Helper: variables we will use for parameter values in the test:
 targetProjects = ["AutomatedTesting"]

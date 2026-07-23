@@ -354,6 +354,7 @@ namespace O3DE::ProjectManager
             m_projectManagerInterface = pybind11::module::import("o3de.project_manager_interface");
             m_download = pybind11::module::import("o3de.download");
             m_repo = pybind11::module::import("o3de.repo");
+            m_cache = pybind11::module::import("o3de.cache");
             m_pathlib = pybind11::module::import("pathlib");
 
             m_pythonStarted = !PyErr_Occurred();
@@ -443,19 +444,19 @@ namespace O3DE::ProjectManager
             auto o3deData = m_manifest.attr("load_o3de_manifest")();
             if (pybind11::isinstance<pybind11::dict>(o3deData))
             {
-                auto defaultGemsFolder = m_manifest.attr("get_o3de_gems_folder")();
+                auto defaultGemsFolder = m_manifest.attr("get_user_o3de_gems_path")();
                 engineInfo.m_defaultGemsFolder = Py_To_String_Optional(o3deData, "default_gems_folder", Py_To_String(defaultGemsFolder));
 
-                auto defaultProjectsFolder = m_manifest.attr("get_o3de_projects_folder")();
+                auto defaultProjectsFolder = m_manifest.attr("get_user_o3de_projects_path")();
                 engineInfo.m_defaultProjectsFolder = Py_To_String_Optional(o3deData, "default_projects_folder", Py_To_String(defaultProjectsFolder));
 
-                auto defaultRestrictedFolder = m_manifest.attr("get_o3de_restricted_folder")();
+                auto defaultRestrictedFolder = m_manifest.attr("get_user_o3de_restricted_path")();
                 engineInfo.m_defaultRestrictedFolder = Py_To_String_Optional(o3deData, "default_restricted_folder", Py_To_String(defaultRestrictedFolder));
 
-                auto defaultTemplatesFolder = m_manifest.attr("get_o3de_templates_folder")();
+                auto defaultTemplatesFolder = m_manifest.attr("get_user_o3de_templates_path")();
                 engineInfo.m_defaultTemplatesFolder = Py_To_String_Optional(o3deData, "default_templates_folder", Py_To_String(defaultTemplatesFolder));
 
-                auto defaultThirdPartyFolder = m_manifest.attr("get_o3de_third_party_folder")();
+                auto defaultThirdPartyFolder = m_manifest.attr("get_user_o3de_third_party_path")();
                 engineInfo.m_thirdPartyPath = Py_To_String_Optional(o3deData, "default_third_party_folder", Py_To_String(defaultThirdPartyFolder));
             }
 
@@ -490,7 +491,7 @@ namespace O3DE::ProjectManager
             [&]
             {
                 using namespace pybind11::literals;
-                auto result = m_repo.attr("get_cache_file_uri")("uri"_a = QString_To_Py_String(filePathOrUri));
+                auto result = m_cache.attr("get_cache_file_uri")("uri"_a = QString_To_Py_String(filePathOrUri));
 
                 // if a valid registered object is not found None is returned
                 if (!pybind11::isinstance<pybind11::none>(result))

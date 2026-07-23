@@ -6,7 +6,7 @@
 #
 #
 
-set(LY_TARGET_PROPERTIES
+set(O3DE_TARGET_PROPERTIES
     BUILD_RPATH @executable_path/
 )
 
@@ -16,38 +16,38 @@ list(APPEND candidate_paths ${project_real_path}/Gem/Resources/Platform/Mac) # L
 list(APPEND candidate_paths ${project_real_path}/Gem/Resources/MacLauncher) # Legacy projects
 foreach(resource_path IN LISTS candidate_paths)
     if(EXISTS ${resource_path})
-        set(ly_game_resource_folder ${resource_path})
+        set(o3de_game_resource_folder ${resource_path})
         break()
     endif()
 endforeach()
 
-if(NOT EXISTS ${ly_game_resource_folder})
+if(NOT EXISTS ${o3de_game_resource_folder})
     list(JOIN candidate_paths " " formatted_error)
     message(FATAL_ERROR "Missing 'Resources' folder. Candidate paths tried were: ${formatted_error}")
 endif()
 
 
-target_sources(${project_name}.GameLauncher PRIVATE ${ly_game_resource_folder}/Images.xcassets)
+target_sources(${project_name}.GameLauncher PRIVATE ${o3de_game_resource_folder}/Images.xcassets)
 set_target_properties(${project_name}.GameLauncher PROPERTIES
-    MACOSX_BUNDLE_INFO_PLIST ${ly_game_resource_folder}/Info.plist
-    RESOURCE ${ly_game_resource_folder}/Images.xcassets
+    MACOSX_BUNDLE_INFO_PLIST ${o3de_game_resource_folder}/Info.plist
+    RESOURCE ${o3de_game_resource_folder}/Images.xcassets
     XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME ${project_name}AppIcon
 )
 
-set(layout_tool_dir ${LY_ROOT_FOLDER}/cmake/Tools)
+set(layout_tool_dir ${O3DE_ENGINE_PATH}/cmake/Tools)
 
 add_custom_command(TARGET ${project_name}.GameLauncher POST_BUILD
-    COMMAND ${LY_PYTHON_CMD} layout_tool.py
+    COMMAND ${O3DE_PYTHON_CMD} layout_tool.py
         -p Mac
-        -a ${LY_ASSET_DEPLOY_ASSET_TYPE}
+        -a ${O3DE_ASSET_DEPLOY_ASSET_TYPE}
         --project-path ${project_real_path}
-        -m ${LY_ASSET_DEPLOY_MODE}
+        -m ${O3DE_ASSET_DEPLOY_MODE}
         --create-layout-root
         -l $<TARGET_BUNDLE_DIR:${project_name}.GameLauncher>/Contents/Resources/assets
         --build-config $<CONFIG>
         --warn-on-missing-assets
         --verify
-        ${LY_OVERRIDE_PAK_ARGUMENT}
+        ${O3DE_OVERRIDE_PAK_ARGUMENT}
     WORKING_DIRECTORY ${layout_tool_dir}
     COMMENT "Synchronizing Layout Assets ..."
     VERBATIM

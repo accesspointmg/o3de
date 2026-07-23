@@ -6,17 +6,17 @@
 #
 #
 
-if(LY_MONOLITHIC_GAME)
+if(O3DE_MONOLITHIC_GAME)
     return()
 endif()
 
-ly_install_directory(DIRECTORIES .)
+o3de_install_directory(DIRECTORIES .)
 
 foreach(conf IN LISTS CMAKE_CONFIGURATION_TYPES)
     string(TOUPPER ${conf} UCONF)
     string(REPLACE "$<CONFIG>" "${conf}" output ${runtime_output_directory})
-    ly_install_directory(DIRECTORIES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${conf}/Registry
+    o3de_install_directory(DIRECTORIES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${conf}/Registry
         DESTINATION ${output}
-        COMPONENT ${LY_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
+        COMPONENT ${O3DE_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
     )
 endforeach()

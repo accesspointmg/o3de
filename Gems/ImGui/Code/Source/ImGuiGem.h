@@ -11,7 +11,7 @@
 #include "ImGuiManager.h"
 //#include "Private/ImGuiManagerImpl.h"
 #ifdef IMGUI_ENABLED
-#include "LYCommonMenu/ImGuiLYCommonMenu.h"
+#include "O3DECommonMenu/ImGuiO3deCommonMenu.h"
 #endif //IMGUI_ENABLED
 
 namespace ImGui
@@ -30,7 +30,7 @@ namespace ImGui
 
     private:
         #ifdef IMGUI_ENABLED
-        ImGuiLYCommonMenu lyCommonMenu;
+        ImGuiO3deCommonMenu o3deCommonMenu;
         ImGuiManager manager;
         #endif
     };

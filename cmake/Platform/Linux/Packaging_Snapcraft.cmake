@@ -11,12 +11,12 @@
 set(snap_file_name "o3de_${CPACK_PACKAGE_VERSION}_amd64")
 
 if(CPACK_SNAP_DISTRO)
-  configure_file("${LY_ROOT_FOLDER}/cmake/Platform/Linux/Packaging/snapcraft_${CPACK_SNAP_DISTRO}.yaml.in"
+  configure_file("${O3DE_ENGINE_PATH}/cmake/Platform/Linux/Packaging/snapcraft_${CPACK_SNAP_DISTRO}.yaml.in"
     "${CPACK_TEMPORARY_DIRECTORY}/snapcraft.yaml"
   )
   set(snap_file_name "o3de_${CPACK_PACKAGE_VERSION}_${CPACK_SNAP_DISTRO}_amd64")
 else()
-  configure_file("${LY_ROOT_FOLDER}/cmake/Platform/Linux/Packaging/snapcraft.yaml.in"
+  configure_file("${O3DE_ENGINE_PATH}/cmake/Platform/Linux/Packaging/snapcraft.yaml.in"
     "${CPACK_TEMPORARY_DIRECTORY}/snapcraft.yaml"
   )
 endif()
@@ -55,7 +55,7 @@ string(JOIN "\n" O3DE_DESKTOP_CONTENT
 )
 file(WRITE "${CPACK_TEMPORARY_DIRECTORY}/snap/gui/o3de.desktop" ${O3DE_DESKTOP_CONTENT})
 file(COPY_FILE
-     "${LY_ROOT_FOLDER}/Code/Tools/ProjectManager/Resources/o3de.svg"
+     "${O3DE_ENGINE_PATH}/Code/Tools/ProjectManager/Resources/o3de.svg"
      "${CPACK_TEMPORARY_DIRECTORY}/snap/gui/o3de.svg"
 )
 

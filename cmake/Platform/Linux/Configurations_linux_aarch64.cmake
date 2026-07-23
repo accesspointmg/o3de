@@ -6,11 +6,12 @@
 #
 #
 
+set(_cmake_Platform_Linux_Configurations_linux_aarch64_cmake ${CMAKE_CURRENT_LIST_DIR})
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 
-    include(cmake/Platform/Common/Clang/Configurations_clang.cmake)
+    include(${_cmake_Platform_Linux_Configurations_linux_aarch64_cmake}/../Common/Clang/Configurations_clang.cmake)
 
-    ly_append_configurations_options(
+    o3de_append_configurations_options(
         DEFINES
             LINUX
             __linux__
@@ -29,19 +30,19 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             -Wl,--disable-new-dtags
     )
 
-    ly_set(CMAKE_CXX_EXTENSIONS OFF)
+    o3de_set(CMAKE_CXX_EXTENSIONS OFF)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 
-    include(cmake/Platform/Common/GCC/Configurations_gcc.cmake)
+    include(${_cmake_Platform_Linux_Configurations_linux_aarch64_cmake}/../Common/GCC/Configurations_gcc.cmake)
 
-    if(LY_GCC_BUILD_FOR_GCOV)
-        set(LY_GCC_GCOV_LFLAGS "-lgcov")
+    if(O3DE_GCC_BUILD_FOR_GCOV)
+        set(O3DE_GCC_GCOV_LFLAGS "-lgcov")
     endif()
-    if(LY_GCC_BUILD_FOR_GPROF)
-        set(LY_GCC_GPROF_LFLAGS "-pg")
+    if(O3DE_GCC_BUILD_FOR_GPROF)
+        set(O3DE_GCC_GPROF_LFLAGS "-pg")
     endif()
 
-    ly_append_configurations_options(
+    o3de_append_configurations_options(
         DEFINES
             LINUX
             __linux__
@@ -49,18 +50,18 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         COMPILATION
             -ffp-contract=off
         LINK_NON_STATIC
-            ${LY_GCC_GCOV_LFLAGS}
-            ${LY_GCC_GPROF_LFLAGS}
+            ${O3DE_GCC_GCOV_LFLAGS}
+            ${O3DE_GCC_GPROF_LFLAGS}
             -Wl,--no-undefined
             -lpthread
             -Wl,--disable-new-dtags
     )
-    ly_set(CMAKE_CXX_EXTENSIONS OFF)
+    o3de_set(CMAKE_CXX_EXTENSIONS OFF)
 
 else()
-    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} not supported in ${PAL_PLATFORM_NAME}")
+    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} not supported in ${O3DE_PAL_PLATFORM_NAME}")
 endif()
 
-ly_set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-ly_set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
-ly_set(CMAKE_INSTALL_RPATH "$ORIGIN")
+o3de_set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+o3de_set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
+o3de_set(CMAKE_INSTALL_RPATH "$ORIGIN")

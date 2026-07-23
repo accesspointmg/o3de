@@ -6,7 +6,7 @@
  *
  */
 
-// LY Editor Crashpad Hook
+// O3DE Editor Crashpad Hook
 
 #pragma once
 
@@ -28,7 +28,7 @@ namespace CrashHandler
         std::string GetCrashSubmissionURL() const override;
         std::string GetCrashSubmissionToken() const override;
 
-        std::string GetCrashHandlerPath(const std::string& lyAppRoot) const override;
+        std::string GetCrashHandlerPath(const std::string& o3deAppRoot) const override;
 
     };
 

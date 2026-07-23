@@ -10,7 +10,7 @@
 #include <AzCore/Serialization/SerializeContext.h>
 
 #include <AzToolsFramework/API/ToolsApplicationAPI.h>
-#include <LyViewPaneNames.h>
+#include <O3deViewPaneNames.h>
 
 #include <QObject>
 
@@ -61,7 +61,7 @@ namespace LandscapeCanvas
     AZ::Crc32 EditorLandscapeCanvasComponent::OnOpenGraphButtonClicked()
     {
         // Make sure the Landscape Canvas tool is open
-        AzToolsFramework::OpenViewPane(LyViewPane::LandscapeCanvas);
+        AzToolsFramework::OpenViewPane(O3deViewPane::LandscapeCanvas);
 
         // Tell the Landscape Canvas tool to graph the entity our Landscape Canvas component is attached to
         LandscapeCanvas::LandscapeCanvasRequestBus::Broadcast(&LandscapeCanvas::LandscapeCanvasRequests::OnGraphEntity, GetEntityId());

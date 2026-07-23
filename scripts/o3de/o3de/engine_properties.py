@@ -11,7 +11,7 @@ import pathlib
 import sys
 import logging
 
-from o3de import manifest, utils
+from o3de import o3de_object, utils
 
 logger = logging.getLogger('o3de.engine_properties')
 logging.basicConfig(format=utils.LOG_FORMAT)
@@ -74,16 +74,16 @@ def edit_engine_props(engine_path: pathlib.Path = None,
                       replace_api_versions: str or list = None
                       ) -> int:
     if not engine_path and not engine_name:
-        engine_path = manifest.get_this_engine_path()
+        engine_path = o3de_object.get_this_engine_path()
 
     if not engine_path:
-        engine_path = manifest.get_registered(engine_name=engine_name)
+        engine_path = o3de_object.get_registered(engine_name=engine_name)
 
     if not engine_path:
         logger.error(f'Error unable locate engine path: No engine with name {engine_name} is registered in any manifest')
         return 1
 
-    engine_json_data = manifest.get_engine_json_data(engine_path=engine_path)
+    engine_json_data = o3de_object.get_engine_json_data(engine_path=engine_path)
     if not engine_json_data:
         return 1
 
@@ -108,7 +108,7 @@ def edit_engine_props(engine_path: pathlib.Path = None,
     # Update the gem_names field in the engine.json
     _edit_gem_names(engine_json_data, new_gem_names, delete_gem_names, replace_gem_names)
 
-    return 0 if manifest.save_o3de_manifest(engine_json_data, pathlib.Path(engine_path) / 'engine.json') else 1
+    return 0 if o3de_object.save_o3de_manifest_json_data(engine_json_data, pathlib.Path(engine_path) / 'engine.json') else 1
 
 
 def _edit_engine_props(args: argparse) -> int:
@@ -125,49 +125,44 @@ def _edit_engine_props(args: argparse) -> int:
                              args.replace_api_versions
                              )
 
+def add_args(subparsers) -> None:
+    """
+    add_args is called to add subparsers arguments to each command such that it can be
+    a central python file such as o3de.py.
+    It can be run from the o3de.py script as follows
+    call add_args and execute: python o3de.py register --engine-path "C:/o3de"
+    :param subparsers: the caller instantiates subparsers and passes it in here
+    """
+    enable_engine_props_subparser = subparsers.add_parser('edit-engine-properties')
 
-def add_parser_args(parser):
-    group = parser.add_mutually_exclusive_group(required=False)
+    group = enable_engine_props_subparser.add_mutually_exclusive_group(required=False)
     group.add_argument('-ep', '--engine-path', type=pathlib.Path, required=False,
                        help='The path to the engine.')
     group.add_argument('-en', '--engine-name', type=str, required=False,
                        help='The name of the engine.')
-    group = parser.add_argument_group('properties', 'arguments for modifying individual engine properties.')
+    
+    group = enable_engine_props_subparser.add_argument_group('properties', 'arguments for modifying individual engine properties.')
     group.add_argument('-enn', '--engine-new-name', type=str, required=False,
                        help='Sets the name for the engine.')
     group.add_argument('-ev', '--engine-version', type=str, required=False,
                        help='Sets the version for the engine.')
     group.add_argument('-edv', '--engine-display-version', type=str, required=False,
                        help='Sets the display version for the engine.')
-    group = parser.add_mutually_exclusive_group(required=False)
+    
+    group = enable_engine_props_subparser.add_mutually_exclusive_group(required=False)
     group.add_argument('-agn', '--add-gem-names', type=str, nargs='*', required=False,
                        help='Adds gem name(s) to gem_names field. Space delimited list (ex. -agn A B C)')
     group.add_argument('-dgn', '--delete-gem-names', type=str, nargs='*', required=False,
                        help='Removes gem name(s) from the gem_names field. Space delimited list (ex. -dgn A B C')
     group.add_argument('-rgn', '--replace-gem-names', type=str, nargs='*', required=False,
                        help='Replace entirety of gem_names field with space delimited list of values')
-    group = parser.add_mutually_exclusive_group(required=False)
+    
+    group = enable_engine_props_subparser.add_mutually_exclusive_group(required=False)
     group.add_argument('-aav', '--add-api-versions', type=str, nargs='*', required=False,
-                       help='Adds api verion(s) to the api_versions field, replacing existing version if the api entry already exists. Space delimited list of key=value pairs (ex. -aav framework=1.2.3)')
+                       help='Adds api version(s) to the api_versions field, replacing existing version if the api entry already exists. Space delimited list of key=value pairs (ex. -aav framework=1.2.3)')
     group.add_argument('-dav', '--delete-api-versions', type=str, nargs='*', required=False,
                        help='Removes api entries from the api_versions field. Space delimited list (ex. -dav framework')
     group.add_argument('-rav', '--replace-api-versions', type=str, nargs='*', required=False,
                        help='Replace entirety of api_versions field with space delimited list of key=value pairs (ex. -rav framework=1.2.3)')
-    parser.set_defaults(func=_edit_engine_props)
-
-
-def add_args(subparsers) -> None:
-    enable_engine_props_subparser = subparsers.add_parser('edit-engine-properties')
-    add_parser_args(enable_engine_props_subparser)
-
-
-def main():
-    the_parser = argparse.ArgumentParser()
-    add_parser_args(the_parser)
-    the_args = the_parser.parse_args()
-    ret = the_args.func(the_args) if hasattr(the_args, 'func') else 1
-    sys.exit(ret)
-
-
-if __name__ == "__main__":
-    main()
+    
+    enable_engine_props_subparser.set_defaults(func=_edit_engine_props)

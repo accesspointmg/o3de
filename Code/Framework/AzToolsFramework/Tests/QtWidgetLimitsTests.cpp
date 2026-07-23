@@ -26,7 +26,7 @@ namespace UnitTest
     {
         switch (AZ::IntegralTypeCompare<TypeParam, QtWidgetValueType>())
         {
-            // Given an LY widget value type of equal signedness and size to QtWidgetValueType
+            // Given an O3DE widget value type of equal signedness and size to QtWidgetValueType
         case AZ::IntegralTypeDiff::LSignedRSignedEqSize:
         {
             // Expect the minimum range of widget type to equal QtWidgetValueType
@@ -35,7 +35,7 @@ namespace UnitTest
             break;
         }
 
-        // Given an LY widget type of equal signedness but wider than QtWidgetValueType
+        // Given an O3DE widget type of equal signedness but wider than QtWidgetValueType
         case AZ::IntegralTypeDiff::LSignedRSignedLWider:
         {
             // Expect the minimum range of widget type to be clamped to the range of QtWidgetValueType
@@ -44,7 +44,7 @@ namespace UnitTest
             break;
         }
 
-        // Given an LY widget type with a minimum range greater than the range of QtWidgetValueType
+        // Given an O3DE widget type with a minimum range greater than the range of QtWidgetValueType
         case AZ::IntegralTypeDiff::LSignedRSignedRWider:
         case AZ::IntegralTypeDiff::LUnsignedRSignedLWider:
         case AZ::IntegralTypeDiff::LUnsignedRSignedEqSize:
@@ -65,7 +65,7 @@ namespace UnitTest
     {
         switch (AZ::IntegralTypeCompare<TypeParam, QtWidgetValueType>())
         {
-            // Given an LY widget value type of equal signedness and size to QtWidgetValueType
+            // Given an O3DE widget value type of equal signedness and size to QtWidgetValueType
         case AZ::IntegralTypeDiff::LSignedRSignedEqSize:
         {
             // Expect the maximum range of widget type to equal QtWidgetValueType
@@ -74,7 +74,7 @@ namespace UnitTest
             break;
         }
 
-        // Given an LY widget type with a maximum range greater than the range of QtWidgetValueType
+        // Given an O3DE widget type with a maximum range greater than the range of QtWidgetValueType
         case AZ::IntegralTypeDiff::LSignedRSignedLWider:
         case AZ::IntegralTypeDiff::LUnsignedRSignedLWider:
         case AZ::IntegralTypeDiff::LUnsignedRSignedEqSize:
@@ -85,7 +85,7 @@ namespace UnitTest
             break;
         }
 
-        // Given an LY widget type with a maximum range less than the range of QtWidgetValueType
+        // Given an O3DE widget type with a maximum range less than the range of QtWidgetValueType
         case AZ::IntegralTypeDiff::LUnsignedRSignedRWider:
         case AZ::IntegralTypeDiff::LSignedRSignedRWider:
         {

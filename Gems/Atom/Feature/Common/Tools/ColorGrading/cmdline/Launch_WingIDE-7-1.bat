@@ -51,14 +51,14 @@ echo.
 echo _____________________________________________________________________
 echo.
 echo ~ WingIDE Version %DCCSI_WING_VERSION_MAJOR%.%DCCSI_WING_VERSION_MINOR%
-echo ~ Launching O3DE %LY_PROJECT% project in WingIDE %DCCSI_WING_VERSION_MAJOR%.%DCCSI_WING_VERSION_MINOR% ...
+echo ~ Launching O3DE %O3DE_PROJECT% project in WingIDE %DCCSI_WING_VERSION_MAJOR%.%DCCSI_WING_VERSION_MINOR% ...
 echo _____________________________________________________________________
 echo.
 
-echo     LY_DEV = %LY_DEV%
+echo     O3DE_DEV = %O3DE_DEV%
 
 :: shared location for default O3DE python location
-set DCCSI_PYTHON_INSTALL=%LY_DEV%\Python
+set DCCSI_PYTHON_INSTALL=%O3DE_DEV%\Python
 echo     DCCSI_PYTHON_INSTALL = %DCCSI_PYTHON_INSTALL%
 
 :: Wing and other IDEs probably prefer access directly to the python.exe

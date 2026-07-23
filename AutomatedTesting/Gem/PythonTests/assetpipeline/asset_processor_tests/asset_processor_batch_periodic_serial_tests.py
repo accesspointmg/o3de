@@ -10,8 +10,8 @@ General Asset Processor Batch Tests
 import pytest
 import os
 import re
-# Import LyTestTools
-from ly_test_tools.o3de import asset_processor as asset_processor_utils
+# Import O3deTestTools
+from o3de_test_tools.o3de import asset_processor as asset_processor_utils
 
 # Import fixtures
 from ..ap_fixtures.asset_processor_fixture import asset_processor as asset_processor

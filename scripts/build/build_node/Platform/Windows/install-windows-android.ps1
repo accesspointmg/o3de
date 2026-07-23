@@ -35,7 +35,7 @@ Start-Process -FilePath $sdkmanager -ArgumentList $googleplay_packages -NoNewWin
 Start-Process -FilePath $sdkmanager -ArgumentList $build_tools -NoNewWindow -Wait
 Start-Process -FilePath $sdkmanager -ArgumentList $ndk -NoNewWindow -Wait
 # Set the NDK environment
-[Environment]::SetEnvironmentVariable("LY_NDK_DIR", "C:\AndroidSdk\ndk\25.1.8937393", [EnvironmentVariableTarget]::Machine)
+[Environment]::SetEnvironmentVariable("O3DE_NDK_DIR", "C:\AndroidSdk\ndk\25.1.8937393", [EnvironmentVariableTarget]::Machine)
 
 Write-Host "Installing Gradle"
 $gradle_version = '8.7'

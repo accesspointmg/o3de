@@ -6,8 +6,8 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_pytest(
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_pytest(
         NAME AutomatedTesting::MultiplayerTests_Main
         TEST_SUITE main
         TEST_SERIAL
@@ -23,7 +23,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
         LABELS REQUIRES_tiaf
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::MultiplayerTests_Sandbox
         TEST_SUITE sandbox
         TEST_SERIAL

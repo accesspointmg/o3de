@@ -1117,9 +1117,9 @@ bool MainWindow::event(QEvent* event)
 
 void MainWindow::ToggleConsole()
 {
-    m_viewPaneManager->TogglePane(LyViewPane::Console);
+    m_viewPaneManager->TogglePane(O3deViewPane::Console);
 
-    QtViewPane* pane = m_viewPaneManager->GetPane(LyViewPane::Console);
+    QtViewPane* pane = m_viewPaneManager->GetPane(O3deViewPane::Console);
     if (!pane)
     {
         return;

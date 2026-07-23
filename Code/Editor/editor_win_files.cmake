@@ -9,5 +9,5 @@
 set(FILES
     Resource.h
     EditorCryEdit.rc
-    res/lyeditor.ico
+    res/o3deeditor.ico
 )

@@ -508,15 +508,15 @@ TEST_F(ScriptCanvasTestFixture, SerializationTest)
 
 TEST_F(ScriptCanvasTestFixture, Vector2AllNodes)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_Vector2_AllNodes", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_Vector2_AllNodes", ExecutionMode::Interpreted);
 }
 
 TEST_F(ScriptCanvasTestFixture, Vector3_GetNode)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_Vector3_Variable_GetNode", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_Vector3_Variable_GetNode", ExecutionMode::Interpreted);
 }
 
 TEST_F(ScriptCanvasTestFixture, Vector3_SetNode)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_Vector3_Variable_SetNode", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_Vector3_Variable_SetNode", ExecutionMode::Interpreted);
 }

@@ -66,7 +66,7 @@ namespace UnitTest
 
         AZ::Test::ScopedAutoTempDirectory tempDirectory;
         const auto filename = AZ::IO::Path(tempDirectory.GetDirectory()) /
-            AZStd::string::format("LYConfig_%s%s.xml", config.platformName, config.configName);
+            AZStd::string::format("O3DEConfig_%s%s.xml", config.platformName, config.configName);
 
         AZ::IO::FileIOStream stream(filename.c_str(), AZ::IO::OpenMode::ModeWrite);
         auto objStream = AZ::ObjectStream::Create(&stream, serializeContext, AZ::ObjectStream::ST_XML);

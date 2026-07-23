@@ -8,8 +8,8 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 # Import builtin libraries
 import pytest
 
-# Import ly_shared
-import ly_test_tools.o3de.pipeline_utils as pipeline_utils
+# Import o3de_shared
+import o3de_test_tools.o3de.pipeline_utils as pipeline_utils
 
 
 @pytest.fixture

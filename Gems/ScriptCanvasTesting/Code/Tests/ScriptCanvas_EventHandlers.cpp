@@ -14,25 +14,25 @@ using namespace ScriptCanvas;
 
 TEST_F(ScriptCanvasTestFixture, StringMethodCStyle2CStyle)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_StringMethodCStyle2CStyle", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_StringMethodCStyle2CStyle", ExecutionMode::Interpreted);
 }
 
 TEST_F(ScriptCanvasTestFixture, EBusStringResultCStyle2CStyle)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_EBusStringResultCStyle2CStyle", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_EBusStringResultCStyle2CStyle", ExecutionMode::Interpreted);
 }
 
 TEST_F(ScriptCanvasTestFixture, EBusStringResultCStyle2String)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_EBusStringResultCStyle2String", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_EBusStringResultCStyle2String", ExecutionMode::Interpreted);
 }
 
 TEST_F(ScriptCanvasTestFixture, EBusStringResultCStyle2StringView)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_EBusStringResultCStyle2StringView", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_EBusStringResultCStyle2StringView", ExecutionMode::Interpreted);
 }
 
 TEST_F(ScriptCanvasTestFixture, EBusResultNested)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_EBusResultNested", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_EBusResultNested", ExecutionMode::Interpreted);
 }

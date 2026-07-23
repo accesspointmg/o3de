@@ -14,7 +14,7 @@ import re
 import os
 
 from getpass import getpass
-from o3de import manifest
+from o3de import o3de_object
 from typing import List, Tuple
 from pathlib import Path
 
@@ -123,7 +123,7 @@ def resolve_project_name_and_path(starting_path: Path or None = None) -> (str, P
     # Extract the project name from resolved project.json file and use it to look up a registered project by its name
     project_path = project_json_path.parent
     resolved_project_name = _get_project_name(project_json_path)
-    resolved_project_path = manifest.get_registered(project_name=resolved_project_name)
+    resolved_project_path = o3de_object.get_registered(project_name=resolved_project_name)
     if not resolved_project_path:
         raise O3DEConfigError(f"Project '{resolved_project_name}' found in {project_json_path} is not registered with O3DE.")
 
@@ -132,7 +132,7 @@ def resolve_project_name_and_path(starting_path: Path or None = None) -> (str, P
 
 class O3DEConfig(object):
     """
-    This class manages settings for o3de command line tools which are serialized globally, but can be overlayed with
+    This class manages settings for o3de command line tools which are serialized globally, but can be overlaid with
     values for specified registered projects.
     """
     def __init__(self, project_path: Path or None, settings_filename: str, settings_section_name: str,
@@ -211,12 +211,12 @@ class O3DEConfig(object):
         """
 
         # Make sure that we have a global .o3de folder
-        o3de_folder = manifest.get_o3de_folder()
+        o3de_folder = o3de_object.get_user_dot_o3de_path()
         if not o3de_folder.is_dir():
             raise O3DEConfigError('The .o3de is not registered yet. Make sure to register the engine first.')
 
         # Make sure a global settings file exists
-        global_settings = manifest.get_o3de_folder() / settings_filename
+        global_settings = o3de_object.get_user_dot_o3de_path() / settings_filename
         if not global_settings.is_file():
             # If not create a new one with a single section
             global_settings.write_text(f"[{settings_section_name}]")

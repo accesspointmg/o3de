@@ -638,7 +638,7 @@ namespace Camera
             auto windowSize = viewportContext->GetViewportSize();
             const float aspectRatio = aznumeric_cast<float>(windowSize.m_width) / aznumeric_cast<float>(windowSize.m_height);
 
-            // This assumes a reversed depth buffer, in line with other LY Atom integration
+            // This assumes a reversed depth buffer, in line with other O3DE Atom integration
             if (m_config.m_orthographic)
             {
                 AZ::MakeOrthographicMatrixRH(viewToClipMatrix,

@@ -13,16 +13,16 @@ import sys
 
 restricted_platforms = ['Provo', 'Salem']
 
-def move_root(current_source_dir, csd_to_platform_parent, platform_dir, ly_dir):
+def move_root(current_source_dir, csd_to_platform_parent, platform_dir, o3de_dir):
     cwd = os.getcwd()
-    if not ly_dir:
-        ly_dir = cwd
-    ly_to_csd = os.path.relpath(os.path.join(cwd, current_source_dir), ly_dir)
+    if not o3de_dir:
+        o3de_dir = cwd
+    o3de_to_csd = os.path.relpath(os.path.join(cwd, current_source_dir), o3de_dir)
     platform_parent_dir = os.path.normpath(os.path.join(current_source_dir, csd_to_platform_parent, platform_dir))
     for p in os.listdir(platform_parent_dir):
         if p in restricted_platforms:
             source_dir = os.path.normpath(os.path.join(platform_parent_dir, p))
-            dest_dir = os.path.normpath(os.path.join(ly_dir, 'restricted', p, ly_to_csd, csd_to_platform_parent))
+            dest_dir = os.path.normpath(os.path.join(o3de_dir, 'restricted', p, o3de_to_csd, csd_to_platform_parent))
             for root, _, files in os.walk(source_dir):
                 for f in files:
                     old = os.path.join(root, f)

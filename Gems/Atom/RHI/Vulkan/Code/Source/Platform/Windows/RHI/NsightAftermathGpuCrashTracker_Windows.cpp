@@ -14,7 +14,7 @@
 #include <AzCore/Component/ComponentApplicationBus.h>
 #include <AzFramework/StringFunc/StringFunc.h>
 
-#if defined(USE_NSIGHT_AFTERMATH)   // To enable nsight aftermath, download and install Nsight AfterMath and add 'ATOM_AFTERMATH_PATH=%path_to_the_install_folder%' to environment variables (or alternatively set LY_AFTERMATH_PATH in CMake options)
+#if defined(USE_NSIGHT_AFTERMATH)   // To enable nsight aftermath, download and install Nsight AfterMath and add 'ATOM_AFTERMATH_PATH=%path_to_the_install_folder%' to environment variables (or alternatively set O3DE_AFTERMATH_PATH in CMake options)
 GpuCrashTracker::~GpuCrashTracker()
 {
     // If initialized, disable GPU crash dumps

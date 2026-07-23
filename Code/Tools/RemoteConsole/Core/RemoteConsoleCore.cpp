@@ -207,7 +207,7 @@ void SRemoteServer::Run()
     // There may be multiple processes running, and each process will require a unique port for remote console to work. 
     // So we need to be able to bind to ascending ports so that automated tests can connect to each process. QA's Automated
     // tools depend on this behavior for successful testing to occur.
-    // Please check with ly-networking, ly-systems or ly-qa before changing this.
+    // Please check with o3de-networking, o3de-systems or o3de-qa before changing this.
     //  Thanks.
     //
 

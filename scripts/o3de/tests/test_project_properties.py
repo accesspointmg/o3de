@@ -208,7 +208,7 @@ class TestEditProjectProperties:
                                 engine_path: str or pathlib.Path = None) -> dict or None:
             return TEST_ENGINE_JSON_PAYLOAD
 
-        def save_o3de_manifest(new_proj_data: dict, project_path) -> bool:
+        def save_o3de_manifest_json_data(new_proj_data: dict, project_path) -> bool:
             self.project_json.data = new_proj_data
             self.project_json.path = project_path
             return True

@@ -6,30 +6,31 @@
 #
 #
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${PAL_PLATFORM_NAME} ${O3DE_ENGINE_RESTRICTED_PATH} ${LY_ROOT_FOLDER})
+o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Legacy/CryCommon/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_legacy_crycommon_path)
+#set(common_code_legacy_crycommon_path ${O3DE_ENGINE_PATH}/Code/Legacy/CryCommon/Platform/Common)
 
-ly_add_target(
+o3de_add_target(
     NAME CryCommon STATIC
     NAMESPACE Legacy
     FILES_CMAKE
         crycommon_files.cmake
-        ${pal_dir}/crycommon_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake # Required for restricted platforms
+        ${pal_code_legacy_crycommon_path}/crycommon_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${pal_dir}/crycommon_${PAL_PLATFORM_NAME_LOWERCASE}.cmake # Required for restricted platforms
+        ${pal_code_legacy_crycommon_path}/crycommon_${O3DE_PAL_PLATFORM_WART}.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             .         # Lots of code without CryCommon/
             ..        # Dangerous since exports Legacy's path (client code can do CrySystem/ without depending on that target)
-            ${pal_dir} # Required for restricted platforms
+            ${pal_code_legacy_crycommon_path}
     BUILD_DEPENDENCIES
         PUBLIC
             AZ::AzCore
             AZ::AzFramework
 )
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-    ly_add_target(
+    o3de_add_target(
         NAME CryCommonMocks HEADERONLY
         NAMESPACE Legacy
         FILES_CMAKE

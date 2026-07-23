@@ -6,11 +6,14 @@
 #
 #
 
-o3de_pal_dir(core_pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
-o3de_pal_dir(editor_pal_dir ${CMAKE_CURRENT_LIST_DIR}/Editor/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
-set(editor_common_dir ${CMAKE_CURRENT_LIST_DIR}/Editor/Platform/Common)
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
+set(pal_common_code_path ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
-ly_add_target(
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Editor/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_editor_path)
+set(pal_common_code_editor_path ${CMAKE_CURRENT_LIST_DIR}/Editor/Platform/Common)
+
+
+o3de_add_target(
     NAME ${gem_name}StaticLib STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -19,9 +22,9 @@ ly_add_target(
         EMotionFX/emotionfx_files.cmake
         EMotionFX/CommandSystem/commandsystem_files.cmake
         EMotionFX/Exporters/ExporterLib/exporterlib_files.cmake
-        ${core_pal_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${core_pal_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
+        ${pal_code_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             .
@@ -43,7 +46,7 @@ ly_add_target(
             EMFX_ANIMGRAPH_PROFILER_ENABLED
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -53,8 +56,8 @@ ly_add_target(
             Gem::${gem_name}StaticLib
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         Source/Integration/System/emotionfx_module_files.cmake
@@ -66,7 +69,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/Integration/System/AnimationModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -75,13 +78,13 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # Clients and servers use the above ${gem_name} module
-ly_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS ${gem_name})
-ly_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS ${gem_name})
-ly_create_alias(NAME ${gem_name}.Unified NAMESPACE Gem TARGETS ${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS ${gem_name})
+o3de_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS ${gem_name})
+o3de_create_alias(NAME ${gem_name}.Unified NAMESPACE Gem TARGETS ${gem_name})
 
-if (PAL_TRAIT_BUILD_HOST_TOOLS)
+if (O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor.Static STATIC
         NAMESPACE Gem
         AUTOMOC
@@ -95,14 +98,14 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
             EMotionFX/Pipeline/SceneAPIExt/sceneapi_ext_files.cmake
             EMotionFX/Pipeline/RCExt/rc_ext_files.cmake
             EMotionFX/Pipeline/EMotionFXBuilder/emotionfxbuilder_files.cmake
-            ${editor_pal_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+            ${pal_code_editor_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
         PLATFORM_INCLUDE_FILES
-            ${editor_pal_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
+            ${pal_code_editor_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
         INCLUDE_DIRECTORIES
             PRIVATE
                 EMotionFX/Tools
                 EMotionFX/Pipeline
-                ${editor_pal_dir}
+                ${pal_code_editor_path}
         BUILD_DEPENDENCIES
             PUBLIC
                 ${gem_name}StaticLib
@@ -125,7 +128,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
                 EMOTIONFXANIMATION_EDITOR
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
 
         NAMESPACE Gem
@@ -143,17 +146,17 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # builders and tools use the above ${gem_name}.Editor module
-    ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS ${gem_name}.Editor)
-    ly_create_alias(NAME ${gem_name}.Tools NAMESPACE Gem TARGETS ${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS ${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Tools NAMESPACE Gem TARGETS ${gem_name}.Editor)
 
 endif()
 
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Tests.Static STATIC
         NAMESPACE Gem
         FILES_CMAKE
@@ -166,8 +169,8 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 Gem::${gem_name}.Static
     )
 
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             emotionfx_tests_files.cmake
@@ -175,7 +178,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         INCLUDE_DIRECTORIES
             PRIVATE
                 Tests
-                ${core_pal_dir}
+                ${pal_code_path}
         BUILD_DEPENDENCIES
             PRIVATE
                 Legacy::CryCommon
@@ -185,16 +188,16 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 Gem::${gem_name}.Static
                 Gem::${gem_name}.Tests.Static
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         LABELS REQUIRES_tiaf
     )
 
     list(APPEND testTargets ${gem_name}.Tests)
 
-    if (PAL_TRAIT_BUILD_HOST_TOOLS)
-        ly_add_target(
-            NAME ${gem_name}.Editor.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    if (O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+        o3de_add_target(
+            NAME ${gem_name}.Editor.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
             NAMESPACE Gem
             AUTOMOC
             FILES_CMAKE
@@ -207,7 +210,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                     Source
                     EMotionFX/Tools
                     EMotionFX/Pipeline
-                    ${editor_pal_dir}
+                    ${pal_code_editor_path}
             BUILD_DEPENDENCIES
                 PRIVATE
                     AZ::AzTest
@@ -216,7 +219,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                     3rdParty::Qt::Concurrent
                     Gem::${gem_name}.Editor.Static
         )
-        ly_add_googletest(
+        o3de_add_googletest(
             NAME Gem::${gem_name}.Editor.Tests
             LABELS REQUIRES_tiaf
         )
@@ -224,7 +227,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         list(APPEND testTargets ${gem_name}.Editor.Tests)
     endif()
 
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             ${testTargets}
         FILES
@@ -237,7 +240,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             Test.Assets/Gems/${gem_name}/Code/Tests/TestAssets/EMotionFXBuilderTestAssets
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             ${testTargets}
         FILES
@@ -273,7 +276,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             Test.Assets/Gems/${gem_name}/Code/Tests/TestAssets/Rin
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             ${testTargets}
         FILES

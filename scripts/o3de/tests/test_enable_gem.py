@@ -141,12 +141,12 @@ class TestEnableGemCommand:
                 return pathlib.PurePath('o3de')
             return None
 
-        def save_o3de_manifest(new_project_data: dict, manifest_path: pathlib.Path = None) -> bool:
+        def save_o3de_manifest_json_data(new_project_data: dict, manifest_path: pathlib.Path = None) -> bool:
             if manifest_path == project_path / 'project.json':
                 self.enable_gem.project_data = new_project_data
             return True
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             if not manifest_path:
                 return json.loads(TEST_O3DE_MANIFEST_JSON_PAYLOAD)
             return None
@@ -288,12 +288,12 @@ class TestEnableGemCommand:
                 return engine_path
             return None
 
-        def save_o3de_manifest(new_project_data: dict, manifest_path: pathlib.Path = None) -> bool:
+        def save_o3de_manifest_json_data(new_project_data: dict, manifest_path: pathlib.Path = None) -> bool:
             if manifest_path == project_path / 'project.json':
                 self.enable_gem.project_data = new_project_data
             return True
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             if not manifest_path:
                 return json.loads(TEST_O3DE_MANIFEST_JSON_PAYLOAD)
             return None
@@ -429,18 +429,18 @@ class TestEnableGemCommand:
         project_path = pathlib.PurePath('TestProject')
         engine_path = pathlib.PurePath('o3de')
 
-        def get_manifest_engines() -> list:
+        def get_manifest_child_engines() -> list:
             return [engine_path]
 
         def get_project_engine_path(project_path:str or pathlib.Path) -> pathlib.Path or None:
             return engine_path
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             if not manifest_path:
                 return json.loads(TEST_O3DE_MANIFEST_JSON_PAYLOAD)
             return None
 
-        def save_o3de_manifest(new_project_data: dict, manifest_path: pathlib.Path = None) -> bool:
+        def save_o3de_manifest_json_data(new_project_data: dict, manifest_path: pathlib.Path = None) -> bool:
             if manifest_path == project_path / 'project.json':
                 self.enable_gem.project_data = new_project_data
             return True

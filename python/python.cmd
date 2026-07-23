@@ -18,7 +18,7 @@ SET CMD_DIR=%~dp0
 SET CMD_DIR=%CMD_DIR:~0,-1%
 
 REM Calculate the path to the expected python venv for the current engine located at %CMD_DIR%\.. 
-REM The logic in LYPython will generate a unique ID based on the absolute path of the current engine
+REM The logic in O3dePython will generate a unique ID based on the absolute path of the current engine
 REM so that the venv will not collide with any other versions of O3DE installed on the current machine
 
 
@@ -35,9 +35,9 @@ exit /b 1
 REM Set the expected location of the python venv for this engine and the locations of the critical scripts/executables 
 REM needed to run python within the venv properly
 
-REM If the %LY_3RDPARTY_PATH% is not set, then default it to %USERPROFILE%/.o3de/3rdParty
-IF "" == "%LY_3RDPARTY_PATH%" (
-    SET LY_3RDPARTY_PATH=%USERPROFILE%\.o3de\3rdParty
+REM If the %O3DE_3RDPARTY_PATH% is not set, then default it to %USERPROFILE%/.o3de/3rdParty
+IF "" == "%O3DE_3RDPARTY_PATH%" (
+    SET O3DE_3RDPARTY_PATH=%USERPROFILE%\.o3de\3rdParty
 )
 
 SET PYTHON_VENV=%USERPROFILE%\.o3de\Python\venv\%ENGINE_ID%

@@ -16,7 +16,7 @@ set(target_target_files $<FILTER:$<REMOVE_DUPLICATES:"@target_target_files@">,EX
 set(target_link_files $<FILTER:$<REMOVE_DUPLICATES:"@target_link_files@">,EXCLUDE,"^$">)
 set(target_imported_files $<FILTER:$<REMOVE_DUPLICATES:"@target_imported_files@">,EXCLUDE,"^$">)
 
-function(ly_copy source_files relative_target_directory)
+function(o3de_copy source_files relative_target_directory)
     set(options)
     set(oneValueArgs TARGET_FILE_DIR SOURCE_TYPE SOURCE_GEM_MODULE)
     set(multiValueArgs)
@@ -30,18 +30,18 @@ function(ly_copy source_files relative_target_directory)
 
     foreach(source_file IN LISTS source_files)
         cmake_path(GET source_file FILENAME target_filename)
-        cmake_PATH(GET source_file EXTENSION target_filename_ext)
+        cmake_path(GET source_file EXTENSION target_filename_ext)
         cmake_path(APPEND target_file "${target_directory}" "${target_filename}")
         cmake_path(COMPARE "${source_file}" EQUAL "${target_file}" same_location)
 
-        if("${source_file}" MATCHES "@LY_PYTHON_SHARED_LIB@")
+        if("${source_file}" MATCHES "@O3DE_PYTHON_SHARED_LIB@")
             # Special case: Since the shared python library is loaded dynamically, it has the potential of being loaded from multiple
             # sources. To make sure that duplicate loads to the shared python library load to the same handle, create a soft-symlink
             # instead so that the dlopen call can resolve the library properly
 
             # Use the relative path to the package source for the link
-            set(source_python_package_abs @LY_CURRENT_PYTHON_PACKAGE_PATH@/python/lib/@LY_PYTHON_SHARED_LIB@)
-            execute_process(COMMAND ln -s -f "${source_python_package_abs}" @LY_PYTHON_SHARED_LIB@
+            set(source_python_package_abs @O3DE_CURRENT_PYTHON_PACKAGE_PATH@/python/lib/@O3DE_PYTHON_SHARED_LIB@)
+            execute_process(COMMAND ln -s -f "${source_python_package_abs}" @O3DE_PYTHON_SHARED_LIB@
                             WORKING_DIRECTORY "${target_directory}")
 
         elseif(NOT ${same_location})
@@ -70,6 +70,6 @@ function(ly_copy source_files relative_target_directory)
     endforeach()
 endfunction()
 
-@LY_COPY_COMMANDS@
+@O3DE_COPY_COMMANDS@
 
 file(TOUCH "@STAMP_OUTPUT_FILE@")

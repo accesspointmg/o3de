@@ -375,12 +375,12 @@ namespace UnitTest
     // Initial Test Values
     static const int Value1_Initial = 3;
     static const float Value2_Initial = 7;
-    static const char* AssetPath_Initial = "C:/ly/dev/assets/myslicetestasset.NaN";
+    static const char* AssetPath_Initial = "C:/o3de/dev/assets/myslicetestasset.NaN";
 
     // Data Patch Override Values
     static const int Value1_Override = 5;
     static const float Value2_Override = 9;
-    static const char* AssetPath_Override = "C:/ly/dev/assets/SliceTestAssets/myslicetestasset.NaN";
+    static const char* AssetPath_Override = "C:/o3de/dev/assets/SliceTestAssets/myslicetestasset.NaN";
 
     // Final Test Values
     static const AZStd::string_view Value1_Final = "Five";

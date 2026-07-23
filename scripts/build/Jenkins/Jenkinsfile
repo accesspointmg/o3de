@@ -229,8 +229,8 @@ def GetBuildEnvVars(Map platformEnv, Map buildTypeEnv, String pipelineName) {
     // Environment that only applies to to Jenkins tweaks.
     // For 3rdParty downloads, we store them in the EBS volume so we can reuse them across node
     // instances. This allow us to scale up and down without having to re-download 3rdParty
-    envVarMap['LY_PACKAGE_DOWNLOAD_CACHE_LOCATION'] = "${envVarMap['WORKSPACE']}/3rdParty/downloaded_packages"
-    envVarMap['LY_PACKAGE_UNPACK_LOCATION'] = "${envVarMap['WORKSPACE']}/3rdParty/packages"
+    envVarMap['O3DE_PACKAGE_DOWNLOAD_CACHE_LOCATION'] = "${envVarMap['WORKSPACE']}/3rdParty/downloaded_packages"
+    envVarMap['O3DE_PACKAGE_UNPACK_LOCATION'] = "${envVarMap['WORKSPACE']}/3rdParty/packages"
 
     return envVarMap
 }
@@ -247,7 +247,7 @@ def GetCrashArtifactDir() {
     if (env.IS_UNIX) {
         def uname = sh(script: 'uname', returnStdout: true).trim()
         if (uname.startsWith('Darwin')) {
-            return '~/Library/Logs/DiagnosticReports/' // MacOS
+            return '~/Library/Logs/DiagnosticReports/' // Mac
         }
         else {
             return '/var/lib/apport/coredump/'
@@ -362,7 +362,7 @@ def HandleDriveMount(String snapshot, String repositoryName, String projectName,
             if sudo test ! -d "${workspace}"; then
                 sudo mkdir -p ${workspace}
                 cd ${workspace}/..
-                sudo chown -R lybuilder:root .
+                sudo chown -R o3debuilder:root .
             fi
             """
     }
@@ -640,11 +640,11 @@ def PreBuildCommonSteps(Map pipelineConfig, Map params, String snapshot, String 
             if(env.PROJECT_OVERRIDE) {
                 external_project = env.PROJECT_OVERRIDE
             }
-            else if(params && params.CMAKE_LY_PROJECTS) {
-                external_project = params.CMAKE_LY_PROJECTS
+            else if(params && params.CMAKE_O3DE_PROJECTS) {
+                external_project = params.CMAKE_O3DE_PROJECTS
             }
             else {
-                echo "No PROJECT_OVERRIDE or CMAKE_LY_PROJECTS defined"
+                echo "No PROJECT_OVERRIDE or CMAKE_O3DE_PROJECTS defined"
             }
             
             echo "external_project = ${external_project}"
@@ -656,7 +656,7 @@ def PreBuildCommonSteps(Map pipelineConfig, Map params, String snapshot, String 
                 processed_repos = NoControlFile(COMMIT_REPOSITORY_NAME, processed_repos, external_project, defer_enable_gems)
             }
             
-            // For only external projects, set CMAKE_LY_PROJECTS to the relative project_path so it will work on all platforms.
+            // For only external projects, set CMAKE_O3DE_PROJECTS to the relative project_path so it will work on all platforms.
             dir(ENGINE_REPOSITORY_NAME) {
                 // Try/catch in the event that this function is called before the scripts are stashed
                 try {
@@ -678,8 +678,8 @@ def PreBuildCommonSteps(Map pipelineConfig, Map params, String snapshot, String 
                     workspace_path = workspace_path.replace("\\", "/")
                     project_path = project_path.replace("${workspace}", "..") // Set the relative path to the project from the engine path
                     project_path = (project_path =~ /\.\.\/[\/a-zA-Z0-9-_]+/)[0] // Ensure only the path is assigned to the variable
-                    env.CMAKE_LY_PROJECTS = project_path
-                    echo "env.CMAKE_LY_PROJECTS = ${env.CMAKE_LY_PROJECTS}"
+                    env.CMAKE_O3DE_PROJECTS = project_path
+                    echo "env.CMAKE_O3DE_PROJECTS = ${env.CMAKE_O3DE_PROJECTS}"
                 }
             }
         }
@@ -821,7 +821,7 @@ def UploadAPLogs(String platformName, String jobName, String workspace, Map para
     catchError(message: "Error archiving AssetProcessor logs (this won't fail the build)", buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
         dir(workspace) {
             dir(ENGINE_REPOSITORY_NAME) {
-                projects = params.CMAKE_LY_PROJECTS.split(",")
+                projects = params.CMAKE_O3DE_PROJECTS.split(",")
                 projects.each{ project ->
                     ArchiveArtifactsOnS3("${project}/user/log", "ap_logs/${platformName}/${jobName}/${project}", true)
                 }
@@ -1379,7 +1379,7 @@ finally {
                     "clean_output_directory": env.CLEAN_OUTPUT_DIRECTORY,
                     "clean_assets": env.CLEAN_ASSETS,
                     "fail_fast": env.FAIL_FAST,
-                    "project_name": env.CMAKE_LY_PROJECTS
+                    "project_name": env.CMAKE_O3DE_PROJECTS
                 ]
                 snsPublish(
                     topicArn: env.POST_AR_BUILD_SNS_TOPIC,

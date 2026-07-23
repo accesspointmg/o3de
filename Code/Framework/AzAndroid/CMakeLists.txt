@@ -6,7 +6,7 @@
 #
 #
 
-ly_install_directory(
+o3de_install_directory(
     DIRECTORIES
         java
 )

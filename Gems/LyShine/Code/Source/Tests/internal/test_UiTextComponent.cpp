@@ -3378,7 +3378,7 @@ void FontSharedPtrTests()
                 }
             }
 
-            // BEGIN JAV_LY_FORK: r_persistFontFamilies keeps font families loaded for lifetime of application.
+            // BEGIN JAV_O3DE_FORK: r_persistFontFamilies keeps font families loaded for lifetime of application.
             // In this case, the normal/regular font has already been loaded as a "pass through" font family,
             // so it has been persisted in memory. Even though the FontFamilyPtr used has gone out of scope.
             // notoSansRegularFamily should now be out of scope, so the original font family's
@@ -3408,7 +3408,7 @@ void FontSharedPtrTests()
                 AZ_Assert(2 == notoSans->boldItalic->AddRef(), "Test failed");
                 AZ_Assert(1 == notoSans->boldItalic->Release(), "Test failed");
             }
-            // END JAV_LY_FORK
+            // END JAV_O3DE_FORK
 
             IFFont* fontBold = GetISystem()->GetICryFont()->GetFont(notoSansBoldPath);
             AZ_Assert(fontBold, "Test failed");
@@ -3460,7 +3460,7 @@ void FontSharedPtrTests()
         const char* veraFontFamilyFile = "fonts/vera.fontfamily";
         FontFamilyPtr veraFontFamily = gEnv->pCryFont->LoadFontFamily(veraFontFamilyFile);
 
-        // BEGIN JAV_LY_FORK: The above "vera.font" is a pass-through font (not a font family)
+        // BEGIN JAV_O3DE_FORK: The above "vera.font" is a pass-through font (not a font family)
         // and is now mapped by by its full filepath rather than just the filename.
         AZ_Assert(veraFontFamily.get(), "Test failed");
 
@@ -3474,7 +3474,7 @@ void FontSharedPtrTests()
         AZ_Assert(5 == veraFont->italic->Release(), "Test failed");
         AZ_Assert(6 == veraFont->boldItalic->AddRef(), "Test failed");
         AZ_Assert(5 == veraFont->boldItalic->Release(), "Test failed");
-        // END JAV_LY_FORK
+        // END JAV_O3DE_FORK
     }
 }
 

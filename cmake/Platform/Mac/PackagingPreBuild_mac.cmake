@@ -6,5 +6,5 @@
 #
 #
 
-file(REAL_PATH "${CPACK_SOURCE_DIR}/.." LY_ROOT_FOLDER)
-include(${LY_ROOT_FOLDER}/cmake/Platform/Common/PackagingPreBuild_common.cmake)
+file(REAL_PATH "${CPACK_SOURCE_DIR}/.." O3DE_ENGINE_PATH)
+include(${O3DE_ENGINE_PATH}/cmake/Platform/Common/PackagingPreBuild_common.cmake)

@@ -69,7 +69,7 @@ CViewManager::CViewManager()
     viewportOptions.canHaveMultipleInstances = true;
 
     viewportOptions.viewportType = ET_ViewportCamera;
-    RegisterQtViewPaneWithName<EditorViewportWidget>(GetIEditor(), "Perspective", LyViewPane::CategoryViewport, viewportOptions);
+    RegisterQtViewPaneWithName<EditorViewportWidget>(GetIEditor(), "Perspective", O3deViewPane::CategoryViewport, viewportOptions);
 
     GetIEditor()->RegisterNotifyListener(this);
 }

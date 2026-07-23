@@ -10,8 +10,8 @@ import shutil
 import logging
 import stat
 
-import ly_test_tools.environment.file_system as file_system
-import ly_test_tools.environment.waiter as waiter
+import o3de_test_tools.environment.file_system as file_system
+import o3de_test_tools.environment.waiter as waiter
 
 logger = logging.getLogger(__name__)
 

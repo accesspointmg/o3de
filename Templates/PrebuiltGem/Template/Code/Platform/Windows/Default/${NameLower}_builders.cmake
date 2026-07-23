@@ -7,7 +7,7 @@
 #
 
 get_property(${NameLower}_gem_root GLOBAL PROPERTY "@GEMROOT:${Name}@")
-list(APPEND LY_TARGET_PROPERTIES
-    IMPORTED_LOCATION ${${NameLower}_gem_root}/bin/${PAL_PLATFORM_NAME}/${LY_BUILD_PERMUTATION}/release/${Name}.Builders.dll
-    IMPORTED_LOCATION_DEBUG ${${NameLower}_gem_root}/bin/${PAL_PLATFORM_NAME}/${LY_BUILD_PERMUTATION}/debug/${Name}.Builders.dll
+list(APPEND O3DE_TARGET_PROPERTIES
+    IMPORTED_LOCATION ${${NameLower}_gem_root}/bin/${O3DE_PAL_PLATFORM_NAME}/${O3DE_BUILD_PERMUTATION}/release/${Name}.Builders.dll
+    IMPORTED_LOCATION_DEBUG ${${NameLower}_gem_root}/bin/${O3DE_PAL_PLATFORM_NAME}/${O3DE_BUILD_PERMUTATION}/debug/${Name}.Builders.dll
 )

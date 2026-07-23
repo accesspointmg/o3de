@@ -22,6 +22,8 @@
 #include <QAbstractItemView>
 #include <QListView>
 #include <QStandardItemModel>
+#include <QLocale>
+#include <QUrl>
 
 namespace O3DE::ProjectManager
 {
@@ -57,22 +59,21 @@ namespace O3DE::ProjectManager
 
         QLabel* curatedReposLabel = new QLabel(tr("Curated Repos"));
         curatedReposLabel->setToolTip(
-            "All curated repos start as uncurated and then can be promoted to curated. "
-            "The bar for curated repos is higher than uncurated repos. "
             "The criteria needed for a repo to be curated is: All objects in the repo have to be LEGAL, maintained, safe, and useful. "
-            "Anyone can create a PR to have any repo promoted from uncurated to curated if they believe it meets the criteria. "
-            "Promotion from uncurated to curated requires 2 maintainers and O3DE director approval. "
-            "O3DE DOES NOT vet the contents of ANY repos other than O3DE canonical repos. "
-            "O3DE offers no guarantee, stated or implied, of fitness for any particular use. "
-            "O3DE assumes no liability for the contents of any repo other than canonical repos. "
-            "Curated repos are regularly reviewed to make sure they fit the criteria. "
-            "If there is lapse in any criteria, the repo will be demoted to uncurated."
-            "O3DE reserves the right to remove or demote any repo at any time for any reason, including no reason. "
-            "If a DMCA takedown is issued about any repo, anything ILLEGAL is reported and confirmed, or any violation by sanctioned entity occurs the repo will be removed immediately and the owner may or may not be notified. "
-            "Anyone may petition the demotion or removal of any curated repo: You have to convince 2 maintainers to sign off that the repo should be removed or demoted, it will be removed or demoted. "
-            "If given a reason for demotion or removal and after remediation, anyone may resubmit it for consideration. Priority will be given to any remediation done within 2 weeks of removal or demotion. "
-            "If the repo is removed or demoted, anyone may appeal this decision directly to the TSC. "
-            "!!!PROCEED WITH CAUTION!!! "
+            "What repos are curated or not start as a github pull request in which repo(s) are added with your best arguments "
+            "as to why you think the repo(s) meets the criteria. You have to convince 2 maintainers and ultimately the O3DE director to be added to curated. "
+            "Anyone can petition/create a pull request to have any repo added to curated if they believe it meets the criteria. "
+            "Curated repos are NOT considered to be O3DE canonical repos and thus O3DE DOES NOT vet the contents of ANY repos other than O3DE canonical repos. "
+            "O3DE offers no guarantee, stated or implied, of fitness for any particular use and assumes no liability for the contents of any curated repo. "
+            "Curated repos are only reviewed that they meet the criteria at the time of inclusion and at such time anyone raises an issue that they "
+            "believe a curated repo no longer meets the criteria. "
+            "If there is found to be a lapse in any criteria after inclusion, the repo may be demoted to uncurated or removed and the owner/petitioner may or may not be notified. "
+            "O3DE reserves the right to demote or remove any repo at any time for any reason, including no reason. "
+            "If a DMCA takedown or other legal challenge is issued against any curated repo or if anything ILLEGAL is reported or any violation by sanctioned "
+            "entity occurs the repo will be removed immediately, even if ultimately found to be unjustified while it is being investigated. If found to be unjustified the repo may be reinstated. "
+            "Demoted or removed repos maybe also be reinstated if a reason for demotion or removal was given and the issue was sufficiently remediated. "
+            "If any repo is demoted or removed, anyone may appeal that decision directly to the TSC. "
+            "!!!SO PROCEED WITH CAUTION WHEN USING ANY NON CANONICAL REPO!!! "
         );
         curatedReposLabel->setAlignment(Qt::AlignLeft);
         vLayout->addWidget(curatedReposLabel);
@@ -89,7 +90,16 @@ namespace O3DE::ProjectManager
 
         vLayout->addWidget(m_curatedRepos);
 
-        QString curated_repos = PythonBindingsInterface::Get()->GetCacheFile("https://canonical.o3de.org/curated.json");
+        QLocale locale = QLocale::system(); 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+        QString countryCode = QLocale::territoryToCode(locale.territory()).toLower();
+#else
+        // Qt 5: no territoryToCode/countryToCode; derive from locale name "lang_COUNTRY"
+        QString countryCode = locale.name().section('_', 1, 1).toLower();
+#endif
+        QString countryCurated = QString("https://canonical.o3de.org/countries/%1/curated/repo.json").arg(countryCode);
+
+        QString curated_repos = PythonBindingsInterface::Get()->GetCacheFile(countryCurated);
         QFile curatedFile(curated_repos);
         if (curatedFile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
@@ -98,9 +108,9 @@ namespace O3DE::ProjectManager
 
             QJsonDocument document = QJsonDocument::fromJson(jsonData);
             QJsonObject jsonObject = document.object();
-            if (jsonObject.contains("curated") && jsonObject["curated"].isArray())
+            if (jsonObject.contains("repos") && jsonObject["repos"].isArray())
             {
-                QJsonArray curatedRepos = jsonObject["curated"].toArray();
+                QJsonArray curatedRepos = jsonObject["repos"].toArray();
                 for (const QJsonValue& value : qAsConst(curatedRepos))
                 {
                     QStandardItem* item = new QStandardItem(value.toString());
@@ -120,25 +130,26 @@ namespace O3DE::ProjectManager
             }
         );
 
+        vLayout->addSpacing(10);
+
         QLabel* uncuratedReposLabel = new QLabel(tr("Uncurated Repos"));
         uncuratedReposLabel->setToolTip(
-            "The bar for uncurated repos is lower than curated repos. "
-            "The criteria needed for a repo to be uncurated is: All objects in the repo have to be LEGAL. "
-            "Anyone can create a PR to have any repo added to uncurated if they believe it meets the criteria. "
-            "Additions to uncurated requires 2 maintainers approval. "
-            "O3DE DOES NOT vet the contents of ANY repos other than O3DE canonical repos. "
-            "O3DE offers no guarantee, stated or implied, of fitness for any particular use. "
-            "O3DE assumes no liability for the contents of any repo other than canonical repos. "
-            "Uncurated repos are NOT reviewed to make sure they fit the criteria, they rely entirely on the community to police. "
-            "O3DE reserves the right to remove or demote any repo at any time for any reason, including no reason. "
-            "If a DMCA takedown is issued about any repo, anything ILLEGAL is reported and confirmed, or any violation by sanctioned entity occurs the repo will be removed immediately and the owner may or may not be notified. "
-            "Anyone may petition the removal of any uncurated repo: You have to convince 2 maintainers to sign off that the repo should be removed, and it will be removed. "
-            "If given a reason for removal and after remediation, anyone may resubmit it for consideration. Priority will be given to any remediation done within 2 weeks of removal. "
-            "If the repo is removed, anyone may appeal the decision directly to the TSC. "
-            "!!!PROCEED WITH CAUTION!!! "
+            "The criteria needed for a repo to be included as uncurated is: All objects in the repo must be LEGAL. "
+            "What repos are uncurated or not start as a github pull request in which repo(s) are added with your best arguments "
+            "as to why you think the repo(s) meets the criteria. You have to convince 2 maintainers to be added to uncurated. "
+            "Uncurated repos are NOT considered to be O3DE canonical repos and thus O3DE DOES NOT vet the contents of ANY repos other than O3DE canonical repos. "
+            "O3DE offers no guarantee, stated or implied, of fitness for any particular use and assumes no liability for the contents of any uncurated repo. "
+            "Uncurated repos are only reviewed that they meet the criteria at the time of inclusion and at such time anyone raises an issue that they "
+            "believe an uncurated repo no longer meets the criteria. "
+            "O3DE reserves the right to demote or remove any repo at any time for any reason, including no reason. "
+            "If a DMCA takedown or other legal challenge is issued against any uncurated repo or if anything ILLEGAL is reported or any violation by sanctioned "
+            "entity occurs the repo will be removed immediately, even if ultimately found to be unjustified while it is being investigated. If found to be unjustified the repo may be reinstated. "
+            "Demoted or removed repos maybe also be reinstated if a reason for demotion or removal was given and the issue was sufficiently remediated. "
+            "If any repo is demoted or removed, anyone may appeal that decision directly to the TSC. "
+            "!!!SO PROCEED WITH CAUTION WHEN USING ANY NON CANONICAL REPO!!! "
         );
-        communityReposLabel->setAlignment(Qt::AlignLeft);
-        vLayout->addWidget(communityReposLabel);
+        uncuratedReposLabel->setAlignment(Qt::AlignLeft);
+        vLayout->addWidget(uncuratedReposLabel);
 
         m_uncuratedRepos = new QListView();
         m_uncuratedRepos->setStyleSheet("QListView { border: 1px solid white; }");
@@ -152,7 +163,9 @@ namespace O3DE::ProjectManager
 
         vLayout->addWidget(m_uncuratedRepos);
 
-        QString uncurated_repos = PythonBindingsInterface::Get()->GetCacheFile("https://canonical.o3de.org/uncurated.json");
+        QString countryUncurated = QString("https://canonical.o3de.org/countries/%1/uncurated/repo.json").arg(countryCode);
+
+        QString uncurated_repos = PythonBindingsInterface::Get()->GetCacheFile(countryUncurated);
         QFile file(uncurated_repos);
         if (file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
@@ -161,9 +174,9 @@ namespace O3DE::ProjectManager
 
             QJsonDocument document = QJsonDocument::fromJson(jsonData);
             QJsonObject jsonObject = document.object();
-            if (jsonObject.contains("uncurated") && jsonObject["uncurated"].isArray())
+            if (jsonObject.contains("repos") && jsonObject["repos"].isArray())
             {
-                QJsonArray communityRepos = jsonObject["uncurated"].toArray();
+                QJsonArray communityRepos = jsonObject["repos"].toArray();
                 for (const QJsonValue& value : qAsConst(communityRepos))
                 {
                     QStandardItem* item = new QStandardItem(value.toString());
@@ -186,7 +199,7 @@ namespace O3DE::ProjectManager
         vLayout->addSpacing(10);
 
         QLabel* warningLabel = new QLabel(tr("Online repositories may contain files that could potentially harm your computer,"
-            " please ensure you understand the risks before downloading Gems from third-party sources."));
+            " please ensure you understand the risks before downloading o3de objects from third-party sources."));
         warningLabel->setObjectName("gemRepoAddDialogWarningLabel");
         warningLabel->setWordWrap(true);
         warningLabel->setAlignment(Qt::AlignLeft);

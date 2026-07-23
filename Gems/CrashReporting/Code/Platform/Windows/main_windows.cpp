@@ -6,7 +6,7 @@
  *
  */
 
-// LY Game Gem crash uploader extension - Windows
+// O3DE Game Gem crash uploader extension - Windows
 
 #include <AzCore/Debug/Trace.h>
 #include <AzCore/PlatformIncl.h>

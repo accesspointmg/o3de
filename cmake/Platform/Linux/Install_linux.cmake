@@ -6,9 +6,10 @@
 #
 #
 
-#! ly_setup_runtime_dependencies_copy_function_override: Linux-specific copy function to handle RPATH fixes
-set(ly_copy_template [[
-function(ly_copy source_files relative_target_directory)
+#! o3de_setup_runtime_dependencies_copy_function_override: Linux-specific copy function to handle RPATH fixes
+set(_cmake_Platform_Linux_Install_linux_cmake ${CMAKE_CURRENT_LIST_DIR})
+set(o3de_copy_template [[
+function(o3de_copy source_files relative_target_directory)
     set(options)
     set(oneValueArgs TARGET_FILE_DIR SOURCE_TYPE SOURCE_GEM_MODULE)
     set(multiValueArgs)
@@ -46,14 +47,20 @@ function(ly_copy source_files relative_target_directory)
     endforeach()
 endfunction()]])
 
-function(ly_setup_runtime_dependencies_copy_function_override)
-    string(CONFIGURE "${ly_copy_template}" ly_copy_function_linux @ONLY)
+function(o3de_setup_runtime_dependencies_copy_function_override)
+    string(CONFIGURE "${o3de_copy_template}" o3de_copy_function_linux @ONLY)
     foreach(conf IN LISTS CMAKE_CONFIGURATION_TYPES)
         string(TOUPPER ${conf} UCONF)
-        ly_install(CODE "${ly_copy_function_linux}"
-            COMPONENT  ${LY_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
+        o3de_install(CODE "${o3de_copy_function_linux}"
+            COMPONENT  ${O3DE_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
         )
     endforeach()
 endfunction()
 
-include(cmake/Platform/Common/Install_common.cmake)
+function(o3de_setup_runtime_dependencies_copy_function_override)
+    # This function is deprecated, use o3de_setup_runtime_dependencies_copy_function_override instead
+    message(WARNING "o3de_setup_runtime_dependencies_copy_function_override is deprecated, use o3de_setup_runtime_dependencies_copy_function_override instead")
+    o3de_setup_runtime_dependencies_copy_function_override()
+endfunction()
+
+include(${_cmake_Platform_Linux_Install_linux_cmake}/../Common/Install_common.cmake)

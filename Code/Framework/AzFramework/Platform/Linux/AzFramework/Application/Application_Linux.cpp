@@ -11,7 +11,7 @@
 
 #include <sys/resource.h>
 
-#if PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#if O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
 #include <AzFramework/XcbApplication.h>
 #endif
 
@@ -39,14 +39,14 @@ namespace AzFramework
             [[maybe_unused]] int set_limit_result = setrlimit(RLIMIT_NOFILE, &newLimit);
             AZ_Assert(set_limit_result == 0, "Unable to update open file limits");
         }
-#if PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#if O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
         return aznew XcbApplication();
-#elif PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND
+#elif O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND
         #error "Linux Window Manager Wayland not supported."
         return nullptr;
 #else
         #error "Linux Window Manager not recognized."
         return nullptr;
-#endif // PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#endif // O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
     }
 } // namespace AzFramework

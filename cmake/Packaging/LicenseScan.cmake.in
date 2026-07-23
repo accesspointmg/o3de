@@ -6,17 +6,17 @@
 #
 #
 
-set(LY_ROOT_FOLDER "@LY_ROOT_FOLDER@")
+set(O3DE_ENGINE_PATH "@O3DE_ENGINE_PATH@")
 set(CMAKE_SCRIPT_MODE_FILE TRUE)
 
 # Scan the engine and 3rd Party folders for licenses
-cmake_path(SET _license_script_path "@LY_ROOT_FOLDER@/scripts/license_scanner")
+cmake_path(SET _license_script_path "@O3DE_ENGINE_PATH@/scripts/license_scanner")
 cmake_path(SET _license_script "${_license_script_path}/license_scanner.py")
 cmake_path(SET _license_config "${_license_script_path}/scanner_config.json")
 
-set(_license_scan_path "@LY_ROOT_FOLDER@" "@LY_PACKAGE_UNPACK_LOCATION@")
+set(_license_scan_path "@O3DE_ENGINE_PATH@" "@O3DE_PACKAGE_UNPACK_LOCATION@")
 set(_license_command
-    @LY_PYTHON_CMD@ -s
+    @O3DE_PYTHON_CMD@ -s
     -u ${_license_script}
     --config-file ${_license_config}
     --license-file-path @CPACK_3P_LICENSE_FILE@

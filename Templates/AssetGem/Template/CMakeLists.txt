@@ -6,16 +6,16 @@
 #
 # {END_LICENSE}
 
-o3de_gem_setup("${Name}")
+o3de_gem_setup()
 
 # This indicates to the Builders applications(AssetProcessor, AssetBuilder, AssetBundler)
 # that the gem should be added to the "cmake_dependencies.<project>.assetbuilder.setreg"
 # which is generated when cmake configure occurs.
 # Also tooling applications such as the Editor needs the CMake alias
 # to see the gem as active
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem)
-    ly_create_alias(NAME ${gem_name}.Tools NAMESPACE Gem)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem)
+    o3de_create_alias(NAME ${gem_name}.Tools NAMESPACE Gem)
 
     # Add in CMake dependencies for each gem dependency listed in this gem's gem.json file
     # for the Tools and Builders gem variants

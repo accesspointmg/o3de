@@ -7,7 +7,7 @@
 #
 
 get_property(atom_rhi_vulkan_gem_root GLOBAL PROPERTY "@GEMROOT:Atom_RHI_Vulkan@")
-ly_add_external_target(
+o3de_add_external_target(
     NAME amd_vma
     VERSION 3.1.0-009ecd1
     3RDPARTY_ROOT_DIRECTORY ${atom_rhi_vulkan_gem_root}/External/vma

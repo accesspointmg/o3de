@@ -1226,7 +1226,7 @@ namespace AZ
         /// Indiscriminately skips all asset references.
         bool AssetFilterNoAssetLoading(const AssetFilterInfo& filterInfo);
 
-        // Shared ProductDependency concepts between AP and LY
+        // Shared ProductDependency concepts between AP and O3DE
         namespace ProductDependencyInfo
         {
             //! Corresponds to all ProductDependencyFlags, not just LoadBehaviors

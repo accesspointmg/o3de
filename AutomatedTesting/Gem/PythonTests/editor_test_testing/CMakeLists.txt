@@ -7,8 +7,8 @@
 #
 
 # disabled to investigate https://github.com/o3de/o3de/issues/11528
- if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_pytest(
+ if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_pytest(
         NAME AutomatedTesting::EditorTestTesting
         TEST_SUITE main
         TEST_SERIAL

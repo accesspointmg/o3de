@@ -12,7 +12,7 @@ import pytest
 import os
 import sys
 
-from ly_test_tools.o3de.editor_test import EditorTestSuite, EditorSingleTest
+from o3de_test_tools.o3de.editor_test import EditorTestSuite, EditorSingleTest
 
 @pytest.mark.parametrize("project", ["AutomatedTesting"])
 @pytest.mark.parametrize("launcher_platform", ['windows_editor'])

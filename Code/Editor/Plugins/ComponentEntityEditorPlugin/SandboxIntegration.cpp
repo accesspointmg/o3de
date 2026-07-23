@@ -243,7 +243,7 @@ void SandboxIntegrationManager::OnEndUndo(const char* label, bool changed)
 
 void SandboxIntegrationManager::OpenPinnedInspector(const AzToolsFramework::EntityIdSet& entities)
 {
-    QDockWidget* dockWidget = InstanceViewPane(LyViewPane::EntityInspectorPinned);
+    QDockWidget* dockWidget = InstanceViewPane(O3deViewPane::EntityInspectorPinned);
     if (dockWidget)
     {
         QComponentEntityEditorInspectorWindow* editor = static_cast<QComponentEntityEditorInspectorWindow*>(dockWidget->widget());
@@ -282,7 +282,7 @@ void SandboxIntegrationManager::ClosePinnedInspector(AzToolsFramework::EntityPro
         QDockWidget* dockWidget = qobject_cast<QDockWidget*>(currentWidget);
         if (dockWidget)
         {
-            QtViewPaneManager::instance()->ClosePaneInstance(LyViewPane::EntityInspectorPinned, dockWidget);
+            QtViewPaneManager::instance()->ClosePaneInstance(O3deViewPane::EntityInspectorPinned, dockWidget);
             return;
         }
         currentWidget = currentWidget->parentWidget();

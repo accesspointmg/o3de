@@ -6,7 +6,7 @@
  *
  */
 
-// LY Base Crashpad Windows implementation
+// O3DE Base Crashpad Windows implementation
 
 #include <CrashHandler.h>
 #include <AzCore/PlatformIncl.h>

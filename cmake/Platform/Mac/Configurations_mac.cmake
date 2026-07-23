@@ -6,11 +6,12 @@
 #
 #
 
+set(_cmake_Platform_Mac_Configurations_mac_cmake ${CMAKE_CURRENT_LIST_DIR})
 if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 
-    include(cmake/Platform/Common/Clang/Configurations_clang.cmake)
+    include(${_cmake_Platform_Mac_Configurations_mac_cmake}/../Common/Clang/Configurations_clang.cmake)
 
-    ly_append_configurations_options(
+    o3de_append_configurations_options(
         DEFINES
             APPLE
             MAC
@@ -21,18 +22,18 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
             -lpthread
             -lncurses
     )
-    ly_set(CMAKE_CXX_EXTENSIONS OFF)
+    o3de_set(CMAKE_CXX_EXTENSIONS OFF)
 else()
 
-    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} not supported in ${PAL_PLATFORM_NAME}")
+    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} not supported in ${O3DE_PAL_PLATFORM_NAME}")
 
 endif()
 
 # Signing
-ly_set(CMAKE_XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS "--deep")
+o3de_set(CMAKE_XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS "--deep")
 
 # Generate scheme files for Xcode
-ly_set(CMAKE_XCODE_GENERATE_SCHEME TRUE)
+o3de_set(CMAKE_XCODE_GENERATE_SCHEME TRUE)
 
 # Make modules have the dylib extension
-ly_set(CMAKE_SHARED_MODULE_SUFFIX .dylib)
+o3de_set(CMAKE_SHARED_MODULE_SUFFIX .dylib)

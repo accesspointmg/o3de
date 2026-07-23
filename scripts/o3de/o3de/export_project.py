@@ -18,7 +18,7 @@ import psutil
 import shutil
 import subprocess
 
-from o3de import command_utils, manifest, utils
+from o3de import command_utils, o3de_object, utils
 
 # Check if tkinter is installed or not
 tkinter_installed = True
@@ -156,7 +156,7 @@ class O3DEScriptExportContext(object):
         self._cmake_additional_configure_args = cmake_additional_configure_args
         self._cmake_additional_build_args = cmake_additional_build_args
 
-        project_json_data = manifest.get_project_json_data(project_path=project_path)
+        project_json_data = o3de_object.get_project_json_data(project_path=project_path)
         assert project_json_data, f"Invalid project configuration file '{project_path}/project.json'. Invalid settings."
 
         project_name = project_json_data.get('project_name')
@@ -383,7 +383,7 @@ def _export_script(export_script_path: pathlib.Path, project_path: pathlib.Path,
 
     o3de_context = O3DEScriptExportContext(export_script_path=validated_export_script_path,
                                            project_path=computed_project_path.resolve(),
-                                           engine_path=manifest.get_project_engine_path(computed_project_path),
+                                           engine_path=o3de_object.get_project_engine_path(computed_project_path),
                                            args=export_process_args,
                                            cmake_additional_configure_args=cmake_configure_args,
                                            cmake_additional_build_args=cmake_build_args)
@@ -417,7 +417,7 @@ def _run_export_script(args: argparse, passthru_args: list) -> int:
     if args.configure:
         if tkinter_installed and tkinter_tix_installed:
             export_config = get_export_project_config(args.project_path)
-            project_info = manifest.get_project_json_data(project_path=args.project_path)
+            project_info = o3de_object.get_project_json_data(project_path=args.project_path)
             is_o3de_sdk = project_info.get('engine') == 'o3de-sdk'
             export_project_ui.MainWindow(export_config, is_o3de_sdk).configure_settings()
             return 0
@@ -472,7 +472,7 @@ def get_project_export_config_from_args(args: argparse) -> (command_utils.O3DECo
             project_name = project
 
             # If '--project' was not a project path, check to see if its a registered project by its name
-            project_path = manifest.get_registered(project_name=project_name)
+            project_path = o3de_object.get_registered(project_name=project_name)
             if not project_path:
                 raise command_utils.O3DEConfigError(f"Unable to resolve project named '{project_name}'. "
                                                     f"Make sure it is registered with O3DE.")

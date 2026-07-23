@@ -6,12 +6,12 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 ## AP Python Tests ##
 
 ## Main Tests ##
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.Batch_2_Main
         PATH  ${CMAKE_CURRENT_LIST_DIR}/asset_processor_batch_tests_2.py
         TEST_SUITE main
@@ -21,7 +21,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.ScriptCanvas_Main
         PATH ${CMAKE_CURRENT_LIST_DIR}/ScriptCanvasAssetProcessorTests.py
         TEST_SUITE main
@@ -35,7 +35,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
 
 ## Periodic Tests ##
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.AssetBuilder_Periodic
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_builder_tests.py
         TEST_SERIAL 
@@ -44,7 +44,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.Batch_Periodic
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_processor_batch_tests.py
         TEST_SUITE periodic        
@@ -54,7 +54,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
     
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.Batch_Periodic_Serial
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_processor_batch_periodic_serial_tests.py
         TEST_SERIAL
@@ -64,7 +64,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessorBatch
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.BatchDependency_Periodic
         PATH  ${CMAKE_CURRENT_LIST_DIR}/asset_processor_batch_dependency_tests.py
         TEST_SUITE periodic
@@ -74,7 +74,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.BatchDependency_2_Periodic
         PATH  ${CMAKE_CURRENT_LIST_DIR}/asset_processor_batch_dependency_tests2.py
         TEST_SUITE periodic
@@ -83,7 +83,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.Gui_Periodic
         PATH  ${CMAKE_CURRENT_LIST_DIR}/asset_processor_gui_tests.py
         TEST_SUITE periodic
@@ -93,7 +93,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.Gui_2_Periodic
         PATH  ${CMAKE_CURRENT_LIST_DIR}/asset_processor_gui_tests_2.py
         TEST_SUITE periodic
@@ -104,7 +104,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.AssetRelocator_Periodic
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_relocator_tests.py
         TEST_SUITE periodic
@@ -113,7 +113,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessorBatch
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AssetProcessorCacheServerTests.Periodic
         PATH  ${CMAKE_CURRENT_LIST_DIR}/asset_processor_cache_server_tests.py
         TEST_SUITE periodic
@@ -124,7 +124,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
 
 ## Sandbox Tests ##
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.Batch_Sandbox
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_processor_batch_tests.py
         TEST_SUITE sandbox
@@ -134,7 +134,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.Batch_2_Sandbox
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_processor_batch_tests_2.py
         TEST_SUITE sandbox
@@ -144,7 +144,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.ScriptCanvas_Sandbox
         PATH ${CMAKE_CURRENT_LIST_DIR}/ScriptCanvasAssetProcessorTests.py
         TEST_SUITE sandbox
@@ -156,7 +156,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             ScriptCanvas
     )
     
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.asset_builder_Sandbox
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_builder_tests.py
         TEST_SUITE sandbox
@@ -165,7 +165,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
     
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.batch_periodic_serial_Sandbox
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_processor_batch_periodic_serial_tests.py
         TEST_SERIAL
@@ -175,7 +175,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessorBatch
     )
     
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.batch_dependency_Sandbox
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_processor_batch_dependency_tests.py
         TEST_SUITE sandbox
@@ -185,7 +185,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
     
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.batch_dependency_2_Sandbox
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_processor_batch_dependency_tests2.py
         TEST_SUITE sandbox
@@ -195,7 +195,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
     
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.gui_Sandbox
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_processor_gui_tests.py
         TEST_SUITE sandbox
@@ -205,7 +205,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
     
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.gui_2_Sandbox
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_processor_gui_tests_2.py
         TEST_SUITE sandbox
@@ -216,7 +216,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessor
     )
     
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.asset_relocator_Sandbox
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_relocator_tests.py
         TEST_SUITE sandbox
@@ -225,7 +225,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             AZ::AssetProcessorBatch
     )
     
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.cache_server_Sandbox
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_processor_cache_server.py
         TEST_SUITE sandbox
@@ -238,13 +238,13 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
 ## Non-Linux Tests ##
 
     set(SUPPORTED_PLATFORMS "Windows" "Mac")
-    if (NOT "${PAL_PLATFORM_NAME}" IN_LIST SUPPORTED_PLATFORMS)
+    if (NOT "${O3DE_PAL_PLATFORM_NAME}" IN_LIST SUPPORTED_PLATFORMS)
         return()
     endif()
 
 ## Periodic Tests ##
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.MissingDependency
         PATH ${CMAKE_CURRENT_LIST_DIR}/missing_dependency_tests.py
         TEST_SERIAL 

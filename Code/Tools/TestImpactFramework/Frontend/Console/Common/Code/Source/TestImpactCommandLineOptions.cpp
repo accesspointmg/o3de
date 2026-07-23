@@ -101,7 +101,7 @@ namespace TestImpact
 
     RepoPath ParseConfigurationFile(const AZ::CommandLine& cmd)
     {
-        return ParsePathOption(CommonOptions::Keys[CommonOptions::ConfigKey], cmd).value_or(LY_TEST_IMPACT_DEFAULT_CONFIG_FILE);
+        return ParsePathOption(CommonOptions::Keys[CommonOptions::ConfigKey], cmd).value_or(O3DE_TEST_IMPACT_DEFAULT_CONFIG_FILE);
     }
 
     AZStd::optional<RepoPath> ParseDataFile(const AZ::CommandLine& cmd)

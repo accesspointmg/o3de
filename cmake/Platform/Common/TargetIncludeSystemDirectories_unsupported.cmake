@@ -6,7 +6,7 @@
 #
 #
 
-#! ly_target_include_system_directories: adds a system include to the target. This is the same behavior as target_include_directories
+#! o3de_target_include_system_directories: adds a system include to the target. This is the same behavior as target_include_directories
 #  passing the SYSTEM parameter. However, this supports doing it in generators that CMake still does not.
 #
 # To handle platforms that yet not support SYSTEM includes, we pass the includes as part of compilation options
@@ -20,40 +20,40 @@
 # \arg:PUBLIC includes to apply to PUBLIC
 # \arg:PRIVATE includes to apply to PRIVATE
 #
-function(ly_target_include_system_directories)
+function(o3de_target_include_system_directories)
 
     set(options)
     set(oneValueArgs TARGET)
     set(multiValueArgs INTERFACE PUBLIC PRIVATE)
 
-    cmake_parse_arguments(ly_target_include_system_directories "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(o3de_target_include_system_directories "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    if(NOT ly_target_include_system_directories_TARGET)
+    if(NOT o3de_target_include_system_directories_TARGET)
         message(FATAL_ERROR "Target not provided")
     endif()
 
-    if(LY_CXX_SYSTEM_INCLUDE_CONFIGURATION_FLAG)
-        target_compile_options(${ly_target_include_system_directories_TARGET}
+    if(O3DE_CXX_SYSTEM_INCLUDE_CONFIGURATION_FLAG)
+        target_compile_options(${o3de_target_include_system_directories_TARGET}
             INTERFACE
-                ${LY_CXX_SYSTEM_INCLUDE_CONFIGURATION_FLAG}
+                ${O3DE_CXX_SYSTEM_INCLUDE_CONFIGURATION_FLAG}
         )
     endif()
 
     foreach(type ITEMS INTERFACE PUBLIC PRIVATE)
-        foreach(include_dir ${ly_target_include_system_directories_${type}})
+        foreach(include_dir ${o3de_target_include_system_directories_${type}})
             string(GENEX_STRIP ${include_dir} include_genex_expr)
             # Skip over any include directory value which contains a generator expression
             # It's path cannot be validated at configure
             # The check validates that the string stripped from generation expressions is the same as the original string
             if(include_genex_expr STREQUAL include_dir AND NOT EXISTS ${include_dir})
-                message(FATAL_ERROR "Cannot find 3rdParty library ${ly_add_external_target_NAME} include path ${include_dir}")
+                message(FATAL_ERROR "Cannot find 3rdParty library ${o3de_add_external_target_NAME} include path ${include_dir}")
             endif()
-            target_compile_options(${ly_target_include_system_directories_TARGET}
+            target_compile_options(${o3de_target_include_system_directories_TARGET}
                 ${type} ${CMAKE_INCLUDE_SYSTEM_FLAG_CXX}${include_dir}
             )
             # For windows add the includes to the INTERFACE_SYSTEM_INCLUDE_DIRECTORIES directly so that the property
             # is available in dependent targets
-            set_property(TARGET ${ly_target_include_system_directories_TARGET} APPEND
+            set_property(TARGET ${o3de_target_include_system_directories_TARGET} APPEND
                 PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${include_dir})
         endforeach()
     endforeach()

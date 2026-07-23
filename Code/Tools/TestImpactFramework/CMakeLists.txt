@@ -6,28 +6,29 @@
 #
 #
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${PAL_PLATFORM_NAME} ${O3DE_ENGINE_RESTRICTED_PATH} ${LY_ROOT_FOLDER})
+o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Tools/TestImpactFramework/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_tools_testimpactframework_path)
+#set(common_code_tools_testimpactframework_path ${O3DE_ENGINE_PATH}/Code/Tools/TestImpactFramework/Platform/Common)
 
-include(${pal_dir}/PAL_${PAL_PLATFORM_NAME_LOWERCASE}.cmake)
+include(${pal_code_tools_testimpactframework_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)
 
-if(PAL_TRAIT_TEST_IMPACT_FRAMEWORK_SUPPORTED AND PAL_TRAIT_BUILD_TESTS_SUPPORTED AND NOT LY_MONOLITHIC_GAME)
+if(O3DE_PAL_TRAIT_TEST_IMPACT_FRAMEWORK_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND NOT O3DE_MONOLITHIC_GAME)
     add_subdirectory(Runtime)
     add_subdirectory(Frontend)
 
     if(O3DE_TEST_IMPACT_ACTIVE)
         # Only add the TIAF unit tests if one or more runtimes is enabled
-        ly_add_pytest(
+        o3de_add_pytest(
             NAME TiafToolsTest
-            PATH ${LY_ROOT_FOLDER}/scripts/build/TestImpactAnalysis/Testing/test_tiaf_tools.py
+            PATH ${O3DE_ENGINE_PATH}/scripts/build/TestImpactAnalysis/Testing/test_tiaf_tools.py
             TEST_SERIAL
             COMPONENT 
                 TestImpactFramework
             LABELS REQUIRES_tiaf
         )
         
-        ly_add_pytest(
+        o3de_add_pytest(
             NAME TiafPythonUnitTest
-            PATH ${LY_ROOT_FOLDER}/scripts/build/TestImpactAnalysis/Testing/test_tiaf_unit_tests.py
+            PATH ${O3DE_ENGINE_PATH}/scripts/build/TestImpactAnalysis/Testing/test_tiaf_unit_tests.py
             TEST_SERIAL
             COMPONENT
                 TestImpactFramework

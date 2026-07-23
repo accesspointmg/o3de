@@ -11,10 +11,9 @@ set(FILES
     ../Common/Clang/Configurations_clang.cmake
     Configurations_ios.cmake
     Install_ios.cmake
-    LYTestWrappers_ios.cmake
-    LYWrappers_ios.cmake
+    O3deTestWrappers_ios.cmake
+    O3deWrappers_ios.cmake
     PAL_ios.cmake
-    PALDetection_ios.cmake
     SDK_ios.cmake
     Toolchain_ios.cmake
 )

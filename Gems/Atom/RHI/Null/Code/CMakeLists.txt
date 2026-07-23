@@ -6,11 +6,13 @@
 #
 #
 
-o3de_pal_dir(pal_include_dir ${CMAKE_CURRENT_LIST_DIR}/Include/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Include/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_include_path)
+set(pal_common_code_include_path ${CMAKE_CURRENT_LIST_DIR}/Include/Platform/Common)
 
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Reflect STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -18,14 +20,14 @@ ly_add_target(
     INCLUDE_DIRECTORIES
         PUBLIC
             Include
-            ${pal_include_dir}
+            ${pal_code_include_path}
     BUILD_DEPENDENCIES
         PRIVATE
             AZ::AzCore
             Gem::Atom_RHI.Reflect
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Private.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -34,10 +36,10 @@ ly_add_target(
         PRIVATE
             .
             Source
-            ${pal_source_dir}
+            ${pal_code_source_path}
         PUBLIC
             Include
-            ${pal_include_dir}
+            ${pal_code_include_path}
     BUILD_DEPENDENCIES
         PUBLIC
             AZ::AzCore
@@ -46,8 +48,8 @@ ly_add_target(
             Gem::Atom_RHI.Public
 )
 
-ly_add_target(
-    NAME ${gem_name}.Private ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name}.Private ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         atom_rhi_null_private_common_shared_files.cmake
@@ -55,7 +57,7 @@ ly_add_target(
         PRIVATE
             .
             Source
-            ${pal_source_dir}
+            ${pal_code_source_path}
     BUILD_DEPENDENCIES
         PRIVATE
             Gem::${gem_name}.Reflect
@@ -63,7 +65,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/RHI/Module.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -71,9 +73,9 @@ ly_add_source_properties(
             O3DE_GEM_NAME=${gem_name}
             O3DE_GEM_VERSION=${gem_version})
 
-if (PAL_TRAIT_BUILD_HOST_TOOLS)
+if (O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Builders.Static STATIC
         NAMESPACE Gem
         FILES_CMAKE
@@ -82,7 +84,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
             PRIVATE
                 .
                 Source
-                ${pal_source_dir}
+                ${pal_code_source_path}
             PUBLIC
                 Include
         BUILD_DEPENDENCIES
@@ -93,7 +95,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::${gem_name}.Reflect
     )
 
-   ly_add_target(
+   o3de_add_target(
         NAME ${gem_name}.Builders GEM_MODULE
         NAMESPACE Gem
         FILES_CMAKE
@@ -110,7 +112,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # Inject the gem name into the Module source file
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES
             Source/RHI.Builders/BuilderModule.cpp
         PROPERTY COMPILE_DEFINITIONS

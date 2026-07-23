@@ -6,11 +6,11 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Editor.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -49,7 +49,7 @@ ly_add_target(
         Gem::ScriptEvents
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Editor GEM_MODULE
 
     NAMESPACE Gem
@@ -76,7 +76,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/ScriptCanvasTestingEditorModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -85,14 +85,14 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # By default, the above module is used only in tools:
-ly_create_alias(NAME ${gem_name}.Tools  NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
-ly_create_alias(NAME ${gem_name}.Builders  NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+o3de_create_alias(NAME ${gem_name}.Tools  NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+o3de_create_alias(NAME ${gem_name}.Builders  NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
         NAME ${gem_name}.Editor.Tests MODULE
         NAMESPACE Gem
         FILES_CMAKE
@@ -119,7 +119,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             Gem::GraphCanvas.Editor
             Gem::ScriptCanvas.Editor
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Editor.Tests
     )
 endif()

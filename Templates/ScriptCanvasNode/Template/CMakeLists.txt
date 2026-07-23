@@ -9,9 +9,9 @@
 # Setup the gem meta variables that includes the "gem_path", "gem_name" and "gem_version"
 # The "pal_dir" variable is also set which refers to the Platform/<platform-name> directory
 # based on the directory of this CMakeLists.txt
-o3de_gem_setup("${Name}")
+o3de_gem_setup()
 
-ly_add_target(
+o3de_add_target(
     NAME ${Name}.Object OBJECT
     NAMESPACE ScriptCanvasNodes
     FILES_CMAKE

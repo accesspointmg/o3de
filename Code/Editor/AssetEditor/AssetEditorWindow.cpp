@@ -23,7 +23,7 @@
 #include <AzToolsFramework/API/ViewPaneOptions.h>
 
 // Editor
-#include "LyViewPaneNames.h"
+#include "O3deViewPaneNames.h"
 
 AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <AssetEditor/ui_AssetEditorWindow.h>
@@ -74,7 +74,7 @@ void AssetEditorWindow::RegisterViewClass(const AZ::Data::Asset<AZ::Data::AssetD
     options.showInMenu = false;
     auto& assetName = asset.GetHint();
     const char* paneName = assetName.c_str();
-    AzToolsFramework::RegisterViewPane<AssetEditorWindow>(paneName, LyViewPane::CategoryTools, options, [asset](QWidget*) {return AssetEditorUtils::CreateAssetEditorWithAsset(asset); });
+    AzToolsFramework::RegisterViewPane<AssetEditorWindow>(paneName, O3deViewPane::CategoryTools, options, [asset](QWidget*) {return AssetEditorUtils::CreateAssetEditorWithAsset(asset); });
 }
 
 void AssetEditorWindow::CreateAsset(const AZ::Data::AssetType& assetType, const AZ::Uuid& interestedComponentId)
@@ -115,7 +115,7 @@ void AssetEditorWindow::RegisterViewClass()
     options.preferedDockingArea = Qt::NoDockWidgetArea;
     options.showOnToolsToolbar = true;
     options.toolbarIcon = ":/Menu/asset_editor.svg";
-    AzToolsFramework::RegisterViewPane<AssetEditorWindow>(LyViewPane::AssetEditor, LyViewPane::CategoryTools, options);
+    AzToolsFramework::RegisterViewPane<AssetEditorWindow>(O3deViewPane::AssetEditor, O3deViewPane::CategoryTools, options);
 }
 
 void AssetEditorWindow::OnAssetOpened(const AZ::Data::Asset<AZ::Data::AssetData>& asset)

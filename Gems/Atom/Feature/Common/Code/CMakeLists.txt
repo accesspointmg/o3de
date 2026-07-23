@@ -6,23 +6,26 @@
 #
 #
 
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
-set(common_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
+set(pal_common_code_path ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
+
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_common_code_source_path)
+# NOTE: all per-platform files (platform_*_files.cmake, runtime_dependencies_*.cmake)
+# live in Source/Platform/<PlatformName>/ — do not clobber this with the Common dir
 
 # TODO(OBJECT-library): Change this target to an object library after Gradle was updated
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Private.Object STATIC
     NAMESPACE Gem
     FILES_CMAKE
         atom_feature_common_files.cmake
-        ${pal_source_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_common_code_source_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${pal_source_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
+        ${pal_common_code_source_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             Include
             Source
-            ${pal_source_dir}
+            ${pal_common_code_source_path}
             3rdParty/ACES
     COMPILE_DEFINITIONS
         PRIVATE
@@ -39,7 +42,7 @@ ly_add_target(
         Gem::ImGui.imguilib
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Public STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -47,7 +50,7 @@ ly_add_target(
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
-            ${pal_source_dir}
+            ${pal_common_code_source_path}
         PUBLIC
             Include
             3rdParty/ACES
@@ -63,19 +66,19 @@ ly_add_target(
             Gem::Atom_Utils.Static
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         atom_feature_common_shared_files.cmake
         ../Assets/atom_feature_common_asset_files.cmake
         ../Editor/atom_feature_common_editor_script_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${pal_source_dir}/runtime_dependencies_clients.cmake
+        ${pal_common_code_source_path}/runtime_dependencies_clients.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
-            ${pal_source_dir}
+            ${pal_common_code_source_path}
     BUILD_DEPENDENCIES
         PUBLIC
             Gem::${gem_name}.Public
@@ -83,8 +86,8 @@ ly_add_target(
             Gem::${gem_name}.Private.Object
 )
 
-ly_add_target(
-    NAME ${gem_name}.Headless ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name}.Headless ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         atom_feature_common_shared_files.cmake
@@ -93,7 +96,7 @@ ly_add_target(
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
-            ${pal_source_dir}
+            ${pal_common_code_source_path}
         PUBLIC
             Include
     COMPILE_DEFINITIONS
@@ -109,7 +112,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/CommonModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -117,15 +120,16 @@ ly_add_source_properties(
             O3DE_GEM_NAME=${gem_name}
             O3DE_GEM_VERSION=${gem_version})
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 
-    set(runtime_dependencies_tools ${pal_source_dir}/runtime_dependencies_tools.cmake)
-    foreach(pal_tools_platform ${LY_PAL_TOOLS_ENABLED})
-        ly_get_list_relative_pal_filename(pal_runtime_dependencies_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${pal_tools_platform})
+    set(runtime_dependencies_tools ${pal_common_code_source_path}/runtime_dependencies_tools.cmake)
+    foreach(pal_tools_platform ${O3DE_PAL_TOOLS_ENABLED})
+        o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${pal_tools_platform} pal_tools_path)
+        o3de_get_list_relative_pal_filename(pal_runtime_dependencies_source_dir ${pal_tools_path})
         list(APPEND runtime_dependencies_tools ${pal_runtime_dependencies_source_dir}/runtime_dependencies_tools.cmake)
     endforeach()
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
 
         NAMESPACE Gem
@@ -136,7 +140,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
         INCLUDE_DIRECTORIES
             PRIVATE
                 Source
-                ${pal_source_dir}
+                ${pal_common_code_source_path}
             PUBLIC
                 Include
         COMPILE_DEFINITIONS
@@ -157,8 +161,8 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::${gem_name}.Public
     )
 
-    set(runtime_dependencies_builders ${pal_source_dir}/runtime_dependencies_builders.cmake)
-    ly_add_target(
+    set(runtime_dependencies_builders ${pal_common_code_source_path}/runtime_dependencies_builders.cmake)
+    o3de_add_target(
         NAME ${gem_name}.Builders GEM_MODULE
 
         NAMESPACE Gem
@@ -177,7 +181,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # Inject the gem name into the Module source file
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES
             Source/Builders/BuilderModule.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -189,9 +193,9 @@ endif()
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             atom_feature_common_tests_files.cmake
@@ -208,7 +212,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 Gem::${gem_name}.Private.Object
                 Gem::${gem_name}.Public
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         LABELS REQUIRES_tiaf
     )

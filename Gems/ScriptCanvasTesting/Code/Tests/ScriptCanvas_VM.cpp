@@ -181,7 +181,7 @@ public:
 
 TEST_F(ScriptCanvasTestFixture, InterpretedHelloWorld)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_HelloWorld");
+    RunUnitTestGraph("O3DE_SC_UnitTest_HelloWorld");
 }
 
 TEST_F(ScriptCanvasTestFixture, TypeInheritance)

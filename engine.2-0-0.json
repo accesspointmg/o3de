@@ -1,0 +1,558 @@
+{
+  "$schemaVersion": "2.0.0",
+  "$schema": "https://canonical.o3de.org/o3de-engine-2.0.0.json",
+  "engine": {
+    "name": "org.o3de.engine.o3de",
+    "version": "4.2.0",
+    "display_name": "",
+    "description": "",
+    "type": "engine",
+    "id": "",
+    "copyright_text": "",
+    "copyright_year": 2023
+  },
+  "origin": {
+    "name": "The Linux Foundation",
+    "uri": "https://www.linuxfoundation.org"
+  },
+  "licenses": [
+    {
+      "license_identifier": "Apache-2.0",
+      "uri": "https://spdx.org/licenses/Apache-2.0.html",
+      "display_name": "Apache 2.0",
+      "relative_path": "LICENSE_APACHE2.TXT"
+    },
+    {
+      "license_identifier": "MIT",
+      "uri": "https://spdx.org/licenses/MIT.html",
+      "display_name": "MIT",
+      "relative_path": "LICENSE_MIT.TXT"
+    }
+  ],
+  "canonical_tags": [
+    "Engine"
+  ],
+  "user_tags": [],
+  "icon": {
+    "relative_path": "",
+    "uri": ""
+  },
+  "documentation": {
+    "relative_path": "",
+    "uri": ""
+  },
+  "api_versions": {
+    "editor": "1.0.0",
+    "framework": "1.2.1",
+    "launcher": "1.0.0",
+    "tools": "1.1.0"
+  },
+  "children": {
+    "engines": [],
+    "projects": [
+      "AutomatedTesting/project.json"
+    ],
+    "gems": [
+      "Gems/Achievements/gem.json",
+      "Gems/Archive/gem.json",
+      "Gems/AssetValidation/gem.json",
+      "Gems/Atom/gem.json",
+      "Gems/AtomContent/gem.json",
+      "Gems/AtomO3deIntegration/gem.json",
+      "Gems/AtomTressFX/gem.json",
+      "Gems/AudioSystem/gem.json",
+      "Gems/BarrierInput/gem.json",
+      "Gems/Camera/gem.json",
+      "Gems/CameraFramework/gem.json",
+      "Gems/CertificateManager/gem.json",
+      "Gems/Compression/gem.json",
+      "Gems/CrashReporting/gem.json",
+      "Gems/CustomAssetExample/gem.json",
+      "Gems/DebugDraw/gem.json",
+      "Gems/DevTextures/gem.json",
+      "Gems/DiffuseProbeGrid/gem.json",
+      "Gems/EditorPythonBindings/gem.json",
+      "Gems/EMotionFX/gem.json",
+      "Gems/ExpressionEvaluation/gem.json",
+      "Gems/FastNoise/gem.json",
+      "Gems/GameState/gem.json",
+      "Gems/GameStateSamples/gem.json",
+      "Gems/Gestures/gem.json",
+      "Gems/GradientSignal/gem.json",
+      "Gems/GraphCanvas/gem.json",
+      "Gems/GraphModel/gem.json",
+      "Gems/ImGui/gem.json",
+      "Gems/InAppPurchases/gem.json",
+      "Gems/LandscapeCanvas/gem.json",
+      "Gems/LmbrCentral/gem.json",
+      "Gems/LocalUser/gem.json",
+      "Gems/LyShine/gem.json",
+      "Gems/LyShineExamples/gem.json",
+      "Gems/Maestro/gem.json",
+      "Gems/MessagePopup/gem.json",
+      "Gems/Microphone/gem.json",
+      "Gems/MiniAudio/gem.json",
+      "Gems/MotionMatching/gem.json",
+      "Gems/Multiplayer/gem.json",
+      "Gems/MultiplayerCompression/gem.json",
+      "Gems/NvCloth/gem.json",
+      "Gems/PhysX/Common/gem.json",
+      "Gems/PhysX/Core/PhysX4/gem.json",
+      "Gems/PhysX/Core/PhysX5/gem.json",
+      "Gems/PhysX/Debug/PhysX4/gem.json",
+      "Gems/PhysX/Debug/PhysX5/gem.json",
+      "Gems/Prefab/PrefabBuilder/gem.json",
+      "Gems/Presence/gem.json",
+      "Gems/PrimitiveAssets/gem.json",
+      "Gems/Profiler/gem.json",
+      "Gems/PythonAssetBuilder/gem.json",
+      "Gems/QtForPython/gem.json",
+      "Gems/RecastNavigation/gem.json",
+      "Gems/RemoteTools/gem.json",
+      "Gems/SaveData/gem.json",
+      "Gems/SceneLoggingExample/gem.json",
+      "Gems/SceneProcessing/gem.json",
+      "Gems/ScriptAutomation/gem.json",
+      "Gems/ScriptCanvas/gem.json",
+      "Gems/ScriptCanvasDeveloper/gem.json",
+      "Gems/ScriptCanvasPhysics/gem.json",
+      "Gems/ScriptCanvasTesting/gem.json",
+      "Gems/ScriptedEntityTweener/gem.json",
+      "Gems/ScriptEvents/gem.json",
+      "Gems/Stars/gem.json",
+      "Gems/StartingPointCamera/gem.json",
+      "Gems/StartingPointInput/gem.json",
+      "Gems/StartingPointMovement/gem.json",
+      "Gems/Streamer/gem.json",
+      "Gems/SurfaceData/gem.json",
+      "Gems/Terrain/gem.json",
+      "Gems/TestAssetBuilder/gem.json",
+      "Gems/TextureAtlas/gem.json",
+      "Gems/TickBusOrderViewer/gem.json",
+      "Gems/UiBasics/gem.json",
+      "Gems/Vegetation/gem.json",
+      "Gems/VideoPlaybackFramework/gem.json",
+      "Gems/VirtualGamepad/gem.json",
+      "Gems/WhiteBox/gem.json"
+    ],
+    "templates": [
+      "Templates/AssetGem/template.json",
+      "Templates/CppToolGem/template.json",
+      "Templates/DefaultComponent/template.json",
+      "Templates/DefaultGem/template.json",
+      "Templates/DefaultProject/template.json",
+      "Templates/GemRepo/template.json",
+      "Templates/GraphicsGem/template.json",
+      "Templates/MinimalProject/template.json",
+      "Templates/PrebuiltGem/template.json",
+      "Templates/PythonToolGem/template.json",
+      "Templates/RemoteRepo/template.json",
+      "Templates/ScriptCanvasNode/template.json",
+      "Templates/ScriptOnlyProject/template.json",
+      "Templates/UnifiedMultiplayerGem/template.json"
+    ],
+    "repos": [],
+    "overlays": []
+  },
+  "remote": {
+    "engines": [],
+    "projects": [],
+    "gems": [],
+    "templates": [],
+    "repos": [
+      "https://canonical.o3de.org"
+    ],
+    "overlays": []
+  },
+  "dependent": {
+    "gems": [
+      "org.o3de.gem.atom_bootstrap>=0.0.0",
+      "org.o3de.gem.atomshader>=0.0.0",
+      "org.o3de.gem.atomviewportdisplayinfo>=0.0.0",
+      "org.o3de.gem.camera>=0.0.0",
+      "org.o3de.gem.commonfeaturesatom>=0.0.0",
+      "org.o3de.gem.editormodefeedback>=0.0.0",
+      "org.o3de.gem.maestro>=0.0.0",
+      "org.o3de.gem.prefabbuilder>=0.0.0",
+      "org.o3de.gem.sceneprocessing>=0.0.0"
+    ]
+  },
+  "releases": [
+    {
+      "name": "2510.2",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2510.2"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2510.2.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2510.2/o3de-2510.2-lfs.zip",
+          "lfs_sha256": "e9e2c1acf4027bf8b39e0da3c71c2060df7abf4434558fe4886b6ce69a19fd55"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2510.2.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2510.2/o3de-2510.2-lfs.tar.gz",
+          "lfs_sha256": "b568f77d3c4000b9f9aa28d2ce26517dbe150e45040a0e645950bdc9226bf411"
+        }
+      ]
+    },
+    {
+      "name": "2510.1",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2510.1"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2510.1.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2510.1/o3de-2510.1-lfs.zip",
+          "lfs_sha256": "092452616af404680a078724f093c70ecd0674e50a0fbd4dd0000296040ddd40"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2510.1.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2510.1/o3de-2510.1-lfs.tar.gz",
+          "lfs_sha256": "f5ea62651f117d553bc96a8d909ab91261d8f103d68b5849e4ba2b35d0749b9c"
+        }
+      ]
+    },
+    {
+      "name": "2510.0",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2510.0"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2510.0.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2510.0/o3de-2510.0-lfs.zip",
+          "lfs_sha256": "83becec70e9fdf26c51471fac075c5f7451762e0a1ffc65121c88778c3f1b8ee"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2510.0.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2510.0/o3de-2510.0-lfs.tar.gz",
+          "lfs_sha256": "482c6febea3f72b50769683bdde86dbc97ab619d77f5a5fdbf8fb7f0fe9a7c7d"
+        }
+      ]
+    },
+    {
+      "name": "2505.1",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2505.1"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2505.1.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2505.1/o3de-2505.1-lfs.zip",
+          "lfs_sha256": "1cfa2250f83aabcbbf6f289a5c0d2d429e1115608519179681dc7363150a091f"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2505.1.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2505.1/o3de-2505.1-lfs.tar.gz",
+          "lfs_sha256": "4aee324115ae80d02d47e4150d65d2784f9529b0a12ff1989df1885fb074d80f"
+        }
+      ]
+    },
+    {
+      "name": "2505.0",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2505.0"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2505.0.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2505.0/o3de-2505.0-lfs.zip",
+          "lfs_sha256": "2db11d0a75acaf40afb8d60844f146461ef1aa6d6f16c285c01c37f23587deb6"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2505.0.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2505.0/o3de-2505.0-lfs.tar.gz",
+          "lfs_sha256": "3c2a8af3ec1f396bb492ac974f3f42dd39225d1c0bdc068939824ad55ba234a1"
+        }
+      ]
+    },
+    {
+      "name": "2409.2",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2409.2"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2409.2.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2409.2/o3de-2409.2-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2409.2.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2409.2/o3de-2409.2-lfs.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "2409.1",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2409.1"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2409.1.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2409.1/o3de-2409.1-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2409.1.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2409.1/o3de-2409.1-lfs.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "2409.0",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2409.0"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2409.0.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2409.0/o3de-2409.0-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2409.0.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2409.0/o3de-2409.0-lfs.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "2310.3",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2310.3"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2310.3.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2310.3/o3de-2310.3-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2310.3.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2310.3/o3de-2310.3-lfs.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "2310.2",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2310.2"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2310.2.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2310.2/o3de-2310.2-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2310.2.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2310.2/o3de-2310.2-lfs.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "2310.1",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2310.1"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2310.1.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2310.1/o3de-2310.1-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2310.1.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2310.1/o3de-2310.1-lfs.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "2310.0",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2310.0"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2310.0.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2310.0/o3de-2310.0-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2310.0.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2310.0/o3de-2310.0-lfs.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "2305.1",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2305.1"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2305.1.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2305.1/o3de-2305.1-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2305.1.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "2305.0",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2305.0"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2305.0.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2305.0/o3de-2305.0-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2305.0.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2305.0/o3de-2305.0-lfs.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "2210.0",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2210.0"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2210.0.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2210.0/o3de-2210.0-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2210.0.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2210.0/o3de-2210.0-lfs.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "2205.0",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2205.0"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2205.0.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2205.0/o3de-2205.0-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2205.0.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2205.0/o3de-2205.0-lfs.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "2111.2",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2111.2"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2111.2.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2111.2/o3de-2111.2-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2111.2.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2111.2/o3de-2111.2-lfs.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "2111.1",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2111.1"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2111.1.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2111.1/o3de-2111.1-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2111.1.tar.gz",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2111.1/o3de-2111.1-lfs.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "2107.1",
+      "source_controls": [
+        {
+          "git": "https://github.com/o3de/o3de.git",
+          "tag": "2107.1"
+        }
+      ],
+      "downloads": [
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2107.1.zip",
+          "lfs": "https://github.com/o3de/o3de/releases/download/2107.1/2107.1-source-and-lfs.zip"
+        },
+        {
+          "source": "https://github.com/o3de/o3de/archive/refs/tags/2107.1.tar.gz"
+        }
+      ]
+    }
+  ],
+  "platforms": [
+    "Windows",
+    "Linux",
+    "Mac",
+    "iOS",
+    "Android"
+  ]
+}

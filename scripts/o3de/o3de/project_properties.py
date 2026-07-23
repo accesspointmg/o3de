@@ -11,14 +11,14 @@ import pathlib
 import sys
 import logging
 
-from o3de import manifest, utils
+from o3de import o3de_object, utils
 
 logger = logging.getLogger('o3de.project_properties')
 logging.basicConfig(format=utils.LOG_FORMAT)
 
 
 def get_project_props(name: str = None, path: pathlib.Path = None, user: bool = False) -> dict:
-    proj_json = manifest.get_project_json_data(project_name=name, project_path=path, user=user)
+    proj_json = o3de_object.get_project_json_data(project_name=name, project_path=path, user=user)
     if not isinstance(proj_json, dict):
         param = name if name else path
         logger.error(f'Could not retrieve project.json file for {param}')
@@ -164,7 +164,7 @@ def edit_project_props(proj_path: pathlib.Path = None,
         if new_engine_path and new_engine_path.name:
             # engine_path is absolute or relative to the project folder to simulate overriding the shared project.json
             engine_path_absolute = proj_path / new_engine_path
-            engine_manifest_data = manifest.get_engine_json_data(engine_path=new_engine_path.resolve())
+            engine_manifest_data = o3de_object.get_engine_json_data(engine_path=new_engine_path.resolve())
             if not engine_manifest_data:
                 logger.error(f'Cannot load engine.json data at path {new_engine_path} ({engine_path_absolute.resolve()}), please verify an engine exists at the supplied location with a valid engine.json file.')
                 return 1
@@ -207,7 +207,7 @@ def edit_project_props(proj_path: pathlib.Path = None,
                 del proj_json[key]
 
     proj_json_path = pathlib.Path(proj_path) if not user else pathlib.Path(proj_path) / 'user'
-    return 0 if manifest.save_o3de_manifest(proj_json, proj_json_path / 'project.json') else 1
+    return 0 if o3de_object.save_o3de_manifest_json_data(proj_json, proj_json_path / 'project.json') else 1
 
 
 def _edit_project_props(args: argparse) -> int:
@@ -239,14 +239,23 @@ def _edit_project_props(args: argparse) -> int:
                               new_engine_finder_cmake_path=args.engine_finder_cmake_path
                               )
 
+def add_args(subparsers) -> None:
+    """
+    add_args is called to add subparsers arguments to each command such that it can be
+    a central python file such as o3de.py.
+    It can be run from the o3de.py script as follows
+    call add_args and execute: python o3de.py project_properties --engine-path "C:/o3de"
+    :param subparsers: the caller instantiates subparsers and passes it in here
+    """
+    enable_project_props_subparser = subparsers.add_parser('edit-project-properties')
 
-def add_parser_args(parser):
-    group = parser.add_mutually_exclusive_group(required=True)
+    group = enable_project_props_subparser.add_mutually_exclusive_group(required=True)
     group.add_argument('-pp', '--project-path', type=pathlib.Path, required=False,
                        help='The path to the project.')
     group.add_argument('-pn', '--project-name', type=str, required=False,
                        help='The name of the project.')
-    group = parser.add_argument_group('properties', 'arguments for modifying individual project properties.')
+    
+    group = enable_project_props_subparser.add_argument_group('properties', 'arguments for modifying individual project properties.')
     group.add_argument('-pv', '--project-version', type=str, required=False,
                        help='The version of the project.')
     group.add_argument('-pnn', '--project-new-name', type=str, required=False,
@@ -269,49 +278,37 @@ def add_parser_args(parser):
                        help='Sets the path to the projects icon resource.')
     group.add_argument('--user', action='store_true', required=False, default=False,
                        help='Make changes to the <project>/user/project.json only. This is useful to locally override settings in <project>/project.json which are shared.')
-    group = parser.add_mutually_exclusive_group(required=False)
+    
+    group = enable_project_props_subparser.add_mutually_exclusive_group(required=False)
     group.add_argument('-at', '--add-tags', type=str, nargs='*', required=False,
                        help='Adds tag(s) to user_tags property. Space delimited list (ex. -at A B C)')
     group.add_argument('-dt', '--delete-tags', type=str, nargs='*', required=False,
                        help='Removes tag(s) from the user_tags property. Space delimited list (ex. -dt A B C')
     group.add_argument('-rt', '--replace-tags', type=str, nargs='*', required=False,
                        help='Replace entirety of user_tags property with space delimited list of values')
-    group = parser.add_mutually_exclusive_group(required=False)
+   
+    group = enable_project_props_subparser.add_mutually_exclusive_group(required=False)
     group.add_argument('-agn', '--add-gem-names', type=str, nargs='*', required=False,
                        help='Adds gem name(s) to gem_names field. Space delimited list (ex. -agn A B C)')
     group.add_argument('-dgn', '--delete-gem-names', type=str, nargs='*', required=False,
                        help='Removes gem name(s) from the gem_names field. Space delimited list (ex. -dgn A B C')
     group.add_argument('-rgn', '--replace-gem-names', type=str, nargs='*', required=False,
                        help='Replace entirety of gem_names field with space delimited list of values')
-    group = parser.add_mutually_exclusive_group(required=False)
+   
+    group = enable_project_props_subparser.add_mutually_exclusive_group(required=False)
     group.add_argument('-aev', '--add-compatible-engines', type=str, nargs='*', required=False,
                        help='Add engine version(s) this project is compatible with. Space delimited list (ex. -aev o3de>=1.2.3 o3de-sdk~=2.3).')
     group.add_argument('-dev', '--delete-compatible-engines', type=str, nargs='*', required=False,
                        help='Removes engine version(s) from the compatible_engines property. Space delimited list (ex. -dev o3de>=1.2.3 o3de-sdk~=2.3).')
     group.add_argument('-rev', '--replace-compatible-engines', type=str, nargs='*', required=False,
                        help='Replace entirety of compatible_engines field with space delimited list of values.')
-    group = parser.add_mutually_exclusive_group(required=False)
+    
+    group = enable_project_props_subparser.add_mutually_exclusive_group(required=False)
     group.add_argument('-aav', '--add-engine-api-dependencies', type=str, nargs='*', required=False,
                        help='Add engine api dependencies this gem is compatible with. Can be specified multiple times.')
     group.add_argument('-dav', '--delete-engine-api-dependencies', type=str, nargs='*', required=False,
                        help='Removes engine api dependencies from the compatible_engines property. Can be specified multiple times.')
     group.add_argument('-rav', '--replace-engine-api-dependencies', type=str, nargs='*', required=False,
                        help='Replace engine api dependencies in the compatible_engines property. Can be specified multiple times.')
-    parser.set_defaults(func=_edit_project_props)
-
-
-def add_args(subparsers) -> None:
-    enable_project_props_subparser = subparsers.add_parser('edit-project-properties')
-    add_parser_args(enable_project_props_subparser)
-
-
-def main():
-    the_parser = argparse.ArgumentParser()
-    add_parser_args(the_parser)
-    the_args = the_parser.parse_args()
-    ret = the_args.func(the_args) if hasattr(the_args, 'func') else 1
-    sys.exit(ret)
-
-
-if __name__ == "__main__":
-    main()
+    
+    enable_project_props_subparser.set_defaults(func=_edit_project_props)

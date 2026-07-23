@@ -6,7 +6,7 @@
 #
 #
 
-function(ly_sign_binaries in_path)
+function(o3de_sign_binaries in_path)
     message(STATUS "Executing package signing...")
     file(REAL_PATH "${CPACK_SOURCE_DIR}/.." _root_path)
     unset(_signing_command)
@@ -30,4 +30,10 @@ function(ly_sign_binaries in_path)
     else()
         message(STATUS "Signing complete!")
     endif()
+endfunction()
+
+function(o3de_sign_binaries in_path)
+    # This function is deprecated, use o3de_sign_binaries instead
+    message(WARNING "o3de_sign_binaries is deprecated, use o3de_sign_binaries instead")
+    o3de_sign_binaries(${in_path})
 endfunction()

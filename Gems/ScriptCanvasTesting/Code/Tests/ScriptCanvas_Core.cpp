@@ -475,10 +475,10 @@ TEST_F(ScriptCanvasTestFixture, Contracts)
 
 TEST_F(ScriptCanvasTestFixture, While)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_While", ScriptCanvas::ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_While", ScriptCanvas::ExecutionMode::Interpreted);
 }
 
 TEST_F(ScriptCanvasTestFixture, WhileBreak)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_WhileBreak", ScriptCanvas::ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_WhileBreak", ScriptCanvas::ExecutionMode::Interpreted);
 }

@@ -31,7 +31,7 @@ def getCopyright():
 """
 
 def getGemCMakeListsTemplate():
-    return """ly_add_target(
+    return """o3de_add_target(
     NAME {GEM_NAME}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -46,8 +46,8 @@ def getGemCMakeListsTemplate():
             #AZ::AzCore
 )
 
-ly_add_target(
-    NAME {GEM_NAME} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME {GEM_NAME} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         {GEM_NAME_LOWERCASE}_shared_files.cmake
@@ -61,8 +61,8 @@ ly_add_target(
             Gem::{GEM_NAME}.Static
 )
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
         NAME {GEM_NAME}.Editor GEM_MODULE
 
         NAMESPACE Gem
@@ -82,9 +82,9 @@ endif()
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME {GEM_NAME}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME {GEM_NAME}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             {GEM_NAME_LOWERCASE}_tests_files.cmake
@@ -96,7 +96,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzTest
                 Gem::{GEM_NAME}.Static
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME {GEM_NAME}.Tests
     )
 endif()

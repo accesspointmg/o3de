@@ -6,10 +6,10 @@
 #
 #
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} ${O3DE_ENGINE_RESTRICTED_PATH} ${LY_ROOT_FOLDER})
-set(common_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
+o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Tools/TestImpactFramework/Runtime/Common/Code/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_tools_testimpactframework_runtime_common_code_path)
+set(common_code_tools_testimpactframework_runtime_common_code_path ${O3DE_ENGINE_PATH}/Code/Tools/TestImpactFramework/Runtime/Common/Code/Source/Platform/Common)
 
-ly_add_target(
+o3de_add_target(
     NAME TestImpact.Runtime.Common.Headers HEADERONLY
     NAMESPACE AZ
     FILES_CMAKE
@@ -22,14 +22,14 @@ ly_add_target(
             AZ::AzCore
 )
 
-ly_add_target(
+o3de_add_target(
     NAME TestImpact.Runtime.Common.Static STATIC
     NAMESPACE AZ
     FILES_CMAKE
         testimpactframework_runtime_common_files.cmake
-        ${pal_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_tools_testimpactframework_runtime_common_code_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${common_dir}/${PAL_TRAIT_COMPILER_ID}/testimpactframework_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+        ${common_code_tools_testimpactframework_runtime_common_code_path}/${O3DE_PAL_TRAIT_COMPILER_ID}/testimpactframework_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             Source

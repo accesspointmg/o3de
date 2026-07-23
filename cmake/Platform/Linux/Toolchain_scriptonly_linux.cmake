@@ -6,6 +6,7 @@
 #
 #
 
+set(_cmake_Platform_Linux_Toolchain_scriptonly_linux_cmake ${CMAKE_CURRENT_LIST_DIR})
 set(CMAKE_SYSTEM_PROCESSOR "x86_64") # there is no AARCH64 version of the 'no compile toolchain' and this is not set automatically
 set(CMAKE_C_COMPILER "/usr/bin/true")
 set(CMAKE_CXX_COMPILER "/usr/bin/true")
@@ -15,4 +16,4 @@ set(CMAKE_C_COMPILER_ID "Clang")
 set(CMAKE_CXX_COMPILER_ID "Clang")
 set(CMAKE_C_COMPILER_VERSION 14.0.0)
 set(CMAKE_CXX_COMPILER_VERSION 14.0.0)
-include(${CMAKE_CURRENT_LIST_DIR}/../Common/Toolchain_scriptonly_common.cmake)
+include(${_cmake_Platform_Linux_Toolchain_scriptonly_linux_cmake}/../Common/Toolchain_scriptonly_common.cmake)

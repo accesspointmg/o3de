@@ -8,7 +8,7 @@
 
 #include "QtEditorApplication_linux.h"
 
-#ifdef PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#ifdef O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
 #include <AzFramework/XcbEventHandler.h>
 #include <AzFramework/XcbConnectionManager.h>
 #include <AzFramework/Input/Buses/Requests/InputSystemCursorRequestBus.h>
@@ -21,7 +21,7 @@ namespace Editor
 {
     EditorQtApplication* EditorQtApplication::newInstance(int& argc, char** argv)
     {
-#ifdef PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#ifdef O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
         return new EditorQtApplicationXcb(argc, argv);
 #endif
 
@@ -55,7 +55,7 @@ namespace Editor
     {
         if (GetIEditor()->IsInGameMode())
         {
-#ifdef PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#ifdef O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
             AzFramework::XcbEventHandlerBus::Broadcast(
                 &AzFramework::XcbEventHandler::HandleXcbEvent, static_cast<xcb_generic_event_t*>(message));
 

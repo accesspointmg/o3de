@@ -8,10 +8,10 @@
 
 add_subdirectory(NumericalMethods)
 
-set(LY_PHYSX_ENABLE_RUNNING_BENCHMARKS OFF CACHE BOOL "Adds a target to allow running of the physx benchmarks.")
+set(O3DE_PHYSX_ENABLE_RUNNING_BENCHMARKS OFF CACHE BOOL "Adds a target to allow running of the physx benchmarks.")
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
         NAME PhysX.Mocks HEADERONLY
         NAMESPACE Gem
         OUTPUT_NAME PhysX.Mocks.Gem

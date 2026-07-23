@@ -21,7 +21,7 @@ IF "%CLEAN_OUTPUT_DIRECTORY%"=="false" (
 
 IF DEFINED CLEAN_ASSETS (
     ECHO [ci_build] CLEAN_ASSETS option set
-    FOR %%P in (%CMAKE_LY_PROJECTS%) do (
+    FOR %%P in (%CMAKE_O3DE_PROJECTS%) do (
         IF EXIST %%P\Cache (
             ECHO [ci_build] Deleting "%%P\Cache"
             DEL /s /q /f %%P\Cache 1>nul

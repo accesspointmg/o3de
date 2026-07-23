@@ -45,7 +45,7 @@ namespace ScriptCanvasBuilder
 
     constexpr const char* s_scriptCanvasBuilder = "ScriptCanvasBuilder";
     constexpr const char* s_scriptCanvasProcessJobKey = "Script Canvas Process Job";
-    constexpr const char* s_unitTestParseErrorPrefix = "LY_SC_UnitTest";
+    constexpr const char* s_unitTestParseErrorPrefix = "O3DE_SC_UnitTest";
 
     enum class BuilderVersion : int
     {

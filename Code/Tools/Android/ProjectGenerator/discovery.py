@@ -46,7 +46,7 @@ def discover_android_sdk_path() -> str:
         if os.path.isdir(sdk_system_path):
             return sdk_system_path
     else:
-        # Linux or MacOS
+        # Linux or Mac
         sdk_path = f"{user_home_dir}/Library/Android/sdk"
         if os.path.isdir(sdk_path):
             return sdk_path

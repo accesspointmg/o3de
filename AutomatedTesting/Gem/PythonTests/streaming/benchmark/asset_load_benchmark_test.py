@@ -24,16 +24,16 @@ from statistics import mean, median
 from ctypes import *
 from ctypes.wintypes import *
 
-pytest.importorskip("ly_test_tools")
+pytest.importorskip("o3de_test_tools")
 
 import time as time
 
-import ly_test_tools.launchers.launcher_helper as launcher_helper
-import ly_remote_console.remote_console_commands as remote_console_commands
-from ly_remote_console.remote_console_commands import (
+import o3de_test_tools.launchers.launcher_helper as launcher_helper
+import o3de_remote_console.remote_console_commands as remote_console_commands
+from o3de_remote_console.remote_console_commands import (
     send_command_and_expect_response as send_command_and_expect_response,
 )
-import ly_test_tools.environment.waiter as waiter
+import o3de_test_tools.environment.waiter as waiter
 from automatedtesting_shared.network_utils import check_for_listening_port
 from automatedtesting_shared.file_utils import delete_check
 
@@ -351,7 +351,7 @@ class TestBenchmarkAssetLoads(object):
             # Load 650 MB from a single root 10MB asset that has 64 dependent 10MB assets
             Benchmark('10mb_64x1', 1),
             # Load 650 MB from a single root 10MB asset where each asset has 1 dependent 10MB asset 64 levels deep
-            # (Currently removed because it crashes Open 3D Engine, re-enable once LY can handle it - SPEC-1314)
+            # (Currently removed because it crashes Open 3D Engine, re-enable once O3DE can handle it - SPEC-1314)
             #Benchmark('10mb_1x64', 1),
 
             # The second set of benchmarks measures the load time effects of different quantities of parallel asset loads.

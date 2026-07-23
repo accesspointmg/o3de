@@ -88,9 +88,9 @@ def Material_DynamicFriction():
     import azlmbr
     import azlmbr.legacy.general as general
     import azlmbr.bus as bus
-    import azlmbr.math as lymath
+    import azlmbr.math as o3demath
 
-    FORCE_IMPULSE = lymath.Vector3(10.0, 0.0, 0.0)
+    FORCE_IMPULSE = o3demath.Vector3(10.0, 0.0, 0.0)
     TIMEOUT = 5
 
     class Box:

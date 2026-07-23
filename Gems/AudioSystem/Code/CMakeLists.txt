@@ -10,12 +10,13 @@ set(AUDIOSYSTEM_COMPILEDEFINITIONS
     $<IF:$<CONFIG:Release>,AUDIO_RELEASE,ENABLE_AUDIO_LOGGING>
 )
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
+set(pal_common_code_path ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
 ################################################################################
 # Client Targets
 ################################################################################
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.API INTERFACE
     NAMESPACE Gem
     FILES_CMAKE
@@ -28,21 +29,21 @@ ly_add_target(
             AZ::AzCore
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Private.Object STATIC
     NAMESPACE Gem
     FILES_CMAKE
         audiosystem_files.cmake
-        ${pal_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     TARGET_PROPERTIES
         O3DE_PRIVATE_TARGET TRUE
     INCLUDE_DIRECTORIES
         PRIVATE
             Include/Engine
             Source/Engine
-            ${pal_dir}
+            ${pal_code_path}
     PLATFORM_INCLUDE_FILES
-            ${pal_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
+            ${pal_code_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
     COMPILE_DEFINITIONS
         PUBLIC
             ${AUDIOSYSTEM_COMPILEDEFINITIONS}
@@ -55,15 +56,15 @@ ly_add_target(
             Legacy::CryCommon # Temporary, needs to be removed
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         audiosystem_shared_files.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             Source/Engine
-            ${pal_dir}
+            ${pal_code_path}
     COMPILE_DEFINITIONS
         PUBLIC
             ${AUDIOSYSTEM_COMPILEDEFINITIONS}
@@ -75,7 +76,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/AudioSystemModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -84,18 +85,18 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # AudioSystem aliases for Clients and Unified launchers (no Servers)
-ly_create_alias(NAME ${gem_name}.Clients        NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Clients.API    NAMESPACE Gem TARGETS Gem::${gem_name}.API)
-ly_create_alias(NAME ${gem_name}.Unified        NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Unified.API    NAMESPACE Gem TARGETS Gem::${gem_name}.API)
+o3de_create_alias(NAME ${gem_name}.Clients        NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients.API    NAMESPACE Gem TARGETS Gem::${gem_name}.API)
+o3de_create_alias(NAME ${gem_name}.Unified        NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Unified.API    NAMESPACE Gem TARGETS Gem::${gem_name}.API)
 
 ################################################################################
 # Tests
 ################################################################################
-if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if (O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     set(common_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             audiosystem_tests_files.cmake
@@ -113,13 +114,13 @@ if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 Legacy::CryCommon   # Temporary, needs to be removed
     )
 
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
     )
 
     list(APPEND testTargets ${gem_name}.Tests)
 
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             ${testTargets}
         FILES
@@ -127,7 +128,7 @@ if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             Test.Assets/Gems/AudioSystem/ATLData/Legacy/MultipleMultiple
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             ${testTargets}
         FILES
@@ -135,7 +136,7 @@ if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             Test.Assets/Gems/AudioSystem/ATLData/Legacy/MultipleOne
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             ${testTargets}
         FILES
@@ -143,7 +144,7 @@ if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             Test.Assets/Gems/AudioSystem/ATLData/Legacy/OneMultiple
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             ${testTargets}
         FILES
@@ -151,7 +152,7 @@ if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             Test.Assets/Gems/AudioSystem/ATLData/Legacy/OneOne
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             ${testTargets}
         FILES
@@ -159,7 +160,7 @@ if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             Test.Assets/Gems/AudioSystem/ATLData/MultipleMultiple
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             ${testTargets}
         FILES
@@ -167,7 +168,7 @@ if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             Test.Assets/Gems/AudioSystem/ATLData/MultipleOne
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             ${testTargets}
         FILES
@@ -175,7 +176,7 @@ if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             Test.Assets/Gems/AudioSystem/ATLData/OneMultiple
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             ${testTargets}
         FILES
@@ -184,14 +185,14 @@ if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             Test.Assets/Gems/AudioSystem/ATLData/OneOne
     )
 
-endif() # PAL_TRAIT_BUILD_TESTS_SUPPORTED
+endif() # O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED
 
 
 ################################################################################
 # Editor
 ################################################################################
-if (PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
+if (O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
         NAME ${gem_name}.Editor.API INTERFACE
         NAMESPACE Gem
         FILES_CMAKE
@@ -204,7 +205,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
                 AZ::AzCore
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor.Private.Object STATIC
         NAMESPACE Gem
         AUTOMOC
@@ -219,7 +220,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
                 .               # <-- This is needed for Automoc, Autouic, Autorcc
                 Source/Engine
                 Source/Editor
-                ${pal_dir}
+                ${pal_code_path}
         COMPILE_DEFINITIONS
             PUBLIC
                 ${AUDIOSYSTEM_COMPILEDEFINITIONS}
@@ -239,7 +240,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
                 3rdParty::Qt::Gui
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
         NAMESPACE Gem
         FILES_CMAKE
@@ -262,12 +263,12 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # use the above "Editor" target in tools and builders:
-    ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
-    ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 
-    if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-        ly_add_target(
-            NAME ${gem_name}.Editor.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    if (O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+        o3de_add_target(
+            NAME ${gem_name}.Editor.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
             NAMESPACE Gem
             FILES_CMAKE
                 audiosystem_editor_tests_files.cmake
@@ -288,10 +289,10 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
                     Gem::${gem_name}.Editor.Private.Object
         )
 
-        ly_add_googletest(
+        o3de_add_googletest(
             NAME Gem::AudioSystem.Editor.Tests
             LABELS REQUIRES_tiaf
         )
 
-    endif() # PAL_TRAIT_BUILD_TESTS_SUPPORTED
-endif() # PAL_TRAIT_BUILD_HOST_TOOLS
+    endif() # O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED
+endif() # O3DE_PAL_TRAIT_BUILD_HOST_TOOLS

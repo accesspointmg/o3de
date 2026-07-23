@@ -8,7 +8,7 @@
 
 #include "ComponentEntityEditorPlugin.h"
 
-#include <LyViewPaneNames.h>
+#include <O3deViewPaneNames.h>
 
 #include "UI/QComponentEntityEditorMainWindow.h"
 #include "UI/QComponentEntityEditorOutlinerWindow.h"
@@ -133,8 +133,8 @@ ComponentEntityEditorPlugin::ComponentEntityEditorPlugin([[maybe_unused]] IEdito
     inspectorOptions.isDisabledInImGuiMode = false;
 
     RegisterViewPane<QComponentEntityEditorInspectorWindow>(
-        LyViewPane::Inspector,
-        LyViewPane::CategoryTools,
+        O3deViewPane::Inspector,
+        O3deViewPane::CategoryTools,
         inspectorOptions);
 
     ViewPaneOptions pinnedInspectorOptions;
@@ -148,8 +148,8 @@ ComponentEntityEditorPlugin::ComponentEntityEditorPlugin([[maybe_unused]] IEdito
     pinnedInspectorOptions.isDisabledInImGuiMode = false;
 
     RegisterViewPane<QComponentEntityEditorInspectorWindow>(
-        LyViewPane::EntityInspectorPinned,
-        LyViewPane::CategoryTools,
+        O3deViewPane::EntityInspectorPinned,
+        O3deViewPane::CategoryTools,
         pinnedInspectorOptions);
 
     // Add the Outliner to the Tools Menu
@@ -162,8 +162,8 @@ ComponentEntityEditorPlugin::ComponentEntityEditorPlugin([[maybe_unused]] IEdito
     outlinerOptions.isDisabledInImGuiMode = false;
 
     RegisterViewPane<QEntityOutlinerWindow>(
-        LyViewPane::EntityOutliner,
-        LyViewPane::CategoryTools,
+        O3deViewPane::EntityOutliner,
+        O3deViewPane::CategoryTools,
         outlinerOptions);
 
     ComponentEntityEditorPluginInternal::RegisterSandboxObjects();
@@ -180,9 +180,9 @@ void ComponentEntityEditorPlugin::Release()
     {
         using namespace AzToolsFramework;
 
-        UnregisterViewPane(LyViewPane::Inspector);
-        UnregisterViewPane(LyViewPane::EntityOutliner);
-        UnregisterViewPane(LyViewPane::EntityInspectorPinned);
+        UnregisterViewPane(O3deViewPane::Inspector);
+        UnregisterViewPane(O3deViewPane::EntityOutliner);
+        UnregisterViewPane(O3deViewPane::EntityInspectorPinned);
 
         ComponentEntityEditorPluginInternal::UnregisterSandboxObjects();
     }

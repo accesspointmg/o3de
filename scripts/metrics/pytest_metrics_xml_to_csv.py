@@ -14,7 +14,7 @@ import xml.etree.ElementTree as xmlElementTree
 import datetime
 import uuid
 
-import ly_test_tools.cli.codeowners_hint as codeowners_hint
+import o3de_test_tools.cli.codeowners_hint as codeowners_hint
 from common import logging, exception
 
 

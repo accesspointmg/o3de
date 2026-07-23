@@ -36,7 +36,7 @@ namespace AZ::SceneAPI::SceneData
             {
                 case ZUpPositiveYForward:
                 {
-                    // Source coordinate system, use identity for now, which will currently just assume LY's coordinate system.
+                    // Source coordinate system, use identity for now, which will currently just assume O3DE's coordinate system.
                     const AZ::Vector3 sourceBasisVectors[3] = { AZ::Vector3( 1.0f, 0.0f, 0.0f), 
                                                                 AZ::Vector3( 0.0f, 1.0f, 0.0f), 
                                                                 AZ::Vector3( 0.0f, 0.0f, 1.0f) };
@@ -55,7 +55,7 @@ namespace AZ::SceneAPI::SceneData
 
                 case ZUpNegativeYForward:
                 {
-                    // Source coordinate system, use identity for now, which will currently just assume LY's coordinate system.
+                    // Source coordinate system, use identity for now, which will currently just assume O3DE's coordinate system.
                     const AZ::Vector3 sourceBasisVectors[3] = { AZ::Vector3( 1.0f, 0.0f, 0.0f), 
                                                                 AZ::Vector3( 0.0f, 1.0f, 0.0f), 
                                                                 AZ::Vector3( 0.0f, 0.0f, 1.0f) };

@@ -6,7 +6,7 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     add_subdirectory(commit_validation)
     add_subdirectory(ctest)
     add_subdirectory(detect_file_changes)

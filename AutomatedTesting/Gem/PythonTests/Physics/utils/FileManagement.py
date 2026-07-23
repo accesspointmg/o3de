@@ -11,7 +11,7 @@ import os
 import shutil
 import json
 import logging
-import ly_test_tools.environment.file_system as fs
+import o3de_test_tools.environment.file_system as fs
 
 
 class FileManagement:

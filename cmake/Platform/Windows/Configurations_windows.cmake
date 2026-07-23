@@ -6,12 +6,13 @@
 #
 #
 
+set(_cmake_Platform_Windows_Configurations_windows_cmake ${CMAKE_CURRENT_LIST_DIR})
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    ly_set(CMAKE_RC_FLAGS /nologo)   
+    o3de_set(CMAKE_RC_FLAGS /nologo)   
     
-    include(cmake/Platform/Common/MSVC/Configurations_msvc.cmake)
+    include(${_cmake_Platform_Windows_Configurations_windows_cmake}/../Common/MSVC/Configurations_msvc.cmake)
 
-    ly_append_configurations_options(
+    o3de_append_configurations_options(
         DEFINES
             _WIN32
             WIN32
@@ -25,12 +26,12 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 
     if(MSVC)
-        include(cmake/Platform/Common/MSVC/Configurations_clang.cmake)
+        include(${_cmake_Platform_Windows_Configurations_windows_cmake}/../Common/MSVC/Configurations_clang.cmake)
     else()
-        include(cmake/Platform/Common/Clang/Configurations_clang.cmake)
+        include(${_cmake_Platform_Windows_Configurations_windows_cmake}/../Common/Clang/Configurations_clang.cmake)
     endif()
 
-    ly_append_configurations_options(
+    o3de_append_configurations_options(
         DEFINES
             _ENABLE_EXTENDED_ALIGNED_STORAGE #Enables support for extended alignment for the MSVC std::aligned_storage class
             _WIN32
@@ -43,11 +44,11 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
             -mf16c
             -Wno-deprecated-declarations
     )
-    ly_set(CMAKE_CXX_EXTENSIONS OFF)
+    o3de_set(CMAKE_CXX_EXTENSIONS OFF)
 
 else()
 
-    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} not supported in ${PAL_PLATFORM_NAME}")
+    message(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} not supported in ${O3DE_PAL_PLATFORM_NAME}")
 
 endif()
 
@@ -111,7 +112,7 @@ if(NOT CMAKE_GENERATOR MATCHES "Visual Studio" AND NOT O3DE_SCRIPT_ONLY)
         message(STATUS "Using Windows SDK version ${version} to target Windows ${CMAKE_SYSTEM_VERSION}")
     endif()
 
-    ly_set(CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION "${version}")
+    o3de_set(CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION "${version}")
 
 endif()
 

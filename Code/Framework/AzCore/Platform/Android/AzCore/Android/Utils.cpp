@@ -113,7 +113,7 @@ namespace AZ
             ////////////////////////////////////////////////////////////////
             const char* FindAssetsDirectory()
             {
-            #if defined(LY_NO_ASSETS)
+            #if defined(O3DE_NO_ASSETS)
                 // The TestRunner app which runs unit tests does not have any assets.
                 return GetAppPublicStoragePath();
             #endif

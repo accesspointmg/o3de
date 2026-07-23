@@ -18,7 +18,7 @@
 #include <QLabel>
 #include <QInputDialog>
 
-#include <AtomLyIntegration/AtomViewportDisplayInfo/AtomViewportInfoDisplayBus.h>
+#include <AtomO3deIntegration/AtomViewportDisplayInfo/AtomViewportInfoDisplayBus.h>
 
 // Editor
 #include "CustomAspectRatioDlg.h"

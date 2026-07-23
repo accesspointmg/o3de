@@ -6,7 +6,7 @@
  *
  */
 
-// LY Crashpad Hook
+// O3DE Crashpad Hook
 
 #pragma once
 
@@ -36,10 +36,10 @@ namespace CrashHandler
         // Helper to add an annotation after initialization - must have already called InitCrashHandler
         static void AddAnnotation(const std::string& keyName, const std::string& valueStr);
     protected:
-        virtual std::string GetCrashReportFolder(const std::string& lyAppRoot) const;
+        virtual std::string GetCrashReportFolder(const std::string& o3deAppRoot) const;
         virtual const char* GetDefaultCrashFolder() const { return defaultCrashFolder; }
 
-        virtual std::string GetCrashHandlerPath(const std::string& lyAppRoot = {}) const;
+        virtual std::string GetCrashHandlerPath(const std::string& o3deAppRoot = {}) const;
         virtual const char* GetCrashHandlerExecutableName() const;
 
         virtual std::string DetermineAppPath() const;
@@ -51,7 +51,7 @@ namespace CrashHandler
         virtual std::string GetCrashSubmissionURL() const { return{}; }
         virtual std::string GetCrashSubmissionToken() const { return{}; }
 
-        static void AppendSep(std::string& lyAppRoot);
+        static void AppendSep(std::string& o3deAppRoot);
 
         virtual void GetBuildAnnotations(CrashHandlerAnnotations& annotations) const;
 

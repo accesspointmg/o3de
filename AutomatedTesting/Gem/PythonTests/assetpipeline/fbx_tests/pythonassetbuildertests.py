@@ -16,12 +16,12 @@ from ..ap_fixtures.asset_processor_fixture import asset_processor as asset_proce
 from ..ap_fixtures.ap_setup_fixture import ap_setup_fixture as ap_setup_fixture
 
 # Import LyShared
-import ly_test_tools.o3de.pipeline_utils as utils
+import o3de_test_tools.o3de.pipeline_utils as utils
 
 # Use the following logging pattern to hook all test logging together:
 logger = logging.getLogger(__name__)
-# Configuring the logging is done in ly_test_tools at the following location:
-# ~/dev/Tools/LyTestTools/ly_test_tools/log/py_logging_util.py
+# Configuring the logging is done in o3de_test_tools at the following location:
+# ~/dev/Tools/O3deTestTools/o3de_test_tools/log/py_logging_util.py
 
 @pytest.fixture
 def local_resources(request, workspace, ap_setup_fixture):

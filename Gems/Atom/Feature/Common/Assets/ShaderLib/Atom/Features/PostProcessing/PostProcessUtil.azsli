@@ -8,7 +8,7 @@
 
 #pragma once
 
-// Lifted from Legacy LY Renderer
+// Lifted from Legacy O3DE Renderer
 // Input color must be in linear space
 float GetLuminance( float3 color )
 {

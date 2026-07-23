@@ -5,11 +5,11 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 #
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 
     set(SMOKETEST_FILTER "SUITE_smoke")
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::SmokeTest
         TEST_SUITE smoke
         PATH ${CMAKE_CURRENT_LIST_DIR}
@@ -27,7 +27,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
             Smoke
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::SmokeTest_Sandbox
         TEST_SUITE sandbox
         TEST_SERIAL

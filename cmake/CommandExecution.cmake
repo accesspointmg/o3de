@@ -18,10 +18,10 @@
 #   the same time. Since we provide flexibility on what file gets locked, multiple invocations could be done with different commands.
 #   The lock file acts as a mutex over a certain "resource" that the caller is trying to control access to.
 # cmake -DLY_TIMESTAMP_REFERENCE=<referencefile> [-DLY_TIMESTAMP_FILE=<referencefile>] -P cmake/CommandExecution.cmake EXEC_COMMAND commandToExecute1 <EXEC_COMMAND commandToExecute2> ...
-#   In this case, the file's timestamp of LY_TIMESTAMP_REFERENCE will be compared to LY_TIMESTAMP_FILE, if newer, it will execute the commands
-#   If LY_TIMESTAMP_FILE is not passed, then ${LY_TIMESTAMP_REFERENCE}.stamp is used
+#   In this case, the file's timestamp of O3DE_TIMESTAMP_REFERENCE will be compared to O3DE_TIMESTAMP_FILE, if newer, it will execute the commands
+#   If O3DE_TIMESTAMP_FILE is not passed, then ${O3DE_TIMESTAMP_REFERENCE}.stamp is used
 #
-# If LY_LOCK_FILE and LY_TIMESTAMP_REFERENCE are not passed, then the commands are executed.
+# If O3DE_LOCK_FILE and O3DE_TIMESTAMP_REFERENCE are not passed, then the commands are executed.
 #
 
 # Find the first "EXEC_COMMAND"
@@ -37,22 +37,22 @@ if(NOT argiP)
 endif()
 
 # Check for timestamp
-if(LY_TIMESTAMP_REFERENCE)
-    if(NOT EXISTS "${LY_TIMESTAMP_REFERENCE}")
-        message(FATAL_ERROR "File LY_TIMESTAMP_REFERENCE=${LY_TIMESTAMP_REFERENCE} does not exists")
+if(O3DE_TIMESTAMP_REFERENCE)
+    if(NOT EXISTS "${O3DE_TIMESTAMP_REFERENCE}")
+        message(FATAL_ERROR "File O3DE_TIMESTAMP_REFERENCE=${O3DE_TIMESTAMP_REFERENCE} does not exists")
     endif()
-    if(NOT LY_TIMESTAMP_FILE)
-        set(LY_TIMESTAMP_FILE "${LY_TIMESTAMP_REFERENCE}.stamp")
+    if(NOT O3DE_TIMESTAMP_FILE)
+        set(O3DE_TIMESTAMP_FILE "${O3DE_TIMESTAMP_REFERENCE}.stamp")
     endif()
-    if(EXISTS "${LY_TIMESTAMP_FILE}" AND NOT "${LY_TIMESTAMP_REFERENCE}" IS_NEWER_THAN "${LY_TIMESTAMP_FILE}")
+    if(EXISTS "${O3DE_TIMESTAMP_FILE}" AND NOT "${O3DE_TIMESTAMP_REFERENCE}" IS_NEWER_THAN "${O3DE_TIMESTAMP_FILE}")
         # Stamp newer, nothing to do
         return()
     endif()
 endif()
 
-if(LY_LOCK_FILE)
+if(O3DE_LOCK_FILE)
     # Lock the file
-    file(LOCK "${LY_LOCK_FILE}" TIMEOUT 1200 RESULT_VARIABLE lock_result)
+    file(LOCK "${O3DE_LOCK_FILE}" TIMEOUT 1200 RESULT_VARIABLE lock_result)
     if(NOT ${lock_result} EQUAL 0)
         message(FATAL_ERROR "Lock failure ${lock_result}")
     endif()
@@ -81,7 +81,7 @@ if(command_arguments_len)
     execute_process(COMMAND ${command_arguments} RESULT_VARIABLE command_result)
 endif()
 
-if(LY_TIMESTAMP_REFERENCE)
+if(O3DE_TIMESTAMP_REFERENCE)
     # Touch the timestamp file
-    file(TOUCH "${LY_TIMESTAMP_FILE}")
+    file(TOUCH "${O3DE_TIMESTAMP_FILE}")
 endif()

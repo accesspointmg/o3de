@@ -13,7 +13,7 @@ import urllib.request
 from urllib.parse import ParseResult
 from unittest.mock import patch, MagicMock, mock_open
 
-from o3de import manifest, download, utils, git_utils 
+from o3de import download, o3de_object, utils, git_utils 
 
 TEST_DEFAULT_GEMS_FOLDER = "C:/Users/testuser/O3DE/Gems"
 TEST_O3DE_MANIFEST_JSON_PAYLOAD = '''
@@ -381,10 +381,10 @@ class TestObjectDownload:
         self.created_files.append('C:/Users/testuser/.o3de/cache/Gems/TestGem/gem.zip')
         self.created_files.append('C:/localrepo/TestLocalGem/gem.zip')
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             return copy.deepcopy(self.o3de_manifest_data)
 
-        def save_o3de_manifest(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
+        def save_o3de_manifest_json_data(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
             self.o3de_manifest_data = manifest_data
             return True
 
@@ -495,7 +495,7 @@ class TestObjectDownload:
             assert result == expected_result
 
             if registration_expected:
-                assert self.extracted_gem_path in manifest.get_manifest_external_subdirectories()
+                assert self.extracted_gem_path in o3de_object.get_manifest_external_subdirectories()
 
             if contents_in_subdir:
                 assert self.subdir_moved
@@ -524,7 +524,7 @@ class TestObjectDownload:
         # add pre existing file for repo
         self.created_files.append(f'C:/Users/testuser/.o3de/cache/{TEST_O3DE_REPO_FILE_NAME}')
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             return json.loads(TEST_O3DE_MANIFEST_JSON_PAYLOAD)
 
         def mocked_open(path, mode = '', *args, **kwargs):
@@ -559,7 +559,7 @@ class TestObjectDownload:
 
         with patch('o3de.manifest.load_o3de_manifest', side_effect=load_o3de_manifest) as _1,\
                 patch('pathlib.Path.resolve', new=self.resolve) as pathlib_is_resolve_mock,\
-                patch('o3de.manifest.get_o3de_cache_folder', return_value=pathlib.Path("Cache")) as get_o3de_cache_folder_patch, \
+                patch('o3de.manifest.get_user_o3de_cache_path', return_value=pathlib.Path("Cache")) as get_user_o3de_cache_path_patch, \
                 patch('o3de.register.register', side_effect=register) as register_patch, \
                 patch('o3de.utils.get_git_provider', side_effect=get_git_provider) as git_git_provider_patch, \
                 patch('o3de.utils.find_ancestor_dir_containing_file', return_value=None) as _3, \
@@ -593,10 +593,10 @@ class TestObjectDownload:
     def test_check_updates(self, update_function, object_name, object_data, existing_time, update_available):
         self.o3de_manifest_data = json.loads(TEST_O3DE_MANIFEST_JSON_PAYLOAD)
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             return copy.deepcopy(self.o3de_manifest_data)
 
-        def save_o3de_manifest(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
+        def save_o3de_manifest_json_data(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
             self.o3de_manifest_data = manifest_data
             return True
 

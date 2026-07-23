@@ -6,22 +6,23 @@
 #
 #
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${PAL_PLATFORM_NAME} ${O3DE_ENGINE_RESTRICTED_PATH} ${LY_ROOT_FOLDER})
+o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Legacy/CrySystem/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_legacy_crysystem_path)
+#set(common_code_legacy_crysystem_path ${O3DE_ENGINE_PATH}/Code/Legacy/CrySystem/Platform/Common)
 
 add_subdirectory(XML)
 
-ly_add_target(
+o3de_add_target(
     NAME CrySystem.Static STATIC
     NAMESPACE Legacy
     FILES_CMAKE
         crysystem_files.cmake
-        ${pal_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake # Required for restricted platforms
+        ${pal_code_legacy_crysystem_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${pal_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}.cmake # Required for restricted platforms
+        ${pal_code_legacy_crysystem_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             .
-            ${pal_dir} # Required for restricted platforms
+            ${pal_code_legacy_crysystem_path}
     BUILD_DEPENDENCIES
         PRIVATE
             3rdParty::expat
@@ -36,14 +37,14 @@ ly_add_target(
             Gem::AudioSystem.API
 )
 
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES SystemInit.cpp
     PROPERTY COMPILE_DEFINITIONS 
-    VALUES ${LY_PAL_TOOLS_DEFINES}
+    VALUES ${O3DE_PAL_TOOLS_DEFINES}
 )
 
-ly_add_target(
-    NAME CrySystem ${PAL_TRAIT_MONOLITHIC_DRIVEN_LIBRARY_TYPE}
+o3de_add_target(
+    NAME CrySystem ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_LIBRARY_TYPE}
     NAMESPACE Legacy
     FILES_CMAKE
         crysystem_shared_files.cmake

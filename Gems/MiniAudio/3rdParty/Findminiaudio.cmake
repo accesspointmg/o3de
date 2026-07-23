@@ -7,13 +7,13 @@
 #
 
 get_property(miniaudio_gem_root GLOBAL PROPERTY "@GEMROOT:MiniAudio@")
-ly_add_external_target(
+o3de_add_external_target(
     NAME miniaudio 
     3RDPARTY_ROOT_DIRECTORY "${miniaudio_gem_root}/3rdParty/miniaudio"
     VERSION
 )
 
-ly_add_external_target(
+o3de_add_external_target(
     NAME stb_vorbis 
     3RDPARTY_ROOT_DIRECTORY "${miniaudio_gem_root}/3rdParty/stb_vorbis"
     VERSION

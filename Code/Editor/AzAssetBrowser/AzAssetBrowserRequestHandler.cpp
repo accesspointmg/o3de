@@ -1242,7 +1242,7 @@ AzAssetBrowserWindow* AzAssetBrowserRequestHandler::FindAzAssetBrowserWindow(QWi
 
     if (!assetBrowserWindow)
     {
-        assetBrowserWindow = AzToolsFramework::GetViewPaneWidget<AzAssetBrowserWindow>(LyViewPane::AssetBrowser);
+        assetBrowserWindow = AzToolsFramework::GetViewPaneWidget<AzAssetBrowserWindow>(O3deViewPane::AssetBrowser);
     }
 
     return assetBrowserWindow;

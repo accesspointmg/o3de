@@ -18,13 +18,13 @@ namespace ImGui
             case ESYSTEM_EVENT_GAME_POST_INIT:
             {
                 manager.Initialize();
-                lyCommonMenu.Initialize();
+                o3deCommonMenu.Initialize();
                 break;
             }
             case ESYSTEM_EVENT_FULL_SHUTDOWN:
             case ESYSTEM_EVENT_FAST_SHUTDOWN:
                 manager.Shutdown();
-                lyCommonMenu.Shutdown();
+                o3deCommonMenu.Shutdown();
                 break;
             case ESYSTEM_EVENT_GAME_POST_INIT_DONE:
                 // Register CVARS after Init is done

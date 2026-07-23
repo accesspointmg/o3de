@@ -130,7 +130,7 @@ namespace BenchmarkAssetBuilder
         AZ::StringFunc::Path::ConstructFull(request.m_tempDirPath.c_str(), fileName.c_str(), destPath, true);
 
         // Copy the original BenchmarkSettings file directly into the output.
-        // This is necessary to open the file in the Asset Editor inside the LY Editor.
+        // This is necessary to open the file in the Asset Editor inside the O3DE Editor.
         // Otherwise, we can *create* the BenchmarkSettings file with the Asset Editor,
         // but if we try to re-open it, the Asset Editor will try to open a BenchmarkAsset file instead.
         {

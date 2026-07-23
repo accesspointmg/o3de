@@ -26,4 +26,4 @@ namespace Camera
         /// Adjust the outLookAtTargetTransform based on the target's initial transform and the time that's passed since the last call
         virtual void AdjustLookAtTarget(float deltaTime, const AZ::Transform& targetTransform, AZ::Transform& outLookAtTargetTransform) = 0;
     };
-} //namespace LYGame
+} //namespace Camera

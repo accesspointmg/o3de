@@ -85,7 +85,7 @@ class TestEditEngineProperties:
         def get_engine_path(engine_name: str) -> pathlib.Path:
             return pathlib.Path('D:/o3de')
 
-        def save_o3de_manifest(new_engine_data: dict, engine_path: pathlib.Path) -> bool:
+        def save_o3de_manifest_json_data(new_engine_data: dict, engine_path: pathlib.Path) -> bool:
             self.engine_json.data = new_engine_data
             return True
 

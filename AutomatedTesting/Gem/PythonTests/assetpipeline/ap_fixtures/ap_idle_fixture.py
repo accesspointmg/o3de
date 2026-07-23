@@ -15,9 +15,9 @@ import time
 # Import fixtures
 from . import ap_setup_fixture
 
-# Import LyTestTools
-import ly_test_tools.environment.waiter as waiter
-from ly_test_tools.o3de.ap_log_parser import APLogParser
+# Import O3deTestTools
+import o3de_test_tools.environment.waiter as waiter
+from o3de_test_tools.o3de.ap_log_parser import APLogParser
 
 
 @pytest.mark.usefixtures("test_assets")

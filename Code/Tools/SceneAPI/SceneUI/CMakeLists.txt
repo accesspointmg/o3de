@@ -6,11 +6,11 @@
 #
 #
 
-if (NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if (NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME SceneUI SHARED
     NAMESPACE AZ
     AUTOMOC
@@ -39,9 +39,9 @@ ly_add_target(
             3rdParty::Qt::Widgets
 )
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME SceneUI.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME SceneUI.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE AZ
         FILES_CMAKE
             SceneUI_testing_files.cmake
@@ -50,7 +50,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzTest
                 AZ::SceneUI
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME AZ::SceneUI.Tests
         LABELS REQUIRES_tiaf
     )

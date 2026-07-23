@@ -34,8 +34,8 @@ define_window_layout_xml {<?xml version="1.0" encoding="UTF-8"?>
 }
 Root {
  inputs 0
- name C:/Depot/o3de-engine/Gems/AtomLyIntegration/CommonFeatures/Tools/ColorGrading/TestData/Nuke/O3DE_HDR_Nuke_Color_Grading
- project_directory C:/Depot/o3de-engine/Gems/AtomLyIntegration/CommonFeatures/Tools/ColorGrading/TestData/Nuke
+ name C:/Depot/o3de-engine/Gems/AtomO3deIntegration/CommonFeatures/Tools/ColorGrading/TestData/Nuke/O3DE_HDR_Nuke_Color_Grading
+ project_directory C:/Depot/o3de-engine/Gems/AtomO3deIntegration/CommonFeatures/Tools/ColorGrading/TestData/Nuke
  label "This is a Nuke project template used to validate HDR / ACES color grading workflow in Nuke to generate 'Look Modification' (LMT) Luts for Oopen 3D Engine."
  frame 16
  first_frame 16
@@ -59,7 +59,7 @@ Root {
 Read {
  inputs 0
  file_type exr
- file C:/Depot/o3de-engine/Gems/AtomLyIntegration/CommonFeatures/Tools/ColorGrading/LUTs/linear_lut_32.exr
+ file C:/Depot/o3de-engine/Gems/AtomO3deIntegration/CommonFeatures/Tools/ColorGrading/LUTs/linear_lut_32.exr
  format "1024 32 0 0 1024 32 1 "
  origset true
  colorspace scene_linear
@@ -84,7 +84,7 @@ Viewer {
 Read {
  inputs 0
  file_type exr
- file C:/Depot/o3de-engine/Gems/AtomLyIntegration/CommonFeatures/Tools/ColorGrading/TestData/Nuke/HDR/displaymapperpassthrough.exr
+ file C:/Depot/o3de-engine/Gems/AtomO3deIntegration/CommonFeatures/Tools/ColorGrading/TestData/Nuke/HDR/displaymapperpassthrough.exr
  format "1167 1618 0 0 1167 1618 1 "
  origset true
  colorspace scene_linear
@@ -95,7 +95,7 @@ Read {
 Read {
  inputs 0
  file_type exr
- file C:/Depot/o3de-engine/Gems/AtomLyIntegration/CommonFeatures/Tools/ColorGrading/LUTs/linear_lut_32.exr
+ file C:/Depot/o3de-engine/Gems/AtomO3deIntegration/CommonFeatures/Tools/ColorGrading/LUTs/linear_lut_32.exr
  format "1024 32 0 0 1024 32 1 "
  origset true
  colorspace "Utility - Log2 48 nits Shaper - AP1"

@@ -7,7 +7,7 @@
 #
 
 # win2012 nodes can build DX11/DX12, but can't run. Disable runtime support if d3d12.dll/d3d11.dll is not available
-set(PAL_TRAIT_ATOM_RHI_DX12_SUPPORTED FALSE)
+set(O3DE_PAL_TRAIT_ATOM_RHI_DX12_SUPPORTED FALSE)
 find_file(d3d12_dll
     d3d12.dll
     PATHS
@@ -15,17 +15,17 @@ find_file(d3d12_dll
 )
 mark_as_advanced(d3d12_dll)
 if(d3d12_dll)
-    set(PAL_TRAIT_ATOM_RHI_DX12_SUPPORTED TRUE)
+    set(O3DE_PAL_TRAIT_ATOM_RHI_DX12_SUPPORTED TRUE)
 endif()
 
 unset(pix3_header CACHE)
 
-set(LY_AFTERMATH_PATH "" CACHE PATH "Path to Aftermath.")
-if (NOT "${LY_AFTERMATH_PATH}" STREQUAL "")
-    set(ATOM_AFTERMATH_PATH_CMAKE_FORMATTED "${LY_AFTERMATH_PATH}")
+set(O3DE_AFTERMATH_PATH "" CACHE PATH "Path to Aftermath.")
+if (NOT "${O3DE_AFTERMATH_PATH}" STREQUAL "")
+    set(ATOM_AFTERMATH_PATH_CMAKE_FORMATTED "${O3DE_AFTERMATH_PATH}")
 endif()
 
-set(PAL_TRAIT_AFTERMATH_AVAILABLE FALSE)
+set(O3DE_PAL_TRAIT_AFTERMATH_AVAILABLE FALSE)
 unset(aftermath_header CACHE)
 if (NOT ATOM_AFTERMATH_PATH_CMAKE_FORMATTED)
     file(TO_CMAKE_PATH "$ENV{ATOM_AFTERMATH_PATH}" ATOM_AFTERMATH_PATH_CMAKE_FORMATTED)
@@ -38,14 +38,14 @@ find_file(aftermath_header
 )  
 mark_as_advanced(CLEAR, aftermath_header)
 if(aftermath_header)
-    set(PAL_TRAIT_AFTERMATH_AVAILABLE TRUE)
+    set(O3DE_PAL_TRAIT_AFTERMATH_AVAILABLE TRUE)
 endif()
 
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/RHI.Builders/ShaderPlatformInterfaceSystemComponent.cpp
     PROPERTY COMPILE_DEFINITIONS 
-    VALUES ${LY_PAL_TOOLS_DEFINES}
+    VALUES ${O3DE_PAL_TOOLS_DEFINES}
 )
 
 # Disable windows OS version check until infra can upgrade all our jenkins nodes

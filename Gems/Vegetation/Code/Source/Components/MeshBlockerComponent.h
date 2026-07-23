@@ -15,7 +15,7 @@
 #include <Vegetation/Ebuses/AreaRequestBus.h>
 #include <Vegetation/Ebuses/MeshBlockerRequestBus.h>
 #include <LmbrCentral/Dependency/DependencyNotificationBus.h>
-#include <AtomLyIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
+#include <AtomO3deIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
 #include <SurfaceData/SurfaceDataSystemNotificationBus.h>
 #include <AzCore/Component/TransformBus.h>
 #include <AzCore/std/containers/unordered_map.h>

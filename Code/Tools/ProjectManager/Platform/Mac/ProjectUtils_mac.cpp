@@ -152,18 +152,18 @@ namespace O3DE::ProjectManager
                     //  local Settings Registry will be used to merge the build_path.setreg for the supplied projectPath
                     AZ::IO::FixedMaxPath buildConfigurationPath = (fixedProjectPath / projectBuildPath).LexicallyNormal();
 
-                    // First try "<project-build-path>/bin/$<CONFIG>/Editor.app/Contents/MacOS"
-                    // Followed by "<project-build-path>/bin/$<PLATFORM>/$<CONFIG>/Editor.app/Contents/MacOS"
+                    // First try "<project-build-path>/bin/$<CONFIG>/Editor.app/Contents/Mac"
+                    // Followed by "<project-build-path>/bin/$<PLATFORM>/$<CONFIG>/Editor.app/Contents/Mac"
                     // Directory existence is checked in this case
                     buildConfigurationPath /= "bin";
                     if (editorPath = (buildConfigurationPath
-                        / AZ_BUILD_CONFIGURATION_TYPE / "Editor.app/Contents/MacOS/Editor");
+                        / AZ_BUILD_CONFIGURATION_TYPE / "Editor.app/Contents/Mac/Editor");
                         AZ::IO::SystemFile::Exists(editorPath.c_str()))
                     {
                         return editorPath;
                     }
                     else if (editorPath = (buildConfigurationPath / AZ_TRAIT_OS_PLATFORM_CODENAME
-                        / AZ_BUILD_CONFIGURATION_TYPE / "Editor.app/Contents/MacOS/Editor");
+                        / AZ_BUILD_CONFIGURATION_TYPE / "Editor.app/Contents/Mac/Editor");
                         AZ::IO::SystemFile::Exists(editorPath.c_str()))
                     {
                         return editorPath;
@@ -174,12 +174,12 @@ namespace O3DE::ProjectManager
             // Fall back to locating the Editor.app bundle which should exists
             // outside of the current O3DE.app bundle
             editorPath = (AZ::IO::FixedMaxPath(AZ::Utils::GetExecutableDirectory()) /
-                "../../../Editor.app/Contents/MacOS/Editor").LexicallyNormal();
+                "../../../Editor.app/Contents/Mac/Editor").LexicallyNormal();
 
             if (!AZ::IO::SystemFile::Exists(editorPath.c_str()))
             {
                 // Attempt to search the O3DE.app global settings registry for an InstalledBinaryFolder
-                // key which indicates the relative path to an SDK binary directory on MacOS
+                // key which indicates the relative path to an SDK binary directory on Mac
                 if (auto settingsRegistry = AZ::SettingsRegistry::Get(); settingsRegistry != nullptr)
                 {
                     if (AZ::IO::FixedMaxPath installedBinariesPath;
@@ -190,7 +190,7 @@ namespace O3DE::ProjectManager
                             settingsRegistry->Get(engineRootFolder.Native(),
                             AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder))
                         {
-                            editorPath = engineRootFolder / installedBinariesPath / "Editor.app/Contents/MacOS/Editor";
+                            editorPath = engineRootFolder / installedBinariesPath / "Editor.app/Contents/Mac/Editor";
                         }
                     }
                 }

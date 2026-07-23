@@ -4,7 +4,7 @@ For complete copyright and license terms please see the LICENSE at the root of t
 
 SPDX-License-Identifier: Apache-2.0 OR MIT
 """
-import ly_test_tools
+import o3de_test_tools
 import pytest
 import os
 import sys
@@ -14,9 +14,9 @@ import ImportPathHelper as imports
 imports.init()
 
 import hydra_test_utils as hydra
-import ly_test_tools.environment.file_system as file_system
-from ly_test_tools.o3de.editor_test import EditorBatchedTest, EditorTestSuite
-from ly_test_tools import LAUNCHERS
+import o3de_test_tools.environment.file_system as file_system
+from o3de_test_tools.o3de.editor_test import EditorBatchedTest, EditorTestSuite
+from o3de_test_tools import LAUNCHERS
 from base import TestAutomationBase
 
 TEST_DIRECTORY = os.path.dirname(__file__)
@@ -170,7 +170,7 @@ class TestScriptCanvasTests(object):
     The following tests use hydra_test_utils.py to launch the editor and validate the results.
     """
 
-    @pytest.mark.skipif(ly_test_tools.LINUX, reason="investigate and update https://github.com/o3de/o3de/issues/15553")
+    @pytest.mark.skipif(o3de_test_tools.LINUX, reason="investigate and update https://github.com/o3de/o3de/issues/15553")
     def test_NodeCategory_ExpandOnClick(self, request, editor, launcher_platform):
         expected_lines = [
             "Script Canvas pane successfully opened",

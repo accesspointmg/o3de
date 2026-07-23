@@ -6,11 +6,11 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_TESTS_SUPPORTED OR NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED OR NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME AzManipulatorTestFramework.Static STATIC
     NAMESPACE AZ
     FILES_CMAKE
@@ -30,8 +30,8 @@ ly_add_target(
             AZ::AzFramework
 )
 
-ly_add_target(
-    NAME AzManipulatorTestFramework.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+o3de_add_target(
+    NAME AzManipulatorTestFramework.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
     NAMESPACE AZ
     FILES_CMAKE
         azmanipulatortestframework_tests_files.cmake
@@ -43,6 +43,6 @@ ly_add_target(
             AZ::AzManipulatorTestFramework.Static
 )
 
-ly_add_googletest(
+o3de_add_googletest(
     NAME AZ::AzManipulatorTestFramework.Tests
 )

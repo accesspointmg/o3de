@@ -37,5 +37,5 @@ if(EXISTS ${ICON_FILE} OR EXISTS ${SPLASH_FILE})
         ${target_file}
         @ONLY
     )
-    set(LY_FILES ${target_file})
+    set(O3DE_FILES ${target_file})
 endif()

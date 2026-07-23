@@ -52,7 +52,7 @@ namespace AZ
         // A static assert inside of HphaSchema.cpp validates that this is the case
         // as of commit https://github.com/o3de/o3de/commit/92cd457c256e1ec91eeabe04b56d1d4c61f8b1af
         // When MULTITHREADED and USE_MUTEX_PER_BUCKET is defined
-        // the largest sizeof for HpAllocator is 16640 on MacOS
+        // the largest sizeof for HpAllocator is 16640 on Mac
         // On Windows the sizeof HpAllocator is 8384
         // Up this value to 18 KiB to be safe
         static constexpr size_t hpAllocatorStructureSize = 18 * 1024;

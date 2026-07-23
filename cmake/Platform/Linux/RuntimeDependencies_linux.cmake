@@ -6,5 +6,6 @@
 #
 #
 
-set(LY_RUNTIME_DEPENDENCIES_TEMPLATE ${LY_ROOT_FOLDER}/cmake/Platform/Linux/runtime_dependencies_linux.cmake.in)
-include(cmake/Platform/Common/RuntimeDependencies_common.cmake)
+set(_cmake_Platform_Linux_RuntimeDependencies_linux_cmake ${CMAKE_CURRENT_LIST_DIR})
+set(O3DE_RUNTIME_DEPENDENCIES_TEMPLATE ${O3DE_ENGINE_PATH}/cmake/Platform/Linux/runtime_dependencies_linux.cmake.in)
+include(${_cmake_Platform_Linux_RuntimeDependencies_linux_cmake}/../Common/RuntimeDependencies_common.cmake)

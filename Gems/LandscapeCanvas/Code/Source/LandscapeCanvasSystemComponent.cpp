@@ -13,7 +13,7 @@
 
 #include <AzToolsFramework/ActionManager/Action/ActionManagerInterface.h>
 #include <AzToolsFramework/API/ViewPaneOptions.h>
-#include <LyViewPaneNames.h>
+#include <O3deViewPaneNames.h>
 
 // LmbrCentral
 #include <LmbrCentral/Shape/BoxShapeComponentBus.h>
@@ -207,7 +207,7 @@ namespace LandscapeCanvas
         options.showOnToolsToolbar = true;
         options.toolbarIcon = ":/Menu/landscape_canvas_editor.svg";
 
-        AzToolsFramework::RegisterViewPane<LandscapeCanvasEditor::MainWindow>(LyViewPane::LandscapeCanvas, LyViewPane::CategoryTools, options);
+        AzToolsFramework::RegisterViewPane<LandscapeCanvasEditor::MainWindow>(O3deViewPane::LandscapeCanvas, O3deViewPane::CategoryTools, options);
     }
 
     LandscapeCanvasSystemComponent::LandscapeCanvasSystemComponent()
@@ -224,8 +224,8 @@ namespace LandscapeCanvas
     {
         AzToolsFramework::ActionManagerRegistrationNotificationBus::Handler::BusDisconnect();
         LandscapeCanvas::GraphContext::SetInstance(nullptr);
-        AzToolsFramework::CloseViewPane(LyViewPane::LandscapeCanvas);
-        AzToolsFramework::UnregisterViewPane(LyViewPane::LandscapeCanvas);
+        AzToolsFramework::CloseViewPane(O3deViewPane::LandscapeCanvas);
+        AzToolsFramework::UnregisterViewPane(O3deViewPane::LandscapeCanvas);
     }
 
     void LandscapeCanvasSystemComponent::OnActionContextRegistrationHook()

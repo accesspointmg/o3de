@@ -12,14 +12,14 @@ find_library(FOUNDATION_LIBRARY Foundation)
 list(APPEND __azcore_dependencies ${FOUNDATION_LIBRARY})
 
 
-if (NOT LY_MONOLITHIC_GAME)
+if (NOT O3DE_MONOLITHIC_GAME)
     find_library(UI_KIT_FRAMEWORK UIKit)
     list(APPEND __azcore_dependencies ${UI_KIT_FRAMEWORK})
 endif()
 
 
 
-set(LY_BUILD_DEPENDENCIES
+set(O3DE_BUILD_DEPENDENCIES
     PRIVATE
         ${__azcore_dependencies}
 )

@@ -457,7 +457,7 @@ class TestEditRepoProperties:
                 return None
             return self.repo_json.data
 
-        def save_o3de_manifest(json_data: dict, manifest_path: pathlib.Path = None) -> bool:
+        def save_o3de_manifest_json_data(json_data: dict, manifest_path: pathlib.Path = None) -> bool:
             self.repo_json.data = json_data
             return True
 

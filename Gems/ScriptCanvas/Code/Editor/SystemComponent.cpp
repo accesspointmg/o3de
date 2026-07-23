@@ -28,7 +28,7 @@
 #include <Editor/View/Widgets/SourceHandlePropertyAssetCtrl.h>
 #include <Editor/View/Windows/MainWindow.h>
 #include <GraphCanvas/GraphCanvasBus.h>
-#include <LyViewPaneNames.h>
+#include <O3deViewPaneNames.h>
 #include <QFileInfo>
 #include <QDir>
 #include <QMenu>
@@ -56,7 +56,7 @@ namespace ScriptCanvasEditor
 
     SystemComponent::~SystemComponent()
     {
-        AzToolsFramework::UnregisterViewPane(LyViewPane::ScriptCanvas);
+        AzToolsFramework::UnregisterViewPane(O3deViewPane::ScriptCanvas);
         AzToolsFramework::EditorEvents::Bus::Handler::BusDisconnect();
         AzToolsFramework::AssetSeedManagerRequests::Bus::Handler::BusDisconnect();
         AZ::SystemTickBus::Handler::BusDisconnect();
@@ -167,7 +167,7 @@ namespace ScriptCanvasEditor
         options.showOnToolsToolbar = true;
         options.toolbarIcon = ":/Menu/script_canvas_editor.svg";
 
-        AzToolsFramework::RegisterViewPane<ScriptCanvasEditor::MainWindow>(LyViewPane::ScriptCanvas, LyViewPane::CategoryTools, options);
+        AzToolsFramework::RegisterViewPane<ScriptCanvasEditor::MainWindow>(O3deViewPane::ScriptCanvas, O3deViewPane::CategoryTools, options);
     }
 
     void SystemComponent::Deactivate()

@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 import os
 import pytest
 
-from ly_test_tools.o3de.editor_test import EditorSingleTest, EditorTestSuite, EditorBatchedTest
+from o3de_test_tools.o3de.editor_test import EditorSingleTest, EditorTestSuite, EditorBatchedTest
 
 # File with the list of vulkan validation errors to ignore
 # can be found in 'tests\rhi_validation\vulkan_skip_errors.py'

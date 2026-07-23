@@ -6,7 +6,7 @@
  *
  */
 
-// LY Crash Handler shared support
+// O3DE Crash Handler shared support
 
 #include <CrashSupport.h>
 

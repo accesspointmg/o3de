@@ -159,12 +159,12 @@ IF NOT EXIST "%KEYTOOL_PATH%" (
     GOTO error
 )
 
-SET CI_ANDROID_KEYSTORE_FILE=ly-android-dev.keystore
-SET CI_ANDROID_KEYSTORE_ALIAS=ly-android
+SET CI_ANDROID_KEYSTORE_FILE=o3de-android-dev.keystore
+SET CI_ANDROID_KEYSTORE_ALIAS=o3de-android
 SET CI_ANDROID_KEYSTORE_PASSWORD=lumberyard
-SET CI_ANDROID_KEYSTORE_DN=cn=LY Developer, ou=Lumberyard, o=Amazon, c=US
+SET CI_ANDROID_KEYSTORE_DN=cn=O3DE Developer, ou=Lumberyard, o=Amazon, c=US
 SET CI_KEYSTORE_VALIDITY_DAYS=10000
-SET CI_KEYSTORE_CERT_DN=cn=LY Developer, ou=Lumberyard, o=Amazon, c=US
+SET CI_KEYSTORE_CERT_DN=cn=O3DE Developer, ou=Lumberyard, o=Amazon, c=US
 
 REM Clear out any existing keystore file since the password/alias may have changed
 SET CI_ANDROID_KEYSTORE_FILE_ABS=%cd%\%OUTPUT_DIRECTORY%\%CI_ANDROID_KEYSTORE_FILE%

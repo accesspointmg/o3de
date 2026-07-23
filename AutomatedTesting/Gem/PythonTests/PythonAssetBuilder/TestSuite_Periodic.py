@@ -6,8 +6,8 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 """
 import shutil, os, time
 import pytest
-import ly_test_tools.o3de.editor_test_utils as editor_test_utils
-from ly_test_tools.o3de.editor_test import EditorTestSuite, EditorSingleTest
+import o3de_test_tools.o3de.editor_test_utils as editor_test_utils
+from o3de_test_tools.o3de.editor_test import EditorTestSuite, EditorSingleTest
 
 @pytest.mark.SUITE_periodic
 @pytest.mark.parametrize("launcher_platform", ['windows_editor'])

@@ -21,7 +21,7 @@ PUSHD %~dp0
 
 SET O3DE_DEV=C:\Depot\o3de-engine
 ::SET OCIO_APPS=C:\Depot\o3de-engine\Tools\ColorGrading\ocio\build\src\apps
-SET TAG_LY_BUILD_PATH=build
+SET TAG_O3DE_BUILD_PATH=build
 SET DCCSI_GDEBUG=True
 SET DCCSI_DEV_MODE=True
 

@@ -15,7 +15,7 @@ import os
 import pathlib
 import sys
 
-from o3de import compatibility, manifest, project_properties, utils
+from o3de import compatibility, o3de_object, project_properties, utils
 
 logging.basicConfig(format=utils.LOG_FORMAT)
 logger = logging.getLogger('o3de.enable_gem')
@@ -47,7 +47,7 @@ def enable_gem_in_project(gem_name: str = None,
 
     # if project name resolve it into a path
     if project_name and not project_path:
-        project_path = manifest.get_registered(project_name=project_name)
+        project_path = o3de_object.get_registered(project_name=project_name)
     if not project_path:
         logger.error(f'Unable to locate project path from the registered manifest.json files:'
                      f' {str(pathlib.Path.home() / ".o3de/manifest.json")}, engine.json')
@@ -65,7 +65,7 @@ def enable_gem_in_project(gem_name: str = None,
 
     # if gem name resolve it into a path
     if gem_name and not gem_path:
-        gem_path = manifest.get_registered(gem_name=gem_name, project_path=project_path)
+        gem_path = o3de_object.get_registered(gem_name=gem_name, project_path=project_path)
     if not gem_path:
         logger.error(f'Unable to locate "{gem_name}" from the registered gems in:'
                      f' {str(pathlib.Path( "~/.o3de/o3de_manifest.json").expanduser())},'
@@ -79,7 +79,7 @@ def enable_gem_in_project(gem_name: str = None,
         return 1
 
     # Read gem.json from the gem path
-    gem_json_data = manifest.get_gem_json_data(gem_path=gem_path, project_path=project_path)
+    gem_json_data = o3de_object.get_gem_json_data(gem_path=gem_path, project_path=project_path)
     if not gem_json_data:
         logger.error(f'Could not read gem.json content under {gem_path}.')
         return 1
@@ -93,7 +93,7 @@ def enable_gem_in_project(gem_name: str = None,
     else:
         # do not check compatibility if the project has not been registered with an engine 
         # because most gems depend on engine gems which would not be found 
-        if manifest.get_project_engine_path(project_path):
+        if o3de_object.get_project_engine_path(project_path):
             # Note: we don't remove gems that are not active or dependencies
             # because they will be implicitly found and activated via cmake 
             incompatible_objects = compatibility.get_gems_project_incompatible_objects([gem_path], [gem_name], project_path)
@@ -170,41 +170,6 @@ def _run_enable_gem_in_project(args: argparse) -> int:
                                      optional=args.optional
                                      )
 
-
-def add_parser_args(parser):
-    """
-    add_parser_args is called to add arguments to each command such that it can be
-    invoked locally or added by a central python file.
-    Ex. Directly run from this file with: python enable_gem.py --project-path "D:/TestProject" --gem-path "D:/TestGem"
-    :param parser: the caller passes an argparse parser like instance to this method
-    """
-
-    # Sub-commands should declare their own verbosity flag, if desired
-    utils.add_verbosity_arg(parser)
-
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-pp', '--project-path', type=pathlib.Path, required=False,
-                       help='The path to the project.')
-    group.add_argument('-pn', '--project-name', type=str, required=False,
-                       help='The name of the project.')
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-gp', '--gem-path', type=pathlib.Path, required=False,
-                       help='The path to the gem.')
-    group.add_argument('-gn', '--gem-name', type=str, required=False,
-                       help='The name of the gem (e.g. "atom"). May also include a version specifier, e.g. "atom>=1.2.3"')
-    group.add_argument('-agp', '--all-gem-paths', type=pathlib.Path, nargs='*', required=False,
-                       help='Explicitly activates all gems in the path recursively.')
-    group = parser.add_mutually_exclusive_group(required=False)
-    group.add_argument('-f', '--force', required=False, action='store_true', default=False,
-                       help='Bypass version compatibility checks')
-    group.add_argument('-dry', '--dry-run', required=False, action='store_true', default=False,
-                       help='Performs a dry run, reporting the result without changing anything.')
-    parser.add_argument('-o', '--optional', action='store_true', required=False, default=False,
-                        help='Marks the gem as optional so a project can still be configured if not found.')
-
-    parser.set_defaults(func=_run_enable_gem_in_project)
-
-
 def add_args(subparsers) -> None:
     """
     add_args is called to add subparsers arguments to each command such that it can be
@@ -214,29 +179,31 @@ def add_args(subparsers) -> None:
     :param subparsers: the caller instantiates subparsers and passes it in here
     """
     enable_gem_project_subparser = subparsers.add_parser('enable-gem')
-    add_parser_args(enable_gem_project_subparser)
 
+    # Sub-commands should declare their own verbosity flag, if desired
+    utils.add_verbosity_arg(enable_gem_project_subparser)
 
-def main():
-    """
-    Runs enable_gem.py script as standalone script
-    """
-    # parse the command line args
-    the_parser = argparse.ArgumentParser()
+    group = enable_gem_project_subparser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-pp', '--project-path', type=pathlib.Path, required=False,
+                       help='The path to the project.')
+    group.add_argument('-pn', '--project-name', type=str, required=False,
+                       help='The name of the project.')
+    
+    group = enable_gem_project_subparser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-gp', '--gem-path', type=pathlib.Path, required=False,
+                       help='The path to the gem.')
+    group.add_argument('-gn', '--gem-name', type=str, required=False,
+                       help='The name of the gem (e.g. "atom"). May also include a version specifier, e.g. "atom>=1.2.3"')
+    group.add_argument('-agp', '--all-gem-paths', type=pathlib.Path, nargs='*', required=False,
+                       help='Explicitly activates all gems in the path recursively.')
+   
+    group = enable_gem_project_subparser.add_mutually_exclusive_group(required=False)
+    group.add_argument('-f', '--force', required=False, action='store_true', default=False,
+                       help='Bypass version compatibility checks')
+    group.add_argument('-dry', '--dry-run', required=False, action='store_true', default=False,
+                       help='Performs a dry run, reporting the result without changing anything.')
+    
+    enable_gem_project_subparser.add_argument('-o', '--optional', action='store_true', required=False, default=False,
+                        help='Marks the gem as optional so a project can still be configured if not found.')
 
-    # add args to the parser
-    add_parser_args(the_parser)
-
-    # parse args
-    the_args = the_parser.parse_args()
-
-    # run
-    ret = the_args.func(the_args) if hasattr(the_args, 'func') else 1
-    logger.info('Success!' if ret == 0 else 'Completed with issues: result {}'.format(ret))
-
-    # return
-    sys.exit(ret)
-
-
-if __name__ == "__main__":
-    main()
+    enable_gem_project_subparser.set_defaults(func=_run_enable_gem_in_project)

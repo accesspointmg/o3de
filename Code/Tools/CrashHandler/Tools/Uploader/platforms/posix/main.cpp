@@ -6,7 +6,7 @@
  *
  */
 
-// LY Editor Crashpad Upload Handler - Mac
+// O3DE Editor Crashpad Upload Handler - Mac
 
 #include <AzCore/Debug/Trace.h>
 #include <handler/handler_main.h>

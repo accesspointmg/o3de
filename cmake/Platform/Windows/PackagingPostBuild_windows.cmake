@@ -6,8 +6,8 @@
 #
 #
 
-file(REAL_PATH "${CPACK_SOURCE_DIR}/.." LY_ROOT_FOLDER)
-include(${LY_ROOT_FOLDER}/cmake/Platform/Common/PackagingPostBuild_common.cmake)
+file(REAL_PATH "${CPACK_SOURCE_DIR}/.." O3DE_ENGINE_PATH)
+include(${O3DE_ENGINE_PATH}/cmake/Platform/Common/PackagingPostBuild_common.cmake)
 include(${CPACK_CODESIGN_SCRIPT})
 
 # convert the path to a windows style path using string replace because TO_NATIVE_PATH
@@ -60,7 +60,7 @@ set(_light_command
 )
 
 if(CPACK_UPLOAD_URL) # Skip signing if we are not uploading the package
-    ly_sign_binaries("${_cpack_wix_out_dir}" "packagePath")
+    o3de_sign_binaries("${_cpack_wix_out_dir}" "packagePath")
 endif()
 
 message(STATUS "Creating Bootstrap Installer...")
@@ -85,7 +85,7 @@ endif()
 message(STATUS "Bootstrap installer generated to ${_bootstrap_output_file}")
 
 if(CPACK_UPLOAD_URL) # Skip signing if we are not uploading the package
-    ly_sign_binaries("${_bootstrap_output_file}" "bootstrapPath")
+    o3de_sign_binaries("${_bootstrap_output_file}" "bootstrapPath")
 endif()
 
 # use the internal default path if somehow not specified from cpack_configure_downloads
@@ -111,7 +111,7 @@ file(COPY ${_artifacts}
 message(STATUS "Artifacts copied to ${CPACK_UPLOAD_DIRECTORY}")
 
 if(CPACK_UPLOAD_URL)
-    ly_upload_to_url(
+    o3de_upload_to_url(
         ${CPACK_UPLOAD_URL}
         ${CPACK_UPLOAD_DIRECTORY}
         ".*(.cab|.exe|.msi|.txt|.json)$"
@@ -120,6 +120,6 @@ if(CPACK_UPLOAD_URL)
     # for auto tagged builds, we will also upload a second copy of just the boostrapper
     # to a special "Latest" folder under the branch in place of the commit date/hash
     if(CPACK_AUTO_GEN_TAG)
-        ly_upload_to_latest(${CPACK_UPLOAD_URL} ${_bootstrap_output_file})
+        o3de_upload_to_latest(${CPACK_UPLOAD_URL} ${_bootstrap_output_file})
     endif()
 endif()

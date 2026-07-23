@@ -60,7 +60,7 @@
             "description": "unity: off",
             "hidden": true,
             "cacheVariables": {
-                "LY_UNITY_BUILD": {
+                "O3DE_UNITY_BUILD": {
                     "type": "BOOL",
                     "value": "OFF"
                 }
@@ -71,7 +71,7 @@
             "description": "unity: on",
             "hidden": true,
             "cacheVariables": {
-                "LY_UNITY_BUILD": {
+                "O3DE_UNITY_BUILD": {
                     "type": "BOOL",
                     "value": "ON"
                 }
@@ -82,7 +82,7 @@
             "description": "non-monolithic permutation(Default)",
             "hidden": true,
             "cacheVariables": {
-                "LY_MONOLITHIC_GAME": {
+                "O3DE_MONOLITHIC_GAME": {
                     "type": "BOOL",
                     "value": "OFF"
                 }
@@ -93,7 +93,7 @@
             "description": "monolithic permutation(Monolithic)",
             "hidden": true,
             "cacheVariables": {
-                "LY_MONOLITHIC_GAME": {
+                "O3DE_MONOLITHIC_GAME": {
                     "type": "BOOL",
                     "value": "ON"
                 }

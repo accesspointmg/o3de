@@ -31,7 +31,7 @@ class TestMetricsXMLtoCSV(unittest.TestCase):
         assert under_test == 'passed'
 
     @mock.patch('pytest_metrics_xml_to_csv._determine_test_result')
-    @mock.patch('ly_test_tools.cli.codeowners_hint.get_codeowners')
+    @mock.patch('o3de_test_tools.cli.codeowners_hint.get_codeowners')
     @mock.patch('xml.etree.ElementTree.parse')
     def test_ParsePytestXMLToCsv_HappyPath_WorksCorrectly(self, mock_parse, mock_get_codeowners, mock_determine_results):
         mock_xml = mock.MagicMock()

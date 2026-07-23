@@ -16,9 +16,9 @@ set_target_properties(AssetProcessor PROPERTIES
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "com.O3DE.AssetProcessor"
 )
 
-# Copy the AssetBuilder to the bundle Content/MacOS directory
+# Copy the AssetBuilder to the bundle Content/Mac directory
 # The AssetProcessor launches the AssetBuilder next to it in the same executable directory
-ly_add_target_files(
+o3de_add_target_files(
     TARGETS
         AssetProcessor
     FILES

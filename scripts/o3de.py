@@ -35,7 +35,8 @@ def add_args(parser: argparse.ArgumentParser) -> None:
     from o3de import android, engine_properties, engine_template, gem_properties, \
         global_project, register, print_registration, get_registration, \
         enable_gem, disable_gem, project_properties, sha256, download, \
-        export_project, repo, repo_properties
+        export_project, repo, repo_properties, cache, upgrade_schema, \
+        gitget, schema, o3de_object, data_to_schema, createdirs
     # Remove the temporarily added path
     sys.path = sys.path[1:]
 
@@ -84,8 +85,26 @@ def add_args(parser: argparse.ArgumentParser) -> None:
     # modify remote repo
     repo_properties.add_args(subparsers)
 
+    # cache
+    cache.add_args(subparsers)
+
     # Android
     android.add_args(subparsers)
+
+    # Upgrade schema
+    upgrade_schema.add_args(subparsers)
+
+    # gitget
+    gitget.add_args(subparsers)
+
+    # license to schema
+    data_to_schema.add_args(subparsers)
+
+    # o3de object
+    o3de_object.add_args(subparsers)
+
+    # createdirs
+    createdirs.add_args(subparsers)
 
 
 if __name__ == "__main__":

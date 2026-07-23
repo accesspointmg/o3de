@@ -6,7 +6,7 @@
  *
  */
 
-// LY Editor Crashpad Upload Handler Extension
+// O3DE Editor Crashpad Upload Handler Extension
 
 #include <AzCore/Debug/Trace.h>
 #include <AzCore/PlatformIncl.h>

@@ -12,7 +12,7 @@ import os
 import subprocess
 import time
 
-import ly_test_tools.environment.file_system as fs
+import o3de_test_tools.environment.file_system as fs
 
 
 class Single_Use_Log:

@@ -19,7 +19,7 @@ PUSHD %OUTPUT_DIRECTORY%
 
 REM Make sure we are using the CMake version of CPack and not the one that comes with chocolatey
 SET CPACK_PATH=
-IF "%LY_CMAKE_PATH%"=="" (
+IF "%O3DE_CMAKE_PATH%"=="" (
     REM quote the paths from 'where' so we can properly tokenize ones in the list with spaces
     FOR /F delims^=^"^ tokens^=1 %%i in ('where /F cpack') DO (
         REM The cpack in chocolatey expects a number supplied with --version so it will error
@@ -30,7 +30,7 @@ IF "%LY_CMAKE_PATH%"=="" (
         )
     )
 ) ELSE (
-    SET "CPACK_PATH=%LY_CMAKE_PATH%\cpack.exe"
+    SET "CPACK_PATH=%O3DE_CMAKE_PATH%\cpack.exe"
 )
 
 :run_cpack

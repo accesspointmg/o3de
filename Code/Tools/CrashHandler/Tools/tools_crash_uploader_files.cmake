@@ -12,6 +12,6 @@ set(FILES
     Uploader/SendReportDialog.h
     Uploader/SendReportDialog.cpp
     UI/submit_report.ui
-    UI/lyeditor.ico
+    UI/o3deeditor.ico
     UI/ToolsCrashHandler.qrc
 )

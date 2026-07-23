@@ -7,7 +7,7 @@
 #
 
 if(EXISTS "${ATOM_AFTERMATH_PATH_CMAKE_FORMATTED}/include/GFSDK_Aftermath.h")
-    ly_add_external_target(
+    o3de_add_external_target(
         NAME Aftermath
         VERSION
         3RDPARTY_ROOT_DIRECTORY ${ATOM_AFTERMATH_PATH_CMAKE_FORMATTED}

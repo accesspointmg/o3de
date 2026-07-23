@@ -28,7 +28,7 @@
 
 // Editor
 #include "Settings.h"
-#include "LyViewPaneNames.h"
+#include "O3deViewPaneNames.h"
 
 
 
@@ -53,7 +53,7 @@ void CPythonScriptsDialog::RegisterViewClass()
     {
         AzToolsFramework::ViewPaneOptions options;
         options.canHaveMultipleInstances = true;
-        AzToolsFramework::RegisterViewPane<CPythonScriptsDialog>("Python Scripts", LyViewPane::CategoryOther, options);
+        AzToolsFramework::RegisterViewPane<CPythonScriptsDialog>("Python Scripts", O3deViewPane::CategoryOther, options);
     }
 }
 

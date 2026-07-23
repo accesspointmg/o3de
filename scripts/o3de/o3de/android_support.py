@@ -22,7 +22,7 @@ import string
 import subprocess
 
 from enum import Enum
-from o3de import command_utils, manifest, utils, export_project as exp
+from o3de import command_utils, o3de_object, utils, export_project as exp
 from packaging.version import Version
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -1375,7 +1375,7 @@ class AndroidProjectGenerator(object):
             'MIN_SDK_VER': self._android_platform_sdk_api_level,
             'NDK_VERSION': self._android_ndk.version,
             'SDK_BUILD_TOOL_VER': self._android_sdk_build_tool_version,
-            'LY_ENGINE_ROOT': self._engine_root.as_posix()
+            'O3DE_ENGINE_ROOT': self._engine_root.as_posix()
         }
         # Generate the gradle build script
         self.create_file_from_project_template(src_template_file='root.build.gradle.in',

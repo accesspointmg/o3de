@@ -13,7 +13,7 @@ import os
 import pytest
 import subprocess
 
-import ly_test_tools
+import o3de_test_tools
 
 
 @pytest.mark.SUITE_smoke
@@ -22,7 +22,7 @@ class TestCLIToolAzTestRunnerWorks(object):
         file_path = os.path.join(build_directory, "AzTestRunner")
         help_message = "OKAY Symbol found: AzRunUnitTests"
 
-        if ly_test_tools.WINDOWS:
+        if o3de_test_tools.WINDOWS:
             target_lib = "AzTestRunner.Tests"
         else:
             target_lib = "libAzTestRunner.Tests"

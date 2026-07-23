@@ -10,7 +10,7 @@
           "The following build commands failed:.*\\(\\d+ failure\\)"
         ],
         "log_testcases": [
-          "The following build commands failed:\\nLd /Users/lybuilder/workspace/o3de/build/ios/bin/debug/AutomatedTesting.GameLauncher.app/AutomatedTesting.GameLauncher normal\\n(1 failure)"
+          "The following build commands failed:\\nLd /Users/o3debuilder/workspace/o3de/build/ios/bin/debug/AutomatedTesting.GameLauncher.app/AutomatedTesting.GameLauncher normal\\n(1 failure)"
         ],
         "owners": []
       },

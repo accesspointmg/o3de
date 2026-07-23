@@ -115,7 +115,7 @@ namespace EMotionFX
         using ThisType = RangedValueParameter<ValueType, Derived>;
 
         // This method calls Reflect() on it's parent class, which is uncommon
-        // in the LY reflection framework.  This is because the parent class is
+        // in the O3DE reflection framework.  This is because the parent class is
         // a template, and is unique to each type that subclasses it, as it
         // uses the Curiously Recursive Template Pattern.
         BaseType::Reflect(context);

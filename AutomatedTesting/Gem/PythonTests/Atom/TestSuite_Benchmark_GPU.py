@@ -12,7 +12,7 @@ import sys
 import pytest
 
 import editor_python_test_tools.hydra_test_utils as hydra
-from ly_test_tools.benchmark.data_aggregator import BenchmarkDataAggregator
+from o3de_test_tools.benchmark.data_aggregator import BenchmarkDataAggregator
 
 logger = logging.getLogger(__name__)
 WINDOWS = sys.platform.startswith('win')

@@ -6,12 +6,12 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
 # common files to all platforms
-ly_install_files(
+o3de_install_files(
     FILES
         get_python.cmake
         get_python_package_hash.cmake
@@ -21,8 +21,8 @@ ly_install_files(
 )
 
 # platform specific files (they are PROGRAMS)
-include(Platform/${PAL_PLATFORM_NAME}/install_files_${PAL_PLATFORM_NAME_LOWERCASE}.cmake)
-ly_install_files(
+include(Platform/${O3DE_PAL_PLATFORM_NAME}/install_files_${O3DE_PAL_PLATFORM_WART}.cmake)
+o3de_install_files(
     FILES ${install_files}
     PROGRAMS
     DESTINATION python

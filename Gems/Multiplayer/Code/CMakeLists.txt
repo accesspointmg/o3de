@@ -6,10 +6,11 @@
 #
 #
 
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
 # The ${gem_name}Stats.API target declares the common interface for tracking and recording multiplayer stats for profiling purposes.
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}Stats.API INTERFACE
     NAMESPACE Gem
     FILES_CMAKE
@@ -22,14 +23,14 @@ ly_add_target(
            AZ::AzCore
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Common.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
         multiplayer_files.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
-            ${pal_source_dir}
+            ${pal_code_source_path}
             Source
             .
         PUBLIC
@@ -61,14 +62,14 @@ set(FORCE_ENABLE_O3DE_EDITOR_CONNECTION_LISTENER "" CACHE STRING
 # whether or not to include the listener.
 set(O3DE_EDITOR_CONNECTION_LISTENER_ENABLE_FLAG $<$<NOT:$<STREQUAL:"${FORCE_ENABLE_O3DE_EDITOR_CONNECTION_LISTENER}","">>:O3DE_EDITOR_CONNECTION_LISTENER_ENABLE=$<BOOL:${FORCE_ENABLE_O3DE_EDITOR_CONNECTION_LISTENER}>>)
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Client.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
         multiplayer_split_files.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
-            ${pal_source_dir}
+            ${pal_code_source_path}
             Source
             .
         PUBLIC
@@ -91,14 +92,14 @@ ly_add_target(
         *.AutoComponent.xml,AutoComponentTypes_Source.jinja,$path/AutoComponentTypes.cpp
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Server.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
         multiplayer_split_files.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
-            ${pal_source_dir}
+            ${pal_code_source_path}
             Source
             .
         PUBLIC
@@ -121,14 +122,14 @@ ly_add_target(
         *.AutoComponent.xml,AutoComponentTypes_Source.jinja,$path/AutoComponentTypes.cpp
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Unified.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
         multiplayer_split_files.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
-            ${pal_source_dir}
+            ${pal_code_source_path}
             Source
             .
         PUBLIC
@@ -151,8 +152,8 @@ ly_add_target(
         *.AutoComponent.xml,AutoComponentTypes_Source.jinja,$path/AutoComponentTypes.cpp
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         multiplayer_shared_files.cmake
@@ -170,7 +171,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/MultiplayerGem.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -178,8 +179,8 @@ ly_add_source_properties(
             O3DE_GEM_NAME=${gem_name}
             O3DE_GEM_VERSION=${gem_version})
 
-ly_add_target(
-    NAME ${gem_name}.Client ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name}.Client ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         multiplayer_shared_files.cmake
@@ -196,8 +197,8 @@ ly_add_target(
         Gem::CertificateManager
 )
 
-ly_add_target(
-    NAME ${gem_name}.Server ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name}.Server ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         multiplayer_shared_files.cmake
@@ -214,8 +215,8 @@ ly_add_target(
         Gem::CertificateManager
 )
 
-ly_add_target(
-    NAME ${gem_name}.Debug.Client ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name}.Debug.Client ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         multiplayer_debug_files.cmake
@@ -236,8 +237,8 @@ ly_add_target(
             Gem::ImGui.Static
 )
 
-ly_add_target(
-    NAME ${gem_name}.Debug ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name}.Debug ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         multiplayer_debug_files.cmake
@@ -259,7 +260,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/Debug/MultiplayerDebugModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -268,19 +269,19 @@ ly_add_source_properties(
             O3DE_GEM_VERSION=${gem_version})
 
 # The "Multiplayer" target is used by clients and servers, Debug is used only on clients.
-ly_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name}.Client Gem::${gem_name}.Debug.Client)
-ly_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::${gem_name}.Server)
-ly_create_alias(NAME ${gem_name}.Unified NAMESPACE Gem TARGETS Gem::${gem_name} Gem::${gem_name}.Debug)
+o3de_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name}.Client Gem::${gem_name}.Debug.Client)
+o3de_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::${gem_name}.Server)
+o3de_create_alias(NAME ${gem_name}.Unified NAMESPACE Gem TARGETS Gem::${gem_name} Gem::${gem_name}.Debug)
 
-if (PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
+if (O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
         NAME ${gem_name}.Tools.Static STATIC
         NAMESPACE Gem
         FILES_CMAKE
             multiplayer_tools_files.cmake
         INCLUDE_DIRECTORIES
             PRIVATE
-                ${pal_source_dir}
+                ${pal_code_source_path}
                 Source
                 .
             PUBLIC
@@ -293,7 +294,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
                 AZ::AzToolsFramework
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
         NAMESPACE Gem
         FILES_CMAKE
@@ -305,7 +306,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
             PRIVATE
                 .
                 Source
-                ${pal_source_dir}
+                ${pal_code_source_path}
             PUBLIC
                 Include
         BUILD_DEPENDENCIES
@@ -324,7 +325,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # Inject the gem name into the Module source file
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES
         Source/Editor/MultiplayerEditorGem.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -332,21 +333,21 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
                 O3DE_GEM_NAME=${gem_name}
                 O3DE_GEM_VERSION=${gem_version})
 
-    ly_create_alias(NAME ${gem_name}.Builders  NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Builders  NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
     # use the ${gem_name}.Editor module in tools like the Editor:  Such tools also get the visual debug view:
-    ly_create_alias(NAME ${gem_name}.Tools     NAMESPACE Gem TARGETS Gem::${gem_name}.Debug Gem::${gem_name}.Builders)
+    o3de_create_alias(NAME ${gem_name}.Tools     NAMESPACE Gem TARGETS Gem::${gem_name}.Debug Gem::${gem_name}.Builders)
 endif()
 
-if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if (O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             multiplayer_tests_files.cmake
         INCLUDE_DIRECTORIES
             PRIVATE
                 Tests
-                ${pal_source_dir}
+                ${pal_code_source_path}
                 Source
                 .
             PUBLIC
@@ -362,18 +363,18 @@ if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             *.AutoComponent.xml,AutoComponentTypes_Header.jinja,$path/AutoComponentTypes.h
             *.AutoComponent.xml,AutoComponentTypes_Source.jinja,$path/AutoComponentTypes.cpp
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         LABELS REQUIRES_tiaf
     )
-    ly_add_googlebenchmark(
+    o3de_add_googlebenchmark(
         NAME Gem::${gem_name}.Benchmarks
         TARGET Gem::${gem_name}.Tests
     )
 
-    if (PAL_TRAIT_BUILD_HOST_TOOLS)
-        ly_add_target(
-            NAME ${gem_name}.Builders.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    if (O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+        o3de_add_target(
+            NAME ${gem_name}.Builders.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
             NAMESPACE Gem
             FILES_CMAKE
                 multiplayer_tools_tests_files.cmake
@@ -390,7 +391,7 @@ if (PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                     Gem::${gem_name}.Unified.Static
                     Gem::${gem_name}.Tools.Static
         )
-        ly_add_googletest(
+        o3de_add_googletest(
             NAME Gem::${gem_name}.Builders.Tests
             LABELS REQUIRES_tiaf
         )

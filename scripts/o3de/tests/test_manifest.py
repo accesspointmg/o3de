@@ -13,7 +13,7 @@ import pathlib
 import logging
 from unittest.mock import patch
 
-from o3de import manifest, utils
+from o3de import o3de_object, utils
 
 
 TEST_GEM_JSON_PAYLOAD = '''
@@ -155,7 +155,7 @@ class TestGetEnabledGems:
         with patch('pathlib.Path.resolve', return_value=pathlib.Path('enabled_gems.cmake')) as pathlib_is_resolve_mock,\
                 patch('pathlib.Path.is_file', return_value=True) as pathlib_is_file_mock,\
                 patch('pathlib.Path.open', return_value=io.StringIO(enable_gems_cmake_data)) as pathlib_open_mock:
-            enabled_gems_set = manifest.get_enabled_gems(pathlib.Path('enabled_gems.cmake'))
+            enabled_gems_set = o3de_object.get_enabled_gems(pathlib.Path('enabled_gems.cmake'))
 
         assert enabled_gems_set == expected_set
 
@@ -166,7 +166,7 @@ class TestGetEnabledGems:
 ])
 class TestGetTemplatesForCreation:
     @staticmethod
-    def get_manifest_templates() -> list:
+    def get_manifest_child_templates() -> list:
         return []
 
     @staticmethod
@@ -214,7 +214,7 @@ class TestGetTemplatesForCreation:
                 patch('o3de.validation.valid_o3de_gem_json', side_effect=validate_gem_json) \
                         as validate_gem_json,\
                 patch('o3de.manifest.load_o3de_manifest') as load_o3de_manifest_patch:
-            templates = manifest.get_templates_for_generic_creation()
+            templates = o3de_object.get_templates_for_generic_creation()
             assert templates == expected_template_paths
 
             # make sure the o3de manifest isn't attempted to be loaded
@@ -250,7 +250,7 @@ class TestGetTemplatesForCreation:
                 patch('o3de.validation.valid_o3de_gem_json', side_effect=validate_gem_json) \
                         as validate_gem_json,\
                 patch('o3de.manifest.load_o3de_manifest') as load_o3de_manifest_patch:
-            templates = manifest.get_templates_for_project_creation()
+            templates = o3de_object.get_templates_for_project_creation()
             assert templates == expected_template_paths
 
             # make sure the o3de manifest isn't attempted to be loaded
@@ -286,7 +286,7 @@ class TestGetTemplatesForCreation:
                 patch('o3de.validation.valid_o3de_gem_json', side_effect=validate_gem_json) \
                         as validate_gem_json, \
                 patch('o3de.manifest.load_o3de_manifest') as load_o3de_manifest_patch:
-            templates = manifest.get_templates_for_gem_creation()
+            templates = o3de_object.get_templates_for_gem_creation()
             assert templates == expected_template_paths
 
             # make sure the o3de manifest isn't attempted to be loaded
@@ -328,7 +328,7 @@ class TestGetAllGems:
             engine_payload['external_subdirectories'] = engine_external_subdirectories
             return engine_payload
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             manifest_payload = json.loads(TEST_O3DE_MANIFEST_JSON_PAYLOAD)
             manifest_payload['external_subdirectories'] = manifest_external_subdirectories
             return manifest_payload
@@ -363,7 +363,7 @@ class TestGetAllGems:
             patch('o3de.manifest.load_o3de_manifest', side_effect=load_o3de_manifest) \
                 as load_o3de_manifest_patch:
 
-            assert manifest.get_all_gems() == expected_gem_paths
+            assert o3de_object.get_all_gems() == expected_gem_paths
 
 
     @pytest.mark.parametrize("""gem_external_subdirectories,
@@ -414,7 +414,7 @@ class TestGetAllGems:
 
             # start with the first path in the dictionary
             gem_path = pathlib.Path(list(gem_external_subdirectories.keys())[0])
-            manifest.get_gem_external_subdirectories(gem_path, list(), dict())
+            o3de_object.get_gem_external_subdirectories(gem_path, list(), dict())
 
             assert self.cycle_detected == expected_cycle_detected
 
@@ -550,7 +550,7 @@ class TestGetProjectEnabledGems:
             patch('pathlib.Path.resolve', self.resolve) as resolve_patch, \
             patch('pathlib.Path.is_file', return_value=True) as is_file_patch:
 
-            assert expected_result == manifest.get_project_enabled_gems(self.project_path, include_dependencies)
+            assert expected_result == o3de_object.get_project_enabled_gems(self.project_path, include_dependencies)
 
 class TestManifestGetRegistered:
     @staticmethod
@@ -593,7 +593,7 @@ class TestManifestGetRegistered:
             project_payload = json.loads(TEST_PROJECT_JSON_PAYLOAD)
             return project_payload
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             manifest_payload = json.loads(TEST_O3DE_MANIFEST_JSON_PAYLOAD)
             manifest_payload['projects'] = []
             return manifest_payload
@@ -608,7 +608,7 @@ class TestManifestGetRegistered:
             patch('pathlib.Path.is_file', self.is_file) as _8,\
             patch('o3de.manifest.get_this_engine_path', side_effect=self.get_this_engine_path) as _9: 
 
-            path = manifest.get_registered(template_name=template_name)
+            path = o3de_object.get_registered(template_name=template_name)
             assert path == expected_path
 
 @pytest.mark.parametrize("test_object_typename", [
@@ -683,7 +683,7 @@ class TestManifestGetRegisteredVersionedObject:
                                 user: bool = False) -> dict or None:
             return get_json_data('project', project_path, None)
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             manifest_payload = json.loads(TEST_O3DE_MANIFEST_JSON_PAYLOAD)
             if test_object_typename == 'gem':
                 manifest_payload['external_subdirectories'] = [p.as_posix() for p in json_data_by_path.keys()]
@@ -704,7 +704,7 @@ class TestManifestGetRegisteredVersionedObject:
             project_name = object_name if test_object_typename == 'project' else None
             gem_name = object_name if test_object_typename == 'gem' else None
 
-            path = manifest.get_registered(engine_name=engine_name, project_name=project_name, gem_name=gem_name)
+            path = o3de_object.get_registered(engine_name=engine_name, project_name=project_name, gem_name=gem_name)
             assert path == expected_path
 
 class TestManifestProjects:
@@ -785,7 +785,7 @@ class TestManifestProjects:
         def get_registered(engine_name: str):
             return engines[engine_name]
 
-        def get_manifest_engines():
+        def get_manifest_child_engines():
             return engines
 
         def find_ancestor_dir_containing_file(target_file_name: pathlib.PurePath, start_path: pathlib.Path,
@@ -812,7 +812,7 @@ class TestManifestProjects:
             patch('pathlib.Path.resolve', self.resolve) as _6, \
             patch('pathlib.Path.samefile', self.samefile) as _7:
 
-            engine_path = manifest.get_project_engine_path(project_path)
+            engine_path = o3de_object.get_project_engine_path(project_path)
             assert engine_path == expected_engine_path
 
 class TestManifestGetGemsJsonData:
@@ -902,7 +902,7 @@ class TestManifestGetGemsJsonData:
             patch('pathlib.Path.is_file', return_value=True) as pathlib_is_file_patch,\
             patch('pathlib.Path.resolve', new=self.resolve) as pathlib_resolve_patch:\
 
-            all_gems_by_name = manifest.get_gems_json_data_by_name(engine_path=engine_path, 
+            all_gems_by_name = o3de_object.get_gems_json_data_by_name(engine_path=engine_path, 
                                             project_path=project_path,
                                             include_manifest_gems=include_manifest_gems,
                                             include_engine_gems=include_engine_gems,
@@ -922,6 +922,6 @@ class TestManifestRemoveNonDependencyGemJsonData:
         ]
     )
     def test_remove_non_dependency_gem_json_data(self, top_level_gem_names, gems_json_data_by_name, expected_result):
-            manifest.remove_non_dependency_gem_json_data(gem_names=top_level_gem_names, 
+            o3de_object.remove_non_dependency_gem_json_data(gem_names=top_level_gem_names, 
                                                         gems_json_data_by_name=gems_json_data_by_name)
             assert gems_json_data_by_name == expected_result

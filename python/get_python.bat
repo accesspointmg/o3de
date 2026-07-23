@@ -27,37 +27,37 @@ IF !ERRORLEVEL!==0 (
 
 cd /D %CMD_DIR%\..
 REM IF you update this logic, update it in scripts/build/Platform/Windows/env_windows.cmd
-REM If cmake is not found on path, try a known location at LY_CMAKE_PATH
+REM If cmake is not found on path, try a known location at O3DE_CMAKE_PATH
 where /Q cmake
 IF NOT !ERRORLEVEL!==0 (
-    IF "%LY_CMAKE_PATH%"=="" (
-        ECHO ERROR: CMake was not found on the PATH and LY_CMAKE_PATH is not defined.
-        ECHO Please ensure CMake is on the path or set LY_CMAKE_PATH.
+    IF "%O3DE_CMAKE_PATH%"=="" (
+        ECHO ERROR: CMake was not found on the PATH and O3DE_CMAKE_PATH is not defined.
+        ECHO Please ensure CMake is on the path or set O3DE_CMAKE_PATH.
         EXIT /b 1
     )
 
-    PATH !LY_CMAKE_PATH!;!PATH!
+    PATH !O3DE_CMAKE_PATH!;!PATH!
     where /Q cmake
     if NOT !ERRORLEVEL!==0 (
-        ECHO ERROR: CMake was not found on the PATH or at the known location: !LY_CMAKE_PATH!
-        ECHO Please add it to the path, set LY_CMAKE_PATH to be the directory containing it, or place it
+        ECHO ERROR: CMake was not found on the PATH or at the known location: !O3DE_CMAKE_PATH!
+        ECHO Please add it to the path, set O3DE_CMAKE_PATH to be the directory containing it, or place it
         ECHO at the above location.
         EXIT /b 1
     )
 )
 
-REM If the %LY_3RDPARTY_PATH% is not set, then default it to %USERPROFILE%/.o3de/3rdParty
-IF "" == "%LY_3RDPARTY_PATH%" (
-    SET LY_3RDPARTY_PATH=%USERPROFILE%\.o3de\3rdParty
+REM If the %O3DE_3RDPARTY_PATH% is not set, then default it to %USERPROFILE%/.o3de/3rdParty
+IF "" == "%O3DE_3RDPARTY_PATH%" (
+    SET O3DE_3RDPARTY_PATH=%USERPROFILE%\.o3de\3rdParty
 )
 
 REM output the version number for forensic logging
 cmake --version
-cmake -DPAL_PLATFORM_NAME:string=Windows -D "LY_3RDPARTY_PATH:string=%LY_3RDPARTY_PATH%" -D "LY_ROOT_FOLDER=%CMD_DIR%\.." -P "%CMD_DIR%\get_python.cmake"
+cmake -DO3DE_PAL_PLATFORM_NAME:string=Windows -D "O3DE_3RDPARTY_PATH:string=%O3DE_3RDPARTY_PATH%" -D "O3DE_ENGINE_PATH=%CMD_DIR%\.." -P "%CMD_DIR%\get_python.cmake"
 
 if ERRORLEVEL 1 (
     ECHO ERROR: Unable to fetch python using cmake.  
-    ECHO  - Is LY_PACKAGE_SERVER_URLS set?  
+    ECHO  - Is O3DE_PACKAGE_SERVER_URLS set?  
     ECHO  - Do you have permission to access the packages?
     EXIT /b 1
 )

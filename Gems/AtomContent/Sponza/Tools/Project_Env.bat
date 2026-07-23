@@ -87,7 +87,7 @@ IF "%O3DE_DEV%"=="" echo     ~ Using default O3DE_DEV=C:\Depot\o3de-engine
 IF "%O3DE_DEV%"=="" (set O3DE_DEV=C:\Depot\o3de-engine)
 echo     O3DE_DEV = %O3DE_DEV%
 
-CALL %O3DE_DEV%\Gems\AtomLyIntegration\TechnicalArt\DccScriptingInterface\Tools\Dev\Windows\Env_Maya.bat
+CALL %O3DE_DEV%\Gems\AtomO3deIntegration\TechnicalArt\DccScriptingInterface\Tools\Dev\Windows\Env_Maya.bat
 
 :: Restore original directory
 popd

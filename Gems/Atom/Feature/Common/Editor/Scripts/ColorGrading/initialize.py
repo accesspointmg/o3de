@@ -79,8 +79,8 @@ def start():
             raise e
     
         try:
-            _TAG_LY_BUILD_PATH = os.getenv('TAG_LY_BUILD_PATH', 'build')
-            _DEFAULT_BIN_PATH = Path(str(_O3DE_DEV), _TAG_LY_BUILD_PATH, 'bin', 'profile')
+            _TAG_O3DE_BUILD_PATH = os.getenv('TAG_O3DE_BUILD_PATH', 'build')
+            _DEFAULT_BIN_PATH = Path(str(_O3DE_DEV), _TAG_O3DE_BUILD_PATH, 'bin', 'profile')
             _PATH_O3DE_BIN = Path(os.getenv('PATH_O3DE_BIN', _DEFAULT_BIN_PATH))
             os.environ['PATH_O3DE_BIN'] = _PATH_O3DE_BIN.as_posix()
             _LOGGER.debug(f'PATH_O3DE_BIN is: {_PATH_O3DE_BIN}')

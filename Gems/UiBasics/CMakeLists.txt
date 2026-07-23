@@ -6,6 +6,8 @@
 #
 #
 
+o3de_gem_setup()
+
 # This will export its "SourcePaths" to the generated "cmake_dependencies.<project>.assetbuilder.setreg"
-ly_create_alias(NAME UiBasics.Builders NAMESPACE Gem)
-ly_create_alias(NAME UiBasics.Tools NAMESPACE Gem)
+o3de_create_alias(NAME UiBasics.Builders NAMESPACE Gem)
+o3de_create_alias(NAME UiBasics.Tools NAMESPACE Gem)

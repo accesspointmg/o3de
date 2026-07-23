@@ -6,36 +6,44 @@
 #
 #
 
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
-#for PAL_TRAIT_BUILD_ATOM_RPI_ASSETS_SUPPORTED and PAL_TRAIT_BUILD_ATOM_RPI_MASKED_OCCLUSION_CULLING_SUPPORTED
-include(${pal_source_dir}/PAL_${PAL_PLATFORM_NAME_LOWERCASE}.cmake)
+#for O3DE_PAL_TRAIT_BUILD_ATOM_RPI_ASSETS_SUPPORTED and O3DE_PAL_TRAIT_BUILD_ATOM_RPI_MASKED_OCCLUSION_CULLING_SUPPORTED
+include(${pal_code_source_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)
 
-if(PAL_TRAIT_BUILD_ATOM_RPI_MASKED_OCCLUSION_CULLING_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_ATOM_RPI_MASKED_OCCLUSION_CULLING_SUPPORTED)
     set(MASKED_OCCLUSION_CULLING_FILES "atom_rpi_masked_occlusion_files.cmake")
 else()
     set(MASKED_OCCLUSION_CULLING_FILES "")
 endif()
 
-ly_add_target(
-    NAME ${gem_name}.Public ${PAL_TRAIT_MONOLITHIC_DRIVEN_LIBRARY_TYPE}
+# ComputePass.cpp includes IndirectRendering.azsli from the
+# Atom_Feature_Common gem's ShaderLib.  Resolve the gem root through
+# the manifest so the include works in both source-tree and composed
+# workspace layouts (the gems are not siblings in a workspace).
+o3de_find_gem("Atom_Feature_Common" atom_feature_common_gem_root)
+
+o3de_add_target(
+    NAME ${gem_name}.Public ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_LIBRARY_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         atom_rpi_reflect_files.cmake
         atom_rpi_public_files.cmake
         ../Assets/atom_rpi_asset_files.cmake
-        ${pal_source_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_source_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
         ${MASKED_OCCLUSION_CULLING_FILES}
     COMPILE_DEFINITIONS
         PRIVATE
             ATOM_RPI_PUBLIC_EXPORTS
             ATOM_RPI_REFLECT_EXPORTS
     PLATFORM_INCLUDE_FILES
-        ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common/${PAL_TRAIT_COMPILER_ID}/atom_rpi_public_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+        ${pal_common_code_source_path}/${O3DE_PAL_TRAIT_COMPILER_ID}/atom_rpi_public_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
-            ${pal_source_dir}
+            ${pal_code_source_path}
+            ${atom_feature_common_gem_root}/Assets/ShaderLib
         PUBLIC
             Include
             External
@@ -51,8 +59,8 @@ ly_add_target(
 ################################################################################
 # Private
 ################################################################################
-ly_add_target(
-    NAME ${gem_name}.Private ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name}.Private ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         atom_rpi_private_files.cmake
@@ -74,7 +82,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/RPI.Private/Module.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -82,10 +90,10 @@ ly_add_source_properties(
             O3DE_GEM_NAME=${gem_name}
             O3DE_GEM_VERSION=${gem_version})
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 
-    ly_add_target(
-        NAME ${gem_name}.Edit ${PAL_TRAIT_MONOLITHIC_DRIVEN_LIBRARY_TYPE}
+    o3de_add_target(
+        NAME ${gem_name}.Edit ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_LIBRARY_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             atom_rpi_edit_files.cmake
@@ -105,7 +113,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::${gem_name}.Public
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor.Private.Object OBJECT
         NAMESPACE Gem
         FILES_CMAKE
@@ -127,7 +135,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::${gem_name}.Public
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
         NAMESPACE Gem
         FILES_CMAKE
@@ -147,7 +155,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     # Inject the gem name into the Module source file
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES
             Source/RPI.Editor/EditorModule.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -159,9 +167,9 @@ endif()
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.TestUtils STATIC
         NAMESPACE Gem
         FILES_CMAKE
@@ -180,9 +188,9 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     )
 endif()
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             atom_rpi_tests_files.cmake
@@ -204,7 +212,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::${gem_name}.Public
                 Gem::${gem_name}.TestUtils
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         LABELS REQUIRES_tiaf
     )
@@ -216,16 +224,12 @@ endif()
 # Builders
 ################################################################################
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 
-
-    o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
-    set(common_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
-
-    if(NOT PAL_TRAIT_BUILD_ATOM_RPI_ASSETS_SUPPORTED)
+    if(NOT O3DE_PAL_TRAIT_BUILD_ATOM_RPI_ASSETS_SUPPORTED)
 
         # Create a stub
-        ly_add_target(
+        o3de_add_target(
             NAME ${gem_name}.Builders GEM_MODULE
             NAMESPACE Gem
             FILES_CMAKE
@@ -241,9 +245,9 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
         )
 
         # Inject the gem name into the Module source file
-        ly_add_source_properties(
+        o3de_add_source_properties(
             SOURCES
-                Source/Platform/Common/Unimplemented/BuilderModule_Stub.cpp
+                ${pal_common_code_source_path}/Unimplemented/BuilderModule_Stub.cpp
             PROPERTY COMPILE_DEFINITIONS
                 VALUES
                     O3DE_GEM_NAME=${gem_name}
@@ -253,7 +257,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
 
     endif()
     
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Builders.Private.Object OBJECT
         NAMESPACE Gem
         FILES_CMAKE
@@ -277,7 +281,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::${gem_name}.Public
     )
 
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Builders GEM_MODULE
         NAMESPACE Gem
         FILES_CMAKE
@@ -294,7 +298,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
      # Inject the gem name into the Module source file
-     ly_add_source_properties(
+     o3de_add_source_properties(
         SOURCES
             Source/RPI.Builders/BuilderModule.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -302,10 +306,10 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 O3DE_GEM_NAME=${gem_name}
                 O3DE_GEM_VERSION=${gem_version})
 
-    if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-        ly_add_target(
-            NAME ${gem_name}.Builders.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+        o3de_add_target(
+            NAME ${gem_name}.Builders.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
             NAMESPACE Gem
             FILES_CMAKE
                 atom_rpi_builders_tests_files.cmake
@@ -320,7 +324,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                     AZ::AzFramework
                     Gem::${gem_name}.Builders.Private.Object
         )
-        ly_add_googletest(
+        o3de_add_googletest(
             NAME Gem::${gem_name}.Builders.Tests
             LABELS REQUIRES_tiaf
         )

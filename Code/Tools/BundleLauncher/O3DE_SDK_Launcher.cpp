@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     }
 
     AZ::IO::FixedMaxPath shellPath = "/bin/sh";
-    AZStd::string parameters = AZStd::string::format("-c \"export LY_CMAKE_PATH=/usr/local/bin && \"%s/python/get_python.sh\"\"", enginePath.c_str());
+    AZStd::string parameters = AZStd::string::format("-c \"export O3DE_CMAKE_PATH=/usr/local/bin && \"%s/python/get_python.sh\"\"", enginePath.c_str());
     AzFramework::ProcessLauncher::ProcessLaunchInfo shellProcessLaunch;
     shellProcessLaunch.m_processExecutableString = AZStd::move(shellPath.Native());
     shellProcessLaunch.m_commandlineParameters = parameters;
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
     shellProcess->WaitForProcessToExit(120);
     shellProcess.reset();
     
-    AZ::IO::FixedMaxPath projectManagerPath = installedBinariesFolder/"o3de.app"/"Contents"/"MacOS"/"o3de";
+    AZ::IO::FixedMaxPath projectManagerPath = installedBinariesFolder/"o3de.app"/"Contents"/"Mac"/"o3de";
     AzFramework::ProcessLauncher::ProcessLaunchInfo processLaunchInfo;
     processLaunchInfo.m_processExecutableString = AZStd::move(projectManagerPath.Native());
     processLaunchInfo.m_showWindow = true;

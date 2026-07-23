@@ -10,13 +10,13 @@ import pytest
 import logging
 import sys
 import time
-pytest.importorskip('ly_test_tools')
+pytest.importorskip('o3de_test_tools')
 
-import ly_test_tools.environment.file_system as fs
-import ly_test_tools.environment.waiter as waiter
-import ly_test_tools.log.log_monitor
+import o3de_test_tools.environment.file_system as fs
+import o3de_test_tools.environment.waiter as waiter
+import o3de_test_tools.log.log_monitor
 
-from ly_test_tools.o3de.editor_test_utils import compile_test_case_name_from_request
+from o3de_test_tools.o3de.editor_test_utils import compile_test_case_name_from_request
 
 from ..ap_fixtures.ap_setup_fixture import ap_setup_fixture
 from ..ap_fixtures.asset_processor_fixture import asset_processor as asset_processor
@@ -88,7 +88,7 @@ class TestBundleMode(object):
 
         with editor.start(launch_ap=True):
             editor_log_file = os.path.join(editor.workspace.paths.project_log(), 'Editor.log')
-            log_monitor = ly_test_tools.log.log_monitor.LogMonitor(editor, editor_log_file)
+            log_monitor = o3de_test_tools.log.log_monitor.LogMonitor(editor, editor_log_file)
             waiter.wait_for(
                 lambda: editor.is_alive(),
                 timeout,

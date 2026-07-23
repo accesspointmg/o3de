@@ -5,13 +5,13 @@ The following are instructions on how to reference pre-existing static libraries
 ## How to Hook Pre-Built Binaries into the CMake targets
 
 To get familiar with the list of targets that need to be updated, please examine the [Code/CMakeLists.txt](./Code/CMakeLists.txt) from the root of the Gem.
-That CMake file contains the list of IMPORTED targets along with the list of per platform include files specified PLATFORM_INCLUDE_FILES argument to ly_add_target
+That CMake file contains the list of IMPORTED targets along with the list of per platform include files specified PLATFORM_INCLUDE_FILES argument to o3de_add_target
 ```cmake
-ly_add_target(
-    NAME ${Name} IMPORTED ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${Name} IMPORTED ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     PLATFORM_INCLUDE_FILES
-        ${pal_dir}/${LY_BUILD_PERMUTATION}/${NameLower}.cmake
+        ${pal_dir}/${O3DE_BUILD_PERMUTATION}/${NameLower}.cmake
 ```
 
 The PLATFORM_INCLUDE_FILES are first segmented by OS platform first(Platform/Linux, Platform/Mac, Platform/Android, Platform/Windows, Platform/iOS) followed by having a build directory based on the build permutation that O3DE is using.
@@ -19,11 +19,11 @@ Those files are pre-configured to set the `IMPORTED_LOCATION` for an existing ta
 
 ### What is a Build Permutation?
 
-A build permutation is a different way to build O3DE engine targets based on the  value of the `LY_MONOLITHIC_GAME` cache variable.
+A build permutation is a different way to build O3DE engine targets based on the  value of the `O3DE_MONOLITHIC_GAME` cache variable.
 
-When the `LY_MONOLITHIC_GAME=0`(or FALSE) which is the default, the Build Permutation is "Default" which represents non-monolithic.
+When the `O3DE_MONOLITHIC_GAME=0`(or FALSE) which is the default, the Build Permutation is "Default" which represents non-monolithic.
 In the "Default" permutation all gem modules are built as MODULE library targets which are dynamically loaded by the O3DE Gem System.
-When the `LY_MONOLITHIC_GAME=1`(or TRUE), the Build Permutation is "Monolithic".
+When the `O3DE_MONOLITHIC_GAME=1`(or TRUE), the Build Permutation is "Monolithic".
 In the "Monolithic" permuation all gem modules are built as STATIC library targets and link directly into the GameLauncher and ServerLauncher applications.
 The O3DE Gem System initializes the gem module through invoking the [CreateStaticModules](https://github.com/o3de/o3de/blob/development/Code/LauncherUnified/Launcher.cpp#L36-L38) function which is generated with the list of active gems when CMake [configures](https://github.com/o3de/o3de/blob/development/Code/LauncherUnified/launcher_generator.cmake#L228-L230) the GameLauncher and ServerLauncher targets
 
@@ -37,9 +37,9 @@ To the update the non-monolithic binaries for the Windows platform first the `Co
 In that directory are several *.cmake files that contains the statements to set the target properties for the IMPORTED targets specified in the gems CMakeLists.txt
 ```cmake
 get_property(${NameLower}_gem_root GLOBAL PROPERTY "@GEMROOT:${Name}@")
-list(APPEND LY_TARGET_PROPERTIES
-    IMPORTED_LOCATION ${${NameLower}_gem_root}/bin/${PAL_PLATFORM_NAME}/${LY_BUILD_PERMUTATION}/release/${Name}.dll
-    IMPORTED_LOCATION_DEBUG ${${NameLower}_gem_root}/bin/${PAL_PLATFORM_NAME}/${LY_BUILD_PERMUTATION}/debug/${Name}.dll
+list(APPEND O3DE_TARGET_PROPERTIES
+    IMPORTED_LOCATION ${${NameLower}_gem_root}/bin/${O3DE_PAL_PLATFORM_NAME}/${O3DE_BUILD_PERMUTATION}/release/${Name}.dll
+    IMPORTED_LOCATION_DEBUG ${${NameLower}_gem_root}/bin/${O3DE_PAL_PLATFORM_NAME}/${O3DE_BUILD_PERMUTATION}/debug/${Name}.dll
 )
 ```
 
@@ -58,8 +58,8 @@ The gem maintainer can even consolidate all build configurations to use the same
 The following allows all build configurations(debug, profile, release) to use the same runtime gem dll
 ```cmake
 get_property(${NameLower}_gem_root GLOBAL PROPERTY "@GEMROOT:${Name}@")
-list(APPEND LY_TARGET_PROPERTIES
-    IMPORTED_LOCATION ${${NameLower}_gem_root}/bin/${PAL_PLATFORM_NAME}/${LY_BUILD_PERMUTATION}/release/${Name}.dll
+list(APPEND O3DE_TARGET_PROPERTIES
+    IMPORTED_LOCATION ${${NameLower}_gem_root}/bin/${O3DE_PAL_PLATFORM_NAME}/${O3DE_BUILD_PERMUTATION}/release/${Name}.dll
 )
 ```
 

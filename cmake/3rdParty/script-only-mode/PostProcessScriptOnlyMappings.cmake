@@ -89,7 +89,7 @@ foreach(data_file IN LISTS file_list)
 
     # binary_folder can be a genex but will always be the Default folder since monolithic
     # cannot be combined with script-only
-    set(installer_binaries [[${LY_ROOT_FOLDER}/bin/${PAL_PLATFORM_NAME}/$<CONFIG>/Default]])
+    set(installer_binaries [[${O3DE_ENGINE_PATH}/bin/${O3DE_PAL_PLATFORM_NAME}/$<CONFIG>/Default]])
     if (trimmed_source_paths)
         foreach(file_name relative_path IN ZIP_LISTS trimmed_source_paths copy_dependencies_target_rel_path)
             if (relative_path)
@@ -99,7 +99,7 @@ foreach(data_file IN LISTS file_list)
                 set(file_name "${installer_binaries}/${file_name}")
             endif()
             string(APPEND final_data 
-                    "ly_add_target_files(TARGETS ${target_name}\n\
+                    "o3de_add_target_files(TARGETS ${target_name}\n\
                         FILES\n\
                             \"${file_name}\"\n\
                         OUTPUT_SUBDIRECTORY \"${relative_path}\")\n\n")

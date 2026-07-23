@@ -6,12 +6,12 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 ## AP Python Tests ##
 
 ## Periodic Tests ##
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.AssetBundler
         PATH ${CMAKE_CURRENT_LIST_DIR}/asset_bundler_batch_tests.py
         TEST_SERIAL 
@@ -25,13 +25,13 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
 ## Non-Linux Tests ##
 
     set(SUPPORTED_PLATFORMS "Windows" "Mac")
-    if (NOT "${PAL_PLATFORM_NAME}" IN_LIST SUPPORTED_PLATFORMS)
+    if (NOT "${O3DE_PAL_PLATFORM_NAME}" IN_LIST SUPPORTED_PLATFORMS)
         return()
     endif()
 
 ## Periodic Tests ##
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME APTests.BundleMode
         PATH ${CMAKE_CURRENT_LIST_DIR}/bundle_mode_tests.py
         TEST_SERIAL

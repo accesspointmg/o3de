@@ -69,7 +69,7 @@
 // Qt
 #include <QtGui/QSurfaceFormat>
 // EMStudio tools and main window registration
-#include <LyViewPaneNames.h>
+#include <O3deViewPaneNames.h>
 #include <AzToolsFramework/ActionManager/Action/ActionManagerInterface.h>
 #include <AzToolsFramework/API/ViewPaneOptions.h>
 #include <AzQtComponents/Components/FancyDocking.h>
@@ -846,7 +846,7 @@ namespace EMotionFX
             emotionFXWindowOptions.showOnToolsToolbar = true;
             emotionFXWindowOptions.toolbarIcon = ":/Menu/emfx_editor.svg";
 
-            EditorRequests::Bus::Broadcast(&EditorRequests::RegisterViewPane, EMStudio::MainWindow::GetEMotionFXPaneName(), LyViewPane::CategoryTools, emotionFXWindowOptions, windowCreationFunc);
+            EditorRequests::Bus::Broadcast(&EditorRequests::RegisterViewPane, EMStudio::MainWindow::GetEMotionFXPaneName(), O3deViewPane::CategoryTools, emotionFXWindowOptions, windowCreationFunc);
         }
 
         //////////////////////////////////////////////////////////////////////////
@@ -883,7 +883,7 @@ namespace EMotionFX
                     const SourceAssetBrowserEntry* fullDetails = SourceAssetBrowserEntry::GetSourceByUuid(sourceUUIDInCall);
                     if (fullDetails)
                     {
-                        AzToolsFramework::OpenViewPane(LyViewPane::AnimationEditor);
+                        AzToolsFramework::OpenViewPane(O3deViewPane::AnimationEditor);
 
                         EMStudio::GetMainWindow()->ApplicationModeChanged("AnimGraph");
 

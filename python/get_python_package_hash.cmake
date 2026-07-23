@@ -7,8 +7,8 @@
 
 # This script will get the current python package hash. To use this script, invoke it using CMake 
 # script mode (-P option) with the cwd being the engine root folder (the one with cmake as a subfolder)
-# on the command line, define LY_3RDPARTY_PATH to a valid directory
-# and PAL_PLATFORM_NAME to the platform you'd like to get or update python for.
+# on the command line, define O3DE_3RDPARTY_PATH to a valid directory
+# and O3DE_PAL_PLATFORM_NAME to the platform you'd like to get or update python for.
 # defines must come before the script call.
 # example:
 # cmake -DPAL_PLATFORM_NAME:string=Windows -DLY_ROOT_FOLDER:string=%CMD_DIR% -P get_python_package_hash.cmake
@@ -22,34 +22,34 @@ if(${CMAKE_ARGC} LESS 5)
     message(FATAL_ERROR "Missing required platform name argument.")
 endif()
 
-#! ly_set: override the ly_set macro that the Python_<platform>.cmake file will use to set 
+#! o3de_set: override the o3de_set macro that the Python_<platform>.cmake file will use to set 
 #          the environments. 
 #
-macro(ly_set name)
+macro(o3de_set name)
     set(${name} "${ARGN}")
-    if(LY_PARENT_SCOPE)
+    if(O3DE_PARENT_SCOPE)
         set(${name} "${ARGN}" PARENT_SCOPE)
     endif()
 endmacro()
 
-#! ly_associate_package: Stub out since this script is only reading the package hash
+#! o3de_associate_package: Stub out since this script is only reading the package hash
 #
-macro("ly_associate_package")
+macro("o3de_associate_package")
 endmacro()
 
 # The first required argument is the platform name
 set(ENGINE_ROOT ${CMAKE_ARGV3})
-set(PAL_PLATFORM_NAME ${CMAKE_ARGV4})
+set(O3DE_PAL_PLATFORM_NAME ${CMAKE_ARGV4})
 
 # The optional second argument is the architecture
 if(${CMAKE_ARGC} GREATER 5)
     set(PLATFORM_ARCH "_${CMAKE_ARGV5}")
 endif()
 
-string(TOLOWER ${PAL_PLATFORM_NAME} PAL_PLATFORM_NAME_LOWERCASE)
+string(TOLOWER ${O3DE_PAL_PLATFORM_NAME} O3DE_PAL_PLATFORM_WART)
 
-include(${ENGINE_ROOT}/cmake/3rdParty/Platform/${PAL_PLATFORM_NAME}/Python_${PAL_PLATFORM_NAME_LOWERCASE}${PLATFORM_ARCH}.cmake)
+include(${ENGINE_ROOT}/cmake/3rdParty/Platform/${O3DE_PAL_PLATFORM_NAME}/Python_${O3DE_PAL_PLATFORM_WART}${PLATFORM_ARCH}.cmake)
 
 # Note: using 'message(STATUS ..' will print to STDOUT, but will always include a double hyphen '--'. Instead we will 
 # use the cmake echo command directly to do this
-execute_process(COMMAND ${CMAKE_COMMAND} -E echo ${LY_PYTHON_PACKAGE_HASH})
+execute_process(COMMAND ${CMAKE_COMMAND} -E echo ${O3DE_PYTHON_PACKAGE_HASH})

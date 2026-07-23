@@ -42,7 +42,7 @@ namespace AZ::Internal
     //! available is in the `<userhome>/.o3de/Registry` folder
     //! This is C:\Users\<username>\.o3de\Registry on Windows = %USERPROFILE%
     //! This is /home/<username>/.o3de/Registry on Linux = $HOME
-    //! This is /Users/<username>/.o3de/Registry on MacOS = $HOME
+    //! This is /Users/<username>/.o3de/Registry on Mac = $HOME
     static constexpr AZStd::string_view SetregFileProjectRootKey{ "/Amazon/AzCore/Bootstrap/project_path" };
 
     //! References the settings key to set the engine path via *.setreg(patch) file

@@ -6,11 +6,11 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 
-    ly_associate_package(PACKAGE_NAME OpenMesh-8.1-rev3-mac TARGETS OpenMesh PACKAGE_HASH af92db02a25c1f7e1741ec898f49d81d52631e00336bf9bddd1e191590063c2f)
+    o3de_associate_package(PACKAGE_NAME OpenMesh-8.1-rev3-mac TARGETS OpenMesh PACKAGE_HASH af92db02a25c1f7e1741ec898f49d81d52631e00336bf9bddd1e191590063c2f)
 
-    set(LY_BUILD_DEPENDENCIES
+    set(O3DE_BUILD_DEPENDENCIES
         PRIVATE
             3rdParty::OpenMesh)
 endif()

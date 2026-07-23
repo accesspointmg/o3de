@@ -13,130 +13,60 @@ import pathlib
 import urllib.parse
 import urllib.request
 import hashlib
+import locale
 from datetime import datetime, timezone
-from o3de import manifest, utils, validation
+from o3de import o3de_object, utils, validation, cache, schema
+
 
 logger = logging.getLogger('o3de.repo')
 logging.basicConfig(format=utils.LOG_FORMAT)
 
-REPO_IMPLICIT_SCHEMA_VERSION = "0.0.0"
-
-REPO_SCHEMA_VERSION_1_0_0 = "1.0.0"
-
-def get_cache_file_uri(uri: str):
-    # check if the passed in uri is a path or uri
-    uri_path = pathlib.Path(uri)
-    if uri_path.exists():
-        uri = uri_path.as_uri()
-
-    parsed_uri = urllib.parse.urlparse(uri)
-    uri_sha256 = hashlib.sha256(parsed_uri.geturl().encode())
-    cache_file = manifest.get_o3de_cache_folder() / str(uri_sha256.hexdigest())
-    return cache_file, parsed_uri
-
-def sanitized_repo_uri(repo_uri: str) -> str or None:
+# Sanitize the repo URI by removing excess whitespace and any trailing slashes
+# and appending "repo.json" if it doesn't already exist
+def sanitize_repo_uri(repo_uri: str) -> str or None:
     # remove excess whitespace and any trailing slashes
-    return repo_uri.strip().rstrip('/') if repo_uri else None
-
-def get_repo_manifest_uri(repo_uri: str) -> str or None:
-    if not repo_uri:
-        logger.error(f'Repo URI cannot be empty.')
+    if repo_uri:
+        clean_uri = repo_uri.strip().rstrip('/')
+        # Check if URI already ends with "repo.json"
+        if not clean_uri.endswith('/repo.json') and not clean_uri.endswith('repo.json'):
+            # Ensure there's a separator before appending
+            if not clean_uri.endswith('/'):
+                clean_uri += '/'
+            clean_uri += 'repo.json'
+        return clean_uri
+    else:
         return None
 
-    return f'{repo_uri}/repo.json'
 
 def repo_enabled(repo_json_data:dict) -> bool:
-    # unless explicitely disabled assume enabled for backwards compatibility
+    # unless explicitly disabled assume enabled for backwards compatibility
     return repo_json_data.get('enabled', True)
 
-def repo_uri_enabled(repo_uri: str) -> bool:
-    repo_json_cache_file, _ = get_cache_file_uri(f'{repo_uri}/repo.json')
 
-    repo_json_data = manifest.get_json_data_file(repo_json_cache_file, "repo", validation.valid_o3de_repo_json)
+def repo_uri_enabled(repo_uri: str) -> bool:
+    # sanitize the repo_uri
+    repo_uri = sanitize_repo_uri(repo_uri)
+    if not repo_uri:
+        return False
+
+    repo_json_cache_file, _ = cache.get_cache_file_uri(repo_uri)
+
+    repo_json_data = o3de_object.get_json_data_file(repo_json_cache_file, "repo", validation.valid_o3de_repo_json)
     if repo_json_data:
         return repo_enabled(repo_json_data)
 
     return False
 
-def download_repo_manifest(manifest_uri: str, force_overwrite: bool = True) -> pathlib.Path or None:
-    cache_file, parsed_uri = get_cache_file_uri(manifest_uri)
-
-    git_provider = utils.get_git_provider(parsed_uri)
-    if git_provider:
-        parsed_uri = git_provider.get_specific_file_uri(parsed_uri)
-
-    result = utils.download_file(parsed_uri, cache_file, force_overwrite)
-
-    return cache_file if result == 0 else None
-
-def download_object_manifests(repo_data: dict, download_missing_files_only: bool = False):
-
-    if get_repo_schema_version(repo_data) == REPO_SCHEMA_VERSION_1_0_0:
-        # schema version 1.0.0 includes all json data in repo.json
-        return 0
-
-    repo_object_type_manifests = [
-        ('engines','engine.json'),
-        ('projects','project.json'),
-        ('gems','gem.json'),
-        ('templates','template.json'),
-        ('restricted','restricted.json')
-        ]
-
-    for key, manifest_json_filename in repo_object_type_manifests:
-        for o3de_object_uri in repo_data.get(key, []):
-            manifest_json_uri = f'{o3de_object_uri}/{manifest_json_filename}'
-            cache_file, parsed_uri = get_cache_file_uri(manifest_json_uri)
-
-            if not cache_file.exists() or not download_missing_files_only:
-                git_provider = utils.get_git_provider(parsed_uri)
-                if git_provider:
-                    parsed_uri = git_provider.get_specific_file_uri(parsed_uri)
-
-                download_file_result = utils.download_file(parsed_uri, cache_file, True)
-                if download_file_result == 0:
-                    # download optional files listed in the object json
-                    file_name = pathlib.Path(cache_file).resolve()
-                    with file_name.open('r') as f:
-                        try:
-                            object_data = json.load(f)
-                        except json.JSONDecodeError as e:
-                            logger.error(f'{file_name} failed to load: {str(e)}')
-                            return
-
-                    optional_files = [
-                        'origin_uri',
-                        'icon_uri',
-                        'license_uri',
-                        'documentation_uri'
-                    ]
-
-                    for optional_file in optional_files:
-                        if (optional_file in object_data):
-                            cache_file, parsed_uri = get_cache_file_uri(object_data[optional_file])
-
-                            if not cache_file.exists() or not download_missing_files_only:
-                                git_provider = utils.get_git_provider(parsed_uri)
-                                if git_provider:
-                                    parsed_uri = git_provider.get_specific_file_uri(parsed_uri)
-
-                                download_file_result = utils.download_file(parsed_uri, cache_file, True)
-                else:
-                    return download_file_result
-    return 0
-
-def get_repo_schema_version(repo_data: dict):
-    return repo_data.get("$schemaVersion", REPO_IMPLICIT_SCHEMA_VERSION)
 
 def validate_remote_repo(repo_uri: str, validate_contained_objects: bool = False) -> bool:
-
-    manifest_uri = get_repo_manifest_uri(repo_uri)
-    if not manifest_uri:
+    # sanitize the repo_uri
+    repo_uri = sanitize_repo_uri(repo_uri)
+    if not repo_uri:
         return False
 
-    cache_file = download_repo_manifest(manifest_uri)
+    cache_file = object.download_object_manifest(repo_uri)
     if not cache_file:
-        logger.error(f'Could not download file at {manifest_uri}')
+        logger.error(f'Could not download file at {repo_uri}')
         return False
 
     if not validation.valid_o3de_repo_json(cache_file):
@@ -152,10 +82,10 @@ def validate_remote_repo(repo_uri: str, validate_contained_objects: bool = False
                 logger.error(f'Invalid JSON - {cache_file} could not be loaded')
                 return False
             
-        repo_schema_version = get_repo_schema_version(repo_data)
+        repo_schema_version = schema.get_schema_version(repo_data)
 
-        if repo_schema_version == REPO_IMPLICIT_SCHEMA_VERSION:
-            if download_object_manifests(repo_data) != 0:
+        if repo_schema_version == schema.VERSION_IMPLICIT:
+            if object.download_object_manifests(repo_data) != 0:
                 # we don't issue an error message here because better error messaging is provided
                 # in the download functions themselves
                 return False
@@ -175,7 +105,7 @@ def validate_remote_repo(repo_uri: str, validate_contained_objects: bool = False
                     logger.error(f'Invalid template JSON - {template_json_data} is missing required values')
                     return False
                 
-        elif repo_schema_version == REPO_SCHEMA_VERSION_1_0_0:
+        elif repo_schema_version == schema.VERSION_1_0_0:
             gem_list = repo_data.get("gems_data", [])
             for gem_json in gem_list:
                 if not validation.valid_o3de_gem_json_data(gem_json):
@@ -213,8 +143,27 @@ def validate_remote_repo(repo_uri: str, validate_contained_objects: bool = False
                 if not validation.valid_o3de_template_json_data(template_json):
                     logger.error(f'Invalid template JSON - {template_json} is missing required values')
                     return False
+                
+        elif repo_schema_version == schema.VERSION_2_0_0:
+            # Schema 2.0 repos use a header-based structure:
+            # {"$schemaVersion": "2.0.0", "repo": {"name": "...", "version": "..."}, ...}
+            if not validation._valid_2_0_header(repo_data, "repo"):
+                logger.error(f'Invalid 2.0 repo header in {repo_uri}')
+                return False
+
+            # Validate contained objects if present
+            for obj_key in ("gems", "projects", "templates", "engines"):
+                obj_list = repo_data.get(obj_key, [])
+                for obj_data in obj_list:
+                    if isinstance(obj_data, dict) and obj_data.get("$schemaVersion") == "2.0.0":
+                        # 2.0 inline object — validate its header
+                        singular = obj_key.rstrip("s")
+                        if not validation._valid_2_0_header(obj_data, singular):
+                            logger.error(f'Invalid 2.0 {singular} in repo {repo_uri}')
+                            return False
 
     return True
+
 
 def process_add_o3de_repo(file_name: str or pathlib.Path,
                           repo_set: set,
@@ -245,7 +194,7 @@ def process_add_o3de_repo(file_name: str or pathlib.Path,
             logger.error(f'{file_name} failed to save: {str(e)}')
             return 1
 
-    if download_object_manifests(repo_data, download_missing_files_only) != 0:
+    if object.download_object_manifests(repo_data, download_missing_files_only) != 0:
         return 1
 
     # Having a repo is also optional
@@ -253,9 +202,14 @@ def process_add_o3de_repo(file_name: str or pathlib.Path,
     repo_list.extend(repo_data.get('repos',[]))
     for repo in repo_list:
         if repo not in repo_set:
-            repo_set.add(repo)
-            repo_uri = f'{repo}/repo.json'
-            cache_file, parsed_uri = get_cache_file_uri(repo_uri)
+            repo_uri = sanitize_repo_uri(repo)
+            if not repo_uri:
+                logger.error(f'Repository URI {repo} is invalid')
+                continue
+            # add the repo to the set of repos to avoid duplicates                
+            repo_set.add(repo_uri)
+            
+            cache_file, parsed_uri = cache.get_cache_file_uri(repo_uri)
             
             if not cache_file.is_file() or not download_missing_files_only:
                 download_file_result = utils.download_file(parsed_uri, cache_file, True)
@@ -264,6 +218,7 @@ def process_add_o3de_repo(file_name: str or pathlib.Path,
 
             return process_add_o3de_repo(cache_file, repo_set, download_missing_files_only)
     return 0
+
 
 def get_object_versions_json_data(remote_object_list:list, required_json_key:str = None, required_json_value:str = None) -> list:
     """
@@ -293,9 +248,11 @@ def get_object_versions_json_data(remote_object_list:list, required_json_key:str
 
     return object_json_data_list
 
+
 def get_object_json_data_from_cached_repo(repo_uri: str, repo_key: str, object_typename: str, object_validator, enabled_only = True) -> list:
-    url = f'{repo_uri}/repo.json'
-    cache_file, _ = get_cache_file_uri(url)
+    # sanitize the repo_uri
+    repo_uri = sanitize_repo_uri(repo_uri)
+    cache_file, _ = cache.get_cache_file_uri(repo_uri)
 
     o3de_object_json_data = list()
 
@@ -304,7 +261,7 @@ def get_object_json_data_from_cached_repo(repo_uri: str, repo_key: str, object_t
         logger.info(f'Could not find cached repository json file for {repo_uri}, attempting to download')
 
         # attempt to download the missing repo.json
-        cache_file = download_repo_manifest(url)
+        cache_file = object.download_object_manifest(repo_uri)
         if not cache_file:
             logger.error(f'Could not download the repository json file from {repo_uri}')
             return list()
@@ -323,8 +280,8 @@ def get_object_json_data_from_cached_repo(repo_uri: str, repo_key: str, object_t
         if enabled_only and not repo_enabled(repo_data):
             return list()
 
-        repo_schema_version = get_repo_schema_version(repo_data)
-        if repo_schema_version == REPO_IMPLICIT_SCHEMA_VERSION:
+        repo_schema_version = schema.get_schema_version(repo_data)
+        if repo_schema_version == schema.VERSION_IMPLICIT:
 
             # Get list of objects, then add all json paths to the list if they exist in the cache
             repo_objects = []
@@ -336,27 +293,35 @@ def get_object_json_data_from_cached_repo(repo_uri: str, repo_key: str, object_t
             for o3de_object_uris, manifest_json in repo_objects:
                 for o3de_object_uri in o3de_object_uris:
                     manifest_json_uri = f'{o3de_object_uri}/{manifest_json}'
-                    cache_object_json_filepath, _ = get_cache_file_uri(manifest_json_uri)
+                    cache_object_json_filepath, _ = cache.get_cache_file_uri(manifest_json_uri)
                     
                     if not cache_object_json_filepath.is_file():
                         # attempt to download the missing file
-                        cache_object_json_filepath = download_repo_manifest(manifest_json_uri)
+                        cache_object_json_filepath = object.download_object_manifest(manifest_json_uri)
                         if not cache_object_json_filepath:
                             logger.warning(f'Could not download the missing cached {repo_key} json file {cache_object_json_filepath} from {manifest_json_uri} in repo {repo_uri}')
                             continue
 
-                    json_data = manifest.get_json_data_file(cache_object_json_filepath, object_typename, object_validator)
+                    json_data = o3de_object.get_json_data_file(cache_object_json_filepath, object_typename, object_validator)
                     # validation errors will be logged via the function above
                     if json_data:
                         o3de_object_json_data.append(json_data)
 
-        elif repo_schema_version == REPO_SCHEMA_VERSION_1_0_0:
+        elif repo_schema_version == schema.VERSION_1_0_0:
             # the new schema version appends _data to the repo key
             # so it doesn't conflict with version 0.0.0 fields 
             repo_key = repo_key if repo_key.endswith('_data') else (repo_key + '_data')
             o3de_object_json_data.extend(get_object_versions_json_data(repo_data.get(repo_key,[])))
 
+        elif repo_schema_version == schema.VERSION_2_0_0:
+            # Schema 2.0 repos store objects directly under the plural key
+            plural_key = repo_key if not repo_key.endswith('_data') else repo_key.replace('_data', '')
+            for obj_data in repo_data.get(plural_key, []):
+                if isinstance(obj_data, dict):
+                    o3de_object_json_data.append(obj_data)
+
     return o3de_object_json_data
+
 
 def get_gem_json_data_from_cached_repo(repo_uri: str, enabled_only: bool = True) -> list:
     gems_json_data = get_object_json_data_from_cached_repo(repo_uri, 'gems', 'gem', validation.valid_o3de_gem_json, enabled_only)
@@ -367,13 +332,15 @@ def get_gem_json_data_from_cached_repo(repo_uri: str, enabled_only: bool = True)
 
     return gems_json_data
 
+
 def get_gem_json_data_from_all_cached_repos(enabled_only: bool = True) -> list:
     gems_json_data = list()
 
-    for repo_uri in manifest.get_manifest_repos():
+    for repo_uri in o3de_object.get_manifest_child_repos():
         gems_json_data.extend(get_gem_json_data_from_cached_repo(repo_uri, enabled_only))
 
     return gems_json_data
+
 
 def get_project_json_data_from_cached_repo(repo_uri: str, enabled_only: bool = True) -> list:
     projects_json_data = get_object_json_data_from_cached_repo(repo_uri, 'projects', 'project', validation.valid_o3de_project_json, enabled_only)
@@ -384,13 +351,15 @@ def get_project_json_data_from_cached_repo(repo_uri: str, enabled_only: bool = T
 
     return projects_json_data
 
+
 def get_project_json_data_from_all_cached_repos(enabled_only: bool = True) -> list:
     projects_json_data = list()
 
-    for repo_uri in manifest.get_manifest_repos():
+    for repo_uri in o3de_object.get_manifest_child_repos():
         projects_json_data.extend(get_project_json_data_from_cached_repo(repo_uri, enabled_only))
 
     return projects_json_data
+
 
 def get_template_json_data_from_cached_repo(repo_uri: str, enabled_only: bool = True) -> list:
     templates_json_data = get_object_json_data_from_cached_repo(repo_uri, 'templates', 'template', validation.valid_o3de_template_json, enabled_only)
@@ -401,17 +370,24 @@ def get_template_json_data_from_cached_repo(repo_uri: str, enabled_only: bool = 
 
     return templates_json_data
 
+
 def get_template_json_data_from_all_cached_repos(enabled_only: bool = True) -> list:
     templates_json_data = list()
 
-    for repo_uri in manifest.get_manifest_repos():
+    for repo_uri in o3de_object.get_manifest_child_repos():
         templates_json_data.extend(get_template_json_data_from_cached_repo(repo_uri, enabled_only))
 
     return templates_json_data
 
+
 def refresh_repo(repo_uri: str,
                  repo_set: set = None,
                  download_missing_files_only: bool = False) -> int:
+    #sanitize the repo_uri
+    repo_uri = sanitize_repo_uri(repo_uri)
+    if not repo_uri:
+        logger.error(f'Repository URI {repo_uri} is invalid')
+        return 1
 
     if not repo_uri_enabled(repo_uri):
         logger.info(f'Not refreshing {repo_uri} repo because it is deactivated.')
@@ -420,10 +396,9 @@ def refresh_repo(repo_uri: str,
     if not repo_set:
         repo_set = set()
 
-    repo_uri = f'{repo_uri}/repo.json'
-    cache_file, _ = get_cache_file_uri(repo_uri)
+    cache_file, _ = cache.get_cache_file_uri(repo_uri)
     if not cache_file.is_file() or not download_missing_files_only:
-        cache_file = download_repo_manifest(repo_uri)
+        cache_file = object.download_object_manifest(repo_uri)
         if not cache_file:
             logger.error(f'Repo json {repo_uri} could not download.')
             return 1
@@ -435,27 +410,46 @@ def refresh_repo(repo_uri: str,
 
     return process_add_o3de_repo(cache_file, repo_set, download_missing_files_only)
 
+
 def refresh_repos(download_missing_files_only: bool = False) -> int:
     result = 0
 
-    curated_repo_uri = 'https://canonical.o3de.org/curated.json'
-    curated_cache_file, _ = get_cache_file_uri(curated_repo_uri)
-    if not curated_cache_file.is_file() or not download_missing_files_only:
-        curated_cache_file = download_repo_manifest(curated_repo_uri)
-        if not curated_cache_file:
-            logger.error(f'{curated_repo_uri} could not download.')
-            return 1
-
     # set will stop circular references
     repo_set = set()
-
-    for repo_uri in manifest.get_manifest_repos():
+    
+    # get the list of repos from the manifest 
+    for repo_uri in o3de_object.get_manifest_repos():
+        repo_uri = sanitize_repo_uri(repo_uri)
+        if not repo_uri:
+            logger.error(f'Repository URI {repo_uri} is invalid')
+            continue
         if repo_uri not in repo_set:
             repo_set.add(repo_uri)
-
             last_failure = refresh_repo(repo_uri, repo_set, download_missing_files_only)
             if last_failure:
                 result = last_failure
+    
+    #default curated and uncurated repo to all
+    curated_repo_uri = 'https://canonical.o3de.org/curated/repo.json'
+    uncurated_repo_uri = 'https://canonical.o3de.org/uncurated/repo.json'
+
+    # Get the system locale
+    loc = locale.getdefaultlocale()
+    if loc and loc[0] and '_' in loc[0]:
+        # Extract country code (part after underscore)
+        country_code = loc[0].split('_')[1]
+        curated_repo_uri = f"https://canonical.o3de.org/countries/{country_code}/curated/repo.json"
+        uncurated_repo_uri = f"https://canonical.o3de.org/countries/{country_code}/uncurated/repo.json"       
+    
+    # only cache the curated and uncurated repos
+    repos = {curated_repo_uri, uncurated_repo_uri}
+    for repo_uri in repos:
+        cache_file, _ = cache.get_cache_file_uri(repo_uri)
+        if not cache_file.is_file() or not download_missing_files_only:
+            cache_file = object.download_object_manifest(repo_uri)
+            if not cache_file:
+                logger.error(f'{repo_uri} could not be downloaded.')
+                result = 1
 
     return result
 
@@ -473,9 +467,9 @@ def search_repo(manifest_json_data: dict,
 
     o3de_object = None
 
-    repo_schema_version = get_repo_schema_version(manifest_json_data)
+    repo_schema_version = schema.get_schema_version(manifest_json_data)
 
-    if repo_schema_version == REPO_IMPLICIT_SCHEMA_VERSION:        
+    if repo_schema_version == schema.VERSION_IMPLICIT:        
         if isinstance(engine_name, str):
             o3de_object = search_o3de_manifest_for_object(manifest_json_data, 'engines', 'engine.json', 'engine_name', engine_name)
         elif isinstance(project_name, str):
@@ -489,7 +483,7 @@ def search_repo(manifest_json_data: dict,
         else:
             return None
         
-    elif repo_schema_version == REPO_SCHEMA_VERSION_1_0_0:
+    elif repo_schema_version == schema.VERSION_1_0_0:
         #search for the o3de object from inside repos object 
         if isinstance(engine_name, str):
             o3de_object = search_o3de_repo_for_object(manifest_json_data, 'engines_data', 'engine_name', engine_name)
@@ -503,6 +497,36 @@ def search_repo(manifest_json_data: dict,
             o3de_object = search_o3de_repo_for_object(manifest_json_data, 'restricted_data', 'restricted_name', restricted_name)
         else:
             return None
+
+    elif repo_schema_version == schema.VERSION_2_0_0:
+        # Schema 2.0: objects stored under plural keys with header-based identity
+        # {"gems": [{"$schemaVersion": "2.0.0", "gem": {"name": "...", ...}}]}
+        search_map = {
+            'engine_name': ('engines', 'engine'),
+            'project_name': ('projects', 'project'),
+            'gem_name': ('gems', 'gem'),
+            'template_name': ('templates', 'template'),
+            'restricted_name': ('restricted', 'restricted'),
+        }
+        name_params = {
+            'engine_name': engine_name,
+            'project_name': project_name,
+            'gem_name': gem_name,
+            'template_name': template_name,
+            'restricted_name': restricted_name,
+        }
+        for key, name_val in name_params.items():
+            if isinstance(name_val, str):
+                plural_key, singular = search_map[key]
+                for obj_data in manifest_json_data.get(plural_key, []):
+                    if isinstance(obj_data, dict):
+                        header = obj_data.get(singular, {})
+                        # Match by header name (2.0) or legacy name field
+                        obj_name = header.get("name") if isinstance(header, dict) else obj_data.get(key)
+                        if obj_name == name_val:
+                            o3de_object = obj_data
+                            break
+                break
         
     if o3de_object:
         o3de_object['repo_name'] = manifest_json_data['repo_name']
@@ -527,7 +551,7 @@ def search_o3de_repo_for_object(repo_json_data: dict, manifest_attribute:str, ta
     # merge all versioned data into a list of candidates
     versioned_candidates = get_object_versions_json_data(remote_candidates, target_json_key, target_name_without_version_specifier)
 
-    return manifest.get_most_compatible_object(object_name=target_name, name_key=target_json_key, objects=versioned_candidates)
+    return o3de_object.get_most_compatible_object(object_name=target_name, name_key=target_json_key, objects=versioned_candidates)
 
 
 def search_o3de_manifest_for_object(manifest_json_data: dict, manifest_attribute: str, target_manifest_json: str, target_json_key: str, target_name: str):
@@ -537,7 +561,7 @@ def search_o3de_manifest_for_object(manifest_json_data: dict, manifest_attribute
     candidates = []
     for o3de_object_uri in o3de_object_uris:
         manifest_uri = f'{o3de_object_uri}/{target_manifest_json}'
-        cache_file, _ = get_cache_file_uri(manifest_uri)
+        cache_file, _ = cache.get_cache_file_uri(manifest_uri)
         if cache_file.is_file():
             with cache_file.open('r') as f:
                 try:
@@ -547,14 +571,14 @@ def search_o3de_manifest_for_object(manifest_json_data: dict, manifest_attribute
                 else:
                     candidates.append(manifest_json_data)
 
-    return manifest.get_most_compatible_object(object_name=target_name, name_key=target_json_key, objects=candidates)
+    return o3de_object.get_most_compatible_object(object_name=target_name, name_key=target_json_key, objects=candidates)
 
 
 def search_o3de_object(manifest_json, o3de_object_uris, search_func):
     # Search for the o3de object based on the supplied object name in the current repo
     for o3de_object_uri in o3de_object_uris:
         manifest_uri = f'{o3de_object_uri}/{manifest_json}'
-        cache_file, _ = get_cache_file_uri(manifest_uri)
+        cache_file, _ = cache.get_cache_file_uri(manifest_uri)
 
         if cache_file.is_file():
             with cache_file.open('r') as f:
@@ -568,20 +592,25 @@ def search_o3de_object(manifest_json, o3de_object_uris, search_func):
                         return result_json_data
     return None
 
+
 def set_repo_enabled(repo_uri:str, enabled:bool) -> int:
-    repo_uri = f'{repo_uri}/repo.json'
+    #sanitize the repo_uri
+    repo_uri = sanitize_repo_uri(repo_uri)
+    if not repo_uri:
+        logger.error(f'Repository URI {repo_uri} is invalid')
+        return 1
 
     # avoid downloading if the file already exists and is valid
-    repo_json_cache_file, _ = get_cache_file_uri(repo_uri)
-    repo_json_data = manifest.get_json_data_file(repo_json_cache_file, "repo", validation.valid_o3de_repo_json)
+    repo_json_cache_file, _ = cache.get_cache_file_uri(repo_uri)
+    repo_json_data = o3de_object.get_json_data_file(repo_json_cache_file, "repo", validation.valid_o3de_repo_json)
     if not repo_json_data:
         # attempt to download the repo.json 
-        repo_json_cache_file = download_repo_manifest(repo_uri)
+        repo_json_cache_file = object.download_object_manifest(repo_uri)
         if not repo_json_cache_file.is_file():
             logger.error(f'{repo_json_cache_file} could not be downloaded')
             return 1
 
-        repo_json_data = manifest.get_json_data_file(repo_json_cache_file, "repo", validation.valid_o3de_repo_json)
+        repo_json_data = o3de_object.get_json_data_file(repo_json_cache_file, "repo", validation.valid_o3de_repo_json)
         if not repo_json_data:
             logger.error(f'Repository JSON {repo_json_cache_file} could not be loaded or is missing required values')
             repo_json_cache_file.unlink()
@@ -616,27 +645,6 @@ def _run_repo(args: argparse) -> int:
 
     return 1 
     
-
-def add_parser_args(parser):
-    """
-    add_parser_args is called to add arguments to each command such that it can be
-    invoked locally or added by a central python file.
-    Ex. Directly run from this file alone with: python print_registration.py --engine-projects
-    :param parser: the caller passes an argparse parser like instance to this method
-    """
-    group = parser.add_mutually_exclusive_group(required=False)
-    group.add_argument('-ar', '--activate-repo', type=str, required=False,
-                       help='Activate the specified remote repository, allowing searching and downloading of objects in it')
-    group.add_argument('-dr', '--deactivate-repo', type=str, required=False,
-                       help='Deactivate the specified remote repository, preventing searching or downloading any objects in it')
-    group.add_argument('-r', '--refresh-repo', type=str, required=False,
-                       help='Fetch the latest meta data the specified remote repository')
-    group.add_argument('-ra', '--refresh-all-repos', action='store_true', required=False, default=False,
-                       help='Fetch the latest meta data from all known remote repository')
-
-    parser.set_defaults(func=_run_repo)
-
-
 def add_args(subparsers) -> None:
     """
     add_args is called to add subparsers arguments to each command such that it can be
@@ -646,4 +654,16 @@ def add_args(subparsers) -> None:
 
     :param subparsers: the caller instantiates subparsers and passes it in here
     """
-    add_parser_args(subparsers.add_parser('repo'))
+    repo_subparser = subparsers.add_parser('repo')
+
+    group = repo_subparser.add_mutually_exclusive_group(required=False)
+    group.add_argument('-ar', '--activate-repo', type=str, required=False,
+                       help='Activate the specified remote repository, allowing searching and downloading of objects in it')
+    group.add_argument('-dr', '--deactivate-repo', type=str, required=False,
+                       help='Deactivate the specified remote repository, preventing searching or downloading any objects in it')
+    group.add_argument('-r', '--refresh-repo', type=str, required=False,
+                       help='Fetch the latest meta data the specified remote repository')
+    group.add_argument('-ra', '--refresh-all-repos', action='store_true', required=False, default=False,
+                       help='Fetch the latest meta data from all known remote repository')
+
+    repo_subparser.set_defaults(func=_run_repo)

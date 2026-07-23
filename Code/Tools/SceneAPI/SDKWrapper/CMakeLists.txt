@@ -6,13 +6,13 @@
 #
 #
 
-if (NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if (NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
 set(sdkwrapper_dir ${CMAKE_CURRENT_LIST_DIR}/../SDKWrapper)
 
-ly_add_target(
+o3de_add_target(
     NAME SDKWrapper STATIC
     NAMESPACE AZ
     FILES_CMAKE

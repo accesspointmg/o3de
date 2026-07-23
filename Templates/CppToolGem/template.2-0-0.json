@@ -1,0 +1,385 @@
+{
+    "$schemaVersion": "2.0.0",
+    "$schema": "https://canonical.o3de.org/o3de-template-2.0.0.json",
+    "template": {
+        "name": "org.o3de.template.cpptoolgem",
+        "version": "0.0.0",
+        "display_name": "CppToolGem Template",
+        "description": "A gem template for a custom tool in C++ that gets registered with the Editor.",
+        "type": "",
+        "id": "",
+        "copyright_year": "",
+        "copyright_text": ""
+    },
+    "copyFiles": [
+        {
+            "file": ".gitignore",
+            "isTemplated": false
+        },
+        {
+            "file": "CMakeLists.txt",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/${NameLower}_editor_api_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/${NameLower}_editor_private_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/${NameLower}_editor_shared_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/${NameLower}_editor_tests_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/${NameLower}_api_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/${NameLower}_private_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/${NameLower}_shared_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/${NameLower}_tests_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/CMakeLists.txt",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Include/${Name}/${Name}Bus.h",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Include/${Name}/${Name}TypeIds.h",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Android/${NameLower}_private_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Android/${NameLower}_shared_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Android/${NameLower}_api_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Android/PAL_android.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Linux/${NameLower}_api_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Linux/${NameLower}_editor_api_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Linux/${NameLower}_private_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Linux/${NameLower}_shared_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Linux/PAL_linux.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Mac/${NameLower}_api_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Mac/${NameLower}_editor_api_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Mac/${NameLower}_private_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Mac/${NameLower}_shared_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Mac/PAL_mac.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Windows/${NameLower}_api_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Windows/${NameLower}_editor_api_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Windows/${NameLower}_shared_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Windows/${NameLower}_private_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/Windows/PAL_windows.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/iOS/${NameLower}_api_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/iOS/${NameLower}_private_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/iOS/${NameLower}_shared_files.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Platform/iOS/PAL_ios.cmake",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Source/${Name}ModuleInterface.cpp",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Source/${Name}ModuleInterface.h",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Source/Clients/${Name}Module.cpp",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Source/Clients/${Name}SystemComponent.cpp",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Source/Clients/${Name}SystemComponent.h",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Source/Tools/${Name}.qrc",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Source/Tools/${Name}EditorModule.cpp",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Source/Tools/${Name}EditorSystemComponent.cpp",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Source/Tools/${Name}EditorSystemComponent.h",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Source/Tools/${Name}Widget.cpp",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Source/Tools/${Name}Widget.h",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Source/Tools/toolbar_icon.svg",
+            "isTemplated": false
+        },
+        {
+            "file": "Code/Tests/Clients/${Name}Test.cpp",
+            "isTemplated": true
+        },
+        {
+            "file": "Code/Tests/Tools/${Name}EditorTest.cpp",
+            "isTemplated": true
+        },
+        {
+            "file": "Registry/assetprocessor_settings.setreg",
+            "isTemplated": true
+        },
+        {
+            "file": "gem.json",
+            "isTemplated": true
+        },
+        {
+            "file": "preview.png",
+            "isTemplated": false
+        }
+    ],
+    "createDirectories": [
+        {
+            "dir": "Assets"
+        },
+        {
+            "dir": "Code"
+        },
+        {
+            "dir": "Code/Include"
+        },
+        {
+            "dir": "Code/Include/${Name}"
+        },
+        {
+            "dir": "Code/Platform"
+        },
+        {
+            "dir": "Code/Platform/Android"
+        },
+        {
+            "dir": "Code/Platform/Linux"
+        },
+        {
+            "dir": "Code/Platform/Mac"
+        },
+        {
+            "dir": "Code/Platform/Windows"
+        },
+        {
+            "dir": "Code/Platform/iOS"
+        },
+        {
+            "dir": "Code/Source"
+        },
+        {
+            "dir": "Code/Source/Clients"
+        },
+        {
+            "dir": "Code/Source/Tools"
+        },
+        {
+            "dir": "Code/Tests"
+        },
+        {
+            "dir": "Code/Tests/Clients"
+        },
+        {
+            "dir": "Code/Tests/Tools"
+        },
+        {
+            "dir": "Registry"
+        }
+    ],
+    "origin": {
+        "name": "The Linux Foundation",
+        "uri": "https://www.linuxfoundation.org"
+    },
+    "licenses": [
+        {
+            "license_identifier": "Apache-2.0",
+            "uri": "https://spdx.org/licenses/Apache-2.0.html",
+            "display_name": "Apache 2.0",
+            "relative_path": "LICENSE_APACHE2.TXT",
+            "comments": [
+                "The licensee of this object has the choice of Apache-2.0 or MIT ",
+                "licenses for the code. See the LICENSE_APACHE2.TXT, LICENSE_MIT.TXT ",
+                "and LICENSE.TXT for more information."
+            ],
+            "scopes": [
+                "All source code"
+            ]
+        },
+        {
+            "license_identifier": "MIT",
+            "uri": "https://spdx.org/licenses/MIT.html",
+            "display_name": "MIT",
+            "relative_path": "LICENSE_MIT.TXT",
+            "comments": [
+                "The licensee of this object has the choice of Apache-2.0 or MIT ",
+                "licenses for the code. See the LICENSE_APACHE2.TXT, LICENSE_MIT.TXT ",
+                "and LICENSE.TXT for more information."
+            ],
+            "scopes": [
+                "All source code"
+            ]
+        },
+        {
+            "license_identifier": "CC0-1.0",
+            "uri": "https://spdx.org/licenses/CC0-1.0.html",
+            "display_name": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+            "relative_path": "LICENSE_CC0.TXT",
+            "comments": [
+                "All artistic assets in this object are released under the CC0 1.0 ",
+                "Universal (CC0 1.0) Public Domain Dedication license. For more ",
+                "information see the LICENSE_CC0.TXT file."
+            ],
+            "scopes": [
+                "All assets"
+            ]
+        },
+        {
+            "license_identifier": "O3DE",
+            "display_name": "O3DE License",
+            "relative_path": "LICENSE.TXT",
+            "comments": [
+                "The O3DE License is a custom license for the Open 3D Engine. ",
+                "The LICENSE.TXT file contains the full text which describes ",
+                "It primarily describes how to find all third party license information."
+            ],
+            "scopes": [
+                "All third party"
+            ]
+        }
+    ],
+    "tags": {
+        "canonical": [
+            "Template",
+            "Gem"
+        ],
+        "user": [
+            "org.o3de.template.cpptoolgem"
+        ]
+    },
+    "icon": {
+        "relative_path": "preview.png",
+        "uri": ""
+    },
+    "documentation": {
+        "relative_path": "",
+        "uri": ""
+    },
+    "children": {
+        "engines": [],
+        "projects": [],
+        "gems": [],
+        "templates": [],
+        "repos": [],
+        "restricteds": []
+    },
+    "remote": {
+        "engines": [],
+        "projects": [],
+        "gems": [],
+        "templates": [],
+        "repos": [],
+        "restricteds": []
+    },
+    "dependent": {
+        "gems": []
+    },
+    "platforms": [
+        "Windows",
+        "Linux",
+        "Mac",
+        "iOS",
+        "Android"
+    ]
+}

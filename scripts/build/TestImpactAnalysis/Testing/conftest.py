@@ -37,7 +37,7 @@ REPORT_KEY = "reports"
 
 @pytest.fixture
 def test_data_file(build_directory):
-    path = Path(build_directory+"/ly_test_impact_test_data.json")
+    path = Path(build_directory+"/o3de_test_impact_test_data.json")
     with open(path) as file:
         return json.load(file)
 

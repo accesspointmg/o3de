@@ -6,16 +6,16 @@
 #
 #
 
-if (NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if (NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME SceneBuilder.Static STATIC
     NAMESPACE AZ
     FILES_CMAKE
         scenebuilder_files.cmake
-        Platform/${PAL_PLATFORM_NAME}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        Platform/${O3DE_PAL_PLATFORM_NAME}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     COMPILE_DEFINITIONS
         PRIVATE
             SCENE_BUILDER_EXPORTS
@@ -33,7 +33,7 @@ ly_add_target(
             AZ::SDKWrapper
 )
 
-ly_add_target(
+o3de_add_target(
     NAME SceneBuilder MODULE
     NAMESPACE AZ
     FILES_CMAKE
@@ -51,11 +51,11 @@ ly_add_target(
             AZ::AzCore
 )
 
-ly_add_dependencies(AssetBuilder AZ::SceneBuilder)
+o3de_add_dependencies(AssetBuilder AZ::SceneBuilder)
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME SceneBuilder.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME SceneBuilder.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE AZ
         FILES_CMAKE
             scenebuilder_testing_files.cmake
@@ -67,7 +67,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzTest
                 AZ::SceneBuilder
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME AZ::SceneBuilder.Tests
         LABELS REQUIRES_tiaf
     )

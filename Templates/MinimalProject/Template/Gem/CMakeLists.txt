@@ -9,30 +9,31 @@
 # Setup the gem meta variables that includes the "gem_path", "gem_name" and "gem_version"
 # The "pal_dir" variable is also set which refers to the Platform/<platform-name> directory
 # based on the directory of this CMakeLists.txt
-o3de_gem_setup("${Name}")
+o3de_gem_setup()
+
 # Now that we have the platform abstraction layer (PAL) folder for this folder, thats where we will find the
 # traits for this platform. Traits for a platform are defines for things like whether or not something in this project
 # is supported by this platform.
-include(${pal_dir}/PAL_${PAL_PLATFORM_NAME_LOWERCASE}.cmake)
+include(${pal_dir}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)
 
 # Now that we have loaded our project traits for this platform, see if this project is even supported on this platform.
 # If its not supported we just return after including the unsupported.
-if(NOT PAL_TRAIT_${NameUpper}_SUPPORTED)
+if(NOT O3DE_PAL_TRAIT_${NameUpper}_SUPPORTED)
     return()
 endif()
 
 # We are on a supported platform, so add the ${gem_name} target
 # Note: We include the common files and the platform specific files which are set in ${NameLower}_files.cmake and
-# in ${pal_dir}/${NameLower}_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+# in ${pal_dir}/${NameLower}_${O3DE_PAL_PLATFORM_WART}_files.cmake
 
 # The ${gem_name}.Private.Object target is an internal target
 # It should not be used outside of this CMakeLists.txt
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Private.Object STATIC
     NAMESPACE Gem
     FILES_CMAKE
         ${NameLower}_files.cmake
-        ${pal_dir}/${NameLower}_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_dir}/${NameLower}_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             Include
@@ -42,12 +43,12 @@ ly_add_target(
             Gem::Atom_AtomBridge.Static
 )
 
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         ${NameLower}_shared_files.cmake
-        ${pal_dir}/${NameLower}_shared_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_dir}/${NameLower}_shared_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             Include
@@ -62,7 +63,7 @@ ly_add_target(
 # This is to allow renaming of the gem to also cause
 # the CreateModuleClass_Gem_<gem-name> function which
 # is used to bootstrap the gem in monolithic builds to link to the new gem name
-ly_add_source_properties(
+o3de_add_source_properties(
 SOURCES
     Source/${Name}Module.cpp
 PROPERTY COMPILE_DEFINITIONS
@@ -71,11 +72,11 @@ PROPERTY COMPILE_DEFINITIONS
         O3DE_GEM_VERSION=${gem_version})
 
 # if enabled, ${gem_name} is used by all kinds of applications
-ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Clients  NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Servers  NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Unified  NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients  NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Servers  NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Unified  NAMESPACE Gem TARGETS Gem::${gem_name})
 
 # Add in CMake dependencies for each gem dependency listed in this gem's gem.json file
 # for the primary gem variants used in most o3de applications

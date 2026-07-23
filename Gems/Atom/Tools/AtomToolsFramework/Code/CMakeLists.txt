@@ -6,13 +6,14 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-o3de_pal_dir(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} "${gem_restricted_path}" "${gem_path}" "${gem_parent_relative_path}")
+o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Static STATIC
     NAMESPACE Gem
     AUTOMOC
@@ -20,11 +21,11 @@ ly_add_target(
     AUTORCC
     FILES_CMAKE
         atomtoolsframework_files.cmake
-        ${pal_source_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_source_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
-            ${pal_source_dir}
+            ${pal_code_source_path}
         PUBLIC
             Include
     BUILD_DEPENDENCIES
@@ -50,7 +51,7 @@ ly_add_target(
             Gem::ImageProcessingAtom.Headers
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Editor GEM_MODULE
 
     NAMESPACE Gem
@@ -81,7 +82,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/AtomToolsFrameworkModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -91,15 +92,15 @@ ly_add_source_properties(
 
 # Add a 'builders' alias to allow the ${gem_name} root gem path to be added to the generated
 # cmake_dependencies.<project>.assetprocessor.setreg to allow the asset scan folder for it to be added
-ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem)
+o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem)
 
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-    ly_add_target(
-        NAME ${gem_name}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME ${gem_name}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             atomtoolsframework_tests_files.cmake
@@ -117,7 +118,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 Gem::${gem_name}.Static
     )
 
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::${gem_name}.Tests
         LABELS REQUIRES_tiaf
     )

@@ -23,7 +23,7 @@ import zipfile
 from datetime import datetime
 from tempfile import TemporaryDirectory
 
-from o3de import manifest, repo, utils, register
+from o3de import o3de_object, repo, utils, register
 
 logger = logging.getLogger('o3de.download')
 logging.basicConfig(format=utils.LOG_FORMAT)
@@ -85,7 +85,7 @@ def get_downloadable(engine_name: str = None,
                      gem_name: str = None,
                      template_name: str = None,
                      restricted_name: str = None) -> dict or None:
-    repos = manifest.get_manifest_repos()
+    repos = o3de_object.get_manifest_child_repos()
     if not repos:
         return None
 
@@ -112,7 +112,7 @@ def download_o3de_object(object_name: str, default_folder_name: str, dest_path: 
                          use_source_control: bool = False) -> int:
 
     object_name_without_version_specifier, version_specifier = utils.get_object_name_and_optional_version_specifier(object_name)
-    download_path = manifest.get_o3de_cache_folder() / default_folder_name / object_name_without_version_specifier
+    download_path = o3de_object.get_user_o3de_cache_path() / default_folder_name / object_name_without_version_specifier
     download_path.mkdir(parents=True, exist_ok=True)
     download_zip_path = download_path / f'{object_type}.zip'
 
@@ -144,7 +144,7 @@ def download_o3de_object(object_name: str, default_folder_name: str, dest_path: 
     parsed_uri = urllib.parse.urlparse(origin_uri)
 
     if not dest_path:
-        dest_path = manifest.get_registered(default_folder=default_folder_name)
+        dest_path = o3de_object.get_registered(default_folder=default_folder_name)
         dest_path = pathlib.Path(dest_path).resolve()
         dest_path = dest_path / object_name_without_version_specifier / object_version
     else:
@@ -379,41 +379,6 @@ def _run_download(args: argparse) -> int:
 
     return 1
 
-def add_parser_args(parser):
-    """
-    add_parser_args is called to add arguments to each command such that it can be
-    invoked locally or added by a central python file.
-    Ex. Directly run from this file alone with: python download.py --engine-name "o3de"
-    :param parser: the caller passes an argparse parser like instance to this method
-    """
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--engine-name', '-e', type=str, required=False,
-                       help='Downloadable engine name.')
-    group.add_argument('--project-name', '-p', type=str, required=False,
-                       help='Downloadable project name with optional version specifier e.g. project==1.2.3\nIf no version specifier is provided, the most recent version will be downloaded.')
-    group.add_argument('--gem-name', '-g', type=str, required=False,
-                       help='Downloadable gem name with optional version specifier e.g. gem==1.2.3\nIf no version specifier is provided, the most recent version will be downloaded.')
-    group.add_argument('--template-name', '-t', type=str, required=False,
-                       help='Downloadable template name with optional version specifier e.g. template==1.2.3\nIf no version specifier is provided, the most recent version will be downloaded.')
-    parser.add_argument('--dest-path', '-dp', type=str, required=False,
-                            default=None,
-                            help='Optional destination folder to download into.'
-                                 ' i.e. download --project-name "CustomProject" --dest-path "C:/projects"'
-                                 ' will result in C:/projects/CustomProject'
-                                 ' If blank will download to default object type folder')
-    parser.add_argument('--skip-auto-register', '-sar', action='store_true', required=False,
-                            default=False,
-                            help = 'Skip the automatic registration of new object download')
-    parser.add_argument('--force', '-f', action='store_true', required=False,
-                            default=False,
-                            help = 'Force overwrite the current object')
-    parser.add_argument('--use-source-control', '-src', action='store_true', required=False,
-                            default=False,
-                            help = 'Acquire from source control instead of downloading a .zip archive.  Requires that the object has a valid source_control_uri.')
-
-    parser.set_defaults(func=_run_download)
-
-
 def add_args(subparsers) -> None:
     """
     add_args is called to add subparsers arguments to each command such that it can be
@@ -423,29 +388,34 @@ def add_args(subparsers) -> None:
     :param subparsers: the caller instantiates subparsers and passes it in here
     """
     download_subparser = subparsers.add_parser('download')
-    add_parser_args(download_subparser)
 
+    group = download_subparser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--engine-name', '-e', type=str, required=False,
+                       help='Downloadable engine name.')
+    group.add_argument('--project-name', '-p', type=str, required=False,
+                       help='Downloadable project name with optional version specifier e.g. project==1.2.3\nIf no version specifier is provided, the most recent version will be downloaded.')
+    group.add_argument('--gem-name', '-g', type=str, required=False,
+                       help='Downloadable gem name with optional version specifier e.g. gem==1.2.3\nIf no version specifier is provided, the most recent version will be downloaded.')
+    group.add_argument('--template-name', '-t', type=str, required=False,
+                       help='Downloadable template name with optional version specifier e.g. template==1.2.3\nIf no version specifier is provided, the most recent version will be downloaded.')
+   
+    download_subparser.add_argument('--dest-path', '-dp', type=str, required=False,
+                            default=None,
+                            help='Optional destination folder to download into.'
+                                 ' i.e. download --project-name "CustomProject" --dest-path "C:/projects"'
+                                 ' will result in C:/projects/CustomProject'
+                                 ' If blank will download to default object type folder')
+    
+    download_subparser.add_argument('--skip-auto-register', '-sar', action='store_true', required=False,
+                            default=False,
+                            help = 'Skip the automatic registration of new object download')
+    
+    download_subparser.add_argument('--force', '-f', action='store_true', required=False,
+                            default=False,
+                            help = 'Force overwrite the current object')
+    
+    download_subparser.add_argument('--use-source-control', '-src', action='store_true', required=False,
+                            default=False,
+                            help = 'Acquire from source control instead of downloading a .zip archive.  Requires that the object has a valid source_control_uri.')
 
-def main():
-    """
-    Runs download.py script as standalone script
-    """
-    # parse the command line args
-    the_parser = argparse.ArgumentParser()
-
-    # add subparsers
-
-    # add args to the parser
-    add_parser_args(the_parser)
-
-    # parse args
-    the_args = the_parser.parse_args()
-
-    # run
-    ret = the_args.func(the_args) if hasattr(the_args, 'func') else 1
-
-    # return
-    sys.exit(ret)
-
-
-# Do not allow running the download.py script as a standalone script until it is reviewed by app-sec
+    download_subparser.set_defaults(func=_run_download)

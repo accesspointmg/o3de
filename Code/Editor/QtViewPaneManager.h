@@ -26,7 +26,7 @@
 #include <QByteArray>
 #include <QList>
 
-#include <LyViewPaneNames.h>
+#include <O3deViewPaneNames.h>
 
 #include <AzCore/std/functional.h>
 #endif

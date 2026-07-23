@@ -6,7 +6,7 @@
 #
 #
 
-set(LY_COMPILE_DEFINITIONS
+set(O3DE_COMPILE_DEFINITIONS
     PRIVATE
         HAVE_ROUND # defined for Windows since http://p-nand-q.com/python/building-python-33-with-vs2013.html
 )

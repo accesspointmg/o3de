@@ -12,7 +12,7 @@ Contains functions for the project manager to call that gather data from o3de sc
 import logging
 import pathlib
 
-from o3de import manifest, utils, compatibility, enable_gem, register, project_properties, repo
+from o3de import o3de_object, utils, compatibility, enable_gem, register, project_properties, repo
 
 logger = logging.getLogger('o3de.project_manager_interface')
 logging.basicConfig(format=utils.LOG_FORMAT)
@@ -75,14 +75,14 @@ def register_project(project_path: pathlib.Path, force:bool) -> int:
         in case there are multiple versions of this project on the user's machine
 
         :param project_path: Project path to register
-        :param force: Whether to force registeration, bypassing compatibility checks
+        :param force: Whether to force registration, bypassing compatibility checks
         :return 0 on success or a non-zero error code
     """
     result = register.register(project_path=project_path, force=force)
     if result == 0:
         result = project_properties.edit_project_props(proj_path=project_path, 
                                                        user=True, 
-                                                       new_engine_path=manifest.get_this_engine_path())
+                                                       new_engine_path=o3de_object.get_this_engine_path())
 
     return result
 
@@ -126,7 +126,7 @@ def get_enabled_gems(project_path: str, include_dependencies: bool = True) -> li
 
         :return list of strs of enable gems for project.
     """
-    return manifest.get_project_enabled_gems(project_path=project_path, include_dependencies=include_dependencies)
+    return o3de_object.get_project_enabled_gems(project_path=project_path, include_dependencies=include_dependencies)
 
 
 def get_project_info(project_path: str) -> dict or None:
@@ -148,22 +148,22 @@ def get_all_project_infos() -> list:
 
         :return list of dicts containing project infos.
     """
-    project_paths = manifest.get_all_projects()
+    project_paths = o3de_object.get_all_projects()
 
     # get all engine info once up front
-    engines_json_data = manifest.get_engines_json_data_by_path()
+    engines_json_data = o3de_object.get_engines_json_data_by_path()
 
     project_infos = []
     for project_path in project_paths:
-        project_json_data = manifest.get_project_json_data(project_path=project_path)
+        project_json_data = o3de_object.get_project_json_data(project_path=project_path)
         if not project_json_data:
             continue
-        user_project_json_data = manifest.get_project_json_data(project_path=project_path, user=True)
+        user_project_json_data = o3de_object.get_project_json_data(project_path=project_path, user=True)
         if user_project_json_data:
             project_json_data.update(user_project_json_data)
 
         project_json_data['path'] = project_path
-        project_json_data['engine_path'] = manifest.get_project_engine_path(project_path=project_path, 
+        project_json_data['engine_path'] = o3de_object.get_project_engine_path(project_path=project_path, 
                                                                             project_json_data=project_json_data, 
                                                                             user_project_json_data=user_project_json_data, 
                                                                             engines_json_data=engines_json_data)
@@ -188,10 +188,10 @@ def get_project_engine_incompatible_objects(project_path: pathlib.Path, engine_p
         :param engine_path: Optional engine path 
         :return a set of all incompatible objects which may include APIs and gems or an error code on failure
     """
-    engine_path = engine_path or manifest.get_this_engine_path()
-    if not manifest.get_engine_json_data(engine_path=engine_path):
+    engine_path = engine_path or o3de_object.get_this_engine_path()
+    if not o3de_object.get_engine_json_data(engine_path=engine_path):
         return 1
-    if not manifest.get_project_json_data(project_path=project_path):
+    if not o3de_object.get_project_json_data(project_path=project_path):
         return 2
 
     return compatibility.get_project_engine_incompatible_objects(project_path=project_path, 
@@ -208,7 +208,7 @@ def get_incompatible_project_gems(gem_paths:list, gem_names: list, project_path:
         :return a set of all incompatible gems or int error code
     """
     # we need to know the engine to check compatibility 
-    engine_path = manifest.get_project_engine_path(project_path)
+    engine_path = o3de_object.get_project_engine_path(project_path)
     if not engine_path:
         return 1
 
@@ -231,7 +231,7 @@ def add_gems_to_project(gem_paths:list, gem_names: list, project_path: str, forc
     """
     if not force:
         # we need to know the engine to check compatibility 
-        engine_path = manifest.get_project_engine_path(project_path)
+        engine_path = o3de_object.get_project_engine_path(project_path)
         if engine_path:
             # check compatibility for all gems at once for speeeeeeeeed
             incompatible_objects = compatibility.get_gems_project_incompatible_objects(
@@ -314,29 +314,29 @@ def get_all_gem_infos(project_path: pathlib.Path or None) -> list:
     # '--this-engine' value from the manifest
     engine_path = None
     if project_path and utils.find_ancestor_dir_containing_file('template.json', project_path) is None:
-        engine_path = manifest.get_project_engine_path(project_path=project_path)
+        engine_path = o3de_object.get_project_engine_path(project_path=project_path)
     if not engine_path:
-        engine_path = manifest.get_this_engine_path()
+        engine_path = o3de_object.get_this_engine_path()
     if not engine_path:
         logger.error("Failed to get engine path for gem info retrieval")
         return [] 
 
-    engine_json_data = manifest.get_engine_json_data(engine_path=engine_path)
+    engine_json_data = o3de_object.get_engine_json_data(engine_path=engine_path)
     if not engine_json_data:
         logger.error("Failed to get engine json data for gem info retrieval")
         return [] 
 
     # get all gem json data by path so we can use it for detecting engine and project gems
     # without re-opening and parsing gem.json files again
-    all_gem_json_data = manifest.get_gems_json_data_by_path(engine_path=engine_path,
+    all_gem_json_data = o3de_object.get_gems_json_data_by_path(engine_path=engine_path,
                                                             project_path=project_path,
                                                             include_engine_gems=True,
                                                             include_manifest_gems=True)
     # include gems inside gems
     recurse = True
-    engine_gem_paths = [pathlib.PurePath(path) for path in manifest.get_engine_gems(engine_path, recurse, all_gem_json_data)]
+    engine_gem_paths = [pathlib.PurePath(path) for path in o3de_object.get_engine_gems(engine_path, recurse, all_gem_json_data)]
     if project_path:
-        project_gem_paths = [pathlib.PurePath(path) for path in manifest.get_project_gems(project_path, recurse, all_gem_json_data)]
+        project_gem_paths = [pathlib.PurePath(path) for path in o3de_object.get_project_gems(project_path, recurse, all_gem_json_data)]
 
     # convert all_gem_json_data to have gem names as keys with values that are gem version lists
     utils.replace_dict_keys_with_value_key(all_gem_json_data, value_key='gem_name', replaced_key_name='path', place_values_in_list=True)
@@ -448,21 +448,21 @@ def get_gem_infos_from_all_repos(project_path:pathlib.Path = None, enabled_only:
     # '--this-engine' value from the manifest
     engine_path = None
     if project_path and utils.find_ancestor_dir_containing_file('template.json', project_path) is None:
-        engine_path = manifest.get_project_engine_path(project_path=project_path)
+        engine_path = o3de_object.get_project_engine_path(project_path=project_path)
     if not engine_path:
-        engine_path = manifest.get_this_engine_path()
+        engine_path = o3de_object.get_this_engine_path()
     if not engine_path:
         logger.error("Failed to get engine path for remote gem compatibility checks")
         return list() 
 
-    engine_json_data = manifest.get_engine_json_data(engine_path=engine_path)
+    engine_json_data = o3de_object.get_engine_json_data(engine_path=engine_path)
     if not engine_json_data:
         logger.error("Failed to get engine json data remote gem compatibility checks")
         return list() 
 
     # get all gem json data by path so we can use it for detecting engine and project gems
     # without re-opening and parsing gem.json files again
-    all_gem_json_data = manifest.get_gems_json_data_by_path(engine_path=engine_path,
+    all_gem_json_data = o3de_object.get_gems_json_data_by_path(engine_path=engine_path,
                                                             project_path=project_path,
                                                             include_engine_gems=True,
                                                             include_manifest_gems=True)

@@ -6,7 +6,7 @@
 #
 #
 
-set(LY_COMPILE_OPTIONS
+set(O3DE_COMPILE_OPTIONS
     PRIVATE
         -fexceptions #ImageLoader/ExrLoader.cpp uses exceptions
 )

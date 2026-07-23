@@ -6,11 +6,11 @@
 #
 #
 
-set(LY_INSTALLER_WIX_ROOT "" CACHE PATH "Path to the WiX install path")
+set(O3DE_INSTALLER_WIX_ROOT "" CACHE PATH "Path to the WiX install path")
 
-if(LY_INSTALLER_WIX_ROOT)
-    if(NOT EXISTS ${LY_INSTALLER_WIX_ROOT})
-        message(FATAL_ERROR "Invalid path supplied for LY_INSTALLER_WIX_ROOT argument")
+if(O3DE_INSTALLER_WIX_ROOT)
+    if(NOT EXISTS ${O3DE_INSTALLER_WIX_ROOT})
+        message(FATAL_ERROR "Invalid path supplied for O3DE_INSTALLER_WIX_ROOT argument")
     endif()
 else()
     # early out as no path to WiX has been supplied effectively disabling support
@@ -19,7 +19,7 @@ endif()
 
 # IMPORTANT: CPACK_WIX_ROOT is a built-in variable that is required to propagate the path supplied
 # via command line down to the cpack internals
-set(CPACK_WIX_ROOT ${LY_INSTALLER_WIX_ROOT})
+set(CPACK_WIX_ROOT ${O3DE_INSTALLER_WIX_ROOT})
 
 set(CPACK_GENERATOR WIX)
 
@@ -50,34 +50,34 @@ set(_guid_seed_base "${PROJECT_NAME}_${O3DE_INSTALL_VERSION_STRING}")
 generate_wix_guid(_wix_default_product_guid "${_guid_seed_base}_ProductID" )
 generate_wix_guid(_wix_default_upgrade_guid "${_guid_seed_base}_UpgradeCode")
 
-set(LY_WIX_PRODUCT_GUID "" CACHE STRING "GUID for the Product ID field. Format: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX")
-set(LY_WIX_UPGRADE_GUID "" CACHE STRING "GUID for the Upgrade Code field. Format: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX")
+set(O3DE_WIX_PRODUCT_GUID "" CACHE STRING "GUID for the Product ID field. Format: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX")
+set(O3DE_WIX_UPGRADE_GUID "" CACHE STRING "GUID for the Upgrade Code field. Format: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX")
 
 # clear previously cached default values to correct future runs.  this will
 # unfortunately only work if the seed properties still haven't changed
-if(LY_WIX_PRODUCT_GUID STREQUAL ${_wix_default_product_guid})
-    unset(LY_WIX_PRODUCT_GUID CACHE)
+if(O3DE_WIX_PRODUCT_GUID STREQUAL ${_wix_default_product_guid})
+    unset(O3DE_WIX_PRODUCT_GUID CACHE)
 endif()
-if(LY_WIX_UPGRADE_GUID STREQUAL ${_wix_default_upgrade_guid})
-    unset(LY_WIX_UPGRADE_GUID CACHE)
+if(O3DE_WIX_UPGRADE_GUID STREQUAL ${_wix_default_upgrade_guid})
+    unset(O3DE_WIX_UPGRADE_GUID CACHE)
 endif()
 
-if(NOT (LY_WIX_PRODUCT_GUID AND LY_WIX_UPGRADE_GUID))
-    message(STATUS "One or both WiX GUIDs were auto generated.  It is recommended you supply your own GUIDs through LY_WIX_PRODUCT_GUID and LY_WIX_UPGRADE_GUID.")
+if(NOT (O3DE_WIX_PRODUCT_GUID AND O3DE_WIX_UPGRADE_GUID))
+    message(STATUS "One or both WiX GUIDs were auto generated.  It is recommended you supply your own GUIDs through O3DE_WIX_PRODUCT_GUID and O3DE_WIX_UPGRADE_GUID.")
 
-    if(NOT LY_WIX_PRODUCT_GUID)
-        set(LY_WIX_PRODUCT_GUID ${_wix_default_product_guid})
-        message(STATUS "-> Default LY_WIX_PRODUCT_GUID = ${LY_WIX_PRODUCT_GUID}")
+    if(NOT O3DE_WIX_PRODUCT_GUID)
+        set(O3DE_WIX_PRODUCT_GUID ${_wix_default_product_guid})
+        message(STATUS "-> Default O3DE_WIX_PRODUCT_GUID = ${O3DE_WIX_PRODUCT_GUID}")
     endif()
 
-    if(NOT LY_WIX_UPGRADE_GUID)
-        set(LY_WIX_UPGRADE_GUID ${_wix_default_upgrade_guid})
-        message(STATUS "-> Default LY_WIX_UPGRADE_GUID = ${LY_WIX_UPGRADE_GUID}")
+    if(NOT O3DE_WIX_UPGRADE_GUID)
+        set(O3DE_WIX_UPGRADE_GUID ${_wix_default_upgrade_guid})
+        message(STATUS "-> Default O3DE_WIX_UPGRADE_GUID = ${O3DE_WIX_UPGRADE_GUID}")
     endif()
 endif()
 
-set(CPACK_WIX_PRODUCT_GUID ${LY_WIX_PRODUCT_GUID})
-set(CPACK_WIX_UPGRADE_GUID ${LY_WIX_UPGRADE_GUID})
+set(CPACK_WIX_PRODUCT_GUID ${O3DE_WIX_PRODUCT_GUID})
+set(CPACK_WIX_UPGRADE_GUID ${O3DE_WIX_UPGRADE_GUID})
 
 set(CPACK_WIX_PRODUCT_LOGO ${CPACK_SOURCE_DIR}/Platform/Windows/Packaging/product_logo.png)
 set(CPACK_WIX_PRODUCT_ICON ${CPACK_SOURCE_DIR}/Platform/Windows/Packaging/product_icon.ico)
@@ -106,7 +106,7 @@ set(_raw_text_license [[
 
 set(WIX_THEME_WARNING_IMAGE ${CPACK_SOURCE_DIR}/Platform/Windows/Packaging/warning.png)
 
-if(LY_INSTALLER_LICENSE_URL)
+if(O3DE_INSTALLER_LICENSE_URL)
     set(WIX_THEME_INSTALL_LICENSE_ELEMENTS ${_hyperlink_license})
     set(WIX_THEME_EULA_ACCEPTANCE_TEXT "&lt;a href=\"#\"&gt;Terms of Use&lt;/a&gt;")
 else()

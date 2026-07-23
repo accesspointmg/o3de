@@ -30,7 +30,7 @@ if __name__ == '__main__':
         long_description=long_description,
         packages=find_packages(where='Tools', exclude=['tests']),
         install_requires=[
-            "ly_test_tools"
+            "o3de_test_tools"
         ],
         tests_require=[
         ],

@@ -11,7 +11,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH "Build dir
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE PATH "Build directory for shared libraries")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE PATH "Build directory for executables")
 
-# We install outside of the binary dir because our install support muliple platforms to 
+# We install outside of the binary dir because our install support multiple platforms to 
 # be installed together. We also have an exclusion rule in the AP that filters out the 
 # "install" folder to avoid the AP picking it up
 unset(define_with_force)

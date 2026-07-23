@@ -44,3 +44,5 @@ if(NOT PROJECT_NAME)
     )
     o3de_initialize()
 endif()
+
+o3de_project_setup("${Name}")

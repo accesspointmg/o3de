@@ -31,15 +31,15 @@ else
 fi
 
 if ! [ -x "$(command -v cmake)" ]; then
-    if [ -z ${LY_CMAKE_PATH} ]; then
-        echo "ERROR: Could not find cmake on the PATH and LY_CMAKE_PATH is not defined, cannot continue."
-        echo "Please add cmake to your PATH, or define LY_CMAKE_PATH"
+    if [ -z ${O3DE_CMAKE_PATH} ]; then
+        echo "ERROR: Could not find cmake on the PATH and O3DE_CMAKE_PATH is not defined, cannot continue."
+        echo "Please add cmake to your PATH, or define O3DE_CMAKE_PATH"
         exit 1
     fi
 
-    export PATH=$LY_CMAKE_PATH:$PATH
+    export PATH=$O3DE_CMAKE_PATH:$PATH
     if ! [ -x "$(command -v cmake)" ]; then
-        echo "ERROR: Could not find cmake on the PATH or at the known location: $LY_CMAKE_PATH"
+        echo "ERROR: Could not find cmake on the PATH or at the known location: $O3DE_CMAKE_PATH"
         echo "Please add cmake to the environment PATH or place it at the above known location."
         exit 1
     fi
@@ -67,8 +67,8 @@ fi
 
 # Calculate the engine ID
 CALC_PATH=$DIR/../cmake/CalculateEnginePathId.cmake
-LY_ROOT_FOLDER=$DIR/..
-ENGINE_ID=$(cmake -P $CALC_PATH $LY_ROOT_FOLDER)
+O3DE_ENGINE_PATH=$DIR/..
+ENGINE_ID=$(cmake -P $CALC_PATH $O3DE_ENGINE_PATH)
 if [ $? -ne 0 ]
 then
     echo "Unable to calculate engine ID"

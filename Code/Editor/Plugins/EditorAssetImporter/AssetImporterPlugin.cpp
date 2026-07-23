@@ -13,7 +13,7 @@
 #include <QtViewPaneManager.h>
 #include <SceneAPI/SceneCore/Events/AssetImportRequest.h>
 #include <SceneAPI/SceneCore/Utilities/Reporting.h>
-#include <LyViewPaneNames.h>
+#include <O3deViewPaneNames.h>
 #include <AzToolsFramework/API/ToolsApplicationAPI.h>
 
 AssetImporterPlugin* AssetImporterPlugin::s_instance;

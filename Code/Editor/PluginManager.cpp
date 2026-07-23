@@ -137,13 +137,13 @@ bool CPluginManager::LoadPlugins(const char* pluginsPath)
 
     std::list<SPlugin> plugins;
     {
-        // LY_EDITOR_PLUGINS is defined by the CMakeLists.txt. The editor plugins add themselves to a variable that
+        // O3DE_EDITOR_PLUGINS is defined by the CMakeLists.txt. The editor plugins add themselves to a variable that
         // the editor uses to pass it to the build. Once a plugin is deleted, it will stop being in such variable producing
         // the editor to not load that plugin anymore, even if it is in the output folder.
-#if defined(LY_EDITOR_PLUGINS)
+#if defined(O3DE_EDITOR_PLUGINS)
         QDir qPath(strPath);
         AZStd::vector<AZStd::string> tokens;
-        AZ::StringFunc::Tokenize(AZStd::string_view(LY_EDITOR_PLUGINS), tokens, ',');
+        AZ::StringFunc::Tokenize(AZStd::string_view(O3DE_EDITOR_PLUGINS), tokens, ',');
         for (const AZStd::string& token : tokens)
         {
             SPlugin plugin;

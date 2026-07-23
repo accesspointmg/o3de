@@ -12,7 +12,7 @@
 #include <Include/IPlugin.h>
 
 #include "ProjectSettingsToolWindow.h"
-#include "../Editor/LyViewPaneNames.h"
+#include "../Editor/O3deViewPaneNames.h"
 
 
 class ProjectSettingsToolPlugin
@@ -23,12 +23,12 @@ public:
     {
         AzToolsFramework::ViewPaneOptions options;
         options.showInMenu = false;
-        AzToolsFramework::RegisterViewPane<ProjectSettingsTool::ProjectSettingsToolWindow>(LyViewPane::ProjectSettingsTool, LyViewPane::ProjectSettingsTool, options);
+        AzToolsFramework::RegisterViewPane<ProjectSettingsTool::ProjectSettingsToolWindow>(O3deViewPane::ProjectSettingsTool, O3deViewPane::ProjectSettingsTool, options);
     }
 
     void Release() override
     {
-        AzToolsFramework::UnregisterViewPane(LyViewPane::ProjectSettingsTool);
+        AzToolsFramework::UnregisterViewPane(O3deViewPane::ProjectSettingsTool);
         delete this;
     }
 

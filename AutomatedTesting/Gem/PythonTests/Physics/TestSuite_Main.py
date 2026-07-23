@@ -11,7 +11,7 @@ import os
 import sys
 
 from .utils.FileManagement import FileManagement as fm
-from ly_test_tools.o3de.editor_test import EditorSingleTest, EditorBatchedTest, EditorTestSuite
+from o3de_test_tools.o3de.editor_test import EditorSingleTest, EditorBatchedTest, EditorTestSuite
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../automatedtesting_shared')
 

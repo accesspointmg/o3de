@@ -6,11 +6,11 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_LARGE_WORLDS_TEST_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_HOST_TOOLS AND O3DE_PAL_TRAIT_LARGE_WORLDS_TEST_SUPPORTED)
 
 ## DynVeg ##
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::DynamicVegetationTests_Main_Optimized
         TEST_SERIAL
         TEST_SUITE main
@@ -24,7 +24,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_
             LargeWorlds
         LABELS REQUIRES_tiaf
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::DynamicVegetationTests_Periodic_Optimized
         TEST_SERIAL
         TEST_SUITE periodic
@@ -40,7 +40,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_
 
 ## LandscapeCanvas ##
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::LandscapeCanvasTests_Main_Optimized
         TEST_SERIAL
         TEST_SUITE main
@@ -54,7 +54,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_
         LABELS REQUIRES_tiaf
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::LandscapeCanvasTests_Sandbox_Optimized
         TEST_SERIAL
         TEST_SUITE sandbox
@@ -69,7 +69,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_
 
 ## GradientSignal ##
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::GradientSignalTests_Periodic_Optimized
         TEST_SERIAL
         TEST_SUITE periodic

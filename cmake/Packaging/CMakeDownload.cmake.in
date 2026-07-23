@@ -6,20 +6,20 @@
 #
 #
 
-set(LY_ROOT_FOLDER "@LY_ROOT_FOLDER@")
+set(O3DE_ENGINE_PATH "@O3DE_ENGINE_PATH@")
 set(CMAKE_SCRIPT_MODE_FILE TRUE)
-include(@LY_ROOT_FOLDER@/cmake/3rdPartyPackages.cmake)
+include(@O3DE_ENGINE_PATH@/cmake/3rdPartyPackages.cmake)
 
-if(EXISTS "@LY_CMAKE_PACKAGE_DOWNLOAD_PATH@")
-    file(SHA256 "@LY_CMAKE_PACKAGE_DOWNLOAD_PATH@" hash_of_downloaded_file)
+if(EXISTS "@O3DE_CMAKE_PACKAGE_DOWNLOAD_PATH@")
+    file(SHA256 "@O3DE_CMAKE_PACKAGE_DOWNLOAD_PATH@" hash_of_downloaded_file)
     if (NOT "${hash_of_downloaded_file}" STREQUAL "@CPACK_CMAKE_PACKAGE_HASH@")
-        message(STATUS "CMake @CPACK_DESIRED_CMAKE_VERSION@ found at @LY_CMAKE_PACKAGE_DOWNLOAD_PATH@ but expected hash missmatches, re-downloading...")
-        file(REMOVE "@LY_CMAKE_PACKAGE_DOWNLOAD_PATH@")
+        message(STATUS "CMake @CPACK_DESIRED_CMAKE_VERSION@ found at @O3DE_CMAKE_PACKAGE_DOWNLOAD_PATH@ but expected hash missmatches, re-downloading...")
+        file(REMOVE "@O3DE_CMAKE_PACKAGE_DOWNLOAD_PATH@")
     else()
         message(STATUS "CMake @CPACK_DESIRED_CMAKE_VERSION@ found")
     endif()
 endif()
-if(NOT EXISTS "@LY_CMAKE_PACKAGE_DOWNLOAD_PATH@")
+if(NOT EXISTS "@O3DE_CMAKE_PACKAGE_DOWNLOAD_PATH@")
     # download it
     string(REPLACE "." ";" _version_components "@CPACK_DESIRED_CMAKE_VERSION@")
     list(GET _version_components 0 _major_version)
@@ -31,16 +31,16 @@ if(NOT EXISTS "@LY_CMAKE_PACKAGE_DOWNLOAD_PATH@")
     message(STATUS "Downloading CMake @CPACK_DESIRED_CMAKE_VERSION@ for packaging...")
     download_file(
         URL ${_package_url}
-        TARGET_FILE @LY_CMAKE_PACKAGE_DOWNLOAD_PATH@
+        TARGET_FILE @O3DE_CMAKE_PACKAGE_DOWNLOAD_PATH@
         EXPECTED_HASH @CPACK_CMAKE_PACKAGE_HASH@
         RESULTS _results
     )
     list(GET _results 0 _status_code)
 
-    if (${_status_code} EQUAL 0 AND EXISTS "@LY_CMAKE_PACKAGE_DOWNLOAD_PATH@")
+    if (${_status_code} EQUAL 0 AND EXISTS "@O3DE_CMAKE_PACKAGE_DOWNLOAD_PATH@")
         message(STATUS "CMake @CPACK_DESIRED_CMAKE_VERSION@ found")
     else()
-        file(REMOVE "@LY_CMAKE_PACKAGE_DOWNLOAD_PATH@")
+        file(REMOVE "@O3DE_CMAKE_PACKAGE_DOWNLOAD_PATH@")
         list(REMOVE_AT _results 0)
 
         set(_error_message "An error occurred, code ${_status_code}.  URL ${_package_url} - ${_results}")

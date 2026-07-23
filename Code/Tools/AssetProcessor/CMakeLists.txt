@@ -6,7 +6,7 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
@@ -15,18 +15,18 @@ endif()
 add_subdirectory(AssetBuilderSDK)
 add_subdirectory(AssetBuilder)
 
-ly_add_target(
+o3de_add_target(
     NAME AssetProcessor.Static STATIC
     NAMESPACE AZ
     AUTOMOC
     AUTORCC
     FILES_CMAKE
         assetprocessor_static_files.cmake
-        Platform/${PAL_PLATFORM_NAME}/assetprocessor_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        Platform/${O3DE_PAL_PLATFORM_NAME}/assetprocessor_${O3DE_PAL_PLATFORM_WART}_files.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             .
-            Platform/${PAL_PLATFORM_NAME}
+            Platform/${O3DE_PAL_PLATFORM_NAME}
         PRIVATE
             native
     BUILD_DEPENDENCIES
@@ -46,16 +46,16 @@ ly_add_target(
             ${additional_dependencies}
 )
 
-# Aggregates all combined AssetBuilders into a single LY_ASSET_BUILDERS #define
-get_property(asset_builders GLOBAL PROPERTY LY_ASSET_BUILDERS)
+# Aggregates all combined AssetBuilders into a single O3DE_ASSET_BUILDERS #define
+get_property(asset_builders GLOBAL PROPERTY O3DE_ASSET_BUILDERS)
 string (REPLACE ";" "," asset_builders "${asset_builders}")
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES native/utilities/ApplicationManager.cpp
     PROPERTY COMPILE_DEFINITIONS
-    VALUES LY_ASSET_BUILDERS="${asset_builders}"
+    VALUES O3DE_ASSET_BUILDERS="${asset_builders}"
 )
 
-ly_add_target(
+o3de_add_target(
     NAME AssetProcessor APPLICATION
     NAMESPACE AZ
     AUTOMOC
@@ -63,9 +63,9 @@ ly_add_target(
     AUTORCC
     FILES_CMAKE
         assetprocessor_gui_files.cmake
-        Platform/${PAL_PLATFORM_NAME}/assetprocessor_gui_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        Platform/${O3DE_PAL_PLATFORM_NAME}/assetprocessor_gui_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        Platform/${PAL_PLATFORM_NAME}/assetprocessor_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
+        Platform/${O3DE_PAL_PLATFORM_NAME}/assetprocessor_${O3DE_PAL_PLATFORM_WART}.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             .
@@ -82,19 +82,19 @@ ly_add_target(
 # specialization in order to look up the generated .setreg which contains the dependencies
 # specified for the target.
 if(TARGET AssetProcessor)
-    ly_set_gem_variant_to_load(TARGETS AssetProcessor VARIANTS Builders)
+    o3de_set_gem_variant_to_load(TARGETS AssetProcessor VARIANTS Builders)
     set_source_files_properties(
         native/AssetProcessorBuildTarget.cpp
         PROPERTIES
             COMPILE_DEFINITIONS
-                LY_CMAKE_TARGET="AssetProcessor"
+                O3DE_CMAKE_TARGET="AssetProcessor"
     )
 else()
-    message(FATAL_ERROR "Cannot set LY_CMAKE_TARGET define to AssetProcessor as the target doesn't exist anymore."
+    message(FATAL_ERROR "Cannot set O3DE_CMAKE_TARGET define to AssetProcessor as the target doesn't exist anymore."
         " Perhaps it has been renamed")
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME AssetProcessorBatch.Static STATIC
     NAMESPACE AZ
     AUTOMOC
@@ -109,7 +109,7 @@ ly_add_target(
         PUBLIC
             AZ::AssetProcessor.Static
 )
-ly_add_target(
+o3de_add_target(
     NAME AssetProcessorBatch EXECUTABLE
     NAMESPACE AZ
     AUTOMOC
@@ -126,33 +126,33 @@ ly_add_target(
         AZ::AssetBuilder
 )
 
-if(LY_DEFAULT_PROJECT_PATH)
-    set_property(TARGET AssetProcessor AssetProcessorBatch APPEND PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS "--project-path=\"${LY_DEFAULT_PROJECT_PATH}\"")
+if(O3DE_DEFAULT_PROJECT_PATH)
+    set_property(TARGET AssetProcessor AssetProcessorBatch APPEND PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS "--project-path=\"${O3DE_DEFAULT_PROJECT_PATH}\"")
 endif()
 
 # Adds the AssetProcessorBatch target as a C preprocessor define so that it can be used as a Settings Registry
 # specialization in order to look up the generated .setreg which contains the dependencies
 # specified for the target.
 if(TARGET AssetProcessorBatch)
-    ly_set_gem_variant_to_load(TARGETS AssetProcessorBatch VARIANTS Builders)
+    o3de_set_gem_variant_to_load(TARGETS AssetProcessorBatch VARIANTS Builders)
     set_source_files_properties(
         native/AssetProcessorBatchBuildTarget.cpp
         PROPERTIES
             COMPILE_DEFINITIONS
-                LY_CMAKE_TARGET="AssetProcessorBatch"
+                O3DE_CMAKE_TARGET="AssetProcessorBatch"
     )
 else()
-    message(FATAL_ERROR "Cannot set LY_CMAKE_TARGET define to AssetProcessorBatch as the target doesn't exist anymore."
+    message(FATAL_ERROR "Cannot set O3DE_CMAKE_TARGET define to AssetProcessorBatch as the target doesn't exist anymore."
         " Perhaps it has been renamed")
 endif()
 
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-    ly_add_target(
-        NAME AssetProcessor.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME AssetProcessor.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE AZ
         AUTOMOC
         AUTORCC
@@ -168,18 +168,18 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AssetProcessorBatch.Static
                 AZ::AzToolsFrameworkTestCommon
     )
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES native/tests/assetBuilderSDK/assetBuilderSDKTest.cpp
         PROPERTY COMPILE_DEFINITIONS
-        VALUES ${LY_PAL_TOOLS_DEFINES}
+        VALUES ${O3DE_PAL_TOOLS_DEFINES}
     )
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES native/unittests/AssetProcessorManagerUnitTests.cpp
         PROPERTY COMPILE_DEFINITIONS
-        VALUES LY_CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}"
+        VALUES O3DE_CMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}"
     )
 
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             AssetProcessor.Tests
         FILES
@@ -187,7 +187,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             testdata/config_broken_badplatform
         )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             AssetProcessor.Tests
         FILES
@@ -195,7 +195,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             testdata/config_broken_noscans
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             AssetProcessor.Tests
         FILES
@@ -203,7 +203,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             testdata/config_broken_recognizers
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             AssetProcessor.Tests
         FILES
@@ -211,7 +211,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             testdata/config_broken_noplatform
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             AssetProcessor.Tests
         FILES
@@ -219,7 +219,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             testdata/config_regular
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             AssetProcessor.Tests
         FILES
@@ -227,7 +227,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             testdata/config_regular_platform_scanfolder
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             AssetProcessor.Tests
         FILES
@@ -235,7 +235,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             testdata/EmptyDummyProject
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             AssetProcessor.Tests
         FILES
@@ -243,7 +243,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         OUTPUT_SUBDIRECTORY
             testdata/DummyProject
     )
-    ly_add_target_files(
+    o3de_add_target_files(
         TARGETS
             AssetProcessor.Tests
         FILES
@@ -252,7 +252,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             testdata/config_metadata
     )
 
-    # Have the AssetProcessorTest use the LY_CMAKE_TARGET define of AssetProcessorBatch for the purpose
+    # Have the AssetProcessorTest use the O3DE_CMAKE_TARGET define of AssetProcessorBatch for the purpose
     # of looking up the generated cmake build dependencies settings registry .setreg file
     # It is tied to the UnitTestUtils.cpp file
     if(TARGET AssetProcessorBatch)
@@ -260,27 +260,27 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             native/unittests/UnitTestUtils.cpp
             PROPERTIES
                 COMPILE_DEFINITIONS
-                    LY_CMAKE_TARGET="AssetProcessorBatch"
+                    O3DE_CMAKE_TARGET="AssetProcessorBatch"
         )
     else()
-        message(FATAL_ERROR "Cannot set LY_CMAKE_TARGET define to AssetProcessorBatch as the target doesn't exist anymore."
+        message(FATAL_ERROR "Cannot set O3DE_CMAKE_TARGET define to AssetProcessorBatch as the target doesn't exist anymore."
             " Perhaps it has been renamed")
     endif()
 
     # there are some tests in the main suite, and some in periodic.
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME AZ::AssetProcessor.Tests
         LABELS REQUIRES_tiaf
     )
-    ly_add_googletest(NAME AZ::AssetProcessor.Tests.Periodic
+    o3de_add_googletest(NAME AZ::AssetProcessor.Tests.Periodic
         TARGET AZ::AssetProcessor.Tests 
         TEST_SUITE periodic)
     # Sandbox the tests that fail intermittently
-    ly_add_googletest(NAME AZ::AssetProcessor.Tests.Sandbox
+    o3de_add_googletest(NAME AZ::AssetProcessor.Tests.Sandbox
         TARGET AZ::AssetProcessor.Tests 
         TEST_SUITE sandbox)
 
-    ly_add_googlebenchmark(
+    o3de_add_googlebenchmark(
         NAME AZ::AssetProcessor.Benchmarks
         TARGET AZ::AssetProcessor.Tests
     )

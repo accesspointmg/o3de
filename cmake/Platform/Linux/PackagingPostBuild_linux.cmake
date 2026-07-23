@@ -6,8 +6,8 @@
 #
 #
 
-file(REAL_PATH "${CPACK_SOURCE_DIR}/.." LY_ROOT_FOLDER)
-include(${LY_ROOT_FOLDER}/cmake/Platform/Common/PackagingPostBuild_common.cmake)
+file(REAL_PATH "${CPACK_SOURCE_DIR}/.." O3DE_ENGINE_PATH)
+include(${O3DE_ENGINE_PATH}/cmake/Platform/Common/PackagingPostBuild_common.cmake)
 include(${CPACK_CODESIGN_SCRIPT})
 
 # Init common variables
@@ -45,7 +45,7 @@ if(CPACK_UPLOAD_URL)
 
     if(ext STREQUAL "deb")
         # Sign and regenerate checksum
-        ly_sign_binaries("${pack_file}" "")
+        o3de_sign_binaries("${pack_file}" "")
         file(${checksum} ${pack_file} file_checksum)
         file(WRITE ${hash_file} "${file_checksum} ${pack_file}")
     endif()
@@ -58,7 +58,7 @@ if(CPACK_UPLOAD_URL)
     file(GLOB _artifacts 
         "${CPACK_TOPLEVEL_DIRECTORY}/*.${ext}" 
         "${CPACK_TOPLEVEL_DIRECTORY}/*.${checkext}"
-        "${LY_ROOT_FOLDER}/scripts/signer/Platform/Linux/*.gpg"
+        "${O3DE_ENGINE_PATH}/scripts/signer/Platform/Linux/*.gpg"
         "${CPACK_3P_LICENSE_FILE}"
         "${CPACK_3P_MANIFEST_FILE}"
     )
@@ -67,7 +67,7 @@ if(CPACK_UPLOAD_URL)
     )
     message(STATUS "Artifacts copied to ${CPACK_UPLOAD_DIRECTORY}")
 
-    ly_upload_to_url(
+    o3de_upload_to_url(
         ${CPACK_UPLOAD_URL}
         ${CPACK_UPLOAD_DIRECTORY}
         ".*(.${ext}|.${checkext}|.gpg|.txt|.json)$"
@@ -81,13 +81,13 @@ if(CPACK_UPLOAD_URL)
             ${pack_file}
             ${latest_pack_file}
         )
-        ly_upload_to_latest(${CPACK_UPLOAD_URL} "${latest_pack_file}")
+        o3de_upload_to_latest(${CPACK_UPLOAD_URL} "${latest_pack_file}")
 
         set(latest_hash_file "${latest_pack_file}.${checkext}")
         file(COPY_FILE
             ${hash_file}
             ${latest_hash_file}
         )
-        ly_upload_to_latest(${CPACK_UPLOAD_URL} "${latest_hash_file}")
+        o3de_upload_to_latest(${CPACK_UPLOAD_URL} "${latest_hash_file}")
     endif()
 endif()

@@ -13,20 +13,20 @@ import logging
 
 import os
 
-# Import LyTestTools
-import ly_test_tools.builtin.helpers as helpers
+# Import O3deTestTools
+import o3de_test_tools.builtin.helpers as helpers
 
 # Import fixtures
 from ..ap_fixtures.asset_processor_fixture import asset_processor as asset_processor
 from ..ap_fixtures.ap_setup_fixture import ap_setup_fixture as ap_setup_fixture
 
 # Import LyShared
-import ly_test_tools.o3de.pipeline_utils as utils
-from ly_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
+import o3de_test_tools.o3de.pipeline_utils as utils
+from o3de_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
 # Use the following logging pattern to hook all test logging together:
 logger = logging.getLogger(__name__)
-# Configuring the logging is done in ly_test_tools at the following location:
-# ~/dev/Tools/LyTestTools/ly_test_tools/log/py_logging_util.py
+# Configuring the logging is done in o3de_test_tools at the following location:
+# ~/dev/Tools/O3deTestTools/o3de_test_tools/log/py_logging_util.py
 
 # Helper: variables we will use for parameter values in the test:
 win_and_mac_platforms = [ASSET_PROCESSOR_PLATFORM_MAP['windows'],

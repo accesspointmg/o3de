@@ -20,7 +20,7 @@ namespace UnitTest
     {
         AZ::ProcessMemInfo memInfo;
         ASSERT_TRUE(AZ::QueryMemInfo(memInfo));
-        // MacOS and iOS populates does not the peak working set nor pagefile usage
+        // Mac and iOS populates does not the peak working set nor pagefile usage
         EXPECT_GT(memInfo.m_workingSet, 0);
         EXPECT_GT(memInfo.m_pagefileUsage, 0);
         EXPECT_GT(memInfo.m_pageFaultCount, 0);

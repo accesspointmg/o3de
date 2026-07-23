@@ -118,9 +118,9 @@ TEST_F(AudioControlsEditorTest, AudioControlsLoader_LoadScopes_ScopesAreAdded)
     CATLControlsModel atlModel;
     CAudioControlsLoader loader(&atlModel, nullptr, nullptr);
 
-    m_fileIO->m_levelName = "ly_extension.ly";
+    m_fileIO->m_levelName = "o3de_extension.ly";
     loader.LoadScopes();
-    EXPECT_TRUE(atlModel.ScopeExists("ly_extension"));
+    EXPECT_TRUE(atlModel.ScopeExists("o3de_extension"));
 
     m_fileIO->m_levelName = "cry_extension.cry";
     loader.LoadScopes();

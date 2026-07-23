@@ -7,10 +7,10 @@
 #
 
 # SPEC-1417 will investigate and fix this
-if(NOT PAL_PLATFORM_NAME STREQUAL "Mac")
-    add_subdirectory(ly_remote_console/tests)
+if(NOT O3DE_PAL_PLATFORM_NAME STREQUAL "Mac")
+    add_subdirectory(o3de_remote_console/tests)
 endif()
 
-ly_install_directory(DIRECTORIES .
+o3de_install_directory(DIRECTORIES .
     EXCLUDE_PATTERNS tests
 )

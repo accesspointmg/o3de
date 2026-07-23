@@ -79,7 +79,7 @@ namespace AZ
             
             bool loadFromByteCode = false;
             
-            // MacOS Big Sur (11.16.x) has issue loading some shader's byte code when GPUCapture(Metal) is on.
+            // Mac Big Sur (11.16.x) has issue loading some shader's byte code when GPUCapture(Metal) is on.
             // Only enable it for Monterey (12.x)
             if(@available(iOS 14.0, macOS 12.0, *))
             {

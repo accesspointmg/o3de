@@ -19,10 +19,10 @@ using namespace ScriptCanvas;
 
 TEST_F(ScriptCanvasTestFixture, MathOperations_Graph)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_MathOperations", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_MathOperations", ExecutionMode::Interpreted);
 }
 
 TEST_F(ScriptCanvasTestFixture, MathCustom_Graph)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_UnitTest_MathCustom", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_UnitTest_MathCustom", ExecutionMode::Interpreted);
 }

@@ -16,14 +16,14 @@ import time
 import configparser
 from pathlib import Path
 
-# Import LyTestTools
-import ly_test_tools
-import ly_test_tools.builtin.helpers as helpers
-import ly_test_tools.environment.waiter as waiter
-import ly_test_tools.environment.file_system as fs
-import ly_test_tools.environment.process_utils as process_utils
-import ly_test_tools.launchers.launcher_helper as launcher_helper
-from ly_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP, ASSET_PROCESSOR_SETTINGS_ROOT_KEY
+# Import O3deTestTools
+import o3de_test_tools
+import o3de_test_tools.builtin.helpers as helpers
+import o3de_test_tools.environment.waiter as waiter
+import o3de_test_tools.environment.file_system as fs
+import o3de_test_tools.environment.process_utils as process_utils
+import o3de_test_tools.launchers.launcher_helper as launcher_helper
+from o3de_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP, ASSET_PROCESSOR_SETTINGS_ROOT_KEY
 
 # Import fixtures
 from ..ap_fixtures.ap_fast_scan_setting_backup_fixture import ap_fast_scan_setting_backup_fixture
@@ -33,12 +33,12 @@ from ..ap_fixtures.ap_idle_fixture import TimestampChecker
 
 
 # Import LyShared
-import ly_test_tools.o3de.pipeline_utils as utils
+import o3de_test_tools.o3de.pipeline_utils as utils
 
 # Use the following logging pattern to hook all test logging together:
 logger = logging.getLogger(__name__)
-# Configuring the logging is done in ly_test_tools at the following location:
-# ~/dev/Tools/LyTestTools/ly_test_tools/log/py_logging_util.py
+# Configuring the logging is done in o3de_test_tools at the following location:
+# ~/dev/Tools/O3deTestTools/o3de_test_tools/log/py_logging_util.py
 
 # Helper: variables we will use for parameter values in the test:
 targetProjects = ["AutomatedTesting"]

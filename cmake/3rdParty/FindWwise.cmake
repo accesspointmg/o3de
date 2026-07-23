@@ -7,7 +7,7 @@
 #
 
 # Wwise Install Path
-set(LY_WWISE_INSTALL_PATH "" CACHE PATH "Path to Wwise installation.")
+set(O3DE_WWISE_INSTALL_PATH "" CACHE PATH "Path to Wwise installation.")
 
 # Wwise Version
 set(WWISE_VERSION)
@@ -44,7 +44,7 @@ endfunction()
 # - CMake cache variable
 # - WWISEROOT Environment Variable
 set(WWISE_SDK_PATHS
-    "${LY_WWISE_INSTALL_PATH}"
+    "${O3DE_WWISE_INSTALL_PATH}"
     "$ENV{WWISEROOT}"
 )
 
@@ -53,7 +53,7 @@ foreach(candidate_path ${WWISE_SDK_PATHS})
     is_valid_sdk(${candidate_path} found_sdk)
     if(found_sdk)
         # Update the Wwise Install Path variable internally
-        set(LY_WWISE_INSTALL_PATH "${candidate_path}")
+        set(O3DE_WWISE_INSTALL_PATH "${candidate_path}")
         break()
     endif()
 endforeach()
@@ -64,7 +64,7 @@ if(NOT found_sdk)
     return()
 endif()
 
-message(STATUS "Using Wwise SDK version ${WWISE_VERSION} at ${LY_WWISE_INSTALL_PATH}")
+message(STATUS "Using Wwise SDK version ${WWISE_VERSION} at ${O3DE_WWISE_INSTALL_PATH}")
 
 set(WWISE_COMMON_LIB_NAMES
     # Core AK
@@ -122,10 +122,10 @@ set(WWISE_COMPILE_DEFINITIONS
 
 
 # Use these to get the parent path and folder name before adding the external 3p target.
-get_filename_component(WWISE_INSTALL_ROOT ${LY_WWISE_INSTALL_PATH} DIRECTORY)
-get_filename_component(WWISE_FOLDER ${LY_WWISE_INSTALL_PATH} NAME)
+get_filename_component(WWISE_INSTALL_ROOT ${O3DE_WWISE_INSTALL_PATH} DIRECTORY)
+get_filename_component(WWISE_FOLDER ${O3DE_WWISE_INSTALL_PATH} NAME)
 
-ly_add_external_target(
+o3de_add_external_target(
     NAME Wwise
     VERSION "${WWISE_FOLDER}"
     3RDPARTY_ROOT_DIRECTORY "${WWISE_INSTALL_ROOT}"

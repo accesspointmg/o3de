@@ -14,5 +14,5 @@ using namespace ScriptCanvas;
   
 TEST_F(ScriptCanvasTestFixture, StringNodes)
 {
-    RunUnitTestGraph("LY_SC_UnitTest_StringNodes", ExecutionMode::Interpreted);
+    RunUnitTestGraph("O3DE_SC_UnitTest_StringNodes", ExecutionMode::Interpreted);
 }

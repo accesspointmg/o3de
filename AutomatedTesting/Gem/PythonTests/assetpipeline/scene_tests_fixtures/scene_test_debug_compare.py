@@ -9,7 +9,7 @@ from __future__ import annotations
 import os
 import re
 from typing import List
-import ly_test_tools.o3de.pipeline_utils as utils
+import o3de_test_tools.o3de.pipeline_utils as utils
 import warnings
 import logging
 from automatedtesting_shared import asset_database_utils as asset_db_utils

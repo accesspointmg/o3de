@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 #
 #
-if(NOT PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(NOT O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     return()
 endif()
 
@@ -21,7 +21,7 @@ set(O3DE_TEST_IMPACT_NATIVE_TEST_TARGETS_ENABLED FALSE CACHE BOOL "Whether to en
 # Test impact analysis opt-in for Python test targets
 set(O3DE_TEST_IMPACT_PYTHON_TEST_TARGETS_ENABLED FALSE CACHE BOOL "Whether to enable Python test targets with the REQUIRES_TIAF_LABEL label for test impact analysis (otherwise, CTest will be used to run these targets).")
 
-if(LY_MONOLITHIC_GAME)
+if(O3DE_MONOLITHIC_GAME)
     # TIAF not supported for monolithic game builds
     set(O3DE_TEST_IMPACT_NATIVE_TEST_TARGETS_ENABLED false)
     set(O3DE_TEST_IMPACT_PYTHON_TEST_TARGETS_ENABLED false)

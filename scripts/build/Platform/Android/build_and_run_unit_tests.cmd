@@ -12,20 +12,20 @@ SETLOCAL EnableDelayedExpansion
 CALL %~dp0gradle_windows.cmd
 IF NOT %ERRORLEVEL%==0 GOTO :error
 
-IF NOT EXIST "%LY_3RDPARTY_PATH%" (
-    ECHO [ci_build] LY_3RDPARTY_PATH is invalid or not set
+IF NOT EXIST "%O3DE_3RDPARTY_PATH%" (
+    ECHO [ci_build] O3DE_3RDPARTY_PATH is invalid or not set
     GOTO :error
 )
 
-IF NOT EXIST "%LY_ANDROID_SDK%" (
-    ECHO [ci_build] FAIL: LY_ANDROID_SDK=!LY_ANDROID_SDK!
+IF NOT EXIST "%O3DE_ANDROID_SDK%" (
+    ECHO [ci_build] FAIL: O3DE_ANDROID_SDK=!O3DE_ANDROID_SDK!
     GOTO :error
 )
-SET ANDROID_SDK_ROOT=%LY_ANDROID_SDK%
+SET ANDROID_SDK_ROOT=%O3DE_ANDROID_SDK%
 ECHO "ANDROID_SDK_ROOT=!ANDROID_SDK_ROOT!"
 SET PYTHON=python\python.cmd
-ECHO [ci_build] %PYTHON% scripts\build\Platform\Android\run_test_on_android_simulator.py --android-sdk-path %LY_ANDROID_SDK% --build-path %OUTPUT_DIRECTORY% --build-config %CONFIGURATION%
-CALL %PYTHON% scripts\build\Platform\Android\run_test_on_android_simulator.py --android-sdk-path %LY_ANDROID_SDK% --build-path %OUTPUT_DIRECTORY% --build-config %CONFIGURATION%
+ECHO [ci_build] %PYTHON% scripts\build\Platform\Android\run_test_on_android_simulator.py --android-sdk-path %O3DE_ANDROID_SDK% --build-path %OUTPUT_DIRECTORY% --build-config %CONFIGURATION%
+CALL %PYTHON% scripts\build\Platform\Android\run_test_on_android_simulator.py --android-sdk-path %O3DE_ANDROID_SDK% --build-path %OUTPUT_DIRECTORY% --build-config %CONFIGURATION%
 IF NOT %ERRORLEVEL%==0 GOTO :popd_error
 
 EXIT /b 0

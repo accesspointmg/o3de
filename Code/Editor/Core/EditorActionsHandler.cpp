@@ -27,7 +27,7 @@
 #include <AzQtComponents/Components/SearchLineEdit.h>
 #include <AzQtComponents/Components/Style.h>
 
-#include <AtomLyIntegration/AtomViewportDisplayInfo/AtomViewportInfoDisplayBus.h>
+#include <AtomO3deIntegration/AtomViewportDisplayInfo/AtomViewportInfoDisplayBus.h>
 
 #include <Core/Widgets/PrefabEditVisualModeWidget.h>
 #include <Core/Widgets/ViewportSettingsWidgets.h>
@@ -483,7 +483,7 @@ void EditorActionsHandler::OnActionRegistrationHook()
             actionProperties,
             [qtViewPaneManager = m_qtViewPaneManager]
             {
-                qtViewPaneManager->OpenPane(LyViewPane::ProjectSettingsTool);
+                qtViewPaneManager->OpenPane(O3deViewPane::ProjectSettingsTool);
             }
         );
     }
@@ -766,7 +766,7 @@ void EditorActionsHandler::OnActionRegistrationHook()
             actionProperties,
             []
             {
-                QtViewPaneManager::instance()->OpenPane(LyViewPane::EditorSettingsManager);
+                QtViewPaneManager::instance()->OpenPane(O3deViewPane::EditorSettingsManager);
             }
         );
 
@@ -1063,7 +1063,7 @@ void EditorActionsHandler::OnActionRegistrationHook()
             actionProperties,
             [qtViewPaneManager = m_qtViewPaneManager]
             {
-                qtViewPaneManager->OpenPane(LyViewPane::ErrorReport);
+                qtViewPaneManager->OpenPane(O3deViewPane::ErrorReport);
             }
         );
 

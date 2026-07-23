@@ -6,8 +6,8 @@
 #
 #
 
-file(REAL_PATH "${CPACK_SOURCE_DIR}/.." LY_ROOT_FOLDER)
-include(${LY_ROOT_FOLDER}/cmake/Platform/Common/PackagingPreBuild_common.cmake)
+file(REAL_PATH "${CPACK_SOURCE_DIR}/.." O3DE_ENGINE_PATH)
+include(${O3DE_ENGINE_PATH}/cmake/Platform/Common/PackagingPreBuild_common.cmake)
 include(${CPACK_CODESIGN_SCRIPT})
 
 if(NOT CPACK_UPLOAD_URL) # Skip signing if we are not uploading the package
@@ -15,4 +15,4 @@ if(NOT CPACK_UPLOAD_URL) # Skip signing if we are not uploading the package
 endif()
 
 set(_cpack_wix_out_dir ${CPACK_TOPLEVEL_DIRECTORY})
-ly_sign_binaries("${_cpack_wix_out_dir}" "exePath")
+o3de_sign_binaries("${_cpack_wix_out_dir}" "exePath")

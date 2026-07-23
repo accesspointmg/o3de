@@ -6,9 +6,9 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_FOUNDATION_TEST_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_HOST_TOOLS AND O3DE_PAL_TRAIT_FOUNDATION_TEST_SUPPORTED)
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::EditorTests_Main
         TEST_SUITE main
         TEST_SERIAL
@@ -22,7 +22,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_
             Editor
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::EditorTests_DPE_Main
         TEST_SUITE main
         TEST_SERIAL
@@ -36,7 +36,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_
             Editor
     )
 
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::EditorTests_Main_GPU_Optimized
         TEST_SUITE main
         TEST_SERIAL
@@ -51,7 +51,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS AND PAL_TRAIT_
             Editor
     )
 
-    #ly_add_pytest(
+    #o3de_add_pytest(
     #    NAME AutomatedTesting::EditorTests_Sandbox
     #    TEST_SUITE sandbox
     #    TEST_SERIAL

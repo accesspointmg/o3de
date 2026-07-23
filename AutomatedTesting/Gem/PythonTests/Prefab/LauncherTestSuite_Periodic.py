@@ -8,7 +8,7 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 import pytest
 
 from .tests.launcher_utils import run_launcher_tests
-import ly_remote_console.remote_console_commands as rc
+import o3de_remote_console.remote_console_commands as rc
 
 
 @pytest.fixture

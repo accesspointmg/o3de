@@ -44,7 +44,7 @@ def generate_lut_values(image_spec, image_buffer):
 # To Do: add some input file validation
 # If the input file doesn't exist, you'll get a LUT with res of 0 x 0 and result in a math error
 #Resolution is 0  x  0
-#writing C:\Depot\o3de-engine\Gems\AtomLyIntegration\CommonFeatures\Tools\ColorGrading\TestData\Nuke\HDR\Nuke_Post_grade_LUT.3dl...
+#writing C:\Depot\o3de-engine\Gems\AtomO3deIntegration\CommonFeatures\Tools\ColorGrading\TestData\Nuke\HDR\Nuke_Post_grade_LUT.3dl...
 #Traceback (most recent call last):
     #File "..\..\Editor\Scripts\ColorGrading\exr_to_3dl_azasset.py", line 103, in <module>
         #dv = 1023.0 / float(lutSize)

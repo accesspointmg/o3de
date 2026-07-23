@@ -19,7 +19,7 @@ import uuid
 import re
 from typing import Tuple
 
-from o3de import manifest, register, validation, utils
+from o3de import o3de_object, register, validation, utils
 
 logger = logging.getLogger('o3de.engine_template')
 logging.basicConfig(format=utils.LOG_FORMAT)
@@ -450,7 +450,7 @@ def _instantiate_template(template_json_data: dict,
                            keep_restricted_in_instance)
 
     # we execute the jason data again if there are any restricted platforms in the main template and
-    # execute any restricted platform jsons if separate
+    # execute any restricted platform .json if separate
 
     for restricted_platform in restricted_platforms:
         restricted_json_data = {}
@@ -553,7 +553,7 @@ def create_template(source_path: pathlib.Path,
         template_path = source_name
     # if the template_path is not an absolute path, then it default to relative from the default template folder
     if not template_path.is_absolute():
-        default_templates_folder = manifest.get_registered(default_folder='templates')
+        default_templates_folder = o3de_object.get_registered(default_folder='templates')
         template_path = default_templates_folder / source_name
         logger.info(f'Template path empty. Using default templates folder {template_path}')
     if not force and template_path.is_dir() and len(list(template_path.iterdir())):
@@ -581,7 +581,7 @@ def create_template(source_path: pathlib.Path,
     # if the source restricted name was given and no source restricted path, look up the restricted name to fill
     # in the path
     if source_restricted_name and not source_restricted_path:
-        source_restricted_path = manifest.get_registered(restricted_name=source_restricted_name)
+        source_restricted_path = o3de_object.get_registered(restricted_name=source_restricted_name)
 
     # if we have a source restricted path, make sure its a real restricted object
     if source_restricted_path:
@@ -607,7 +607,7 @@ def create_template(source_path: pathlib.Path,
     # if the template restricted name was given and no template restricted path, look up the restricted name to fill
     # in the path
     if template_restricted_name and not template_restricted_path:
-        template_restricted_path = manifest.get_registered(restricted_name=template_restricted_name)
+        template_restricted_path = o3de_object.get_registered(restricted_name=template_restricted_name)
 
     # if we dont have a template restricted name then set it to the templates name
     if not template_restricted_name:
@@ -711,7 +711,7 @@ def create_template(source_path: pathlib.Path,
 
         def find_pattern_and_add_replacement(pattern: str, replace_placeholder: str):
             """
-            Searchs for pattern containing Uuid within the file data
+            Searches for pattern containing Uuid within the file data
             and replaces matched Uuids with with the specified placeholder
             :param pattern: Regular expression pattern to search for Uuid
                             Pattern must contain a symbolic group of (?P<Uuid>...)
@@ -767,7 +767,7 @@ def create_template(source_path: pathlib.Path,
             '{${Random_Uuid}}')
 
         # Finally replace any remaining AZ_TYPE_INFO*, AZ_RTTI*, AZ_COMPONENT*, and AZ_EDITOR_COMPONENT*
-        # with the {${Random_Uuid}} placehlder
+        # with the {${Random_Uuid}} placeholder
         find_pattern_and_add_replacement( \
             r'.*AZ_TYPE_INFO.*?\(.+,\s*"(?P<Uuid>\{?[A-Fa-f0-9]{8}-?[A-Fa-f0-9]{4}-?[A-Fa-f0-9]{4}-?[A-Fa-f0-9]{4}-?[A-Fa-f0-9]{12}\}?)"', \
             '{${Random_Uuid}}')
@@ -794,8 +794,8 @@ def create_template(source_path: pathlib.Path,
     def _transform_restricted_into_copyfiles_and_createdirs(root_abs: pathlib.Path,
                                                             path_abs: pathlib.Path = None) -> None:
         """
-        Internal function recursively called to transform any paths files into copyfiles and create dirs relative to
-        the root. This will transform and copy the files, and save the copyfiles and createdirs data, no not save it
+        Internal function recursively called to transform any paths files into copy files and create dirs relative to
+        the root. This will transform and copy the files, and save the copy files and create dirs data, no not save it
         :param root_abs: This is the path everything will end up relative to
         :path_abs: This is the path being processed, it is always either root_abs (where it starts) or a subdir
          of root_abs
@@ -855,7 +855,7 @@ def create_template(source_path: pathlib.Path,
             # data into it
             os.makedirs(os.path.dirname(destination_entry_abs), exist_ok=True)
 
-            # if the entry is a file, we need to transform it and add the entries into the copyfiles
+            # if the entry is a file, we need to transform it and add the entries into the copy files
             # if the entry is a folder then we need to add the entry to the createDirs and recurse into that folder
             templated = False
             if os.path.isfile(entry_abs):
@@ -916,8 +916,8 @@ def create_template(source_path: pathlib.Path,
     def _transform_dir_into_copyfiles_and_createdirs(root_abs: pathlib.Path,
                                                      path_abs: pathlib.Path = None) -> None:
         """
-        Internal function recursively called to transform any paths files into copyfiles and create dirs relative to
-        the root. This will transform and copy the files, and save the copyfiles and createdirs data, no not save it
+        Internal function recursively called to transform any paths files into copy files and create dirs relative to
+        the root. This will transform and copy the files, and save the copy files and create dirs data, no not save it
         :param root_abs: This is the path everything will end up relative to
         :path_abs: This is the path being processed, it is always either root_abs (where it starts) or a subdir
          of root_abs
@@ -965,7 +965,7 @@ def create_template(source_path: pathlib.Path,
                     found_platform = ''
 
                 # if we found a platform that is not yet in the restricted_platform_entries and it is a restricted
-                # platform, then add empty copyfiles and createDirs for this found restricted platform
+                # platform, then add empty copy files and createDirs for this found restricted platform
                 if found_platform not in restricted_platform_entries and found_platform in restricted_platforms:
                     restricted_platform_entries.update({found_platform: {'copyFiles': [], 'createDirs': []}})
 
@@ -1006,7 +1006,7 @@ def create_template(source_path: pathlib.Path,
             # data into it
             os.makedirs(os.path.dirname(destination_entry_abs), exist_ok=True)
 
-            # if the entry is a file, we need to transform it and add the entries into the copyfiles
+            # if the entry is a file, we need to transform it and add the entries into the copy files
             # if the entry is a folder then we need to add the entry to the createDirs and recurse into that folder
             templated = False
             if os.path.isfile(entry_abs):
@@ -1025,7 +1025,7 @@ def create_template(source_path: pathlib.Path,
                             source_data = s.read()
                             templated, source_data = _transform_into_template(source_data, _is_cpp_file(entry_abs))
 
-                            # if the file type is a file that we expect to fins license header and we don't find any
+                            # if the file type is a file that we expect to find license header and we don't find any
                             # warn that the we didn't find the license info, this makes it easy to make sure we didn't
                             # miss any files we want to have license info in.
                             if keep_license_text and ext in expect_license_info_ext:
@@ -1070,7 +1070,7 @@ def create_template(source_path: pathlib.Path,
                 # recurse using the same root and this folder
                 _transform_dir_into_copyfiles_and_createdirs(root_abs, entry_abs)
 
-    # when we run the transformation to create copyfiles, createdirs, any we find will go in here
+    # when we run the transformation to create copy files, create dirs, any we find will go in here
     copy_files = []
     create_dirs = []
 
@@ -1262,7 +1262,7 @@ def create_from_template(destination_path: pathlib.Path,
         return 1
 
     if template_name:
-        template_path = manifest.get_registered(template_name=template_name)
+        template_path = o3de_object.get_registered(template_name=template_name)
 
     if not template_path:
         logger.error(f'Could not find the template path using name {template_name}.\n'
@@ -1327,7 +1327,7 @@ def create_from_template(destination_path: pathlib.Path,
                         f' templates "restricted_name" is wrong. Note that since this template specifies "restricted_name" as'
                         f' {template_json_restricted_name}, --template-restricted-name need not be supplied.')
 
-            template_restricted_path = manifest.get_registered(restricted_name=template_restricted_name)
+            template_restricted_path = o3de_object.get_registered(restricted_name=template_restricted_name)
         else:
             # The user has supplied the --template-restricted-path, see if that matches the template specifies.
             # If it does then we do not have a problem. If it doesn't match then error out. If not specified
@@ -1339,7 +1339,7 @@ def create_from_template(destination_path: pathlib.Path,
                 logger.info(f'The template does not specify a "restricted_name".'
                             f' Using supplied {template_restricted_path}')
             else:
-                template_json_restricted_path = manifest.get_registered(
+                template_json_restricted_path = o3de_object.get_registered(
                     restricted_name=template_json_restricted_name)
                 if template_json_restricted_path != template_restricted_path:
                     logger.error(
@@ -1416,18 +1416,18 @@ def create_from_template(destination_path: pathlib.Path,
 
     # destination restricted name
     if destination_restricted_name:
-        destination_restricted_path = manifest.get_registered(restricted_name=destination_restricted_name)
+        destination_restricted_path = o3de_object.get_registered(restricted_name=destination_restricted_name)
 
     # destination restricted path
     elif destination_restricted_path:
         if not os.path.isabs(destination_restricted_path):
-            restricted_default_path = manifest.get_registered(default_folder='restricted')
+            restricted_default_path = o3de_object.get_registered(default_folder='restricted')
             new_destination_restricted_path = restricted_default_path / "Templates" / destination_restricted_path
             logger.info(f'{destination_restricted_path} is not a full path, making it relative'
                         f' to default restricted path = {new_destination_restricted_path}')
             destination_restricted_path = new_destination_restricted_path
     else:
-        restricted_default_path = manifest.get_registered(default_folder='restricted')
+        restricted_default_path = o3de_object.get_registered(default_folder='restricted')
         new_destination_restricted_path = restricted_default_path / "Templates" / destination_name
         logger.info(f'--destination-restricted-path is not specified, using default restricted path'
                     f' / Templates / destination name = {new_destination_restricted_path}')
@@ -1569,7 +1569,7 @@ def create_project(project_path: pathlib.Path,
         template_name = 'DefaultProject'
 
     if template_name and not template_path:
-        template_path = manifest.get_registered(template_name=template_name)
+        template_path = o3de_object.get_registered(template_name=template_name)
 
     if not template_path:
         logger.error(f'Could not find the template path using name {template_name}.\n'
@@ -1632,7 +1632,7 @@ def create_project(project_path: pathlib.Path,
                         f' templates "restricted_name" is wrong. Note that since this template specifies "restricted_name" as'
                         f' {template_json_restricted_name}, --template-restricted-name need not be supplied.')
 
-            template_restricted_path = manifest.get_registered(restricted_name=template_restricted_name)
+            template_restricted_path = o3de_object.get_registered(restricted_name=template_restricted_name)
         else:
             # The user has supplied the --template-restricted-path, see if that matches the template specifies.
             # If it does then we do not have a problem. If it doesn't match then error out. If not specified
@@ -1644,7 +1644,7 @@ def create_project(project_path: pathlib.Path,
                 logger.info(f'The template does not specify a "restricted_name".'
                             f' Using supplied {template_restricted_path}')
             else:
-                template_json_restricted_path = manifest.get_registered(
+                template_json_restricted_path = o3de_object.get_registered(
                     restricted_name=template_json_restricted_name)
                 if template_json_restricted_path != template_restricted_path:
                     logger.error(
@@ -1705,7 +1705,7 @@ def create_project(project_path: pathlib.Path,
         return 1
     project_path = project_path.resolve()
     if not os.path.isabs(project_path):
-        default_projects_folder = manifest.get_registered(default_folder='projects')
+        default_projects_folder = o3de_object.get_registered(default_folder='projects')
         new_project_path = default_projects_folder / project_path
         logger.info(f'Project Path {project_path} is not a full path, we must assume its relative'
                     f' to default projects path = {new_project_path}')
@@ -1738,7 +1738,7 @@ def create_project(project_path: pathlib.Path,
 
     # project restricted name
     if project_restricted_name and not project_restricted_path:
-        gem_restricted_path = manifest.get_registered(restricted_name=project_restricted_name)
+        gem_restricted_path = o3de_object.get_registered(restricted_name=project_restricted_name)
         if not gem_restricted_path:
             logger.error(f'Project Restricted Name {project_restricted_name} cannot be found.')
             return 1
@@ -1750,7 +1750,7 @@ def create_project(project_path: pathlib.Path,
             return 1
     # neither put it in the default restricted projects
     else:
-        project_restricted_path = manifest.get_o3de_restricted_folder() / 'Projects' / project_name
+        project_restricted_path = o3de_object.get_user_o3de_restricted_path() / 'Projects' / project_name
 
     # project restricted relative path
     if not project_restricted_platform_relative_path:
@@ -1771,7 +1771,7 @@ def create_project(project_path: pathlib.Path,
     replacements.append(("${SanitizedCppName}", sanitized_cpp_name))
     replacements.append(("${Version}", version if version else "1.0.0"))
     replacements.append(("${ProjectPath}", project_path.as_posix()))
-    replacements.append(("${EnginePath}", manifest.get_this_engine_path().as_posix()))
+    replacements.append(("${EnginePath}", o3de_object.get_this_engine_path().as_posix()))
 
     # was a project id specified
     if project_id:
@@ -1984,7 +1984,7 @@ def create_gem(gem_path: pathlib.Path,
         template_name = 'DefaultGem'
 
     if template_name and not template_path:
-        template_path = manifest.get_registered(template_name=template_name)
+        template_path = o3de_object.get_registered(template_name=template_name)
 
     if not template_path:
         logger.error(f'Could not find the template path using name {template_name}.\n'
@@ -2049,7 +2049,7 @@ def create_gem(gem_path: pathlib.Path,
                         f' templates "restricted_name" is wrong. Note that since this template specifies "restricted_name" as'
                         f' {template_json_restricted_name}, --template-restricted-name need not be supplied.')
 
-            template_restricted_path = manifest.get_registered(restricted_name=template_restricted_name)
+            template_restricted_path = o3de_object.get_registered(restricted_name=template_restricted_name)
         else:
             # The user has supplied the --template-restricted-path, see if that matches the template specifies.
             # If it does then we do not have a problem. If it doesn't match then error out. If not specified
@@ -2061,7 +2061,7 @@ def create_gem(gem_path: pathlib.Path,
                 logger.info(f'The template does not specify a "restricted_name".'
                             f' Using supplied {template_restricted_path}')
             else:
-                template_json_restricted_path = manifest.get_registered(
+                template_json_restricted_path = o3de_object.get_registered(
                     restricted_name=template_json_restricted_name)
                 if template_json_restricted_path != template_restricted_path:
                     logger.error(
@@ -2121,7 +2121,7 @@ def create_gem(gem_path: pathlib.Path,
         return 1
     gem_path = gem_path.resolve()
     if not os.path.isabs(gem_path):
-        default_gems_folder = manifest.get_registered(default_folder='gems')
+        default_gems_folder = o3de_object.get_registered(default_folder='gems')
         new_gem_path = default_gems_folder / gem_path
         logger.info(f'Gem Path {gem_path} is not a full path, we must assume its relative'
                     f' to default gems path = {new_gem_path}')
@@ -2147,7 +2147,7 @@ def create_gem(gem_path: pathlib.Path,
 
     # gem restricted name
     if gem_restricted_name and not gem_restricted_path:
-        gem_restricted_path = manifest.get_registered(restricted_name=gem_restricted_name)
+        gem_restricted_path = o3de_object.get_registered(restricted_name=gem_restricted_name)
         if not gem_restricted_path:
             logger.error(f'Gem Restricted Name {gem_restricted_name} cannot be found.')
             return 1
@@ -2159,7 +2159,7 @@ def create_gem(gem_path: pathlib.Path,
             return 1
     # neither put it in the default restricted gems
     else:
-        gem_restricted_path = manifest.get_o3de_restricted_folder() / "Gems" / gem_name
+        gem_restricted_path = o3de_object.get_user_o3de_restricted_path() / "Gems" / gem_name
 
     # gem restricted relative
     if not gem_restricted_platform_relative_path:
@@ -2345,7 +2345,7 @@ def create_repo(repo_path: pathlib.Path,
 
     template_name = 'RemoteRepo'
 
-    template_path = manifest.get_registered(template_name=template_name)
+    template_path = o3de_object.get_registered(template_name=template_name)
 
     template_json = template_path / 'template.json'
   
@@ -2964,23 +2964,4 @@ def add_args(subparsers) -> None:
                                                ' repo with the global manifest file.')                                       
     create_repo_subparser.set_defaults(func=_run_create_repo)
 
-if __name__ == "__main__":
-    # parse the command line args
-    the_parser = argparse.ArgumentParser()
 
-    # add subparsers
-    subparsers = the_parser.add_subparsers(help='To get help on a sub-command:\nengine_template.py <sub-command> -h',
-                                           title='Sub-Commands', dest='command', required=True)
-
-    # add args to the parsers
-    add_args(subparsers)
-
-    # parse args
-    the_args = the_parser.parse_args()
-
-    # run
-    ret = the_args.func(the_args) if hasattr(the_args, 'func') else 1
-    logger.info('Success!' if ret == 0 else 'Completed with issues: result {}'.format(ret))
-
-    # return
-    sys.exit(ret)

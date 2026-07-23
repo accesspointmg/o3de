@@ -19,13 +19,13 @@ from dataclasses import dataclass
 from dataclasses import field
 from typing import List
 
-# Import LyTestTools
-import ly_test_tools
-import ly_test_tools.builtin.helpers as helpers
-import ly_test_tools.environment.file_system as fs
-import ly_test_tools.environment.process_utils as process_utils
-from ly_test_tools.o3de import asset_processor as asset_processor_utils
-from ly_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
+# Import O3deTestTools
+import o3de_test_tools
+import o3de_test_tools.builtin.helpers as helpers
+import o3de_test_tools.environment.file_system as fs
+import o3de_test_tools.environment.process_utils as process_utils
+from o3de_test_tools.o3de import asset_processor as asset_processor_utils
+from o3de_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
 
 # Import fixtures
 from ..ap_fixtures.asset_processor_fixture import asset_processor as asset_processor
@@ -35,12 +35,12 @@ from ..ap_fixtures.clear_moveoutput_fixture import clear_moveoutput_fixture as c
 from ..ap_fixtures.clear_testingAssets_dir import clear_testingAssets_dir as clear_testingAssets_dir
 
 # Import LyShared
-import ly_test_tools.o3de.pipeline_utils as utils
+import o3de_test_tools.o3de.pipeline_utils as utils
 
 # Use the following logging pattern to hook all test logging together:
 logger = logging.getLogger(__name__)
-# Configuring the logging is done in ly_test_tools at the following location:
-# ~/dev/Tools/LyTestTools/ly_test_tools/log/py_logging_util.py
+# Configuring the logging is done in o3de_test_tools at the following location:
+# ~/dev/Tools/O3deTestTools/o3de_test_tools/log/py_logging_util.py
 
 # Helper: variables we will use for parameter values in the test:
 targetProjects = ["AutomatedTesting"]
@@ -260,8 +260,8 @@ class TestsAssetRelocator_WindowsAndMac(object):
         # Look for expected message inside the log and verify that no move or delete occurs in the log
         utils.validate_log_output(ap_batch_output, [expected_message], [unexpected_message])
 
-    @pytest.mark.skipif(ly_test_tools.WINDOWS, reason="https://github.com/o3de/o3de/issues/14514")
-    @pytest.mark.skipif(ly_test_tools.LINUX, reason="Python based file locking does not function on Linux")
+    @pytest.mark.skipif(o3de_test_tools.WINDOWS, reason="https://github.com/o3de/o3de/issues/14514")
+    @pytest.mark.skipif(o3de_test_tools.LINUX, reason="Python based file locking does not function on Linux")
     @pytest.mark.test_case_id("C21968355")
     @pytest.mark.test_case_id("C21968356")
     @pytest.mark.test_case_id("C21968359")

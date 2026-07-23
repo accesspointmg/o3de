@@ -6,17 +6,17 @@
 #
 #
 
-o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${PAL_PLATFORM_NAME} ${O3DE_ENGINE_RESTRICTED_PATH} ${LY_ROOT_FOLDER})
-set(common_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
+o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Tools/TestImpactFramework/Runtime/Native/Code/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_tools_testimpactframework_runtime_native_code_path)
+set(common_code_tools_testimpactframework_runtime_native_code_path ${O3DE_ENGINE_PATH}/Code/Tools/TestImpactFramework/Runtime/Native/Code/Source/Platform/Common)
 
-ly_add_target(
+o3de_add_target(
     NAME TestImpact.Runtime.Native.Static STATIC
     NAMESPACE AZ
     FILES_CMAKE
         testimpactframework_runtime_native_files.cmake
-        ${pal_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${pal_code_tools_testimpactframework_runtime_native_code_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${common_dir}/${PAL_TRAIT_COMPILER_ID}/testimpactframework_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+        ${common_code_tools_testimpactframework_runtime_native_code_path}/${O3DE_PAL_TRAIT_COMPILER_ID}/testimpactframework_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             Include

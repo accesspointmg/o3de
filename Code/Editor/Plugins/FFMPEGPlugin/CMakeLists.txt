@@ -6,11 +6,11 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME FFMPEGPlugin MODULE
     NAMESPACE Legacy
     OUTPUT_SUBDIRECTORY EditorPlugins
@@ -30,5 +30,5 @@ ly_add_target(
             Legacy::EditorLib
 )
 
-ly_add_dependencies(Editor FFMPEGPlugin)
-set_property(GLOBAL APPEND PROPERTY LY_EDITOR_PLUGINS $<TARGET_FILE_NAME:Legacy::FFMPEGPlugin>)
+o3de_add_dependencies(Editor FFMPEGPlugin)
+set_property(GLOBAL APPEND PROPERTY O3DE_EDITOR_PLUGINS $<TARGET_FILE_NAME:Legacy::FFMPEGPlugin>)

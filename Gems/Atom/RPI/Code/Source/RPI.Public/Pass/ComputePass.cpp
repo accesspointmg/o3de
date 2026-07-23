@@ -27,7 +27,9 @@
 
 using uint = uint32_t;
 using uint4 = uint[4];
-#include "../../../Feature/Common/Assets/ShaderLib/Atom/Features/IndirectRendering.azsli"
+// Resolved via the Atom_Feature_Common gem's ShaderLib include dir
+// (see CMakeLists.txt) — the gems are not siblings in composed workspaces.
+#include <Atom/Features/IndirectRendering.azsli>
 
 namespace AZ
 {

@@ -6,8 +6,8 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_pytest(
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_pytest(
         NAME AutomatedTesting::EditorPythonBindingsPeriodic
         TEST_SUITE periodic
         TEST_SERIAL

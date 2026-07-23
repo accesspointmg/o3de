@@ -381,10 +381,10 @@ class TestCreateTemplate:
         template_dest_path = engine_root / instantiated_name
        
         # Skip registration in test
-        def download_repo_manifest(manifest_uri: str, force_overwrite: bool = True) -> pathlib.Path or None:
+        def download_object_manifest(manifest_uri: str, force_overwrite: bool = True) -> pathlib.Path or None:
             # return the path to the .json file
             return manifest_uri
-        with patch('o3de.repo.download_repo_manifest', side_effect=download_repo_manifest) as download_repo_manifest_patch, \
+        with patch('o3de.repo.download_object_manifest', side_effect=download_object_manifest) as download_object_manifest_patch, \
                     patch('o3de.manifest.load_o3de_manifest', return_value={}) as load_o3de_manifest_patch, \
                     patch('o3de.repo.process_add_o3de_repo', return_value=0) as process_o3de_manifest_patch, \
                     patch('o3de.manifest.get_registered', return_value=template_default_folder) as get_registered_patch, \
@@ -486,9 +486,9 @@ class TestCreateTemplate:
                          False, True, False,
                          TEST_TEMPLATE_JSON_CONTENTS,
                          "Test Gem2", "Test Summary2", "Test Requirements2", "Test License2", "https://o3de.org/license2", 
-                         "Test Origin2", "https://o3de.org/2", "tag2 tag3  tag4", "MacOS Linux Windows", "preview2.png", "https://o3de.org/docs2", "https://o3de.org/repo2",
+                         "Test Origin2", "https://o3de.org/2", "tag2 tag3  tag4", "Mac Linux Windows", "preview2.png", "https://o3de.org/docs2", "https://o3de.org/repo2",
                          "1.2.3",
-                         ["tag2","tag3","tag4","TestGem"], ['MacOS', 'Linux', 'Windows']),
+                         ["tag2","tag3","tag4","TestGem"], ['Mac', 'Linux', 'Windows']),
         ]
     )
     def test_create_gem(self, tmpdir, concrete_contents, templated_contents, keep_license_text, force,

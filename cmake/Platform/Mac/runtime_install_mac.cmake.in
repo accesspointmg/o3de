@@ -12,7 +12,7 @@ cmake_path(GET file_path EXTENSION LAST_ONLY file_ext)
 if(file_ext STREQUAL .app)
 
     file(INSTALL @CMAKE_BINARY_DIR@/runtime_install/$<CONFIG>/BinariesInstallPath.setreg
-        DESTINATION ${file_path}/Contents/MacOS/Registry
+        DESTINATION ${file_path}/Contents/Mac/Registry
     )
 
     if(EXISTS "${file_path}/Contents/Frameworks/Python.framework")
@@ -21,13 +21,13 @@ if(file_ext STREQUAL .app)
 
 else()
 
-    find_program(LY_INSTALL_NAME_TOOL install_name_tool)
-    if (NOT LY_INSTALL_NAME_TOOL)
+    find_program(O3DE_INSTALL_NAME_TOOL install_name_tool)
+    if (NOT O3DE_INSTALL_NAME_TOOL)
         message(FATAL_ERROR "Unable to locate 'install_name_tool'")
     endif()
 
     execute_process(COMMAND
-        ${LY_INSTALL_NAME_TOOL} -add_rpath @loader_path ${file_path})
+        ${O3DE_INSTALL_NAME_TOOL} -add_rpath @loader_path ${file_path})
 
 endif()
 

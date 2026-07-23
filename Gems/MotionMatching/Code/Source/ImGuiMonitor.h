@@ -20,7 +20,7 @@
 #include <imgui/imgui.h>
 #include <ImGuiBus.h>
 #include <ImGuiMonitorBus.h>
-#include <LYImGuiUtils/HistogramGroup.h>
+#include <O3deImGuiUtils/HistogramGroup.h>
 
 namespace EMotionFX::MotionMatching
 {
@@ -48,8 +48,8 @@ namespace EMotionFX::MotionMatching
         void SetKdTreeInfo(const ImGuiMonitorRequests::KdTreeInfo& info) override { m_kdTreeInfo = info; }
 
     private:
-        ImGui::LYImGuiUtils::HistogramGroup m_performanceStats;
-        ImGui::LYImGuiUtils::HistogramGroup m_featureCosts;
+        ImGui::O3deImGuiUtils::HistogramGroup m_performanceStats;
+        ImGui::O3deImGuiUtils::HistogramGroup m_featureCosts;
 
         ImGuiMonitorRequests::FrameDatabaseInfo m_frameDatabaseInfo;
         ImGuiMonitorRequests::FeatureMatrixInfo m_featurMatrixInfo;

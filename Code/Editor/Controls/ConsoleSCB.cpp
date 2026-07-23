@@ -426,7 +426,7 @@ void CConsoleSCB::RegisterViewClass()
     opts.isDisabledInComponentMode = false;
     opts.isDisabledInImGuiMode = false;
 
-    AzToolsFramework::RegisterViewPane<CConsoleSCB>(LyViewPane::Console, LyViewPane::CategoryTools, opts);
+    AzToolsFramework::RegisterViewPane<CConsoleSCB>(O3deViewPane::Console, O3deViewPane::CategoryTools, opts);
 }
 
 void CConsoleSCB::OnEditorPreferencesChanged()
@@ -579,7 +579,7 @@ void CConsoleSCB::AddToPendingLines(const QString& text, bool bNewLine)
  */
 static void OnVariableUpdated(ICVar* pCVar)
 {
-    QtViewPane* pane = QtViewPaneManager::instance()->GetPane(LyViewPane::ConsoleVariables);
+    QtViewPane* pane = QtViewPaneManager::instance()->GetPane(O3deViewPane::ConsoleVariables);
     if (!pane)
     {
         return;
@@ -1158,7 +1158,7 @@ AZ::ConsoleCommandInvokedEvent::Handler ConsoleVariableEditor::m_commandInvokedH
         if (command == AzToolsFramework::DocumentPropertyEditor::GetEnableCVarEditorName())
         {
             // the cvar editor pref changed, unregister the old and register the new
-            AzToolsFramework::UnregisterViewPane(LyViewPane::ConsoleVariables);
+            AzToolsFramework::UnregisterViewPane(O3deViewPane::ConsoleVariables);
             ConsoleVariableEditor::RegisterViewClass();
         }
 
@@ -1288,7 +1288,7 @@ void ConsoleVariableEditor::RegisterViewClass()
     {
         AzToolsFramework::ViewPaneOptions opts;
         opts.paneRect = QRect(100, 100, 340, 500);
-        AzToolsFramework::RegisterViewPane<ConsoleVariableEditor>(LyViewPane::ConsoleVariables, LyViewPane::CategoryOther, opts);
+        AzToolsFramework::RegisterViewPane<ConsoleVariableEditor>(O3deViewPane::ConsoleVariables, O3deViewPane::CategoryOther, opts);
     }
 }
 
@@ -1343,7 +1343,7 @@ void ConsoleVariableEditor::showEvent(QShowEvent* event)
 void CConsoleSCB::showVariableEditor()
 {
     // Open the console variables pane
-    QtViewPaneManager::instance()->OpenPane(LyViewPane::ConsoleVariables);
+    QtViewPaneManager::instance()->OpenPane(O3deViewPane::ConsoleVariables);
 }
 
 void CConsoleSCB::toggleConsoleSearch()

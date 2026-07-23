@@ -154,7 +154,7 @@ PHYSICAL_SKY_INTENSITY_MODE = {
 }
 
 # PostFX Layer Category as defined in
-# ./Gems/AtomLyIntegration/CommonFeatures/Assets/PostProcess/default.postfxlayercategories
+# ./Gems/AtomO3deIntegration/CommonFeatures/Assets/PostProcess/default.postfxlayercategories
 POSTFX_LAYER_CATEGORY = {
     'FrontEnd': 1000000,
     'Cinematics': 2000000,

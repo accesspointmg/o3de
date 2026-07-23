@@ -6,19 +6,19 @@
 #
 #
 
-o3de_gem_setup("PhysXDebug")
+o3de_gem_setup()
 
-ly_add_external_target_path(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
+o3de_add_external_target_path(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
 
 # This gem relies on the PhysX gem
 o3de_find_gem("PhysX" physx_gem_path)
 set(physx_gem_json ${physx_gem_path}/gem.json)
 o3de_restricted_path(${physx_gem_json} physx_gem_restricted_path physx_gem_parent_relative_path)
-o3de_pal_dir(physx_pal_source_dir ${physx_gem_path}/Source/Platform/${PAL_PLATFORM_NAME} "${physx_gem_restricted_path}" "${physx_gem_path}" "${physx_gem_parent_relative_path}")
+o3de_pal_dir(physx_pal_source_dir ${physx_gem_path}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} "${physx_gem_restricted_path}" "${physx_gem_path}" "${physx_gem_parent_relative_path}")
 
-include(${physx_pal_source_dir}/PAL_${PAL_PLATFORM_NAME_LOWERCASE}.cmake) # for PAL_TRAIT_PHYSX_SUPPORTED
+include(${physx_pal_source_dir}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake) # for O3DE_PAL_TRAIT_PHYSX_SUPPORTED
 
-if(PAL_TRAIT_PHYSX_SUPPORTED)
+if(O3DE_PAL_TRAIT_PHYSX_SUPPORTED)
     set(physxdebug_dependency 3rdParty::PhysX4)
     set(physxdebug_files ../Code/physxdebug_files.cmake)
     set(physxdebug_module_files physxdebug_module_files.cmake)
@@ -30,8 +30,8 @@ else()
 endif()
 
 ########################################################################################
-ly_add_target(
-    NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME ${gem_name} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     OUTPUT_NAME ${gem_name}.Gem
     FILES_CMAKE
@@ -56,8 +56,8 @@ ly_add_target(
 
 ########################################################################################
 # Inject the gem name into the Module source file
-if (PAL_TRAIT_PHYSX_SUPPORTED)
-    ly_add_source_properties(
+if (O3DE_PAL_TRAIT_PHYSX_SUPPORTED)
+    o3de_add_source_properties(
         SOURCES
             Source/Module.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -65,7 +65,7 @@ if (PAL_TRAIT_PHYSX_SUPPORTED)
                 O3DE_GEM_NAME=${gem_name}
                 O3DE_GEM_VERSION=${gem_version})
 else()
-    ly_add_source_properties(
+    o3de_add_source_properties(
         SOURCES
             Source/ModuleUnsupported.cpp
         PROPERTY COMPILE_DEFINITIONS
@@ -75,13 +75,13 @@ else()
 endif()
 
 # use the ${gem_name} module in Clients and Servers:
-ly_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::${gem_name})
-ly_create_alias(NAME ${gem_name}.Unified NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Clients NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Servers NAMESPACE Gem TARGETS Gem::${gem_name})
+o3de_create_alias(NAME ${gem_name}.Unified NAMESPACE Gem TARGETS Gem::${gem_name})
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     ########################################################################################
-    ly_add_target(
+    o3de_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
         NAMESPACE Gem
         OUTPUT_NAME ${gem_name}.Editor.Gem
@@ -110,7 +110,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
             Gem::ImGui.Editor
     )
     # use the ${gem_name}.Editor module in dev tools:
-    ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
-    ly_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+    o3de_create_alias(NAME ${gem_name}.Tools    NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 
 endif()

@@ -16,7 +16,7 @@ function(FindX11)
     find_package(X11 COMPONENTS ${X11_FIND_COMPONENTS} QUIET)
 
     foreach(component IN LISTS X11_FIND_COMPONENTS)
-        ly_add_external_target(
+        o3de_add_external_target(
             SYSTEM
             PACKAGE X11
             NAME ${component}

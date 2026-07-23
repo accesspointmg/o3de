@@ -11,10 +11,10 @@ import re
 from pprint import pformat
 import pytest
 
-import ly_test_tools.o3de.pipeline_utils as utils
+import o3de_test_tools.o3de.pipeline_utils as utils
 from _pytest.mark import ParameterSet
-from ly_test_tools._internal.managers.workspace import AbstractWorkspaceManager
-from ly_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
+from o3de_test_tools._internal.managers.workspace import AbstractWorkspaceManager
+from o3de_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
 
 from assetpipeline.ap_fixtures.asset_processor_fixture import asset_processor
 from assetpipeline.ap_fixtures.ap_setup_fixture import ap_setup_fixture

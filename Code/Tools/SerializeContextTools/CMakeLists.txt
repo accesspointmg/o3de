@@ -6,11 +6,11 @@
 #
 #
 
-if (NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if (NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME SerializeContextTools.Private.Object OBJECT
     NAMESPACE AZ
     FILES_CMAKE
@@ -25,7 +25,7 @@ ly_add_target(
             AZ::AzToolsFramework
 )
 
-ly_add_target(
+o3de_add_target(
     NAME SerializeContextTools EXECUTABLE
     NAMESPACE AZ
     FILES_CMAKE
@@ -41,8 +41,8 @@ ly_add_target(
             SerializeContextTools.Private.Object
 )
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
         NAME SerializeContextTools.Tests EXECUTABLE
         NAMESPACE AZ
         FILES_CMAKE
@@ -60,7 +60,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 SerializeContextTools.Private.Object
     )
 
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME AZ::SerializeContextTools.Tests
         TEST_COMMAND $<TARGET_FILE:AZ::SerializeContextTools.Tests> AzRunUnitTests
     )

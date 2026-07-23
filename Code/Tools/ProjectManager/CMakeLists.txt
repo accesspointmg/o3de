@@ -6,35 +6,35 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
 # This will set python_package_name to whatever the package 'Python' is associated with
-ly_get_package_association(Python python_package_name)
+o3de_get_package_association(Python python_package_name)
 if (NOT python_package_name)
     set(python_package_name "python-no-package-assocation-found")
-    message(WARNING "Python was not found in the package assocation list.  Did someone call ly_associate_package(xxxxxxx Python) ?")
+    message(WARNING "Python was not found in the package assocation list.  Did someone call o3de_associate_package(xxxxxxx Python) ?")
 endif()
 
 
-ly_add_target(
+o3de_add_target(
     NAME ProjectManager.Static STATIC
     NAMESPACE AZ
     AUTOMOC
     FILES_CMAKE
         project_manager_files.cmake
-        Platform/${PAL_PLATFORM_NAME}/PAL_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        Platform/${O3DE_PAL_PLATFORM_NAME}/PAL_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        Platform/${PAL_PLATFORM_NAME}/PAL_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
-        Platform/Common/${PAL_TRAIT_COMPILER_ID}/projectmanager_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+        Platform/${O3DE_PAL_PLATFORM_NAME}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake
+        Platform/Common/${O3DE_PAL_TRAIT_COMPILER_ID}/projectmanager_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
     COMPILE_DEFINITIONS
         PRIVATE
             PY_PACKAGE="${python_package_name}" 
     INCLUDE_DIRECTORIES
         PRIVATE
             Source
-            Platform/${PAL_PLATFORM_NAME}
+            Platform/${O3DE_PAL_PLATFORM_NAME}
     BUILD_DEPENDENCIES
         PRIVATE
             3rdParty::Qt::Core
@@ -47,7 +47,7 @@ ly_add_target(
             AZ::AzToolsFramework
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ProjectManager APPLICATION
     OUTPUT_NAME o3de
     NAMESPACE AZ
@@ -71,18 +71,18 @@ ly_add_target(
             AZ::ProjectManager.Static
 )
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
         NAME ProjectManager.Tests EXECUTABLE
         NAMESPACE AZ
         AUTORCC
         FILES_CMAKE
             project_manager_tests_files.cmake
-            Platform/${PAL_PLATFORM_NAME}/PAL_${PAL_PLATFORM_NAME_LOWERCASE}_tests_files.cmake
+            Platform/${O3DE_PAL_PLATFORM_NAME}/PAL_${O3DE_PAL_PLATFORM_WART}_tests_files.cmake
         INCLUDE_DIRECTORIES
             PRIVATE
                 Source
-                Platform/${PAL_PLATFORM_NAME}
+                Platform/${O3DE_PAL_PLATFORM_NAME}
         BUILD_DEPENDENCIES
             PRIVATE
                 3rdParty::Qt::Core
@@ -98,7 +98,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzToolsFramework
     )
 
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME AZ::ProjectManager.Tests
         LABELS REQUIRES_tiaf
         TEST_COMMAND $<TARGET_FILE:AZ::ProjectManager.Tests> --unittest

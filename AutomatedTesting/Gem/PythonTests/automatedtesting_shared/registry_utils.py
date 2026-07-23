@@ -12,16 +12,16 @@ logger = logging.getLogger(__name__)
 
 LUMBERYARD_SETTINGS_PATH = r'Software\O3DE\O3DE\Settings'
 
-def set_ly_registry_value(reg_path, value_name, new_value, value_type=winreg.REG_DWORD):
+def set_o3de_registry_value(reg_path, value_name, new_value, value_type=winreg.REG_DWORD):
     """
-    Sets the specified value for the specified value_name in the LY registry key.
+    Sets the specified value for the specified value_name in the O3DE registry key.
     :param reg_path: A string that identifies the registry path to the desired key (e.g. Software\\O3DE\\O3DE\\Settings)
     :param value_name: A string that identifies the value name (e.g. UndoLevels, ViewportInteractionModel)
     :param new_value: Value to set on the specified value_name
     :param value_type: The type of value set. Defaults to a 32-bit number.
     :return: None
     """
-    # Open LY Registry key
+    # Open O3DE Registry key
     try:
         key = winreg.CreateKeyEx(winreg.HKEY_CURRENT_USER, reg_path, 0, access=winreg.KEY_ALL_ACCESS)
     except OSError as err:
@@ -38,14 +38,14 @@ def set_ly_registry_value(reg_path, value_name, new_value, value_type=winreg.REG
         logger.debug(f'Failed to set {value_name} to {new_value}. Current value is {value[0]}.')
 
 
-def get_ly_registry_value(reg_path, value_name):
+def get_o3de_registry_value(reg_path, value_name):
     """
-    Gets the current value for an existing value_name in the LY registry key.
+    Gets the current value for an existing value_name in the O3DE registry key.
     :param reg_path: A string that identifies the registry path to the desired key (e.g. Software\\O3DE\\O3DE\\Settings)
     :param value_name: A string that identifies the value name (e.g. UndoLevels, ViewportInteractionModel)
     :return: Value set for the specified value_name
     """
-    # Open LY Registry key
+    # Open O3DE Registry key
     try:
         key = winreg.CreateKeyEx(winreg.HKEY_CURRENT_USER, reg_path, 0, access=winreg.KEY_ALL_ACCESS)
     except OSError as err:
@@ -60,14 +60,14 @@ def get_ly_registry_value(reg_path, value_name):
         logger.error(err)
 
 
-def delete_ly_registry_value(reg_path, value_name):
+def delete_o3de_registry_value(reg_path, value_name):
     """
     Deletes the specific registry value_name found in the reg_path key.
     :param reg_path: A string that identifies the registry path to the desired key (e.g. Software\\O3DE\\O3DE\\Settings)
     :param value_name: A string that identifies the value name (e.g. UndoLevels, ViewportInteractionModel)
     :return: None
     """
-    # Open LY Registry key
+    # Open O3DE Registry key
     try:
         key = winreg.CreateKeyEx(winreg.HKEY_CURRENT_USER, reg_path, 0, access=winreg.KEY_ALL_ACCESS)
     except OSError as err:

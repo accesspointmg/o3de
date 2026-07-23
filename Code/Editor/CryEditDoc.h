@@ -93,7 +93,7 @@ public:
     enum class FetchPolicy
     {
         DELETE_FOLDER,
-        DELETE_LY_FILE,
+        DELETE_O3DE_FILE,
         PRESERVE
     };
 

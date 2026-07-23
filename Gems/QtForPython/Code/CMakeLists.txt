@@ -5,26 +5,26 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 #
 #
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
 set(common_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/${PAL_PLATFORM_NAME}/PAL_${PAL_PLATFORM_NAME_LOWERCASE}.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)
 
-if(NOT PAL_TRAIT_BUILD_QTFORPYTHON_SUPPORTED)
+if(NOT O3DE_PAL_TRAIT_BUILD_QTFORPYTHON_SUPPORTED)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Editor.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
         qtforpython_editor_files.cmake
-        ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/${PAL_PLATFORM_NAME}/qtforpython_editor_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+        ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME}/qtforpython_editor_${O3DE_PAL_PLATFORM_WART}_files.cmake
     PLATFORM_INCLUDE_FILES
-        ${common_source_dir}/${PAL_TRAIT_COMPILER_ID}/qtforpython_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+        ${common_source_dir}/${O3DE_PAL_TRAIT_COMPILER_ID}/qtforpython_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
             Include
@@ -41,14 +41,14 @@ ly_add_target(
         3rdParty::Qt::Test
 )
 
-ly_add_target(
+o3de_add_target(
     NAME ${gem_name}.Editor GEM_MODULE
     NAMESPACE Gem
     FILES_CMAKE
         qtforpython_shared_files.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/${PAL_PLATFORM_NAME}
+            ${CMAKE_CURRENT_SOURCE_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME}
     BUILD_DEPENDENCIES
         PRIVATE
             Gem::${gem_name}.Editor.Static
@@ -58,7 +58,7 @@ ly_add_target(
 )
 
 # Inject the gem name into the Module source file
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES
         Source/QtForPythonModule.cpp
     PROPERTY COMPILE_DEFINITIONS
@@ -68,6 +68,6 @@ ly_add_source_properties(
 
 # the above target is used in both builders like AssetProcessor and Tools like the Editor
 # but is not used in clients or servers
-ly_create_alias(NAME ${gem_name}.Tools     NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
-ly_create_alias(NAME ${gem_name}.Builders  NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+o3de_create_alias(NAME ${gem_name}.Tools     NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
+o3de_create_alias(NAME ${gem_name}.Builders  NAMESPACE Gem TARGETS Gem::${gem_name}.Editor)
 

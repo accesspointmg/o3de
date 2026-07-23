@@ -6,20 +6,21 @@
 #
 #
 
-include(cmake/Platform/Common/Configurations_common.cmake)
+set(_cmake_Platform_Common_GCC_Configurations_gcc_cmake ${CMAKE_CURRENT_LIST_DIR})
+include(${_cmake_Platform_Common_GCC_Configurations_gcc_cmake}/../Configurations_common.cmake)
 
-set(LY_GCC_BUILD_FOR_GCOV FALSE CACHE BOOL "Flag to enable the build for gcov usage")
-if(LY_GCC_BUILD_FOR_GCOV)
-    set(LY_GCC_GCOV_FLAGS "--coverage")
+set(O3DE_GCC_BUILD_FOR_GCOV FALSE CACHE BOOL "Flag to enable the build for gcov usage")
+if(O3DE_GCC_BUILD_FOR_GCOV)
+    set(O3DE_GCC_GCOV_FLAGS "--coverage")
 endif()
 
-set(LY_GCC_BUILD_FOR_GPROF FALSE CACHE BOOL "Flag to enable the build for gprof usage")
-if(LY_GCC_BUILD_FOR_GPROF)
-    set(LY_GCC_GPROF_FLAGS "-pg")
+set(O3DE_GCC_BUILD_FOR_GPROF FALSE CACHE BOOL "Flag to enable the build for gprof usage")
+if(O3DE_GCC_BUILD_FOR_GPROF)
+    set(O3DE_GCC_GPROF_FLAGS "-pg")
 endif()
 
 
-ly_append_configurations_options(
+o3de_append_configurations_options(
     DEFINES_PROFILE
         _FORTIFY_SOURCE=2
     DEFINES_RELEASE
@@ -34,8 +35,8 @@ ly_append_configurations_options(
         -fpie                   # Position-Independent Executables
         -fstack-protector-all   # Enable stack protectors for all functions
 
-        ${LY_GCC_GCOV_FLAGS}
-        ${LY_GCC_GPROF_FLAGS}
+        ${O3DE_GCC_GCOV_FLAGS}
+        ${O3DE_GCC_GPROF_FLAGS}
 
     COMPILATION_CXX
         -fno-exceptions
@@ -47,8 +48,8 @@ ly_append_configurations_options(
         -fpie                   # Position-Independent Executables
         -fstack-protector-all   # Enable stack protectors for all functions
 
-        ${LY_GCC_GCOV_FLAGS}
-        ${LY_GCC_GPROF_FLAGS}
+        ${O3DE_GCC_GCOV_FLAGS}
+        ${O3DE_GCC_GPROF_FLAGS}
 
         # Disabled warnings
         -Wno-array-bounds
@@ -97,4 +98,4 @@ ly_append_configurations_options(
 
 )
 
-include(cmake/Platform/Common/TargetIncludeSystemDirectories_supported.cmake)
+include(${_cmake_Platform_Common_GCC_Configurations_gcc_cmake}/../TargetIncludeSystemDirectories_supported.cmake)

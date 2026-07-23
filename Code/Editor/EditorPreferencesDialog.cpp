@@ -30,7 +30,7 @@
 #include "EditorPreferencesPageViewportCamera.h"
 #include "EditorPreferencesPageViewportDebug.h"
 #include "EditorPreferencesPageAWS.h"
-#include "LyViewPaneNames.h"
+#include "O3deViewPaneNames.h"
 #include "Entity/EditorEntityHelpers.h"
 
 // Editor
@@ -241,7 +241,7 @@ void EditorPreferencesDialog::OnReject()
 
 void EditorPreferencesDialog::OnManage()
 {
-    GetIEditor()->OpenView(LyViewPane::EditorSettingsManager);
+    GetIEditor()->OpenView(O3deViewPane::EditorSettingsManager);
     OnAccept();
 }
 

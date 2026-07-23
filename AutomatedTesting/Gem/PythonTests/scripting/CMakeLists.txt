@@ -6,8 +6,8 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_pytest(
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_pytest(
         NAME AutomatedTesting::ScriptCanvasTests_Perodic
         TEST_SUITE periodic
         TEST_SERIAL
@@ -19,7 +19,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
         COMPONENT
             ScriptCanvas
     )
-    ly_add_pytest(
+    o3de_add_pytest(
         NAME AutomatedTesting::ScriptCanvasTests_Sandbox
         TEST_SUITE sandbox
         TEST_SERIAL

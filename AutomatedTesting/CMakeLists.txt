@@ -6,39 +6,53 @@
 #
 #
 
-if(NOT PROJECT_NAME)
-    cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.22)
 
-    # Utility function to look for an optional 'engine_finder_cmake_path'setting 
-    function(get_engine_finder_cmake_path project_json_file_path path_value)
-        if(NOT ${path_value} AND EXISTS "${project_json_file_path}")
-            file(READ "${project_json_file_path}" project_json_data)
-            string(JSON engine_finder_cmake_value ERROR_VARIABLE json_error GET ${project_json_data} "engine_finder_cmake_path")
-            cmake_path(APPEND CMAKE_CURRENT_SOURCE_DIR "${engine_finder_cmake_value}" engine_finder_cmake_value)
-            if(NOT json_error AND EXISTS "${engine_finder_cmake_value}")
-                set(${path_value} "${engine_finder_cmake_value}" PARENT_SCOPE)
-            elseif(json_error AND ${engine_finder_cmake_value} STREQUAL "NOTFOUND")
-                # When the error value is just NOTFOUND that means there is a JSON
-                # parsing error, and not simply a missing key 
-                message(WARNING "Unable to read 'engine_finder_cmake_path'.\nError: ${json_error} ${engine_finder_cmake_value}")
-            endif()
-        endif()
-    endfunction()
+if(NOT ${CMAKE_VERSION} VERSION_LESS "3.24") 
+    # CMP0135 - controls whether, when unpacking an archive file, it should:
+    # (OLD) set the file timestamps to what they are in the archive (not recommended)
+    # (NEW) set the file timestamps to the time of extraction (recommended)
+    cmake_policy(SET CMP0135 NEW) 
+endif()
+
+if(NOT PROJECT_NAME)
+    # Locate the engine that provides Project.cmake.
+    # 1. Explicit -DO3DE_ENGINE_PATH=<path> (used by workspace builds where
+    #    the engine is composed at <workspace>/Engines/<name>)
+    # 2. Sibling engine layout (project lives inside the engine source tree)
+    if(NOT O3DE_ENGINE_PATH)
+        cmake_path(SET O3DE_ENGINE_PATH NORMALIZE "${CMAKE_CURRENT_SOURCE_DIR}/..")
+    endif()
+    if(NOT EXISTS "${O3DE_ENGINE_PATH}/cmake/Project.cmake")
+        message(FATAL_ERROR
+            "Could not find an engine at '${O3DE_ENGINE_PATH}'. "
+            "Pass -DO3DE_ENGINE_PATH=<engine root> or place this project "
+            "inside an engine source tree.")
+    endif()
+    list(APPEND CMAKE_MODULE_PATH "${O3DE_ENGINE_PATH}/cmake")
+
+    # Include the project cmake
+    include(${O3DE_ENGINE_PATH}/cmake/Project.cmake)
     
-    # Check for optional 'engine_finder_cmake_path' in order of preference
-    # We support per-project customization to make it easier to upgrade 
-    # or revert to a custom EngineFinder.cmake 
-    get_engine_finder_cmake_path("${CMAKE_CURRENT_SOURCE_DIR}/user/project.json" engine_finder_cmake_path)
-    get_engine_finder_cmake_path("${CMAKE_CURRENT_SOURCE_DIR}/project.json" engine_finder_cmake_path)
-    if(NOT engine_finder_cmake_path)
-        set(engine_finder_cmake_path cmake/EngineFinder.cmake)
+    # Init the project
+    o3de_project_init()
+
+   # Set the cmake project from this o3de project object
+    project(${project_name}
+        LANGUAGES C CXX
+        VERSION ${project_version}
+        DESCRIPTION ${project_description}
+    )
+
+    # Setup
+    o3de_project_setup()
+
+    # Add the project's embedded gem.  In composed workspaces the gem is
+    # flattened to workspace level and added by the manifest traversal.
+    if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/Gem/CMakeLists.txt)
+        add_subdirectory(Gem)
     endif()
 
-    include(${engine_finder_cmake_path} OPTIONAL)
-    find_package(o3de REQUIRED)
-    project(AutomatedTesting
-        LANGUAGES C CXX
-        VERSION 1.0.0.0
-    )
-    o3de_initialize()
+    # call the post processing macro
+    o3de_project_post_processing()
 endif()

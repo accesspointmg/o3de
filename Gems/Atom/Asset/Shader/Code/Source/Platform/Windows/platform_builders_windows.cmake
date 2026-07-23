@@ -7,7 +7,7 @@
 #
 
 #Shader asset include headers
-ly_add_target_files(
+o3de_add_target_files(
    TARGETS ${gem_name}.Builders
    FILES 
        ${CMAKE_CURRENT_SOURCE_DIR}/AZSL/Platform/Windows/DX12/AzslcHeader.azsli
@@ -16,7 +16,7 @@ ly_add_target_files(
        Builders/ShaderHeaders/Platform/Windows/DX12
 )
 
-ly_add_target_files(
+o3de_add_target_files(
    TARGETS ${gem_name}.Builders
    FILES 
        ${CMAKE_CURRENT_SOURCE_DIR}/AZSL/Platform/Windows/Vulkan/AzslcHeader.azsli
@@ -25,7 +25,7 @@ ly_add_target_files(
        Builders/ShaderHeaders/Platform/Windows/Vulkan
 )
 
-ly_add_target_files(
+o3de_add_target_files(
    TARGETS ${gem_name}.Builders
    FILES 
        ${CMAKE_CURRENT_SOURCE_DIR}/AZSL/Platform/Windows/Null/AzslcHeader.azsli
@@ -33,7 +33,7 @@ ly_add_target_files(
        Builders/ShaderHeaders/Platform/Windows/Null
 )
 
-ly_add_target_files(
+o3de_add_target_files(
    TARGETS ${gem_name}.Builders
    FILES 
        ${CMAKE_CURRENT_SOURCE_DIR}/AZSL/Platform/Mac/Metal/AzslcHeader.azsli
@@ -42,7 +42,7 @@ ly_add_target_files(
        Builders/ShaderHeaders/Platform/Mac/Metal
 )
 
-ly_add_target_files(
+o3de_add_target_files(
    TARGETS ${gem_name}.Builders
    FILES 
        ${CMAKE_CURRENT_SOURCE_DIR}/AZSL/Platform/Mac/Null/AzslcHeader.azsli
@@ -50,7 +50,7 @@ ly_add_target_files(
        Builders/ShaderHeaders/Platform/Mac/Null
 )
 
-ly_add_target_files(
+o3de_add_target_files(
    TARGETS ${gem_name}.Builders
    FILES 
        ${CMAKE_CURRENT_SOURCE_DIR}/AZSL/Platform/iOS/Metal/AzslcHeader.azsli
@@ -59,7 +59,7 @@ ly_add_target_files(
        Builders/ShaderHeaders/Platform/iOS/Metal
 )
 
-ly_add_target_files(
+o3de_add_target_files(
    TARGETS ${gem_name}.Builders
    FILES 
        ${CMAKE_CURRENT_SOURCE_DIR}/AZSL/Platform/Android/Vulkan/AzslcHeader.azsli
@@ -68,7 +68,7 @@ ly_add_target_files(
        Builders/ShaderHeaders/Platform/Android/Vulkan
 )
 
-ly_add_target_files(
+o3de_add_target_files(
    TARGETS ${gem_name}.Builders
    FILES 
        ${CMAKE_CURRENT_SOURCE_DIR}/AZSL/Platform/Linux/Vulkan/AzslcHeader.azsli
@@ -77,7 +77,7 @@ ly_add_target_files(
        Builders/ShaderHeaders/Platform/Linux/Vulkan
 )
 
-ly_add_target_files(
+o3de_add_target_files(
    TARGETS ${gem_name}.Builders
    FILES 
        ${CMAKE_CURRENT_SOURCE_DIR}/AZSL/Platform/Linux/Null/AzslcHeader.azsli

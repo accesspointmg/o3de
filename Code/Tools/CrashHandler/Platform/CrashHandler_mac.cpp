@@ -6,7 +6,7 @@
  *
  */
 
-// LY Base Crashpad Mac implementation
+// O3DE Base Crashpad Mac implementation
 
 #include <CrashHandler.h>
 #include <AzCore/PlatformIncl.h>

@@ -6,5 +6,5 @@
 #
 #
 
-add_subdirectory(LyTestTools)
+add_subdirectory(O3deTestTools)
 add_subdirectory(RemoteConsole)

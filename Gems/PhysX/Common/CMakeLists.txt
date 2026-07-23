@@ -8,8 +8,8 @@
 
 add_subdirectory(Code)
 
-o3de_gem_setup("PhysXCommon")
+o3de_gem_setup()
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_create_alias(NAME ${gem_name}.Builders NAMESPACE Gem)
 endif()

@@ -6,7 +6,7 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(NOT O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     return()
 endif()
 
@@ -35,10 +35,10 @@ set(CTEST_RUN_FLAGS ${CTEST_RUN_FLAGS_STRING} CACHE STRING "Command line argumen
 # before we append this value:
 set(CMAKE_CTEST_ARGUMENTS ${CTEST_RUN_FLAGS} -LE SUITE_benchmark)
 
-#! ly_add_suite_build_and_run_targets - Add CMake Targets for associating dependencies with each
+#! o3de_add_suite_build_and_run_targets - Add CMake Targets for associating dependencies with each
 #  suite of test supported by Open 3D Engine
-function(ly_add_suite_build_and_run_targets)
-    if(NOT PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+function(o3de_add_suite_build_and_run_targets)
+    if(NOT O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         return()
     endif()
     foreach(suite_name ${ARGV})       
@@ -72,24 +72,24 @@ set(test_module_template [[
 )
 
 
-#! ly_delayed_generate_test_runner_registry: Generates a .json file for all the test modules that aztestrunner can process
+#! o3de_delayed_generate_test_runner_registry: Generates a .json file for all the test modules that aztestrunner can process
 #
-function(ly_delayed_generate_unit_test_module_registry)
+function(o3de_delayed_generate_unit_test_module_registry)
 
-    if(NOT PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    if(NOT O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         return()
     endif()
 
-    get_property(ly_delayed_aztestrunner_test_modules GLOBAL PROPERTY LY_AZTESTRUNNER_TEST_MODULES)
-    list(REMOVE_DUPLICATES ly_delayed_aztestrunner_test_modules) # Strip out any duplicate test targets
+    get_property(o3de_delayed_aztestrunner_test_modules GLOBAL PROPERTY O3DE_AZTESTRUNNER_TEST_MODULES)
+    list(REMOVE_DUPLICATES o3de_delayed_aztestrunner_test_modules) # Strip out any duplicate test targets
 
     set(target_test_dependencies_names)
     set(test_module_name_components)
 
-    foreach(namespace_and_target ${ly_delayed_aztestrunner_test_modules})
+    foreach(namespace_and_target ${o3de_delayed_aztestrunner_test_modules})
 
          # Strip target namespace from test targets before configuring them into the json template
-        ly_strip_target_namespace(TARGET ${namespace_and_target} OUTPUT_VARIABLE stripped_test_target)
+        o3de_strip_target_namespace(TARGET ${namespace_and_target} OUTPUT_VARIABLE stripped_test_target)
 
         string(CONFIGURE ${test_module_template} target_module_json @ONLY)
         list(APPEND target_test_dependencies_names ${target_module_json})

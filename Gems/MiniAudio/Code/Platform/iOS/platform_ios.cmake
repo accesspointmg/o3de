@@ -11,7 +11,7 @@ find_library(AUDIO_TOOLBOX_GRAPHICS_LIBRARY AudioToolbox)
 find_library(CORE_AUDIO_SERVICES_LIBRARY CoreAudio)
 find_library(FOUNDATION_LIBRARY Foundation)
 
-set(LY_BUILD_DEPENDENCIES
+set(O3DE_BUILD_DEPENDENCIES
     PRIVATE
         ${AV_FOUNDATION_LIBRARY}
         ${AUDIO_TOOLBOX_GRAPHICS_LIBRARY}
@@ -21,7 +21,7 @@ set(LY_BUILD_DEPENDENCIES
 
 add_compile_definitions(MA_NO_RUNTIME_LINKING=1)
 
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES Source/Clients/MiniAudioImplementation.cpp
     PROPERTY COMPILE_OPTIONS
     VALUES -xobjective-c++

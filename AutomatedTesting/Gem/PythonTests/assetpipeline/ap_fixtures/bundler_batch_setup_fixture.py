@@ -22,9 +22,9 @@ from assetpipeline.ap_fixtures.timeout_option_fixture import timeout_option_fixt
 from assetpipeline.ap_fixtures.ap_config_backup_fixture import ap_config_backup_fixture as config_backup
 from assetpipeline.ap_fixtures.ap_setup_fixture import ap_setup_fixture
 
-import ly_test_tools.environment.file_system as fs
-import ly_test_tools.o3de.pipeline_utils as utils
-from ly_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
+import o3de_test_tools.environment.file_system as fs
+import o3de_test_tools.o3de.pipeline_utils as utils
+from o3de_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
 
 logger = logging.getLogger(__name__)
 

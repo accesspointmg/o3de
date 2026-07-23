@@ -246,7 +246,7 @@ public:
     AZStd::size_t GetData(void** outputData, AZStd::size_t numFrames, const SAudioInputConfig& targetConfig, bool shouldDeinterleave) override
     {
 #if defined(USE_LIBSAMPLERATE)
-// pending port of LIBSAMPLERATE to MacOS
+// pending port of LIBSAMPLERATE to Mac
         return {};
 #else
         bool changeSampleType = (targetConfig.m_sampleType != m_config.m_sampleType);

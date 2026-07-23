@@ -12,7 +12,7 @@ import os
 import time
 import pytest
 from typing import Dict
-from ly_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
+from o3de_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
 
 @pytest.fixture
 def ap_setup_fixture(request, workspace) -> Dict:

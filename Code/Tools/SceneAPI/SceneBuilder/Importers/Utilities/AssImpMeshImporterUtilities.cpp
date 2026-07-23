@@ -25,7 +25,7 @@ namespace AZ::SceneAPI::SceneBuilder
         const AZStd::function<AZStd::shared_ptr<AZ::SceneData::GraphData::MeshData>()>& makeMeshFunc)
     {
         AZStd::unordered_map<int, int> assImpMatIndexToLYIndex;
-        int lyMeshIndex = 0;
+        int o3deMeshIndex = 0;
 
         if(!currentNode || !scene)
         {
@@ -47,7 +47,7 @@ namespace AZ::SceneAPI::SceneBuilder
             // Lumberyard materials are created in order based on mesh references in the scene
             if (assImpMatIndexToLYIndex.find(mesh->mMaterialIndex) == assImpMatIndexToLYIndex.end())
             {
-                assImpMatIndexToLYIndex.insert(AZStd::pair<int, int>(mesh->mMaterialIndex, lyMeshIndex++));
+                assImpMatIndexToLYIndex.insert(AZStd::pair<int, int>(mesh->mMaterialIndex, o3deMeshIndex++));
             }
 
             for (unsigned int vertIdx = 0; vertIdx < mesh->mNumVertices; ++vertIdx)

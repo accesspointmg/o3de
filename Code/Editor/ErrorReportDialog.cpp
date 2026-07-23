@@ -29,7 +29,7 @@
 #include "Viewport.h"
 #include "Util/Mailer.h"
 #include "GameEngine.h"
-#include "LyViewPaneNames.h"
+#include "O3deViewPaneNames.h"
 
 
 AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
@@ -48,7 +48,7 @@ void CErrorReportDialog::RegisterViewClass()
 {
     AzToolsFramework::ViewPaneOptions options;
     options.showInMenu = false;
-    AzToolsFramework::RegisterViewPane<CErrorReportDialog>(LyViewPane::ErrorReport, LyViewPane::CategoryOther, options);
+    AzToolsFramework::RegisterViewPane<CErrorReportDialog>(O3deViewPane::ErrorReport, O3deViewPane::CategoryOther, options);
 }
 
 CErrorReportDialog::CErrorReportDialog(QWidget* parent)
@@ -101,7 +101,7 @@ void CErrorReportDialog::Open(CErrorReport* pReport)
 {
     if (!m_instance)
     {
-        GetIEditor()->OpenView(LyViewPane::ErrorReport);
+        GetIEditor()->OpenView(O3deViewPane::ErrorReport);
     }
 
     if (!m_instance)

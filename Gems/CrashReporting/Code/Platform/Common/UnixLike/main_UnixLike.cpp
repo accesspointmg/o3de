@@ -6,7 +6,7 @@
  *
  */
 
-// LY Game Gem Crashpad Upload Handler - Posix
+// O3DE Game Gem Crashpad Upload Handler - Posix
 
 #include <AzCore/Debug/Trace.h>
 #include <handler/handler_main.h>

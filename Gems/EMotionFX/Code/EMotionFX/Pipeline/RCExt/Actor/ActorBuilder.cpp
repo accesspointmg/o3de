@@ -338,7 +338,7 @@ namespace EMotionFX
             {
                 const SceneContainers::SceneGraph::NodeIndex& nodeIndex = graph.ConvertToNodeIndex(it.GetHierarchyIterator());
 
-                // The end point in ly scene graph should not be added to the emfx actor.
+                // The end point in o3de scene graph should not be added to the emfx actor.
                 // Note: For example, the end point could be a transform node. We will process that later on its parent node.
                 if (graph.IsNodeEndPoint(nodeIndex))
                 {

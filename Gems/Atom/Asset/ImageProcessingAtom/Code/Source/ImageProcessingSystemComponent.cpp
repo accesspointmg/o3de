@@ -82,8 +82,8 @@ namespace ImageProcessingAtom
         // Note: the editor initialization will only report incompatible components if we have two system components are incompatible.
         // It won't interrupt the initialization. And the CSystem::Init would continue and report totally irrelevant message 
         // due to cinematic system pointer was empty since the ActivateEntities returned early
-        // This is a temporary solution until we have the proper system for gem incompatible mechanism in place ( LY-105408)
-        // Here it would pop out a message box if we found the LY ImageProcessingSystemComponent was reflected. 
+        // This is a temporary solution until we have the proper system for gem incompatible mechanism in place ( O3DE-105408)
+        // Here it would pop out a message box if we found the O3DE ImageProcessingSystemComponent was reflected. 
         AZ::SerializeContext* serializeContext = nullptr;
         AZ::ComponentApplicationBus::BroadcastResult(serializeContext, &AZ::ComponentApplicationBus::Events::GetSerializeContext);
         if (serializeContext->FindClassData(AZ::Uuid("{13B1EB88-316F-4D44-B59C-886F023A5A58}")))

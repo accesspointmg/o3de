@@ -8,11 +8,11 @@
 
 '''
 Usage:
-Use EC2 role to upload all .zip and .MD5 files in %WORKSPACE% folder to bucket ly-packages-mainline:
-python upload_to_s3.py --base_dir %WORKSPACE% --file_regex "(.*zip$|.*MD5$)" --bucket ly-packages-mainline
+Use EC2 role to upload all .zip and .MD5 files in %WORKSPACE% folder to bucket o3de-packages-mainline:
+python upload_to_s3.py --base_dir %WORKSPACE% --file_regex "(.*zip$|.*MD5$)" --bucket o3de-packages-mainline
 
-Use profile to upload all .zip and .MD5 files in %WORKSPACE% folder to bucket ly-packages-mainline:
-python upload_to_s3.py --base_dir %WORKSPACE% --profile profile --file_regex "(.*zip$|.*MD5$)" --bucket ly-packages-mainline
+Use profile to upload all .zip and .MD5 files in %WORKSPACE% folder to bucket o3de-packages-mainline:
+python upload_to_s3.py --base_dir %WORKSPACE% --profile profile --file_regex "(.*zip$|.*MD5$)" --bucket o3de-packages-mainline
 
 Another example usage for uploading all .png and .ppm files inside base_dir and only subdirectories within base_dir:
 python upload_to_s3.py --base_dir %WORKSPACE%/path/to/files --file_regex "(.*png$|.*ppm$)" --bucket screenshot-test-bucket --search_subdirectories True --key_prefix Test

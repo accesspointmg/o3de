@@ -86,7 +86,7 @@ def Material_StaticFriction():
     import azlmbr
     import azlmbr.legacy.general as general
     import azlmbr.bus as bus
-    import azlmbr.math as lymath
+    import azlmbr.math as o3demath
 
     FORCE_IMPULSE_INCREMENT = 0.005  # How much we increase the force every frame
     MIN_MOVE_DISTANCE = 0.02  # Distance magnitude that a box must travel in order to be considered moved
@@ -117,7 +117,7 @@ def Material_StaticFriction():
         delta = box.start_position.Subtract(box.get_position())
         if vector_close_to_zero(delta, MIN_MOVE_DISTANCE):
             box.force_impulse += FORCE_IMPULSE_INCREMENT
-            impulse_vector = lymath.Vector3(box.force_impulse, 0.0, 0.0)
+            impulse_vector = o3demath.Vector3(box.force_impulse, 0.0, 0.0)
             azlmbr.physics.RigidBodyRequestBus(bus.Event, "ApplyLinearImpulse", box.id, impulse_vector)
             return False
         else:

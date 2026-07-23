@@ -16,25 +16,25 @@ from typing import List, Tuple
 
 from ..ap_fixtures.asset_processor_fixture import asset_processor
 from ..ap_fixtures.ap_setup_fixture import ap_setup_fixture
-from ly_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
-from ly_test_tools.o3de import asset_processor as asset_processor_utils
+from o3de_test_tools.o3de.asset_processor import ASSET_PROCESSOR_PLATFORM_MAP
+from o3de_test_tools.o3de import asset_processor as asset_processor_utils
 
 # fmt:off
 from ..ap_fixtures.ap_missing_dependency_fixture \
     import ap_missing_dependency_fixture as missing_dep_helper
 # fmt:on
 
-# Import LyTestTools
-import ly_test_tools.builtin.helpers as helpers
+# Import O3deTestTools
+import o3de_test_tools.builtin.helpers as helpers
 
 # Import LyShared
-import ly_test_tools.o3de.pipeline_utils as utils
+import o3de_test_tools.o3de.pipeline_utils as utils
 from automatedtesting_shared import asset_database_utils as db_utils
 
 # Use the following logging pattern to hook all test logging together:
 logger = logging.getLogger(__name__)
-# Configuring the logging is done in ly_test_tools at the following location:
-# ~/dev/Tools/LyTestTools/ly_test_tools/log/py_logging_util.py
+# Configuring the logging is done in o3de_test_tools at the following location:
+# ~/dev/Tools/O3deTestTools/o3de_test_tools/log/py_logging_util.py
 
 # Helper: variables we will use for parameter values in the test:
 targetProjects = ["AutomatedTesting"]

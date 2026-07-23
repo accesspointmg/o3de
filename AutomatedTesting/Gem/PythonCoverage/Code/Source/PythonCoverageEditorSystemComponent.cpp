@@ -71,7 +71,7 @@ namespace PythonCoverage
     PythonCoverageEditorSystemComponent::CoverageState PythonCoverageEditorSystemComponent::ParseCoverageOutputDirectory()
     {
         m_coverageState = CoverageState::Disabled;
-        const AZStd::string configFilePath = LY_TEST_IMPACT_DEFAULT_CONFIG_FILE;
+        const AZStd::string configFilePath = O3DE_TEST_IMPACT_DEFAULT_CONFIG_FILE;
 
         if (configFilePath.empty())
         {

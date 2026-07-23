@@ -6,14 +6,18 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     set(GOOGLETEST_GIT_REPOSITORY "https://github.com/google/googletest.git")
     set(GOOGLETEST_GIT_TAG 2fe3bd994b3189899d93f1d5a881e725e046fdc2) # release-1.8.1
     set(GOOGLETEST_VERSION_STRING "release-1.8.1")
 
-    o3de_pal_dir(pal_aztest_dir ${CMAKE_CURRENT_LIST_DIR}/AzTest/Platform/${PAL_PLATFORM_NAME} ${O3DE_ENGINE_RESTRICTED_PATH} ${LY_ROOT_FOLDER})
+    o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Framework/AzTest/AzTest/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_framework_aztest_path)
+    #set(common_code_framework_aztest_path ${O3DE_ENGINE_PATH}/Code/Framework/AzTest/Platform/Common)
 
     set(CMAKE_POLICY_DEFAULT_CMP0148 OLD)
+    # googletest 1.8.1 declares cmake_minimum_required < 3.5 which CMake 4+
+    # rejects outright; give the subproject a policy floor.
+    set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
     set(OLD_CMAKE_WARN_DEPRECATED ${CMAKE_WARN_DEPRECATED})
     set(CMAKE_WARN_DEPRECATED FALSE CACHE BOOL "" FORCE)
     include(FetchContent)
@@ -33,19 +37,19 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     unset(CMAKE_POLICY_DEFAULT_CMP0148)
     set(CMAKE_WARN_DEPRECATED ${OLD_CMAKE_WARN_DEPRECATED} CACHE BOOL "" FORCE)
 
-    ly_create_alias(NAME googletest::GTest NAMESPACE 3rdParty TARGETS gtest)
-    ly_create_alias(NAME googletest::GMock NAMESPACE 3rdParty TARGETS gmock)
+    o3de_create_alias(NAME googletest::GTest NAMESPACE 3rdParty TARGETS gtest)
+    o3de_create_alias(NAME googletest::GMock NAMESPACE 3rdParty TARGETS gmock)
 
-    ly_add_target(
+    o3de_add_target(
         NAME AzTest STATIC
         NAMESPACE AZ
         FILES_CMAKE
             AzTest/aztest_files.cmake
-            ${pal_aztest_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
+            ${pal_code_framework_aztest_path}/platform_${O3DE_PAL_PLATFORM_WART}_files.cmake
         INCLUDE_DIRECTORIES
             PUBLIC
                 .
-                ${pal_aztest_dir}
+                ${pal_code_framework_aztest_path}
         BUILD_DEPENDENCIES
             PUBLIC
                 3rdParty::googletest::GMock
@@ -53,7 +57,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 3rdParty::GoogleBenchmark
                 AZ::AzCore
         PLATFORM_INCLUDE_FILES
-            ${pal_aztest_dir}/platform_${PAL_PLATFORM_NAME_LOWERCASE}.cmake
+            ${pal_code_framework_aztest_path}/platform_${O3DE_PAL_PLATFORM_WART}.cmake
     )
 
     # Maintainers, please note that when building O3DE from source, this entire script file you are looking at right now
@@ -67,15 +71,15 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     # Export external googletest targets for installers.
     set_property(DIRECTORY APPEND PROPERTY O3DE_SUBDIRECTORY_INSTALL_CODE [[
         add_library(gtest STATIC IMPORTED GLOBAL)
-        set_target_properties(gtest PROPERTIES IMPORTED_LOCATION "${LY_ROOT_FOLDER}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
-        ly_target_include_system_directories(TARGET gtest INTERFACE "${LY_ROOT_FOLDER}/include/gtest")
+        set_target_properties(gtest PROPERTIES IMPORTED_LOCATION "${O3DE_ENGINE_PATH}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        o3de_target_include_system_directories(TARGET gtest INTERFACE "${O3DE_ENGINE_PATH}/include/gtest")
         
         add_library(gmock STATIC IMPORTED GLOBAL)
-        set_target_properties(gmock PROPERTIES IMPORTED_LOCATION "${LY_ROOT_FOLDER}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}")
-        ly_target_include_system_directories(TARGET gmock INTERFACE "${LY_ROOT_FOLDER}/include/gmock")
+        set_target_properties(gmock PROPERTIES IMPORTED_LOCATION "${O3DE_ENGINE_PATH}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        o3de_target_include_system_directories(TARGET gmock INTERFACE "${O3DE_ENGINE_PATH}/include/gmock")
             
-        ly_create_alias(NAME googletest::GTest NAMESPACE 3rdParty TARGETS gtest)
-        ly_create_alias(NAME googletest::GMock NAMESPACE 3rdParty TARGETS gmock)
+        o3de_create_alias(NAME googletest::GTest NAMESPACE 3rdParty TARGETS gtest)
+        o3de_create_alias(NAME googletest::GMock NAMESPACE 3rdParty TARGETS gmock)
     ]]
     )
 endif()

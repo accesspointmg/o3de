@@ -21,7 +21,7 @@ import sys
 import urllib.parse
 from packaging.version import Version, InvalidVersion
 from packaging.specifiers import SpecifierSet
-from o3de import manifest, utils, validation
+from o3de import o3de_object, utils, validation
 
 logger = logging.getLogger('o3de.repo_properties')
 logging.basicConfig(format=utils.LOG_FORMAT)
@@ -157,7 +157,7 @@ def create_remote_object_archive(src_data_path: pathlib.Path,
     
 # retrieves json data of the repository from a file path
 def get_repo_props(path: pathlib.Path) -> dict or None:
-    repo_json = manifest.get_json_data_file(path, "Repo", validation.valid_o3de_repo_json)
+    repo_json = o3de_object.get_json_data_file(path, "Repo", validation.valid_o3de_repo_json)
     if not isinstance(repo_json, dict):
         logger.error(f'Could not retrieve repo.json file from {path} or the repo.json file is invalid.')
         return None
@@ -210,7 +210,7 @@ def _edit_objects(object_typename: str,
             paths = add_objects.split() if isinstance(add_objects, str) else add_objects
         for object_path in paths:
             # object JSON data of the object you want to add
-            json_data = manifest.get_json_data(object_typename, object_path, validator)
+            json_data = o3de_object.get_json_data(object_typename, object_path, validator)
             if json_data:
                 # for a project called TestProject that is version 1.0.0, 
                 # --release_archive_path would create a filename of `testproject-1.0.0-project.zip`
@@ -407,7 +407,7 @@ def edit_repo_props(repo_path: pathlib.Path = None,
     if repo_path.is_file():
         repo_json = get_repo_props(repo_path)
     else:    
-        repo_path = manifest.get_json_file_path('repo', repo_path)
+        repo_path = o3de_object.get_json_file_path('repo', repo_path)
         repo_json = get_repo_props(repo_path)
 
     if not repo_json:
@@ -444,7 +444,7 @@ def edit_repo_props(repo_path: pathlib.Path = None,
         print_repo_diff(repo_json, repo_json_original)
         return 0
     else:     
-        return 0 if manifest.save_o3de_manifest(repo_json, repo_path) else 1    
+        return 0 if o3de_object.save_o3de_manifest_json_data(repo_json, repo_path) else 1    
 
 def _edit_repo_props(args: argparse) -> int:
     return edit_repo_props(repo_path=args.repo_path,
@@ -470,14 +470,21 @@ def _edit_repo_props(args: argparse) -> int:
                               upload_git_release_tag=args.upload_git_release_tag
                               )
 
+def add_args(subparsers) -> None:
+    """
+    add_args is called to add subparsers arguments to each command such that it can be
+    a central python file such as o3de.py.
+    It can be run from the o3de.py script as follows
+    call add_args and execute: python o3de.py edit-repo-properties
+    :param subparsers: the caller instantiates subparsers and passes it in here
+    """
+    enable_repo_props_subparser = subparsers.add_parser('edit-repo-properties')
 
-def add_parser_args(parser):
-    
-    required_general_group = parser.add_mutually_exclusive_group(required=True)
+    required_general_group = enable_repo_props_subparser.add_mutually_exclusive_group(required=True)
     required_general_group.add_argument('--repo-path', '-rp', type=pathlib.Path,
                                     help='The local path to the remote repository.')    
 
-    general_group = parser.add_argument_group('General Arguments')
+    general_group = enable_repo_props_subparser.add_argument_group('General Arguments')
     general_group.add_argument('--repo-name', '-rn', type=str, required=False,
                                help='The name of the remote repository.')
     general_group.add_argument('--auto-update', '-au', type=str, nargs='*', required=False,
@@ -491,7 +498,7 @@ def add_parser_args(parser):
     general_group.add_argument('--force', '-f', action='store_true', default=False,
                                    help='Overwrite the release-archive zip file if there is already an existing zip with the same name.')
 
-    gem_group = parser.add_argument_group('Gem Modification Args')
+    gem_group = enable_repo_props_subparser.add_argument_group('Gem Modification Args')
     gem_group.add_argument('--add-gems', '-ag', type=pathlib.Path, nargs='*', required=False,
                            help="Adds gem(s) to the 'gems_data' property. Space delimited list (ex. -ag c:/gem1 c:/gem2)")
     gem_group.add_argument('--delete-gems', '-dg', type=str, nargs='*', required=False,
@@ -500,7 +507,7 @@ def add_parser_args(parser):
     gem_group.add_argument('--replace-gems', '-rg', type=pathlib.Path, nargs='*', required=False,
                            help='Replace the entirety of gems_data property with the provided gems.')
 
-    project_group = parser.add_argument_group('Project Modification Args')
+    project_group = enable_repo_props_subparser.add_argument_group('Project Modification Args')
     project_group.add_argument('--add-projects', '-apr', type=pathlib.Path, nargs='*', required=False,
                                help="Adds project(s) to the 'projects_data' property. Space delimited list (ex. -apr c:/project1 c:/project2)")
     project_group.add_argument('--delete-projects', '-dpr', type=str, nargs='*', required=False,
@@ -509,7 +516,7 @@ def add_parser_args(parser):
     project_group.add_argument('--replace-projects', '-rpr', type=pathlib.Path, nargs='*', required=False,
                                help='Replace the entirety of projects_data property with the provided projects.')
 
-    template_group = parser.add_argument_group('Template Modification Args')
+    template_group = enable_repo_props_subparser.add_argument_group('Template Modification Args')
     template_group.add_argument('--add-templates', '-at', type=pathlib.Path, nargs='*', required=False,
                                 help="Adds template(s) to the 'templates_data' property. Space delimited list (ex. -at c:/template1 c:/template2)")
     template_group.add_argument('--delete-templates', '-dt', type=str, nargs='*', required=False,
@@ -518,7 +525,7 @@ def add_parser_args(parser):
     template_group.add_argument('--replace-templates', '-rt', type=pathlib.Path, nargs='*', required=False,
                                 help='Replace the entirety of templates_data property with the provided templates.')
 
-    modify_object_group = parser.add_argument_group('Create Release',
+    modify_object_group = enable_repo_props_subparser.add_argument_group('Create Release',
                                                   'Path arguments to use with the --add-objects or --replace-objects option')
     modify_object_group.add_argument('--release-archive-path', '-rap', type=pathlib.Path, required=False,
                                    help='Create a release archive at the specified local path and update the download_source_uri and sha256 fields.')
@@ -528,21 +535,5 @@ def add_parser_args(parser):
     modify_object_group.add_argument('--upload-git-release-tag', '-ugrt', type=str, default=False,
                                    help='Automatically uploads your object-release-archive.zip file to specified GitHub release.\n'
                                         'Please provide a tag_name for the release. ')
-    parser.set_defaults(func=_edit_repo_props)
-
-
-def add_args(subparsers) -> None:
-    enable_repo_props_subparser = subparsers.add_parser('edit-repo-properties')
-    add_parser_args(enable_repo_props_subparser)
-
-
-def main():
-    the_parser = argparse.ArgumentParser()
-    add_parser_args(the_parser)
-    the_args = the_parser.parse_args()
-    ret = the_args.func(the_args) if hasattr(the_args, 'func') else 1
-    sys.exit(ret)
-
-
-if __name__ == "__main__":
-    main()
+    
+    enable_repo_props_subparser.set_defaults(func=_edit_repo_props)

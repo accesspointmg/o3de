@@ -37,7 +37,7 @@ CAudioControlsEditorPlugin::CAudioControlsEditorPlugin(IEditor* editor)
 {
     QtViewOptions options;
     options.canHaveMultipleInstances = true;
-    RegisterQtViewPane<CAudioControlsEditorWindow>(editor, LyViewPane::AudioControlsEditor, LyViewPane::CategoryOther, options);
+    RegisterQtViewPane<CAudioControlsEditorWindow>(editor, O3deViewPane::AudioControlsEditor, O3deViewPane::CategoryOther, options);
 
     ms_implementationManager.LoadImplementation();
     ReloadModels();

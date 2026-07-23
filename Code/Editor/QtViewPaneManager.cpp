@@ -1076,10 +1076,10 @@ void QtViewPaneManager::RestoreDefaultLayout(bool resetSettings)
 
         ViewLayoutState state;
 
-        state.viewPanes.push_back(LyViewPane::EntityOutliner);
-        state.viewPanes.push_back(LyViewPane::Inspector);
-        state.viewPanes.push_back(LyViewPane::AssetBrowser);
-        state.viewPanes.push_back(LyViewPane::Console);
+        state.viewPanes.push_back(O3deViewPane::EntityOutliner);
+        state.viewPanes.push_back(O3deViewPane::Inspector);
+        state.viewPanes.push_back(O3deViewPane::AssetBrowser);
+        state.viewPanes.push_back(O3deViewPane::Console);
 
         state.mainWindowState = m_defaultMainWindowState;
 
@@ -1100,10 +1100,10 @@ void QtViewPaneManager::RestoreDefaultLayout(bool resetSettings)
     }
 
     // Reset the default view panes to be opened. Used for restoring default layout and component entity layout.
-    const QtViewPane* entityOutlinerViewPane = OpenPane(LyViewPane::EntityOutliner, QtViewPane::OpenMode::UseDefaultState);
-    const QtViewPane* assetBrowserViewPane = OpenPane(LyViewPane::AssetBrowser, QtViewPane::OpenMode::UseDefaultState);
-    const QtViewPane* InspectorViewPane = OpenPane(LyViewPane::Inspector, QtViewPane::OpenMode::UseDefaultState);
-    const QtViewPane* consoleViewPane = OpenPane(LyViewPane::Console, QtViewPane::OpenMode::UseDefaultState);
+    const QtViewPane* entityOutlinerViewPane = OpenPane(O3deViewPane::EntityOutliner, QtViewPane::OpenMode::UseDefaultState);
+    const QtViewPane* assetBrowserViewPane = OpenPane(O3deViewPane::AssetBrowser, QtViewPane::OpenMode::UseDefaultState);
+    const QtViewPane* InspectorViewPane = OpenPane(O3deViewPane::Inspector, QtViewPane::OpenMode::UseDefaultState);
+    const QtViewPane* consoleViewPane = OpenPane(O3deViewPane::Console, QtViewPane::OpenMode::UseDefaultState);
 
     const QtViewPane* levelInspectorPane = nullptr;
 
@@ -1398,11 +1398,11 @@ bool QtViewPaneManager::RestoreLayout(QString layoutName)
         bool layoutHasEntityOutliner = false;
         for (const QString& paneName : state.viewPanes)
         {
-            if (paneName == LyViewPane::Inspector)
+            if (paneName == O3deViewPane::Inspector)
             {
                 layoutHasInspector = true;
             }
-            else if (paneName == LyViewPane::EntityOutliner)
+            else if (paneName == O3deViewPane::EntityOutliner)
             {
                 layoutHasEntityOutliner = true;
             }

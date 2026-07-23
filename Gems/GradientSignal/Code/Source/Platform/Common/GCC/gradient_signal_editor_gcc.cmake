@@ -6,4 +6,4 @@
 #
 #
 
-set(LY_COMPILE_OPTIONS PRIVATE -fexceptions)
+set(O3DE_COMPILE_OPTIONS PRIVATE -fexceptions)

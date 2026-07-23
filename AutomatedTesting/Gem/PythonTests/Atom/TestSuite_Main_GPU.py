@@ -9,10 +9,10 @@ import os
 
 import pytest
 
-import ly_test_tools.environment.file_system as file_system
+import o3de_test_tools.environment.file_system as file_system
 
-from ly_test_tools.o3de.atom_tools_test import AtomToolsTestSuite, AtomToolsSingleTest
-from ly_test_tools.o3de.editor_test import EditorSingleTest, EditorTestSuite, EditorBatchedTest
+from o3de_test_tools.o3de.atom_tools_test import AtomToolsTestSuite, AtomToolsSingleTest
+from o3de_test_tools.o3de.editor_test import EditorSingleTest, EditorTestSuite, EditorBatchedTest
 
 from Atom.atom_utils.atom_component_helper import create_screenshots_archive, golden_images_directory
 

@@ -11,7 +11,7 @@
 
 #include <sys/resource.h>
 
-#if PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#if O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
 #include <AzFramework/XcbApplication.h>
 #include <AzFramework/XcbInputDeviceKeyboard.h>
 #include <AzFramework/XcbInputDeviceMouse.h>
@@ -55,15 +55,15 @@ namespace AzFramework
                 [[maybe_unused]] int set_limit_result = setrlimit(RLIMIT_NOFILE, &newLimit);
                 AZ_Assert(set_limit_result == 0, "Unable to update open file limits");
             }
-#if PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#if O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
             return AZStd::make_unique<XcbApplication>();
-#elif PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND
+#elif O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND
             #error "Linux Window Manager Wayland not supported."
             return nullptr;
 #else
             #error "Linux Window Manager not recognized."
             return nullptr;
-#endif // PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#endif // O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
         }
     };
 
@@ -72,15 +72,15 @@ namespace AzFramework
     {
         AZStd::unique_ptr<InputDeviceKeyboard::Implementation> Create(InputDeviceKeyboard& inputDevice) override
         {
-#if PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#if O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
             return AZStd::make_unique<XcbInputDeviceKeyboard>(inputDevice);
-#elif PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND
+#elif O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND
             #error "Linux Window Manager Wayland not supported."
             return nullptr;
 #else
             #error "Linux Window Manager not recognized."
             return nullptr;
-#endif // PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#endif // O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
         }
     };
 
@@ -89,16 +89,16 @@ namespace AzFramework
     {
         AZStd::unique_ptr<InputDeviceMouse::Implementation> Create(InputDeviceMouse& inputDevice) override
         {
-#if PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#if O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
             
             return AZStd::unique_ptr<InputDeviceMouse::Implementation>(XcbInputDeviceMouse::Create(inputDevice));
-#elif PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND
+#elif O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND
 #error "Linux Window Manager Wayland not supported."
             return nullptr;
 #else
 #error "Linux Window Manager not recognized."
             return nullptr;
-#endif // PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#endif // O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
         }
     };
 
@@ -107,15 +107,15 @@ namespace AzFramework
     {
         AZStd::unique_ptr<NativeWindow::Implementation> Create() override
         {
-#if PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#if O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
             return AZStd::make_unique<XcbNativeWindow>();
-#elif PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND
+#elif O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_WAYLAND
             #error "Linux Window Manager Wayland not supported."
             return nullptr;
 #else
             #error "Linux Window Manager not recognized."
             return nullptr;
-#endif // PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
+#endif // O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER_XCB
         }
     };
 

@@ -7,7 +7,7 @@
 #
 
 
-set(LY_BUILD_DEPENDENCIES
+set(O3DE_BUILD_DEPENDENCIES
     PUBLIC
         3rdParty::Freetype
 )

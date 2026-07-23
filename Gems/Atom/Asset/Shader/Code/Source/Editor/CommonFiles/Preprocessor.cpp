@@ -136,7 +136,7 @@ namespace AZ
                 biggerData.reset(new char[count]);
                 result = &biggerData[0];
 
-                // Remark: for MacOS & Linux it is important to call va_start again before
+                // Remark: for Mac & Linux it is important to call va_start again before
                 // each call to azvsnprintf. Not required for Windows.
                 va_start(args, format);
                 count = azvsnprintf(result, count, format, args);
@@ -152,7 +152,7 @@ namespace AZ
                 // these functions return -1 indicating that output has been truncated."
 
                 // There wasn't enough space in the local store.
-                // Remark: for MacOS & Linux it is important to call va_start again before
+                // Remark: for Mac & Linux it is important to call va_start again before
                 // each call to azvsnprintf. Not required for Windows.
                 va_start(args, format);
                 count = azvscprintf(format, args);

@@ -9,4 +9,4 @@
 # RHI/Metal requires Catalina which we have just one node in Jenkins. Atom can enable
 # this again in their stream, but cannot push this change until we put more Catalina
 # nodes in Jenkins
-set(PAL_TRAIT_ATOM_RHI_METAL_SUPPORTED TRUE)
+set(O3DE_PAL_TRAIT_ATOM_RHI_METAL_SUPPORTED TRUE)

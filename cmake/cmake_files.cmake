@@ -17,23 +17,21 @@ set(FILES
     Dependencies.cmake
     Deployment.cmake
     FileUtil.cmake
-    Findo3de.cmake
     Gems.cmake
     GeneralSettings.cmake
     Install.cmake
-    LyAutoGen.cmake
-    LYPackage_S3Downloader.cmake
-    LySet.cmake
-    LYTestWrappers.cmake
-    LYPython.cmake
-    LYWrappers.cmake
+    O3deAutoGen.cmake
+    O3dePackage_S3Downloader.cmake
+    O3deSet.cmake
+    O3deTestWrappers.cmake
+    O3dePython.cmake
+    O3deWrappers.cmake
     Monolithic.cmake
     O3DEJson.cmake
     OutputDirectory.cmake
     Packaging.cmake
     PAL.cmake
     PALTools.cmake
-    Projects.cmake
     RuntimeDependencies.cmake
     SettingsRegistry.cmake
     Subdirectories.cmake

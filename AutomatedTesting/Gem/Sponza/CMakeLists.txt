@@ -6,6 +6,6 @@
 #
 #
 # This will export its "SourcePaths" to the generated "cmake_dependencies.<project>.assetbuilder.setreg"
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_create_alias(NAME AtomContent_Sponza.Builders NAMESPACE Gem)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_create_alias(NAME AtomContent_Sponza.Builders NAMESPACE Gem)
 endif()

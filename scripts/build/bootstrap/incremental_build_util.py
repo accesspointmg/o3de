@@ -482,7 +482,7 @@ def mount_ebs(snapshot_hint, repository_name, project, pipeline, branch, platfor
         delete_volume(ec2_client, volume_id)
         new_disk_size = int(volume.size * 1.25)
         if new_disk_size > MAX_EBS_DISK_SIZE:
-            print(f'Error: EBS disk size reached to the allowed maximum disk size {MAX_EBS_DISK_SIZE}MB, please contact ly-infra@ and ly-build@ to investigate.')
+            print(f'Error: EBS disk size reached to the allowed maximum disk size {MAX_EBS_DISK_SIZE}MB, please contact o3de-infra@ and o3de-build@ to investigate.')
             exit(1)
         print('Recreating the EBS with disk size {}'.format(new_disk_size))
         volume_id, created = create_volume(ec2_client, ec2_availability_zone, snapshot_hint, repository_name, project, pipeline, branch, platform, build_type, new_disk_size, disk_type)

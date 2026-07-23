@@ -30,7 +30,9 @@
 
 using uint = uint32_t;
 using uint4 = uint[4];
-#include "../../../Feature/Common/Assets/ShaderLib/Atom/Features/IndirectRendering.azsli"
+// Gem-relative include (this gem's own Assets/ShaderLib) — must not
+// reference sibling-gem layout, which differs in composed workspaces.
+#include "../../../Assets/ShaderLib/Atom/Features/IndirectRendering.azsli"
 
 namespace AZ
 {

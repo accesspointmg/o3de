@@ -17,7 +17,7 @@ import waffiles2cmake
 import gemcmake
 
 def getProjectGemCMakeListsTemplate():
-    return """ly_add_target(
+    return """o3de_add_target(
     NAME {GEM_NAME}.Static STATIC
     NAMESPACE Gem
     FILES_CMAKE
@@ -32,8 +32,8 @@ def getProjectGemCMakeListsTemplate():
             #AZ::AzCore
 )
 
-ly_add_target(
-    NAME {GEM_NAME} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+o3de_add_target(
+    NAME {GEM_NAME} ${O3DE_PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         {GEM_NAME_LOWERCASE}_shared_files.cmake
@@ -47,8 +47,8 @@ ly_add_target(
             Gem::{GEM_NAME}.Static
 )
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
         NAME {GEM_NAME}.Editor GEM_MODULE
 
         NAMESPACE Gem
@@ -68,7 +68,7 @@ endif()
 ################################################################################
 # Gem dependencies
 ################################################################################
-ly_add_project_dependencies(
+o3de_add_project_dependencies(
     PROJECT_NAME
         {GEM_NAME}
     TARGETS
@@ -77,8 +77,8 @@ ly_add_project_dependencies(
         runtime_dependencies.cmake
 )
 
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_project_dependencies(
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_project_dependencies(
         PROJECT_NAME
             {GEM_NAME}
         TARGETS
@@ -94,9 +94,9 @@ endif()
 ################################################################################
 # Tests
 ################################################################################
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME {GEM_NAME}.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME {GEM_NAME}.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             {GEM_NAME_LOWERCASE}_tests_files.cmake
@@ -108,7 +108,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzTest
                 Gem::{GEM_NAME}.Static
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME {GEM_NAME}.Tests
     )
 endif()
@@ -122,7 +122,7 @@ def getGemPaths(gems_list, project_path):
     gem_paths = []
     
     # Get the parent directory of the project
-    # If this is not an external project this should be the dev folder for the LY install
+    # If this is not an external project this should be the dev folder for the O3DE install
     project_parent_path = os.path.abspath(os.path.join(project_path, os.pardir))
     for gem_json in gems_list:
         gem_path = gem_json['Path']
@@ -141,7 +141,7 @@ def getGemPaths(gems_list, project_path):
         if os.path.exists(parent_gems_path):
             gem_paths.append(parent_gems_path)
         else:
-            # Could not find the gem in the project or in the LY install
+            # Could not find the gem in the project or in the O3DE install
             print(f'Could not find full path for {gem_path}')
             sys.exit(1)
     
@@ -254,7 +254,7 @@ def generateCMakeFilesForProjectGemDependencies(toolTime_dependencies, runTime_d
     subprocess.run(['p4', 'add', runTime_filePath])
     
 def main():
-    parser = argparse.ArgumentParser(description='This script creates basic CMakeLists.txt and .cmake files for a waf based LY project',
+    parser = argparse.ArgumentParser(description='This script creates basic CMakeLists.txt and .cmake files for a waf based O3DE project',
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('path_to_projects', type=str, nargs='+',
         help='list of project directories to create CMakeLists.txt and .cmake files within and add to p4')

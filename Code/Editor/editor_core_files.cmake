@@ -22,7 +22,7 @@ set(FILES
     Controls/ReflectedPropertyControl/ReflectedVarWrapper.cpp
     Controls/ReflectedPropertyControl/ReflectedVarWrapper.h
     UsedResources.cpp
-    LyViewPaneNames.h
+    O3deViewPaneNames.h
     QtViewPaneManager.cpp
     QtViewPaneManager.h
     ErrorRecorder.cpp

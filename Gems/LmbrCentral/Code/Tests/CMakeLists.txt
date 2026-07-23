@@ -6,11 +6,11 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+if(NOT O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     return()
 endif()
     
-ly_add_target(
+o3de_add_target(
     NAME LmbrCentral.Mocks HEADERONLY
     NAMESPACE Gem
     FILES_CMAKE
@@ -20,8 +20,8 @@ ly_add_target(
             ../Mocks
 )
     
-ly_add_target(
-    NAME LmbrCentral.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+o3de_add_target(
+    NAME LmbrCentral.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
     NAMESPACE Gem
     FILES_CMAKE
         lmbrcentral_tests_files.cmake
@@ -38,14 +38,14 @@ ly_add_target(
             Gem::LmbrCentral.Static
             Gem::LmbrCentral.Mocks
 )
-ly_add_googletest(
+o3de_add_googletest(
     NAME Gem::LmbrCentral.Tests
     LABELS REQUIRES_tiaf
 )
 
-if (PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_add_target(
-        NAME LmbrCentral.Editor.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if (O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_add_target(
+        NAME LmbrCentral.Editor.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE Gem
         FILES_CMAKE
             lmbrcentral_editor_tests_files.cmake
@@ -73,7 +73,7 @@ if (PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::LmbrCentral.Static
                 Gem::LmbrCentral.Editor.Static
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME Gem::LmbrCentral.Editor.Tests
         LABELS REQUIRES_tiaf
     )

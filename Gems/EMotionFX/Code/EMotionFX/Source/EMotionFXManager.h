@@ -318,7 +318,7 @@ namespace EMotionFX
 
         /**
          * Get if EMotionFX is in editor mode or not
-         * @return True if EMotionFX is configured in editor mode (e.g. ly editor or EMStudio).
+         * @return True if EMotionFX is configured in editor mode (e.g. o3de editor or EMStudio).
          */
         bool GetIsInEditorMode() const { return m_isInEditorMode; }
 

@@ -22,7 +22,7 @@ namespace UnitTest
     TEST(LogLines, BasicTest)
     {
         const char* messages[] = {
-            R"X(Executing RC.EXE: '"E:\lyengine\dev\windows\bin\profile\rc.exe" "E:/Directory/File.tga")X",
+            R"X(Executing RC.EXE: '"E:\o3deengine\dev\windows\bin\profile\rc.exe" "E:/Directory/File.tga")X",
             R"X(Executing RC.EXE with working directory : '')X",
             R"X(ResourceCompiler  64 - bit  DEBUG)X",
             R"X(Platform support : PC, PowerVR)X",

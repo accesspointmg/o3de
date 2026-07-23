@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 Pytest fixture for standardizing key external project file locations.
 Houses a mock workspace for the external project. Only has enough information
-to satisfy a ly_test_tools.o3de.asset_processor.AssetProcessor object.
+to satisfy a o3de_test_tools.o3de.asset_processor.AssetProcessor object.
 
 """
 
@@ -37,7 +37,7 @@ def ap_external_project_setup_fixture(request, workspace) -> Dict:
     }
 
     # Set up a "mock" workspace for the external project to use with
-    # ly_test_tools.asset_processor python object
+    # o3de_test_tools.asset_processor python object
     # asset_processor.py only uses platform and paths to asset processor executables and config file.
     # If it looks like a workspace and quacks like a workspace then it's a workspace, right?
     class mock:

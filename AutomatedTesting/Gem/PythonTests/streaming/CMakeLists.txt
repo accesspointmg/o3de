@@ -6,9 +6,9 @@
 #
 #
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND PAL_TRAIT_BUILD_HOST_TOOLS)
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED AND O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     # Unstable, SPEC-3838 will restore
-    #ly_add_pytest(
+    #o3de_add_pytest(
     #    NAME AutomatedTesting::asset_load_benchmark_test
     #    TEST_SERIAL
     #    TEST_SUITE benchmark

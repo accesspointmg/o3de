@@ -12,7 +12,7 @@ import sqlite3
 import os
 from typing import List
 
-import ly_test_tools.o3de.pipeline_utils as pipeline_utils
+import o3de_test_tools.o3de.pipeline_utils as pipeline_utils
 
 # Index for ProductID in Products table in DB
 PRODUCT_ID_INDEX = 0

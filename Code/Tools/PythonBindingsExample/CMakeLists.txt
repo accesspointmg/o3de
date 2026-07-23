@@ -6,17 +6,17 @@
 #
 #
 
-if(NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME PythonBindingsExample.Static STATIC
     NAMESPACE AZ
     FILES_CMAKE
         pythonbindingsexample_files.cmake
     PLATFORM_INCLUDE_FILES
-        source/Platform/Common/${PAL_TRAIT_COMPILER_ID}/pythonbindingsexample_${PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
+        source/Platform/Common/${O3DE_PAL_TRAIT_COMPILER_ID}/pythonbindingsexample_${O3DE_PAL_TRAIT_COMPILER_ID_LOWERCASE}.cmake
     INCLUDE_DIRECTORIES
         PRIVATE
             .
@@ -27,7 +27,7 @@ ly_add_target(
             AZ::AzToolsFramework
 )
 
-ly_add_target(
+o3de_add_target(
     NAME PythonBindingsExample EXECUTABLE
     NAMESPACE AZ
     FILES_CMAKE
@@ -43,12 +43,12 @@ ly_add_target(
             PythonBindingsExample.Static
 )
 
-# The PythonBindingsExample application isn't really an LY_PROJECT,
+# The PythonBindingsExample application isn't really an O3DE_PROJECT,
 # It's target name is being used to tag the tool_dependencies
 # This allows both the PythonBindingsExample and PythonBindingsExample.Tests applications
 # to load the generated cmake_dependencies.PythonBindingsExample.PythonBindingsExample.setreg file
 # which contains the list of gem dependencies
-ly_add_target_dependencies(
+o3de_add_target_dependencies(
     TARGETS
         PythonBindingsExample
     DEPENDENCIES_FILES
@@ -63,15 +63,15 @@ if(TARGET PythonBindingsExample)
         source/main.cpp
         PROPERTIES
             COMPILE_DEFINITIONS
-                LY_CMAKE_TARGET="PythonBindingsExample"
+                O3DE_CMAKE_TARGET="PythonBindingsExample"
     )
 else()
-    message(FATAL_ERROR "Cannot set LY_CMAKE_TARGET define to PythonBindingsExample as the target doesn't exist anymore."
+    message(FATAL_ERROR "Cannot set O3DE_CMAKE_TARGET define to PythonBindingsExample as the target doesn't exist anymore."
         " Perhaps it has been renamed")
 endif()
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
         NAME PythonBindingsExample.Tests EXECUTABLE
         NAMESPACE AZ
         FILES_CMAKE
@@ -88,7 +88,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 PythonBindingsExample.Static
     )
 
-    ly_add_target_dependencies(
+    o3de_add_target_dependencies(
         TARGETS
             PythonBindingsExample.Tests
         DEPENDENCIES_FILES
@@ -102,14 +102,14 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 COMPILE_DEFINITIONS
                     # The PythonBindingsExample target is being defined here to allow the PythonBindingsExample.Tests executable
                     # to load the specializations which contains the "PythonBindingsExample" value'
-                    LY_CMAKE_TARGET="PythonBindingsExample"
+                    O3DE_CMAKE_TARGET="PythonBindingsExample"
         )
     else()
-        message(FATAL_ERROR "Cannot set LY_CMAKE_TARGET define to PythonBindingsExample as the target doesn't exist anymore."
+        message(FATAL_ERROR "Cannot set O3DE_CMAKE_TARGET define to PythonBindingsExample as the target doesn't exist anymore."
             " Perhaps it has been renamed")
     endif()
 
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME AZ::PythonBindingsExample.Tests
         LABELS REQUIRES_tiaf
         TEST_COMMAND $<TARGET_FILE:AZ::PythonBindingsExample.Tests> --unittest

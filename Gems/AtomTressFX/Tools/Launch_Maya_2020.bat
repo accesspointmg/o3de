@@ -42,21 +42,21 @@ echo ________________________________
 echo Launching Maya %MAYA_VERSION% for Lumberyard...
 
 :::: Set Maya native project acess to this project
-set MAYA_PROJECT=%LY_PROJECT_PATH%
-echo     MAYA_PROJECT = %LY_PROJECT_PATH%
+set MAYA_PROJECT=%O3DE_PROJECT_PATH%
+echo     MAYA_PROJECT = %O3DE_PROJECT_PATH%
 
 :: DX11 Viewport
 Set MAYA_VP2_DEVICE_OVERRIDE = VirtualDeviceDx11
 
 :: add plug-in path to AtomTressFX
-set TRESSFX_PLUG_IN_PATH=%LY_DEV%\Gems\AtomTressFX\Tools\Maya
+set TRESSFX_PLUG_IN_PATH=%O3DE_DEV%\Gems\AtomTressFX\Tools\Maya
 :: also attached to maya's built-it env var
 set MAYA_PLUG_IN_PATH=%TRESSFX_PLUG_IN_PATH%;%MAYA_PLUG_IN_PATH%
 echo     MAYA_PLUG_IN_PATH = %MAYA_PLUG_IN_PATH%
 
 :: configure local xgen data so we can store it with test data
 :: https://knowledge.autodesk.com/support/maya/learn-explore/caas/CloudHelp/cloudhelp/2020/ENU/Maya-CharEffEnvBuild/files/GUID-6ED517C7-7346-4A6E-A9CF-37D2B8511C36-htm.html
-Set XGEN_CONFIG_PATH=%LY_PROJECT_PATH%\AssetData
+Set XGEN_CONFIG_PATH=%O3DE_PROJECT_PATH%\AssetData
 echo     XGEN_CONFIG_PATH = %XGEN_CONFIG_PATH%
 
 :: Default to the right version of Maya if we can detect it... and launch

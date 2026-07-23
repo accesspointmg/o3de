@@ -14,13 +14,13 @@ import pytest
 import logging
 import re
 import sqlite3
-pytest.importorskip('ly_test_tools')
+pytest.importorskip('o3de_test_tools')
 
-import ly_test_tools.environment.file_system as file_system
-import ly_test_tools.log.log_monitor
-import ly_test_tools.environment.waiter as waiter
+import o3de_test_tools.environment.file_system as file_system
+import o3de_test_tools.log.log_monitor
+import o3de_test_tools.environment.waiter as waiter
 
-from ly_test_tools.o3de.editor_test_utils import compile_test_case_name_from_request
+from o3de_test_tools.o3de.editor_test_utils import compile_test_case_name_from_request
 
 def detect_product(sql_connection, platform, target):
     cur = sql_connection.cursor()
@@ -77,7 +77,7 @@ class TestPythonAssetProcessing(object):
 
         with editor.start():
             editorlog_file = os.path.join(editor.workspace.paths.project_log(), 'Editor.log')
-            log_monitor = ly_test_tools.log.log_monitor.LogMonitor(editor, editorlog_file)
+            log_monitor = o3de_test_tools.log.log_monitor.LogMonitor(editor, editorlog_file)
             waiter.wait_for(
                 lambda: editor.is_alive(),
                 timeout,

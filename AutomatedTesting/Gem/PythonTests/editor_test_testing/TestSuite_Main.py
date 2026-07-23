@@ -12,27 +12,27 @@ import sys
 import importlib
 import unittest.mock as mock
 
-import ly_test_tools
-import ly_test_tools.environment.process_utils as process_utils
-from ly_test_tools.o3de.editor_test import EditorSingleTest, EditorSharedTest, EditorTestSuite
-from ly_test_tools.o3de.multi_test_framework import Result
-from ly_test_tools.o3de.asset_processor import AssetProcessor
+import o3de_test_tools
+import o3de_test_tools.environment.process_utils as process_utils
+from o3de_test_tools.o3de.editor_test import EditorSingleTest, EditorSharedTest, EditorTestSuite
+from o3de_test_tools.o3de.multi_test_framework import Result
+from o3de_test_tools.o3de.asset_processor import AssetProcessor
 
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
 def get_editor_launcher_platform():
-    if ly_test_tools.WINDOWS:
+    if o3de_test_tools.WINDOWS:
         return "windows_editor"
-    elif ly_test_tools.LINUX:
+    elif o3de_test_tools.LINUX:
         return "linux_editor"
     else:
         return None
 
 
 # Other plugins can create cross-object reference issues due these tests executing nonstandard pytest-within-pytest
-@mock.patch('ly_test_tools._internal.pytest_plugin.terminal_report._add_ownership', mock.MagicMock())
+@mock.patch('o3de_test_tools._internal.pytest_plugin.terminal_report._add_ownership', mock.MagicMock())
 @pytest.mark.parametrize("launcher_platform", [get_editor_launcher_platform()])
 @pytest.mark.parametrize("project", ["AutomatedTesting"])
 class TestEditorTest:
@@ -89,8 +89,8 @@ class TestEditorTest:
             import os
             import sys
 
-            from ly_test_tools import LAUNCHERS
-            from ly_test_tools.o3de.editor_test import EditorSingleTest, EditorSharedTest, EditorTestSuite
+            from o3de_test_tools import LAUNCHERS
+            from o3de_test_tools.o3de.editor_test import EditorSingleTest, EditorSharedTest, EditorTestSuite
 
             @pytest.mark.SUITE_main
             @pytest.mark.parametrize("launcher_platform", ['{get_editor_launcher_platform()}'])
@@ -147,8 +147,8 @@ class TestEditorTest:
             import os
             import sys
 
-            from ly_test_tools import LAUNCHERS
-            from ly_test_tools.o3de.editor_test import EditorSingleTest, EditorSharedTest, EditorTestSuite
+            from o3de_test_tools import LAUNCHERS
+            from o3de_test_tools.o3de.editor_test import EditorSingleTest, EditorSharedTest, EditorTestSuite
 
             @pytest.mark.SUITE_main
             @pytest.mark.parametrize("launcher_platform", ['{get_editor_launcher_platform()}'])

@@ -6,13 +6,13 @@
 #
 #
 
-if (${PAL_TRAIT_LINUX_WINDOW_MANAGER} STREQUAL "xcb")
+if (${O3DE_PAL_TRAIT_LINUX_WINDOW_MANAGER} STREQUAL "xcb")
     # This library defines local implementations of all the used xcb functions,
     # in order to allow tests to run in the absence of a running X server.
     # These have to be in a separate library, so that the normal AzFramework
     # tests do not need to set up a mock Xcb interface.
-    ly_add_target(
-        NAME AzFramework.Xcb.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+    o3de_add_target(
+        NAME AzFramework.Xcb.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE AZ
         FILES_CMAKE
             Tests/Platform/Common/Xcb/azframework_xcb_tests_files.cmake
@@ -28,7 +28,7 @@ if (${PAL_TRAIT_LINUX_WINDOW_MANAGER} STREQUAL "xcb")
                 AZ::AzTestShared
                 AZ::AzFrameworkTestShared
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME AZ::AzFramework.Xcb.Tests
     )
 endif()

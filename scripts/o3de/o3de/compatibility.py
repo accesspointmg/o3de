@@ -12,7 +12,7 @@ from packaging.version import Version, InvalidVersion
 from packaging.specifiers import SpecifierSet
 import pathlib
 import logging
-from o3de import manifest, utils, cmake, validation
+from o3de import o3de_object, utils, cmake, validation
 from collections import namedtuple
 from resolvelib import (
     AbstractProvider,
@@ -38,7 +38,7 @@ def get_most_compatible_project_engine_path(project_path:pathlib.Path,
     :param engines_json_data: Json data to use for engines instead of opening each file, useful for speed 
     """
     if not project_json_data:
-        project_json_data = manifest.get_project_json_data(project_path=project_path)
+        project_json_data = o3de_object.get_project_json_data(project_path=project_path)
     if not project_json_data:
         logger.error(f'Failed to load project.json data from {project_path}. '
             'Please verify the path is correct, the file exists and is formatted correctly.')
@@ -48,7 +48,7 @@ def get_most_compatible_project_engine_path(project_path:pathlib.Path,
     if not isinstance(user_project_json_data, dict):
         user_project_json_path = pathlib.Path(project_path) / 'user' / 'project.json'
         if user_project_json_path.is_file():
-            user_project_json_data = manifest.get_json_data_file(user_project_json_path, 'project', validation.always_valid)
+            user_project_json_data = o3de_object.get_json_data_file(user_project_json_path, 'project', validation.always_valid)
 
     # take into account any user project.json overrides 
     if user_project_json_data:
@@ -63,7 +63,7 @@ def get_most_compatible_project_engine_path(project_path:pathlib.Path,
         return None
 
     if not engines_json_data:
-        engines_json_data = manifest.get_engines_json_data_by_path()
+        engines_json_data = o3de_object.get_engines_json_data_by_path()
 
     most_compatible_engine_path = None
     most_compatible_engine_version = None
@@ -100,14 +100,14 @@ def get_project_engine_incompatible_objects(project_path:pathlib.Path, engine_pa
     :param engine_path: Optional path to the engine. If not specified, the current engine path is used
     """
     # use the specified engine path NOT necessarily engine the project is registered to
-    engine_path = engine_path or manifest.get_this_engine_path()
-    engine_json_data = manifest.get_engine_json_data(engine_path=engine_path)
+    engine_path = engine_path or o3de_object.get_this_engine_path()
+    engine_json_data = o3de_object.get_engine_json_data(engine_path=engine_path)
     if not engine_json_data:
         logger.error(f'Failed to load engine.json data needed for compatibility check from {engine_path}. '
             'Please verify the path is correct, the file exists and is formatted correctly.')
         return set('engine.json (missing)')
 
-    project_json_data = manifest.get_project_json_data(project_path=project_path)
+    project_json_data = o3de_object.get_project_json_data(project_path=project_path)
     if not project_json_data:
         logger.error(f'Failed to load project.json data needed for compatibility check from {project_path}. '
             'Please verify the path is correct, the file exists and is formatted correctly.')
@@ -117,13 +117,13 @@ def get_project_engine_incompatible_objects(project_path:pathlib.Path, engine_pa
 
     # verify project -> gem -> engine compatibility
     active_gem_names = project_json_data.get('gem_names',[])
-    enabled_gems_file = manifest.get_enabled_gem_cmake_file(project_path=project_path)
+    enabled_gems_file = o3de_object.get_enabled_gem_cmake_file(project_path=project_path)
     if enabled_gems_file and enabled_gems_file.is_file():
-        active_gem_names.extend(manifest.get_enabled_gems(enabled_gems_file))
+        active_gem_names.extend(o3de_object.get_enabled_gems(enabled_gems_file))
     active_gem_names = utils.get_gem_names_set(active_gem_names)
 
     # it's much more efficient to get all gem data once than to query them by name one by one
-    all_gems_json_data = manifest.get_gems_json_data_by_name(engine_path, project_path, include_manifest_gems=True)
+    all_gems_json_data = o3de_object.get_gems_json_data_by_name(engine_path, project_path, include_manifest_gems=True)
 
     # Dependency resolution takes into account gem and engine requirements so if 
     # it succeeds, all is well
@@ -157,32 +157,32 @@ def get_gems_project_incompatible_objects(gem_paths:list, gem_names:list, projec
     :param project_path: path to the project
     """
     # early out if this project has no assigned engine
-    engine_path = manifest.get_project_engine_path(project_path=project_path)
+    engine_path = o3de_object.get_project_engine_path(project_path=project_path)
     if not engine_path:
         logger.warning(f'Project at path {project_path} is not registered to an engine and compatibility cannot be checked.')
         return set()
 
-    project_json_data = manifest.get_project_json_data(project_path=project_path)
+    project_json_data = o3de_object.get_project_json_data(project_path=project_path)
     if not project_json_data:
         logger.error(f'Failed to load project.json data from {project_path} needed for checking compatibility')
         return set(f'project.json (missing)') 
 
-    engine_json_data = manifest.get_engine_json_data(engine_path=engine_path)
+    engine_json_data = o3de_object.get_engine_json_data(engine_path=engine_path)
     if not engine_json_data:
         logger.error('Failed to load engine.json data based on the engine field in project.json or detect the engine from the current folder')
         return set(f'engine.json (missing)') 
 
     # include the gem_paths for the gems we are adding so their
     # 'external_subdirectories' will be considered 
-    all_gems_json_data = manifest.get_gems_json_data_by_name(engine_path, project_path, 
+    all_gems_json_data = o3de_object.get_gems_json_data_by_name(engine_path, project_path, 
         external_subdirectories=gem_paths, include_manifest_gems=True)
 
     # Verify we can resolve all dependencies after adding this new gem
     active_gem_names = engine_json_data.get('gem_names',[])
     active_gem_names.extend(project_json_data.get('gem_names',[]))
-    enabled_gems_file = manifest.get_enabled_gem_cmake_file(project_path=project_path)
+    enabled_gems_file = o3de_object.get_enabled_gem_cmake_file(project_path=project_path)
     if enabled_gems_file and enabled_gems_file.is_file():
-        active_gem_names.extend(manifest.get_enabled_gems(enabled_gems_file))
+        active_gem_names.extend(o3de_object.get_enabled_gems(enabled_gems_file))
 
     # convert the list into a set of strings that removes any dictionaries and optional gems
     active_gem_names = utils.get_gem_names_set(active_gem_names, include_optional=False)
@@ -469,8 +469,10 @@ class GemDependencyProvider(AbstractProvider):
 def resolve_gem_dependencies(gem_names:list, all_gem_json_data:dict, engine_json_data:dict, include_optional=False) -> tuple:
     # Start with the engine candidate using a version of 0.0.0 for any
     # engine that has no version field (older engine)
+    engine_name = validation.get_object_name(engine_json_data, 'engine') or engine_json_data.get('engine_name', '')
+    engine_version = validation.get_object_version(engine_json_data, 'engine') or engine_json_data.get('version', '0.0.0')
     candidates = [
-        EngineCandidate(engine_json_data.get('engine_name'), engine_json_data.get('version','0.0.0'), [], engine_json_data)
+        EngineCandidate(engine_name, engine_version, [], engine_json_data)
     ]
 
     provided_unique_service_gem_map = {}

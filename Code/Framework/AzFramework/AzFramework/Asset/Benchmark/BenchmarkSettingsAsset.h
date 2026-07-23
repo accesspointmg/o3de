@@ -23,7 +23,7 @@ namespace AzFramework
     //! The generated assets can be used for benchmarking asset loads in a variety of situations.
     //!
     //! To use:
-    //! In the LY Editor, go to the Asset Editor and create a new "Benchmark Settings Asset" asset.  Set the following
+    //! In the O3DE Editor, go to the Asset Editor and create a new "Benchmark Settings Asset" asset.  Set the following
     //! settings as appropriate for your test:
     //!    - "Asset Buffer Size":            The number of bytes to save in the buffer for the top-level asset.
     //!    - "Dependent Asset Buffer Size":  The number of bytes to save in the buffer for every asset below the top-level one.

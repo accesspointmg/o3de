@@ -10,8 +10,8 @@ import shutil
 import zipfile
 
 import pytest
-from ly_test_tools.environment import file_system
-from ly_test_tools.o3de.editor_test import EditorTestSuite, EditorSingleTest
+from o3de_test_tools.environment import file_system
+from o3de_test_tools.o3de.editor_test import EditorTestSuite, EditorSingleTest
 
 
 def cleanup_test_files(workspace, test_file_names: list[str]):

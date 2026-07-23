@@ -4,7 +4,7 @@
     "COMMAND": "../Mac/clean_mac.sh",
     "PARAMETERS": {
       "OUTPUT_DIRECTORY": "build",
-      "CMAKE_LY_PROJECTS": "AutomatedTesting"
+      "CMAKE_O3DE_PROJECTS": "AutomatedTesting"
     }
   },
   "metrics": {
@@ -28,7 +28,7 @@
       "CONFIGURATION": "debug",
       "OUTPUT_DIRECTORY": "build/ios",
       "CMAKE_OPTIONS": "-G Xcode -DCMAKE_TOOLCHAIN_FILE=cmake/Platform/iOS/Toolchain_ios.cmake -DLY_MONOLITHIC_GAME=TRUE -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED=FALSE -DLY_IOS_CODE_SIGNING_IDENTITY=\"\" -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS=\"\" -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=FALSE",
-      "CMAKE_LY_PROJECTS": "AutomatedTesting",
+      "CMAKE_O3DE_PROJECTS": "AutomatedTesting",
       "CMAKE_TARGET": "ALL_BUILD",
       "CMAKE_NATIVE_BUILD_ARGS": "-destination generic/platform=iOS"
     }
@@ -45,7 +45,7 @@
       "CONFIGURATION": "profile",
       "OUTPUT_DIRECTORY": "build/ios",
       "CMAKE_OPTIONS": "-G Xcode -DCMAKE_TOOLCHAIN_FILE=cmake/Platform/iOS/Toolchain_ios.cmake -DLY_MONOLITHIC_GAME=TRUE -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED=FALSE -DLY_IOS_CODE_SIGNING_IDENTITY=\"\"  -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS=\"\" -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=FALSE",
-      "CMAKE_LY_PROJECTS": "AutomatedTesting",
+      "CMAKE_O3DE_PROJECTS": "AutomatedTesting",
       "CMAKE_TARGET": "ALL_BUILD",
       "CMAKE_NATIVE_BUILD_ARGS": "-destination generic/platform=iOS"
     }
@@ -61,7 +61,7 @@
       "CONFIGURATION": "profile",
       "OUTPUT_DIRECTORY": "build/ios",
       "CMAKE_OPTIONS": "-G Xcode -DCMAKE_TOOLCHAIN_FILE=cmake/Platform/iOS/Toolchain_ios.cmake -DLY_MONOLITHIC_GAME=TRUE -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED=FALSE -DLY_IOS_CODE_SIGNING_IDENTITY=\"\"  -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS=\"\" -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=FALSE -DLY_UNITY_BUILD=FALSE",
-      "CMAKE_LY_PROJECTS": "AutomatedTesting",
+      "CMAKE_O3DE_PROJECTS": "AutomatedTesting",
       "CMAKE_TARGET": "ALL_BUILD",
       "CMAKE_NATIVE_BUILD_ARGS": "-destination generic/platform=iOS"
     }
@@ -77,7 +77,7 @@
       "CONFIGURATION": "profile",
       "OUTPUT_DIRECTORY": "build/mac",
       "CMAKE_OPTIONS": "-G Xcode",
-      "CMAKE_LY_PROJECTS": "AutomatedTesting",
+      "CMAKE_O3DE_PROJECTS": "AutomatedTesting",
       "CMAKE_TARGET": "AssetProcessorBatch",
       "ASSET_PROCESSOR_BINARY": "bin/profile/AssetProcessorBatch",
       "ASSET_PROCESSOR_OPTIONS": "--zeroAnalysisMode --ignoreFutureAssetDatabaseVersionError",
@@ -95,7 +95,7 @@
       "CONFIGURATION": "release",
       "OUTPUT_DIRECTORY": "build/ios",
       "CMAKE_OPTIONS": "-G Xcode -DCMAKE_TOOLCHAIN_FILE=cmake/Platform/iOS/Toolchain_ios.cmake -DLY_MONOLITHIC_GAME=TRUE -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED=FALSE -DLY_IOS_CODE_SIGNING_IDENTITY=\"\"  -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS=\"\" -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=FALSE",
-      "CMAKE_LY_PROJECTS": "AutomatedTesting",
+      "CMAKE_O3DE_PROJECTS": "AutomatedTesting",
       "CMAKE_TARGET": "ALL_BUILD",
       "CMAKE_NATIVE_BUILD_ARGS": "-destination generic/platform=iOS"
     }
@@ -105,7 +105,7 @@
     ],
     "PIPELINE_ENV":{
       "NODE_LABEL":"Catalina_DeviceFarm_1",
-      "LY_3RDPARTY_PATH": "/Volumes/Data/jenkins/3rdParty",
+      "O3DE_3RDPARTY_PATH": "/Volumes/Data/jenkins/3rdParty",
       "WORKSPACE": "/Volumes/Data/jenkins/workspace"
     },
     "COMMAND": "./build_ios_test.sh",

@@ -6,7 +6,7 @@
  *
  */
 
-// LY Editor Tools Crash Handler support for Mac
+// O3DE Editor Tools Crash Handler support for Mac
 
 #include <ToolsCrashHandler.h>
 #include <AzCore/PlatformIncl.h>

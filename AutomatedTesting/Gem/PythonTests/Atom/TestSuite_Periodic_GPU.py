@@ -12,11 +12,11 @@ import json
 
 import pytest
 
-from ly_test_tools.environment import process_utils
-from ly_test_tools.launchers import launcher_helper
-from ly_test_tools.log.log_monitor import LogMonitor
+from o3de_test_tools.environment import process_utils
+from o3de_test_tools.launchers import launcher_helper
+from o3de_test_tools.log.log_monitor import LogMonitor
 
-import ly_test_tools.environment.waiter as waiter
+import o3de_test_tools.environment.waiter as waiter
 
 logger = logging.getLogger(__name__)
 

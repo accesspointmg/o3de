@@ -87,18 +87,18 @@ set(FILES
     AzCore/Debug/Profiler_Platform.inl
     AzCore/Debug/Profiler_Android.inl
 )
-if (LY_TEST_PROJECT)
-    ly_add_source_properties(
+if (O3DE_TEST_PROJECT)
+    o3de_add_source_properties(
         SOURCES ${CMAKE_CURRENT_LIST_DIR}/AzCore/Android/Utils.cpp
         PROPERTY COMPILE_DEFINITIONS
-        VALUES LY_NO_ASSETS
+        VALUES O3DE_NO_ASSETS
     )
 endif()
 
 # Disabling -ffast-math for 'IntersectSegment.cpp' file only.
 # It has an implementation of the "Watertight Ray/Triangle Intersection"
 # algorithm, which gets broken by the fast-math optimizations.
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES ${CMAKE_CURRENT_LIST_DIR}/../../AzCore/Math/IntersectSegment.cpp
     PROPERTY COMPILE_OPTIONS
     VALUES -fno-fast-math -Wno-overriding-t-option

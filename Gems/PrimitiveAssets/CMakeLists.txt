@@ -6,8 +6,10 @@
 #
 #
 
+o3de_gem_setup()
+
 # Add the PrimitiveAssets Asset-only gem as a Builder variant
 # This will export its "SourcePaths" to the generated "cmake_dependencies.<project>.assetbuilder.setreg"
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_create_alias(NAME PrimitiveAssets.Builders NAMESPACE Gem)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_create_alias(NAME PrimitiveAssets.Builders NAMESPACE Gem)
 endif()

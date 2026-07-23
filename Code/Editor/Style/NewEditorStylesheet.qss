@@ -1767,7 +1767,7 @@ AzQtComponents--TitleBar[drawSimple="true"] {
 
 AzQtComponents--TitleBar QLabel#icon {
     margin-left: 2px; /* DockBar::HandleLeftMargin */
-    qproperty-pixmap: url(:/stylesheet/img/ly_application_icon.png);
+    qproperty-pixmap: url(:/stylesheet/img/o3de_application_icon.png);
 }
 
 AzQtComponents--TitleBar[drawSimple="false"][tearEnabled="true"] QLabel#icon {

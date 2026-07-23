@@ -11,7 +11,7 @@ import logging
 import os
 import pathlib
 
-from o3de import command_utils, manifest, utils, android_support
+from o3de import command_utils, o3de_object, utils, android_support
 from getpass import getpass
 
 ENGINE_PATH = pathlib.Path(__file__).parents[3]
@@ -204,7 +204,7 @@ def get_android_config_from_args(args: argparse) -> (command_utils.O3DEConfig, s
             project_name = project
 
             # If '--project' was not a project path, check to see if its a registered project by its name
-            project_path = manifest.get_registered(project_name=project_name)
+            project_path = o3de_object.get_registered(project_name=project_name)
             if not project_path:
                 raise command_utils.O3DEConfigError(f"Unable to resolve project named '{project_name}'. "
                                                     f"Make sure it is registered with O3DE.")
@@ -253,7 +253,7 @@ def configure_android_options(args: argparse) -> int:
 
 def prompt_validated_password(name: str) -> str:
     """
-    Request a password with validation prompt to the user. If the password validation fails (either empty or doesnt match), an exception is thrown
+    Request a password with validation prompt to the user. If the password validation fails (either empty or doesn't match), an exception is thrown
 
     :param name:    The password name to display
     :return: The validated password
@@ -286,7 +286,7 @@ def generate_android_project(args: argparse) -> int:
         android_config, project_name = get_android_config_from_args(args)
 
         # Resolve the project path and get the project and android settings
-        resolved_project_path = manifest.get_registered(project_name=project_name)
+        resolved_project_path = o3de_object.get_registered(project_name=project_name)
         if not resolved_project_path:
             raise android_support.AndroidToolError(f"Project '{project_name}' is not registered with O3DE.")
         project_settings, android_settings = android_support.read_android_settings_for_project(resolved_project_path)

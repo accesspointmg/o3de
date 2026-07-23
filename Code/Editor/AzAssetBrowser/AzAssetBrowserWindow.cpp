@@ -33,7 +33,7 @@
 
 // Editor
 #include "AzAssetBrowser/AzAssetBrowserRequestHandler.h"
-#include "LyViewPaneNames.h"
+#include "O3deViewPaneNames.h"
 
 AZ_PUSH_DISABLE_DLL_EXPORT_MEMBER_WARNING
 #include <AzAssetBrowser/ui_AzAssetBrowserWindow.h>
@@ -84,9 +84,9 @@ public:
 
     void SelectAsset(const QString& assetPath) override
     {
-        AzToolsFramework::OpenViewPane(LyViewPane::AssetBrowser);
+        AzToolsFramework::OpenViewPane(O3deViewPane::AssetBrowser);
 
-        AzAssetBrowserWindow* assetBrowser = AzToolsFramework::GetViewPaneWidget<AzAssetBrowserWindow>(LyViewPane::AssetBrowser);
+        AzAssetBrowserWindow* assetBrowser = AzToolsFramework::GetViewPaneWidget<AzAssetBrowserWindow>(O3deViewPane::AssetBrowser);
         if (assetBrowser)
         {
             AzQtComponents::bringWindowToTop(assetBrowser);
@@ -444,11 +444,11 @@ void AzAssetBrowserWindow::RegisterViewClass()
 {
     AzToolsFramework::ViewPaneOptions options;
     options.preferedDockingArea = Qt::BottomDockWidgetArea;
-    AzToolsFramework::RegisterViewPane<AzAssetBrowserWindow>(LyViewPane::AssetBrowser, LyViewPane::CategoryTools, options);
+    AzToolsFramework::RegisterViewPane<AzAssetBrowserWindow>(O3deViewPane::AssetBrowser, O3deViewPane::CategoryTools, options);
 
     options.showInMenu = false;
-    const QString name = QString("%1 (2)").arg(LyViewPane::AssetBrowser);
-    AzToolsFramework::RegisterViewPane<AzAssetBrowserWindow>(qPrintable(name), LyViewPane::CategoryTools, options);
+    const QString name = QString("%1 (2)").arg(O3deViewPane::AssetBrowser);
+    AzToolsFramework::RegisterViewPane<AzAssetBrowserWindow>(qPrintable(name), O3deViewPane::CategoryTools, options);
 }
 
 QObject* AzAssetBrowserWindow::createListenerForShowAssetEditorEvent(QObject* parent)

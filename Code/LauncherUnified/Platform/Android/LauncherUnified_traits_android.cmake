@@ -7,4 +7,4 @@
 #
 
 # Android launcher are shared objects that are loaded by Android's own launcher
-set(PAL_TRAIT_LAUNCHERUNIFIED_LAUNCHER_TYPE MODULE)
+set(O3DE_PAL_TRAIT_LAUNCHERUNIFIED_LAUNCHER_TYPE MODULE)

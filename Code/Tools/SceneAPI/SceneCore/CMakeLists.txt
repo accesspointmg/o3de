@@ -6,11 +6,11 @@
 #
 #
 
-if (NOT PAL_TRAIT_BUILD_HOST_TOOLS)
+if (NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-ly_add_target(
+o3de_add_target(
     NAME SceneCore SHARED
     NAMESPACE AZ
     FILES_CMAKE
@@ -28,9 +28,9 @@ ly_add_target(
             AZ::AzToolsFramework
 )
 
-if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    ly_add_target(
-        NAME SceneCore.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
+    o3de_add_target(
+        NAME SceneCore.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
         NAMESPACE AZ
         FILES_CMAKE
             scenecore_testing_files.cmake
@@ -44,7 +44,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 AZ::AzFramework
                 AZ::AzToolsFramework
     )
-    ly_add_googletest(
+    o3de_add_googletest(
         NAME AZ::SceneCore.Tests
         LABELS REQUIRES_tiaf
     )

@@ -6,26 +6,26 @@
 #
 #
 
-ly_get_pal_tool_dirs(pal_tool_dirs ${CMAKE_CURRENT_LIST_DIR}/AssetBuilderSDK/Platform)
-
-set(pal_files "")
-foreach(enabled_platform ${LY_PAL_TOOLS_ENABLED})
-    string(TOLOWER ${enabled_platform} enabled_platform_lowercase)
-    o3de_pal_dir(pal_dir ${CMAKE_CURRENT_LIST_DIR}/AssetBuilderSDK/Platform/${enabled_platform} ${O3DE_ENGINE_RESTRICTED_PATH} ${LY_ROOT_FOLDER})
-    list(APPEND pal_files ${pal_dir}/assetbuildersdk_${enabled_platform_lowercase}_files.cmake)
+set(pal_tool_paths "")
+set(pal_tool_files "")
+foreach(enabled_platform ${O3DE_PAL_TOOLS_ENABLED})
+    o3de_pal_platform_name_wart(${enabled_platform} pal_wart)
+    o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Tools/AssetProcessor/AssetBuilderSDK/Platform/${enabled_platform} pal_tool_path)
+    list(APPEND pal_tool_paths ${pal_tool_path})
+    list(APPEND pal_tool_files ${pal_tool_path}/assetbuildersdk_${pal_wart}_files.cmake)
 endforeach()
 
-ly_add_target(
+o3de_add_target(
     NAME AssetBuilderSDK STATIC
     NAMESPACE AZ
     FILES_CMAKE
         assetbuilder_files.cmake
-        ${pal_files}
+        ${pal_tool_files}
     INCLUDE_DIRECTORIES
         PUBLIC
             .
         PRIVATE
-            ${pal_tool_dirs}
+            ${pal_tool_paths}
     BUILD_DEPENDENCIES
         PRIVATE
             AZ::AzCore
@@ -34,8 +34,8 @@ ly_add_target(
             AZ::AzToolsFramework
             3rdParty::xxhash
 )
-ly_add_source_properties(
+o3de_add_source_properties(
     SOURCES AssetBuilderSDK/AssetBuilderSDK.cpp
     PROPERTY COMPILE_DEFINITIONS 
-    VALUES ${LY_PAL_TOOLS_DEFINES}
+    VALUES ${O3DE_PAL_TOOLS_DEFINES}
 )

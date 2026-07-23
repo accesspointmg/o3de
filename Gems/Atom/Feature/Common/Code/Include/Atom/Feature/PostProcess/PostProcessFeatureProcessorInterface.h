@@ -15,7 +15,7 @@ namespace AZ
 {
     namespace Render
     {
-        //! Abstract interface for PostProcessFeatureProcessor so it can be access outside of Atom (for example in AtomLyIntegration)
+        //! Abstract interface for PostProcessFeatureProcessor so it can be access outside of Atom (for example in AtomO3deIntegration)
         class PostProcessFeatureProcessorInterface
             : public RPI::FeatureProcessor
         {

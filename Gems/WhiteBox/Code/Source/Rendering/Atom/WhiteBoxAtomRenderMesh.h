@@ -16,7 +16,7 @@
 #include <Rendering/WhiteBoxRenderMeshInterface.h>
 
 #include <Atom/Feature/Mesh/MeshFeatureProcessorInterface.h>
-#include <AtomLyIntegration/CommonFeatures/Mesh/MeshHandleStateBus.h>
+#include <AtomO3deIntegration/CommonFeatures/Mesh/MeshHandleStateBus.h>
 #include <AzCore/Component/TransformBus.h>
 #include <AzCore/Name/Name.h>
 

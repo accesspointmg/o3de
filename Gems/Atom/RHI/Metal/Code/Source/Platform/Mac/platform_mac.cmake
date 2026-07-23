@@ -6,7 +6,7 @@
 #
 #
 
-set(LY_COMPILE_OPTIONS
+set(O3DE_COMPILE_OPTIONS
     PRIVATE
         -xobjective-c++
         -Wno-c++11-narrowing

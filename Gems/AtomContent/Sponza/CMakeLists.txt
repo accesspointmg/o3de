@@ -5,7 +5,10 @@
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 #
 #
+
+o3de_gem_setup()
+
 # This will export the Sponza Buliders module to the generated "cmake_dependencies.<project>.assetbuilder.setreg"
-if(PAL_TRAIT_BUILD_HOST_TOOLS)
-    ly_create_alias(NAME Sponza.Builders NAMESPACE Gem)
+if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_create_alias(NAME Sponza.Builders NAMESPACE Gem)
 endif()

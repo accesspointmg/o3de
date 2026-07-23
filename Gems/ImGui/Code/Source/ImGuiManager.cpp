@@ -525,10 +525,10 @@ bool ImGuiManager::OnInputChannelEventFiltered(const InputChannel& inputChannel)
         // Only pipe in Controller Nav Inputs when at least 1 of the two controller modes are enabled.
         if (m_controllerModeFlags)
         {
-            const auto lyButtonToImGuiNav = s_lyInputToImGuiNavIndexMap.find(inputChannelId);
-            if (lyButtonToImGuiNav != s_lyInputToImGuiNavIndexMap.end())
+            const auto o3deButtonToImGuiNav = s_lyInputToImGuiNavIndexMap.find(inputChannelId);
+            if (o3deButtonToImGuiNav != s_lyInputToImGuiNavIndexMap.end())
             {
-                const ImGuiNavInput_ imGuiNavInput = lyButtonToImGuiNav->second;
+                const ImGuiNavInput_ imGuiNavInput = o3deButtonToImGuiNav->second;
                 io.NavInputs[imGuiNavInput] = inputChannel.GetValue();
             }
         }

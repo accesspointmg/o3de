@@ -13,7 +13,7 @@ import pathlib
 import urllib.request
 from unittest.mock import patch, MagicMock, mock_open
 
-from o3de import manifest, register, repo
+from o3de import o3de_object, register, repo, cache
 
 TEST_O3DE_MANIFEST_JSON_PAYLOAD = '''
 {
@@ -408,11 +408,11 @@ class TestRepos:
         self.o3de_manifest_data = json.loads(TEST_O3DE_MANIFEST_JSON_PAYLOAD)
         self.o3de_manifest_data["repos"] = ["http://o3de.org", "http://removablerepo.com"]
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             return self.o3de_manifest_data
 
         with patch('o3de.manifest.load_o3de_manifest', side_effect=load_o3de_manifest) as _1:
-            assert (repo_path in manifest.get_manifest_repos()) == expected_result
+            assert (repo_path in o3de_object.get_manifest_child_repos()) == expected_result
 
     @pytest.mark.parametrize("repo_uri, expected_result, expected_in_repo, download_repo_data, created_file", [
                                  pytest.param('http://o3derepo.org', 0, True, TEST_O3DE_REPO_JSON_PAYLOAD, TEST_O3DE_REPO_FILENAME),
@@ -427,10 +427,10 @@ class TestRepos:
         self.o3de_manifest_data["repos"] = ["http://o3de.org", "http://removablerepo.com"]
         self.created_files.clear()
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             return copy.deepcopy(self.o3de_manifest_data)
 
-        def save_o3de_manifest(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
+        def save_o3de_manifest_json_data(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
             self.o3de_manifest_data = manifest_data
             return True
 
@@ -476,7 +476,7 @@ class TestRepos:
             result = register.register(repo_uri=repo_uri, force=True)
 
             assert result == expected_result
-            assert (repo_uri in manifest.get_manifest_repos()) == expected_in_repo
+            assert (repo_uri in o3de_object.get_manifest_child_repos()) == expected_in_repo
 
             #If we were expecting to create a file, check that it was created
             matches = [pathlib.Path(x).name for x in self.created_files if pathlib.Path(x).name == created_file]
@@ -490,19 +490,19 @@ class TestRepos:
         self.o3de_manifest_data = json.loads(TEST_O3DE_MANIFEST_JSON_PAYLOAD)
         self.o3de_manifest_data["repos"] = ["http://o3de.org", "http://removablerepo.com"]
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             return self.o3de_manifest_data
 
-        def save_o3de_manifest(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
+        def save_o3de_manifest_json_data(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
             self.o3de_manifest_data = manifest_data
             return True
 
         with patch('o3de.manifest.load_o3de_manifest', side_effect=load_o3de_manifest) as _1,\
                 patch('o3de.manifest.save_o3de_manifest', side_effect=save_o3de_manifest) as _2:
-            assert (repo_path in manifest.get_manifest_repos()) == existing_repo
+            assert (repo_path in o3de_object.get_manifest_child_repos()) == existing_repo
             result = register.register(repo_uri=repo_path, remove=True)
             assert result == expected_result
-            assert repo_path not in manifest.get_manifest_repos()
+            assert repo_path not in o3de_object.get_manifest_child_repos()
 
     @pytest.mark.parametrize("test_name, repo_paths, expected_gems_json_data, expected_projects_json_data, expected_templates_json_data", [
             pytest.param("repoA loads repoA objects", ['http://o3de.org/repoA'],  
@@ -529,7 +529,7 @@ class TestRepos:
         self.o3de_manifest_data = json.loads(TEST_O3DE_MANIFEST_JSON_PAYLOAD)
         self.o3de_manifest_data["repos"] = repo_paths
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             return copy.deepcopy(self.o3de_manifest_data)
 
         def mocked_open(path, mode, *args, **kwargs):
@@ -572,17 +572,17 @@ class TestRepos:
                 None
 
         with patch('o3de.manifest.load_o3de_manifest', side_effect=load_o3de_manifest) as _1,\
-            patch('o3de.manifest.get_o3de_cache_folder', return_value=pathlib.Path('Cache')) as _2, \
+            patch('o3de.manifest.get_user_o3de_cache_path', return_value=pathlib.Path('Cache')) as _2, \
             patch('o3de.manifest.get_json_data_file', side_effect=get_json_data_file) as get_json_data_file_patch, \
             patch('pathlib.Path.open', mocked_open) as _3, \
             patch('pathlib.Path.is_file', return_value=True) as _4:
 
-            self.test_gem_cache_filename, _ = repo.get_cache_file_uri("http://o3derepo.org/TestGem/gem.json")
-            self.test_gem2_cache_filename, _ = repo.get_cache_file_uri("http://o3derepo.org/TestGem2/gem.json")
-            self.test_project_cache_filename, _ = repo.get_cache_file_uri("http://o3derepo.org/TestProject/project.json")
-            self.test_project2_cache_filename, _ = repo.get_cache_file_uri("http://o3derepo.org/TestProject2/project.json")
-            self.test_template_cache_filename, _ = repo.get_cache_file_uri("http://o3derepo.org/TestTemplate/template.json")
-            self.test_template2_cache_filename, _ = repo.get_cache_file_uri("http://o3derepo.org/TestTemplate2/template.json")
+            self.test_gem_cache_filename, _ = cache.get_cache_file_uri("http://o3derepo.org/TestGem/gem.json")
+            self.test_gem2_cache_filename, _ = cache.get_cache_file_uri("http://o3derepo.org/TestGem2/gem.json")
+            self.test_project_cache_filename, _ = cache.get_cache_file_uri("http://o3derepo.org/TestProject/project.json")
+            self.test_project2_cache_filename, _ = cache.get_cache_file_uri("http://o3derepo.org/TestProject2/project.json")
+            self.test_template_cache_filename, _ = cache.get_cache_file_uri("http://o3derepo.org/TestTemplate/template.json")
+            self.test_template2_cache_filename, _ = cache.get_cache_file_uri("http://o3derepo.org/TestTemplate2/template.json")
 
             # Gems
             gems_json_data = repo.get_gem_json_data_from_all_cached_repos()
@@ -611,10 +611,10 @@ class TestRepos:
         self.o3de_manifest_data["repos"] = []
         self.created_files.clear()
 
-        def load_o3de_manifest(manifest_path: pathlib.Path = None) -> dict:
+        def get_o3de_manifest_json_data(manifest_path: pathlib.Path = None) -> dict:
             return copy.deepcopy(self.o3de_manifest_data)
 
-        def save_o3de_manifest(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
+        def save_o3de_manifest_json_data(manifest_data: dict, manifest_path: pathlib.Path = None) -> bool:
             self.o3de_manifest_data = manifest_data
             return True
 

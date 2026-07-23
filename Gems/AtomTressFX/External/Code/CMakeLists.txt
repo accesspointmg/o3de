@@ -5,4 +5,4 @@
 #
 #
 #add_subdirectory(src)
-#add_subdirectory(LYIntegration)
+#add_subdirectory(O3DEIntegration)

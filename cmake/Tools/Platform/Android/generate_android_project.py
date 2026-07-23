@@ -28,7 +28,7 @@ O3DE_SCRIPTS_PATH = os.path.join(ROOT_DEV_PATH, 'scripts', 'o3de')
 if O3DE_SCRIPTS_PATH not in sys.path:
     sys.path.append(O3DE_SCRIPTS_PATH)
 
-from o3de import manifest
+from o3de import o3de_object
 
 
 GRADLE_ARGUMENT_NAME = '--gradle-install-path'
@@ -134,8 +134,8 @@ ALL_ASSET_MODES = [ASSET_MODE_PAK, ASSET_MODE_LOOSE, ASSET_MODE_VFS]
 ASSET_TYPE_ARGUMENT_NAME = '--asset-type'
 DEFAULT_ASSET_TYPE = 'android'
 
-manifest_json = manifest.load_o3de_manifest()
-DEFAULT_3RD_PARTY_PATH = pathlib.Path(manifest_json.get('default_third_party_folder', manifest.get_o3de_third_party_folder()))
+manifest_json = o3de_object.get_o3de_manifest_json_data()
+DEFAULT_3RD_PARTY_PATH = pathlib.Path(manifest_json.get('default_third_party_folder', o3de_object.get_user_o3de_third_party_path()))
 
 
 def wrap_parsed_args(parsed_args):

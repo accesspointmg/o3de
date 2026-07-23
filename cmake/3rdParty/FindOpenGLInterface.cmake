@@ -8,7 +8,7 @@
 
 find_package(OpenGL)
 
-ly_add_external_target(
+o3de_add_external_target(
     NAME OpenGLInterface
     VERSION ""
     BUILD_DEPENDENCIES

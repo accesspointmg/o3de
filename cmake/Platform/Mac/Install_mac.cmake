@@ -6,7 +6,8 @@
 #
 #
 
-include(cmake/Platform/Common/Install_common.cmake)
+set(_cmake_Platform_Mac_Install_mac_cmake ${CMAKE_CURRENT_LIST_DIR})
+include(${_cmake_Platform_Mac_Install_mac_cmake}/../Common/Install_common.cmake)
 
 # This is used to generate a setreg file which will be placed inside the bundle
 # for targets that request it(eg. AssetProcessor/Editor). This is the relative path
@@ -35,20 +36,20 @@ file(GENERATE
     CONTENT "${configured_setreg_file}"
 )
 
-# ly_install_run_script isn't defined yet so we use install(SCRIPT) directly.
+# o3de_install_run_script isn't defined yet so we use install(SCRIPT) directly.
 # This needs to be done here because it needs to update the install prefix
 # before cmake does anything else in the install process.
-configure_file(${LY_ROOT_FOLDER}/cmake/Platform/Mac/PreInstallSteps_mac.cmake.in ${CMAKE_BINARY_DIR}/runtime_install/PreInstallSteps_mac.cmake @ONLY)
-ly_install(SCRIPT ${CMAKE_BINARY_DIR}/runtime_install/PreInstallSteps_mac.cmake COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
+configure_file(${O3DE_ENGINE_PATH}/cmake/Platform/Mac/PreInstallSteps_mac.cmake.in ${CMAKE_BINARY_DIR}/runtime_install/PreInstallSteps_mac.cmake @ONLY)
+o3de_install(SCRIPT ${CMAKE_BINARY_DIR}/runtime_install/PreInstallSteps_mac.cmake COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
 
-#! ly_setup_target_install_targets_override: Mac specific target installation
-function(ly_setup_target_install_targets_override)
+#! o3de_setup_target_install_targets_override: Mac specific target installation
+function(o3de_setup_target_install_targets_override)
 
     set(options)
     set(oneValueArgs TARGET ARCHIVE_DIR LIBRARY_DIR RUNTIME_DIR LIBRARY_SUBDIR RUNTIME_SUBDIR)
     set(multiValueArgs)
-    cmake_parse_arguments(ly_platform_install_target "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-    set(target_name "${ly_platform_install_target_TARGET}")
+    cmake_parse_arguments(o3de_platform_install_target "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    set(target_name "${o3de_platform_install_target_TARGET}")
 
     # For bundles on Mac, we set the icons by passing in a path to the Images.xcassets directory.
     # However, the CMake install command expects paths to files for the RESOURCE property.
@@ -69,31 +70,31 @@ function(ly_setup_target_install_targets_override)
 
     foreach(conf IN LISTS CMAKE_CONFIGURATION_TYPES)
         string(TOUPPER ${conf} UCONF)
-        ly_install(TARGETS ${target_name}
+        o3de_install(TARGETS ${target_name}
             ARCHIVE
-                DESTINATION ${ly_platform_install_target_ARCHIVE_DIR}
-                COMPONENT ${LY_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
+                DESTINATION ${o3de_platform_install_target_ARCHIVE_DIR}
+                COMPONENT ${O3DE_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
                 CONFIGURATIONS ${conf}
             LIBRARY
-                DESTINATION ${ly_platform_install_target_LIBRARY_DIR}/${ly_platform_install_target_LIBRARY_SUBDIR}
-                COMPONENT ${LY_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
+                DESTINATION ${o3de_platform_install_target_LIBRARY_DIR}/${o3de_platform_install_target_LIBRARY_SUBDIR}
+                COMPONENT ${O3DE_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
                 CONFIGURATIONS ${conf}
             RUNTIME
-                DESTINATION ${ly_platform_install_target_RUNTIME_DIR}/${ly_platform_install_target_RUNTIME_SUBDIR}
-                COMPONENT ${LY_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
+                DESTINATION ${o3de_platform_install_target_RUNTIME_DIR}/${o3de_platform_install_target_RUNTIME_SUBDIR}
+                COMPONENT ${O3DE_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
                 CONFIGURATIONS ${conf}
             BUNDLE
-                DESTINATION ${ly_platform_install_target_RUNTIME_DIR}/${ly_platform_install_target_RUNTIME_SUBDIR}
-                COMPONENT ${LY_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
+                DESTINATION ${o3de_platform_install_target_RUNTIME_DIR}/${o3de_platform_install_target_RUNTIME_SUBDIR}
+                COMPONENT ${O3DE_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
                 CONFIGURATIONS ${conf}
             RESOURCE
-                DESTINATION ${ly_platform_install_target_RUNTIME_DIR}/${ly_platform_install_target_RUNTIME_SUBDIR}
-                COMPONENT ${LY_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
+                DESTINATION ${o3de_platform_install_target_RUNTIME_DIR}/${o3de_platform_install_target_RUNTIME_SUBDIR}
+                COMPONENT ${O3DE_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
                 CONFIGURATIONS ${conf}
         )
     endforeach()
 
-    set(install_relative_binaries_path "${ly_platform_install_target_RUNTIME_DIR}/${ly_platform_install_target_RUNTIME_SUBDIR}")
+    set(install_relative_binaries_path "${o3de_platform_install_target_RUNTIME_DIR}/${o3de_platform_install_target_RUNTIME_SUBDIR}")
 
     if (is_bundle)
         set_property(TARGET ${target_name} PROPERTY RESOURCE ${cached_resources_dir})
@@ -103,13 +104,13 @@ function(ly_setup_target_install_targets_override)
     endif()
 
     get_target_property(target_type ${target_name} TYPE)
-    if(target_type IN_LIST LY_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
+    if(target_type IN_LIST O3DE_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
         get_target_property(entitlement_file ${target_name} ENTITLEMENT_FILE_PATH)
         if (NOT entitlement_file)
             set(entitlement_file "none")
         endif()
 
-        ly_file_read(${LY_ROOT_FOLDER}/cmake/Platform/Mac/runtime_install_mac.cmake.in template_file)
+        o3de_file_read(${O3DE_ENGINE_PATH}/cmake/Platform/Mac/runtime_install_mac.cmake.in template_file)
         string(CONFIGURE "${template_file}" configured_template_file @ONLY)
         file(GENERATE
             OUTPUT ${CMAKE_BINARY_DIR}/runtime_install/$<CONFIG>/${target_name}.cmake
@@ -118,41 +119,56 @@ function(ly_setup_target_install_targets_override)
     endif()
 endfunction()
 
-#! ly_setup_runtime_dependencies_copy_function_override: Mac specific copy function to handle frameworks
-function(ly_setup_runtime_dependencies_copy_function_override)
+function(o3de_setup_target_install_targets_override)
+    message(WARNING "o3de_setup_target_install_targets_override is deprecated, use o3de_setup_target_install_targets_override instead")
+    o3de_setup_target_install_targets_override(${ARGN})
+endfunction()
 
-    configure_file(${LY_ROOT_FOLDER}/cmake/Platform/Mac/InstallUtils_mac.cmake.in ${CMAKE_BINARY_DIR}/runtime_install/InstallUtils_mac.cmake @ONLY)
+#! o3de_setup_runtime_dependencies_copy_function_override: Mac specific copy function to handle frameworks
+function(o3de_setup_runtime_dependencies_copy_function_override)
+
+    configure_file(${O3DE_ENGINE_PATH}/cmake/Platform/Mac/InstallUtils_mac.cmake.in ${CMAKE_BINARY_DIR}/runtime_install/InstallUtils_mac.cmake @ONLY)
     foreach(conf IN LISTS CMAKE_CONFIGURATION_TYPES)
         string(TOUPPER ${conf} UCONF)
-        ly_install(SCRIPT "${CMAKE_BINARY_DIR}/runtime_install/InstallUtils_mac.cmake"
-            COMPONENT  ${LY_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
+        o3de_install(SCRIPT "${CMAKE_BINARY_DIR}/runtime_install/InstallUtils_mac.cmake"
+            COMPONENT  ${O3DE_INSTALL_PERMUTATION_COMPONENT}_${UCONF}
         )
     endforeach()
 
 endfunction()
 
-#! ly_post_install_steps: Any additional platform specific post install steps
-function(ly_post_install_steps)
+function(o3de_setup_runtime_dependencies_copy_function_override)
+    message(WARNING "o3de_setup_runtime_dependencies_copy_function_override is deprecated, use o3de_setup_runtime_dependencies_copy_function_override instead")
+    o3de_setup_runtime_dependencies_copy_function_override(${ARGN})
+endfunction()
+
+#! o3de_post_install_steps: Any additional platform specific post install steps
+function(o3de_post_install_steps)
 
     # On Mac, after CMake is done installing, the code signatures on all our built binaries will be invalid.
     # We need to now codesign each dynamic library, executable, and app bundle. It's specific to each target
     # because there could potentially be different entitlements for different targets.
-    get_property(all_targets GLOBAL PROPERTY LY_ALL_TARGETS)
+    get_property(all_targets GLOBAL PROPERTY O3DE_ALL_TARGETS)
     foreach(alias_target IN LISTS all_targets)
-        ly_de_alias_target(${alias_target} target)
+        o3de_de_alias_target(${alias_target} target)
         # Exclude targets that dont produce runtime outputs
         get_target_property(target_type ${target} TYPE)
-        if(NOT target_type IN_LIST LY_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
+        if(NOT target_type IN_LIST O3DE_TARGET_TYPES_WITH_RUNTIME_OUTPUTS)
             continue()
         endif()
 
-        ly_install_run_script(${CMAKE_BINARY_DIR}/runtime_install/$<CONFIG>/${target}.cmake)
+        o3de_install_run_script(${CMAKE_BINARY_DIR}/runtime_install/$<CONFIG>/${target}.cmake)
     endforeach()
 
-    ly_install_run_code("
-        ly_download_and_codesign_sdk_python()
-        ly_codesign_sdk()
-        set(CMAKE_INSTALL_PREFIX ${LY_INSTALL_PATH_ORIGINAL})
+    o3de_install_run_code("
+        o3de_download_and_codesign_sdk_python()
+        o3de_codesign_sdk()
+        set(CMAKE_INSTALL_PREFIX ${O3DE_INSTALL_PATH_ORIGINAL})
     ")
 
+endfunction()
+
+function(o3de_post_install_steps)
+    message(WARNING "o3de_post_install_steps is deprecated, use o3de_post_install_steps instead")
+    o3de_post_install_steps(${ARGN})
 endfunction()

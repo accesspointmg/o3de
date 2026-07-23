@@ -12,8 +12,8 @@ set(FILES
     Source/ImGuiColorDefines.h
     Source/ImGuiManager.h
     Source/ImGuiManager.cpp
-    Source/LYCommonMenu/ImGuiLYCommonMenu.h
-    Source/LYCommonMenu/ImGuiLYCommonMenu.cpp
-    Source/LYCommonMenu/ImGuiLYEntityOutliner.h
-    Source/LYCommonMenu/ImGuiLYEntityOutliner.cpp
+    Source/O3deCommonMenu/ImGuiO3deCommonMenu.h
+    Source/O3deCommonMenu/ImGuiO3deCommonMenu.cpp
+    Source/O3deCommonMenu/ImGuiO3deEntityOutliner.h
+    Source/O3deCommonMenu/ImGuiO3deEntityOutliner.cpp
 )

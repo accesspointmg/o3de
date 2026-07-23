@@ -165,7 +165,7 @@ CLyShine::CLyShine()
     AZ::Render::Bootstrap::NotificationBus::Handler::BusConnect();
 
     // These are internal Amazon components, so register them so that we can send back their names to our metrics collection
-    // IF YOU ARE A THIRDPARTY WRITING A GEM, DO NOT REGISTER YOUR COMPONENTS WITH EditorMetricsComponentRegistrationBus
+    // IF YOU ARE A 3RDPARTY WRITING A GEM, DO NOT REGISTER YOUR COMPONENTS WITH EditorMetricsComponentRegistrationBus
     // This is internal Amazon code, so register it's components for metrics tracking, otherwise the name of the component won't get sent back.
     AZStd::vector<AZ::Uuid> componentUuidsForMetricsCollection
     {

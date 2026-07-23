@@ -342,7 +342,7 @@ def sync_layout_vfs(target_platform, project_path, asset_type, warning_on_missin
     result = hasher.hexdigest()
 
     temp_dir = tempfile.gettempdir()
-    temp_vfs_layout_path = os.path.join(temp_dir, 'ly-layout-{}'.format(result), 'vfs')
+    temp_vfs_layout_path = os.path.join(temp_dir, 'o3de-layout-{}'.format(result), 'vfs')
     temp_vfs_layout_project_path = temp_vfs_layout_path
 
     temp_vfs_layout_project_config_path = os.path.join(temp_vfs_layout_project_path, 'config')

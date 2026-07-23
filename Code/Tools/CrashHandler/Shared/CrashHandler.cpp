@@ -6,7 +6,7 @@
  *
  */
 
-// LY Base Crashpad Hook
+// O3DE Base Crashpad Hook
 #include <AzCore/PlatformIncl.h>
 
 #include <client/crashpad_client.h>
@@ -86,8 +86,8 @@ namespace CrashHandler
         std::string versionString = std::to_string(EXE_VERSION_INFO_0) + "." + std::to_string(EXE_VERSION_INFO_1) + "." + std::to_string(EXE_VERSION_INFO_2) + "." + std::to_string(EXE_VERSION_INFO_3);
         annotations["version"] = versionString;
 
-        versionString = std::to_string(LY_BUILD);
-        annotations["ly_build"] = versionString;
+        versionString = std::to_string(O3DE_BUILD);
+        annotations["o3de_build"] = versionString;
 
 #if defined(_MSC_VER)
         versionString = std::to_string(_MSC_VER);
@@ -164,22 +164,22 @@ namespace CrashHandler
         const std::string url{ crashUrl.length() ? crashUrl : GetCrashSubmissionURL() };
         const std::string token{ crashToken.length() ? crashToken : GetCrashSubmissionToken() };
 
-        std::string lyAppRoot{ appRoot };
-        AppendSep(lyAppRoot);
+        std::string o3deAppRoot{ appRoot };
+        AppendSep(o3deAppRoot);
 
-        if (!lyAppRoot.length())
+        if (!o3deAppRoot.length())
         {
-            lyAppRoot = DetermineAppPath();
+            o3deAppRoot = DetermineAppPath();
 
-            if(!lyAppRoot.length())
+            if(!o3deAppRoot.length())
             {
                 AZ_Warning("CrashReporting", false, "Could not determine app root");
                 return;
             }
-            AppendSep(lyAppRoot);
+            AppendSep(o3deAppRoot);
         }
 
-        std::string dbPath = GetCrashReportFolder(lyAppRoot);
+        std::string dbPath = GetCrashReportFolder(o3deAppRoot);
         std::string disableFilePath{ dbPath + disableFile };
 
         if (AZ::IO::SystemFile::Exists(disableFilePath.c_str()))

@@ -11,8 +11,8 @@
 #include <AzCore/Math/PackedVector3.h>
 #include <AzCore/Math/PackedVector4.h>
 
-#include <AtomLyIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
-#include <AtomLyIntegration/CommonFeatures/SkinnedMesh/SkinnedMeshOverrideBus.h>
+#include <AtomO3deIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
+#include <AtomO3deIntegration/CommonFeatures/SkinnedMesh/SkinnedMeshOverrideBus.h>
 #include <Atom/RHI/RHIUtils.h>
 
 #include <NvCloth/IClothSystem.h>

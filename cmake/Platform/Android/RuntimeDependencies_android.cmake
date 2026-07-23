@@ -6,5 +6,6 @@
 #
 #
 
-set(LY_RUNTIME_DEPENDENCIES_TEMPLATE ${LY_ROOT_FOLDER}/cmake/Platform/Common/runtime_dependencies_common.cmake.in)
-include(cmake/Platform/Common/RuntimeDependencies_common.cmake)
+set(_cmake_Platform_Android_RuntimeDependencies_android_cmake ${CMAKE_CURRENT_LIST_DIR})
+set(O3DE_RUNTIME_DEPENDENCIES_TEMPLATE ${O3DE_ENGINE_PATH}/cmake/Platform/Common/runtime_dependencies_common.cmake.in)
+include(${_cmake_Platform_Android_RuntimeDependencies_android_cmake}/../Common/RuntimeDependencies_common.cmake)

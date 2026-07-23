@@ -14,14 +14,14 @@ import time
 
 from os import path
 
-import ly_test_tools.environment.file_system as file_system
-import ly_test_tools.environment.process_utils as process_utils
-import ly_test_tools.environment.waiter as waiter
+import o3de_test_tools.environment.file_system as file_system
+import o3de_test_tools.environment.process_utils as process_utils
+import o3de_test_tools.environment.waiter as waiter
 
-from ly_test_tools.o3de.asset_processor import AssetProcessor
-from ly_test_tools.launchers.exceptions import WaitTimeoutError
-from ly_test_tools.log.log_monitor import LogMonitor, LogMonitorException
-from ly_test_tools.o3de.editor_test_utils import compile_test_case_name_from_request
+from o3de_test_tools.o3de.asset_processor import AssetProcessor
+from o3de_test_tools.launchers.exceptions import WaitTimeoutError
+from o3de_test_tools.log.log_monitor import LogMonitor, LogMonitorException
+from o3de_test_tools.o3de.editor_test_utils import compile_test_case_name_from_request
 
 class TestRunError():
     def __init__(self, title, content):
@@ -53,8 +53,8 @@ class TestAutomationBase:
         if cls.asset_processor is not None:
             cls.asset_processor.teardown()
 
-        # Kill all ly processes
-        cls._kill_ly_processes(include_asset_processor=True)
+        # Kill all o3de processes
+        cls._kill_o3de_processes(include_asset_processor=True)
 
     def _run_test(self, request, workspace, editor, testcase_module, extra_cmdline_args=[], batch_mode=True,
                   autotest_mode=True, use_null_renderer=True):
@@ -66,11 +66,11 @@ class TestAutomationBase:
         #########
         # Setup #
         if self.asset_processor is None:
-            self._kill_ly_processes(include_asset_processor=True)
+            self._kill_o3de_processes(include_asset_processor=True)
             self.__class__.asset_processor = AssetProcessor(workspace)
             self.asset_processor.backup_ap_settings()
         else:
-            self._kill_ly_processes(include_asset_processor=False)
+            self._kill_o3de_processes(include_asset_processor=False)
 
         if not self.asset_processor.process_exists():
             self.asset_processor.start()
@@ -183,8 +183,8 @@ class TestAutomationBase:
             pytest.fail(error_str)     
         
     @staticmethod
-    def _kill_ly_processes(include_asset_processor=True):
-        LY_PROCESSES = [
+    def _kill_o3de_processes(include_asset_processor=True):
+        O3DE_PROCESSES = [
             'Editor', 'Profiler', 'RemoteConsole', 'AutomatedTesting.ServerLauncher', 'o3de'
         ]
         AP_PROCESSES = [
@@ -193,9 +193,9 @@ class TestAutomationBase:
         ]
         
         if include_asset_processor:
-            process_utils.kill_processes_named(LY_PROCESSES+AP_PROCESSES, ignore_extensions=True)
+            process_utils.kill_processes_named(O3DE_PROCESSES+AP_PROCESSES, ignore_extensions=True)
         else:
-            process_utils.kill_processes_named(LY_PROCESSES, ignore_extensions=True)
+            process_utils.kill_processes_named(O3DE_PROCESSES, ignore_extensions=True)
     
     @staticmethod
     def _get_testcase_module_filepath(testcase_module):

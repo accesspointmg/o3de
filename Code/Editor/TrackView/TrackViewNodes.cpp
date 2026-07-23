@@ -613,10 +613,10 @@ void CTrackViewNodesCtrl::UpdateTrackRecord(CRecord* record, CTrackViewTrack* pT
 //////////////////////////////////////////////////////////////////////////
 void CTrackViewNodesCtrl::UpdateAnimNodeRecord(CRecord* record, CTrackViewAnimNode* animNode)
 {
-    const QColor TextColorForMissingEntity(226, 52, 43);        // LY palette for 'Error/Failure'
-    const QColor BackColorForActiveDirector(243, 81, 29);       // LY palette for 'Primary'
-    const QColor BackColorForInactiveDirector(22, 23, 27);      // LY palette for 'Background (In Focus)'
-    const QColor BackColorForGroupNodes(42, 84, 244);           // LY palette for 'Secondary'
+    const QColor TextColorForMissingEntity(226, 52, 43);        // O3DE palette for 'Error/Failure'
+    const QColor BackColorForActiveDirector(243, 81, 29);       // O3DE palette for 'Primary'
+    const QColor BackColorForInactiveDirector(22, 23, 27);      // O3DE palette for 'Background (In Focus)'
+    const QColor BackColorForGroupNodes(42, 84, 244);           // O3DE palette for 'Secondary'
 
     QFont f = font();
     f.setBold(true);

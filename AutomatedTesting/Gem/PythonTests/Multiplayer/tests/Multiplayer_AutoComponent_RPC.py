@@ -42,7 +42,7 @@ def Multiplayer_AutoComponent_RPC():
     from editor_python_test_tools.utils import Tracer
 
     from editor_python_test_tools.utils import TestHelper as helper
-    from ly_remote_console.remote_console_commands import RemoteConsole as RemoteConsole
+    from o3de_remote_console.remote_console_commands import RemoteConsole as RemoteConsole
 
     level_name = "AutoComponent_RPC"
 

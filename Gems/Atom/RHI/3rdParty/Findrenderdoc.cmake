@@ -6,9 +6,9 @@
 #
 #
 
-ly_add_external_target(
+o3de_add_external_target(
     NAME renderdoc
-    3RDPARTY_ROOT_DIRECTORY "${LY_RENDERDOC_PATH}"
+    3RDPARTY_ROOT_DIRECTORY "${O3DE_RENDERDOC_PATH}"
     VERSION
     COMPILE_DEFINITIONS USE_RENDERDOC
 )

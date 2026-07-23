@@ -109,7 +109,7 @@ def Material_ComponentsInSyncWithLibrary():
     import azlmbr.bus as bus
     import azlmbr.components
     import azlmbr.physics
-    import azlmbr.math as lymath
+    import azlmbr.math as o3demath
 
     from Physmaterial_Editor import Physmaterial_Editor
     from editor_python_test_tools.utils import Report
@@ -216,7 +216,7 @@ def Material_ComponentsInSyncWithLibrary():
     test_0_max_bounce = max([entity.bounces[0] for entity in all_entities])
     test_0_min_bounce = min([entity.bounces[0] for entity in all_entities])
     Report.result(
-        Tests.all_bounced_equal_0, lymath.Math_IsClose(test_0_max_bounce, test_0_min_bounce, BOUNCE_TOLERANCE)
+        Tests.all_bounced_equal_0, o3demath.Math_IsClose(test_0_max_bounce, test_0_min_bounce, BOUNCE_TOLERANCE)
     )
 
     # 4) Modify the restitution value of 'modified'
@@ -229,7 +229,7 @@ def Material_ComponentsInSyncWithLibrary():
     test_1_max_bounce = max([entity.bounces[1] for entity in all_entities])
     test_1_min_bounce = min([entity.bounces[1] for entity in all_entities])
     Report.result(
-        Tests.all_bounced_equal_1, lymath.Math_IsClose(test_1_max_bounce, test_1_min_bounce, BOUNCE_TOLERANCE)
+        Tests.all_bounced_equal_1, o3demath.Math_IsClose(test_1_max_bounce, test_1_min_bounce, BOUNCE_TOLERANCE)
     )
 
     # 6) Verify that the material change was propagated correctly

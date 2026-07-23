@@ -25,8 +25,8 @@ except ModuleNotFoundError: # Not all projects enable the Multiplayer Gem.
     pass
 
 import azlmbr.debug
-import ly_test_tools.environment.waiter as waiter
-import ly_test_tools.environment.process_utils as process_utils
+import o3de_test_tools.environment.waiter as waiter
+import o3de_test_tools.environment.process_utils as process_utils
 
 # Controls how many reconnection attempts to make from the editor to the multiplayer server before giving up and failing the test.
 # Note that the editor will wait one additional second in between each attempt, so the final time will be

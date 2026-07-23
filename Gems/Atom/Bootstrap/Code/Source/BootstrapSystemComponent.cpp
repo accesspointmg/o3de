@@ -321,7 +321,7 @@ namespace AZ
             void BootstrapSystemComponent::Activate()
             {
                 // Create a native window only if it's a launcher (or standalone)
-                // LY editor create its own window which we can get its handle through AzFramework::WindowSystemNotificationBus::Handler's OnWindowCreated() function
+                // O3DE editor create its own window which we can get its handle through AzFramework::WindowSystemNotificationBus::Handler's OnWindowCreated() function
 
                 // Query the application type to determine if this is a headless application
                 AZ::ApplicationTypeQuery appType;
