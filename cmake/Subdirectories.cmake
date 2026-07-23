@@ -233,76 +233,6 @@ function(get_all_external_subdirectories_for_o3de_object output_subdirectories o
     set(${output_subdirectories} ${subdirectories_for_object} PARENT_SCOPE)
 endfunction()
 
-#! Gather the unique list of all gems that the engine provides
-#! plus all gems that every active project provides
-#! or references "gem_names"
-function(get_gems_in_use output_gems)
-    get_property(all_gems GLOBAL PROPERTY O3DE_ALL_GEMS)
-    if(all_gems)
-        # This function has already run, use the calculated list of gems
-        set(${output_gems} ${all_gems} PARENT_SCOPE)
-        return()
-    endif()
-
-    # Gather the list of gems set through the O3DE_GEMS Cache Variable
-    get_property(all_gems CACHE O3DE_GEMS PROPERTY VALUE)
-
-    # Append the list of gems from the engine.json
-    get_all_gems_for_o3de_object(engine_gems "ENGINE" "" ${O3DE_ENGINE_PATH} "engine.json")
-    list(APPEND all_gems ${engine_gems})
-
-    # Visit each O3DE_PROJECTS_PATHS entry and append the gems
-    # the project provides and references
-    get_property(O3DE_PROJECTS_NAME GLOBAL PROPERTY O3DE_PROJECTS_NAME)
-    get_property(O3DE_PROJECTS_PATHS GLOBAL PROPERTY O3DE_PROJECTS_PATHS)
-    foreach(project_name project_path IN ZIP_LISTS O3DE_PROJECTS_NAME O3DE_PROJECTS_PATHS)
-        # Append the project root path to the list of gems so that it is visited
-        list(APPEND all_gems ${project_path})
-        get_all_gems_for_o3de_object(project_gems "PROJECT" "${project_name}" "${project_path}" "project.json")
-        list(APPEND all_gems ${project_gems})
-    endforeach()
-
-    # Make sure any gems in the "dependencies" field of a gem.json
-    # are ordered before that gem, so they are parsed first.
-    reorder_dependent_gems_before_gems(all_gems "${all_gems}")
-    list(REMOVE_DUPLICATES all_gems)
-
-    # Store in a global property so we don't re-calculate this list again
-    set_property(GLOBAL PROPERTY O3DE_ALL_GEMS "${all_gems}")
-
-    set(${output_gems} ${all_gems} PARENT_SCOPE)
-endfunction()
-
-#! Visit all gems that are in use by the engine and each project
-#! This visits gems listed in the engine.json,
-#! the gems listed in the each O3DE_PROJECTS project.json,
-#! and the gems listed o3de_manifest.json in which the engine.json/project.json
-#! references in their "gem_names" key.
-function(call_add_subdirectory_on_gems)
-    # Query the list of external subdirectories in use by the engine and any projects
-    get_gem_in_use(all_gems)
-
-    # Log the gem visit order
-    message(VERBOSE "add_subdirectory will be called on the following gems in order:")
-    foreach(gem IN LISTS all_gems)
-        message(VERBOSE "${gem}")
-    endforeach()
-
-    # Loop over the additional gems and invoke add_subdirectory on them
-    foreach(gem IN LISTS all_gems)
-        # Hash the gem name and append it to the Binary Directory section of add_subdirectory
-        # This is to deal with potential situations where multiple gems has the same name
-        file(REAL_PATH ${gem} full_directory_path)
-        string(SHA256 full_directory_hash ${full_directory_path})
-        # Truncate the full_directory_hash down to 8 characters to avoid hitting the Windows 260 character path limit
-        # when the external subdirectory contains relative paths of significant length
-        string(SUBSTRING ${full_directory_hash} 0 8 full_directory_hash)
-        # Use the last directory as the suffix path to use for the Binary Directory
-        cmake_path(GET gem FILENAME directory_name)
-        add_subdirectory(${gem} ${CMAKE_BINARY_DIR}/Gem/${directory_name}-${full_directory_hash})
-    endforeach()
-endfunction()
-
 
 
 
@@ -805,21 +735,10 @@ endfunction()
 function(o3de_add_manifest_gem_subdirectories exclude_prefix)
     get_property(all_gem_paths GLOBAL PROPERTY O3DE_MANIFEST_ALL_GEM_PATHS)
 
-    # TEMPORARY: legacy gem variants excluded from source-tree builds.
-    # PhysX4 is superseded by PhysX5 (same canonical gem name, older
-    # version).  Proper fix: derive the gem set from the dependency
-    # solve (workspace builds already get exactly the solved set in
-    # their workspace-scoped manifest).
-    set(legacy_excluded_dirs "PhysX4")
-
     # collect gem roots
     set(gem_roots "")
     foreach(gem_json_path IN LISTS all_gem_paths)
         get_filename_component(gem_root "${gem_json_path}" DIRECTORY)
-        get_filename_component(gem_dirname "${gem_root}" NAME)
-        if(gem_dirname IN_LIST legacy_excluded_dirs)
-            continue()
-        endif()
         list(APPEND gem_roots ${gem_root})
     endforeach()
     list(REMOVE_DUPLICATES gem_roots)
