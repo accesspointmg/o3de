@@ -226,7 +226,6 @@ macro(o3de_engine_init)
     include(${_cmake_Engine_cmake}/GeneralSettings.cmake)
     include(${_cmake_Engine_cmake}/CompilerSettings.cmake)
     include(${_cmake_Engine_cmake}/OutputDirectory.cmake)
-    include(${_cmake_Engine_cmake}/Configurations.cmake)
 endmacro()
 
 macro(o3de_engine_setup)
@@ -303,6 +302,11 @@ macro(o3de_engine_setup)
     #engine object cmake 3rdparty pal path
     o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Editor/Platform/${O3DE_PAL_HOST_PLATFORM_NAME} O3DE_ENGINE_CODE_EDITOR_PAL_HOST_PATH)
     o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Editor/Platform/${O3DE_PAL_PLATFORM_NAME} O3DE_ENGINE_CODE_EDITOR_PAL_PATH)
+
+    # Set up build configurations now that the PAL platform paths and warts are known.
+    # This must run after project() (compilers/languages enabled) and after the PAL
+    # detection above, since it includes Platform/<name>/Configurations_<wart>.cmake
+    include(${_cmake_Engine_cmake}/Configurations.cmake)
 
 
     # append platform files for the host platform to ALLFILES so they show up
