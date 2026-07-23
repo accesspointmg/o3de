@@ -27,8 +27,8 @@ if(NOT PROJECT_NAME)
     # Set the cmake project from this o3de engine object
     project(${engine_name}
         LANGUAGES C CXX
-        VERSION ${engine_version}
-        DESCRIPTION ${engine_description}
+        VERSION "${engine_version}"
+        DESCRIPTION "${engine_description}"
     )
 
     # Setup
