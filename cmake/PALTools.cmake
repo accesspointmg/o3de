@@ -35,7 +35,7 @@
 #function(o3de_get_pal_tool_dirs out_list pal_path)
 #    set(pal_paths "")
 #    foreach(platform ${O3DE_PAL_TOOLS_ENABLED})
-#        o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${pal_path}/${platform} pal_path)
+#        o3de_pal_path(${pal_path}/${platform} pal_path)
 #        list(APPEND pal_paths ${pal_path})
 #    endforeach()
 #    set(${out_list} ${pal_paths} PARENT_SCOPE)

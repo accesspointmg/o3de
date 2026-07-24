@@ -6,7 +6,7 @@
 #
 #
 
-o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Tools/TestImpactFramework/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_tools_testimpactframework_path)
+o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Tools/TestImpactFramework/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_tools_testimpactframework_path)
 #set(common_code_tools_testimpactframework_path ${O3DE_ENGINE_PATH}/Code/Tools/TestImpactFramework/Platform/Common)
 
 include(${pal_code_tools_testimpactframework_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)

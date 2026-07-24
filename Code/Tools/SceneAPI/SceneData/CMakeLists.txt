@@ -10,7 +10,7 @@ if (NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Tools/SceneAPI/SceneData/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_tools_sceneapi_scenedata_path)
+o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Tools/SceneAPI/SceneData/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_tools_sceneapi_scenedata_path)
 #set(common_code_tools_sceneapi_scenedata_path ${O3DE_ENGINE_PATH}/Code/Tools/SceneAPI/SceneData/Platform/Common)
 
 o3de_add_target(

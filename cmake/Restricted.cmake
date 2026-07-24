@@ -40,11 +40,18 @@ function(o3de_pal_dir out_dir in_dir)
     set(${out_dir} ${in_dir} PARENT_SCOPE)
 endfunction()
 
-#! o3de_pal_path_object_json: PAL path resolution scoped to an object.
-# The object json argument is retained for signature compatibility.
-# \arg:object_json_path - the object json file (unused)
-# \arg:path_to_where_the_platform_file_should_be - requested path
-# \arg:path_to_where_the_platform_file_really_is - output variable
+#! o3de_pal_path_object_json: DEPRECATED object-scoped PAL path resolution.
+#
+# Kept for backward compatibility with object CMakeLists that call
+#   o3de_pal_path_object_json(<object_json> <dir> <out_var>)
+# The object json argument was only needed by the retired restricted
+# mechanism and is ignored.
+#
+# New code should call o3de_pal_path(<dir> <out_var>) instead.
 function(o3de_pal_path_object_json object_json_path path_to_where_the_platform_file_should_be path_to_where_the_platform_file_really_is)
+    message(DEPRECATION
+        "o3de_pal_path_object_json is deprecated; call o3de_pal_path(<path> <out_var>) instead. "
+        "The object json argument is ignored - platform code is delivered by "
+        "overlay objects at workspace compose time.")
     set(${path_to_where_the_platform_file_really_is} ${path_to_where_the_platform_file_should_be} PARENT_SCOPE)
 endfunction()

@@ -9,7 +9,7 @@
 # TODO: would like to be able to build from this path, however, the whole setup is done at the workspace's root
 #       we also dont want to drop cmake output files everywhere.
 
-o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
+o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
 set(common_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
 if(O3DE_PAL_TRAIT_PROF_PIX_SUPPORTED)
@@ -172,7 +172,7 @@ if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     )
 
     if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-        o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${CMAKE_CURRENT_LIST_DIR}/Tests/Platform/${O3DE_PAL_PLATFORM_NAME} pal_tests_dir)
+        o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Tests/Platform/${O3DE_PAL_PLATFORM_NAME} pal_tests_dir)
         o3de_add_target(
             NAME AzCore.Tests ${O3DE_PAL_TRAIT_TEST_TARGET_TYPE}
             NAMESPACE AZ

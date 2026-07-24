@@ -242,7 +242,7 @@ macro(o3de_engine_setup)
     # Now that we have all possible PAL platforms, include all pal platform cmake files
     get_property(O3DE_ALL_PAL_PLATFORM_NAMES GLOBAL PROPERTY O3DE_ALL_PAL_PLATFORM_NAMES)
     foreach(pal_platform ${O3DE_ALL_PAL_PLATFORM_NAMES})
-        o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/cmake/Platform/${pal_platform}/PAL_platform.cmake pal_platform_cmake_file)
+        o3de_pal_path(${O3DE_ENGINE_PATH}/cmake/Platform/${pal_platform}/PAL_platform.cmake pal_platform_cmake_file)
         include(${pal_platform_cmake_file})
     endforeach()
     
@@ -279,20 +279,20 @@ macro(o3de_engine_setup)
     set(PAL_HOST_PLATFORM_NAME_LOWERCASE ${O3DE_PAL_HOST_PLATFORM_NAME_LOWERCASE})
 
     # Engine object pal path
-    o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Platform/${O3DE_PAL_HOST_PLATFORM_NAME} O3DE_ENGINE_PAL_HOST_PATH)
-    o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Platform/${O3DE_PAL_PLATFORM_NAME} O3DE_ENGINE_PAL_PATH)
+    o3de_pal_path(${O3DE_ENGINE_PATH}/Platform/${O3DE_PAL_HOST_PLATFORM_NAME} O3DE_ENGINE_PAL_HOST_PATH)
+    o3de_pal_path(${O3DE_ENGINE_PATH}/Platform/${O3DE_PAL_PLATFORM_NAME} O3DE_ENGINE_PAL_PATH)
 
     #engine object cmake pal path
-    o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_CMAKE_PATH}/Platform/${O3DE_PAL_HOST_PLATFORM_NAME} O3DE_ENGINE_CMAKE_PAL_HOST_PATH)
-    o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_CMAKE_PATH}/Platform/${O3DE_PAL_PLATFORM_NAME} O3DE_ENGINE_CMAKE_PAL_PATH)
+    o3de_pal_path(${O3DE_ENGINE_CMAKE_PATH}/Platform/${O3DE_PAL_HOST_PLATFORM_NAME} O3DE_ENGINE_CMAKE_PAL_HOST_PATH)
+    o3de_pal_path(${O3DE_ENGINE_CMAKE_PATH}/Platform/${O3DE_PAL_PLATFORM_NAME} O3DE_ENGINE_CMAKE_PAL_PATH)
 
     #engine object cmake 3rdparty pal path
-    o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_CMAKE_3RDPARTY_PATH}/Platform/${O3DE_PAL_HOST_PLATFORM_NAME} O3DE_ENGINE_CMAKE_3RDPARTY_PAL_HOST_PATH)
-    o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_CMAKE_3RDPARTY_PATH}/Platform/${O3DE_PAL_PLATFORM_NAME} O3DE_ENGINE_CMAKE_3RDPARTY_PAL_PATH)
+    o3de_pal_path(${O3DE_ENGINE_CMAKE_3RDPARTY_PATH}/Platform/${O3DE_PAL_HOST_PLATFORM_NAME} O3DE_ENGINE_CMAKE_3RDPARTY_PAL_HOST_PATH)
+    o3de_pal_path(${O3DE_ENGINE_CMAKE_3RDPARTY_PATH}/Platform/${O3DE_PAL_PLATFORM_NAME} O3DE_ENGINE_CMAKE_3RDPARTY_PAL_PATH)
 
     #engine object cmake 3rdparty pal path
-    o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Editor/Platform/${O3DE_PAL_HOST_PLATFORM_NAME} O3DE_ENGINE_CODE_EDITOR_PAL_HOST_PATH)
-    o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Editor/Platform/${O3DE_PAL_PLATFORM_NAME} O3DE_ENGINE_CODE_EDITOR_PAL_PATH)
+    o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Editor/Platform/${O3DE_PAL_HOST_PLATFORM_NAME} O3DE_ENGINE_CODE_EDITOR_PAL_HOST_PATH)
+    o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Editor/Platform/${O3DE_PAL_PLATFORM_NAME} O3DE_ENGINE_CODE_EDITOR_PAL_PATH)
 
     # Set up build configurations now that the PAL platform paths and warts are known.
     # This must run after project() (compilers/languages enabled) and after the PAL

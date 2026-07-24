@@ -10,9 +10,9 @@ if(NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     return()
 endif()
 
-o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Framework/AzQtComponents/Platform/${O3DE_PAL_PLATFORM_NAME} pal_core_framework_azqtcomponents_path)
+o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Framework/AzQtComponents/Platform/${O3DE_PAL_PLATFORM_NAME} pal_core_framework_azqtcomponents_path)
 # The per-platform source file list lives in the nested AzQtComponents/Platform dir
-o3de_pal_path_object_json(${O3DE_ENGINE_JSON_PATH} ${O3DE_ENGINE_PATH}/Code/Framework/AzQtComponents/AzQtComponents/Platform/${O3DE_PAL_PLATFORM_NAME} pal_nested_azqtcomponents_path)
+o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Framework/AzQtComponents/AzQtComponents/Platform/${O3DE_PAL_PLATFORM_NAME} pal_nested_azqtcomponents_path)
 #set(common_core_framework_azqtcomponents_path ${O3DE_ENGINE_PATH}/Code/Framework/AzQtComponents/Platform/Common)
 
 o3de_add_target(

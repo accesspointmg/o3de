@@ -6,7 +6,7 @@
 #
 #
 
-o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
 set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
 # Load the PAL trait file at top level so O3DE_PAL_TRAIT_MICROPHONE_USES_LIBSAMPLERATE

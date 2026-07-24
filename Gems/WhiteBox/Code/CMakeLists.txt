@@ -6,7 +6,7 @@
 #
 #
 
-o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
 set(common_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
 include(${pal_code_source_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)

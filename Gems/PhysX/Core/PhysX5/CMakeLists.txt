@@ -12,7 +12,7 @@ get_property(v_hacd_gem_root GLOBAL PROPERTY "@GEMROOT:PhysXCommon@")
 list(APPEND CMAKE_MODULE_PATH ${v_hacd_gem_root}/3rdParty)
 o3de_add_external_target_path(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty)
 
-o3de_pal_path_object_json(${gem_json_path} ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
 set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
 include(${pal_code_source_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake) # for O3DE_PAL_TRAIT_PHYSX_SUPPORTED
