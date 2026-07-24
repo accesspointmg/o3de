@@ -327,10 +327,7 @@ macro(o3de_project_setup)
 
     # append platform pal tools files to ALLFILES so they show up
     o3de_append_cmake_file_list_to_ALLFILES(${pal_cmake_path}/pal_tools_${O3DE_PAL_PLATFORM_WART}_files.cmake)
-
-    # NOTE: restricted PAL loops removed — restricted objects are legacy;
-    # overlays are applied at workspace compose time.
-    
+   
     # Find all dependent packages
     include(${_cmake_Project_cmake}/Dependencies.cmake)
     # Find all packages the engine declares as dependencies

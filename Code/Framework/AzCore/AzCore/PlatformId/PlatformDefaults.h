@@ -75,8 +75,6 @@ namespace AZ
             Platform_ALL_CLIENT = 1ULL << 31,
 
             AllNamedPlatforms = Platform_PC | Platform_LINUX | Platform_ANDROID | Platform_IOS | Platform_MAC | Platform_SERVER,
-
-            UnrestrictedPlatforms = AllNamedPlatforms,
         };
 
         AZ_DEFINE_ENUM_BITWISE_OPERATORS(PlatformFlags);

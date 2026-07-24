@@ -701,7 +701,7 @@ namespace AzToolsFramework
         using namespace AzFramework;
 
         PlatformFlags visiblePlatforms = seed.m_platformFlags;
-        visiblePlatforms &= PlatformFlags::UnrestrictedPlatforms;
+        visiblePlatforms &= PlatformFlags::AllNamedPlatforms;
         auto readablePlatformListIter = m_platformFlagsToReadablePlatformList.find(visiblePlatforms);
         if (readablePlatformListIter != m_platformFlagsToReadablePlatformList.end())
         {

@@ -160,7 +160,7 @@ namespace AssetBundler
         }
 
         auto visiblePlatforms = platforms;
-        visiblePlatforms &= AzFramework::PlatformFlags::UnrestrictedPlatforms;
+        visiblePlatforms &= AzFramework::PlatformFlags::AllNamedPlatforms;
         additionalSeedInfo->second->m_platformList =
             QString(AzFramework::PlatformHelper::GetCommaSeparatedPlatformList(visiblePlatforms).c_str());
 
@@ -186,7 +186,7 @@ namespace AssetBundler
             return false;
         }
 
-        validPlatforms &= AzFramework::PlatformFlags::UnrestrictedPlatforms;
+        validPlatforms &= AzFramework::PlatformFlags::AllNamedPlatforms;
         QString platformList = QString(AzFramework::PlatformHelper::GetCommaSeparatedPlatformList(validPlatforms).c_str());
 
         int lastRowIndex = AZStd::max(rowCount() - 1, 0);
