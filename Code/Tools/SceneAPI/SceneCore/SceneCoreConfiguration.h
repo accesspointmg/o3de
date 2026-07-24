@@ -10,7 +10,7 @@
 
 #include <AzCore/PlatformDef.h>
 
-#if defined(AZ_PLATFORM_WINDOWS) || defined(AZ_PLATFORM_PROVO)
+#if defined(AZ_PLATFORM_WINDOWS)
     #define SCENE_CORE_CLASS
     #if defined(AZ_MONOLITHIC_BUILD)
         #define SCENE_CORE_API

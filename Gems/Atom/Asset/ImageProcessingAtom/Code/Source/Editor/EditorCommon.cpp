@@ -115,21 +115,9 @@ namespace ImageProcessingAtomEditor
         {
             readableString = "macOS";
         }
-        else if (platformStrLowerCase == "provo")
-        {
-            readableString = "Provo";
-        }
         else if (platformStrLowerCase == "ios")
         {
             readableString = "iOS";
-        }
-        else if (platformStrLowerCase == "salem")
-        {
-            readableString = "Salem";
-        }
-        else if (platformStrLowerCase == "jasper")
-        {
-            readableString = "Jasper";
         }
         else
         {

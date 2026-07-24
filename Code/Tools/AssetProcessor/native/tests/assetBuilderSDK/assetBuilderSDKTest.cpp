@@ -132,9 +132,6 @@ namespace AssetProcessor
         ASSERT_TRUE(createJobsRequest.IsPlatformValid(AssetBuilderSDK::Platform_ANDROID));
         ASSERT_TRUE(createJobsRequest.IsPlatformValid(AssetBuilderSDK::Platform_IOS));
         ASSERT_TRUE(createJobsRequest.IsPlatformValid(AssetBuilderSDK::Platform_MAC));
-        ASSERT_TRUE(createJobsRequest.IsPlatformValid(AssetBuilderSDK::Platform_PROVO));
-        ASSERT_TRUE(createJobsRequest.IsPlatformValid(AssetBuilderSDK::Platform_SALEM));
-        ASSERT_TRUE(createJobsRequest.IsPlatformValid(AssetBuilderSDK::Platform_JASPER));
         //64 is 0x040 which currently is the next valid platform value which is invalid as of now, if we ever add a new platform entry to the Platform enum
         //we will have to update this failure unit test
         ASSERT_FALSE(createJobsRequest.IsPlatformValid(static_cast<AssetBuilderSDK::Platform>(256)));

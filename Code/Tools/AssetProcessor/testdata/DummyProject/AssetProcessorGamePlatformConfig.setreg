@@ -2,15 +2,15 @@
     "Amazon": {
         "AssetProcessor": {
             "Settings": {
-                "Platform provo": {
-                    "tags": "console, renderer"
+                "Platform android": {
+                    "tags": "mobile, renderer"
                 },
                 "Platforms": {
                     "server": "disabled",
-                    "provo": "enabled"
+                    "android": "enabled"
                 },
                 "RC i_caf": {
-                    "provo": "copy"
+                    "android": "copy"
                 },
                 "RC mov": {
                     "ignore": true

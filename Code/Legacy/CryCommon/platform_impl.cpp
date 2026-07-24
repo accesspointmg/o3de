@@ -20,22 +20,10 @@
 
 
 // Section dictionary
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define PLATFORM_IMPL_H_SECTION_TRAITS 1
-#define PLATFORM_IMPL_H_SECTION_CRYLOWLATENCYSLEEP 2
-#define PLATFORM_IMPL_H_SECTION_CRYGETFILEATTRIBUTES 3
-#define PLATFORM_IMPL_H_SECTION_CRY_FILE_ATTRIBUTE_STUBS 5
-#define PLATFORM_IMPL_H_SECTION_CRY_SYSTEM_FUNCTIONS 6
-#define PLATFORM_IMPL_H_SECTION_VIRTUAL_ALLOCATORS 7
-#endif
 
 struct SSystemGlobalEnvironment* gEnv = nullptr;
 
 // Traits
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PLATFORM_IMPL_H_SECTION_TRAITS
-    #include AZ_RESTRICTED_FILE(platform_impl_h)
-#endif
 
 #if defined(WIN32) || defined(WIN64)
 void CryPureCallHandler()
@@ -148,10 +136,6 @@ void __stl_debug_message(const char* format_str, ...)
 #include <intrin.h>
 #endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PLATFORM_IMPL_H_SECTION_CRY_SYSTEM_FUNCTIONS
-    #include AZ_RESTRICTED_FILE(platform_impl_h)
-#endif
 
 #if defined (_WIN32)
 
@@ -232,10 +216,6 @@ void InitRootDir(char szExeFileName[], uint nExeSize, char szExeRootName[], uint
 
 #endif // _WIN32
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PLATFORM_IMPL_H_SECTION_CRY_FILE_ATTRIBUTE_STUBS
-    #include AZ_RESTRICTED_FILE(platform_impl_h)
-#endif
 
 #if defined(AZ_PLATFORM_WINDOWS)
 int64 CryGetTicks()
@@ -270,10 +250,3 @@ inline void CryDebugStr([[maybe_unused]] const char* format, ...)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PLATFORM_IMPL_H_SECTION_VIRTUAL_ALLOCATORS
-    #include AZ_RESTRICTED_FILE(platform_impl_h)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-#undef AZ_RESTRICTED_SECTION_IMPLEMENTED
-#endif

@@ -15,7 +15,7 @@ namespace AZ
 {
     inline namespace PlatformDefaults
     {
-        static const char* PlatformNames[PlatformId::NumPlatformIds] = { PlatformPC, PlatformLinux, PlatformAndroid, PlatformIOS, PlatformMac, PlatformProvo, PlatformSalem, PlatformJasper, PlatformServer, PlatformAll, PlatformAllClient };
+        static const char* PlatformNames[PlatformId::NumPlatformIds] = { PlatformPC, PlatformLinux, PlatformAndroid, PlatformIOS, PlatformMac, PlatformServer, PlatformAll, PlatformAllClient };
 
         const char* PlatformIdToPalFolder(AZ::PlatformId platform)
         {
@@ -35,12 +35,6 @@ namespace AZ
                 return "iOS";
             case AZ::MAC_ID:
                 return "Mac";
-            case AZ::PROVO:
-                return "Provo";
-            case AZ::SALEM:
-                return "Salem";
-            case AZ::JASPER:
-                return "Jasper";
             case AZ::SERVER:
                 return "Server";
             case AZ::ALL:
@@ -77,18 +71,6 @@ namespace AZ
             else if (osPlatform == PlatformCodeNameiOS)
             {
                 return PlatformIOS;
-            }
-            else if (osPlatform == PlatformCodeNameProvo)
-            {
-                return PlatformProvo;
-            }
-            else if (osPlatform == PlatformCodeNameSalem)
-            {
-                return PlatformSalem;
-            }
-            else if (osPlatform == PlatformCodeNameJasper)
-            {
-                return PlatformJasper;
             }
 
             AZ_Error("PlatformDefault", false, R"(Supplied OS platform "%.*s" does not have a corresponding default asset platform)",
@@ -219,15 +201,6 @@ namespace AZ
                 break;
             case PlatformId::MAC_ID:
                 platformCodes.emplace_back(PlatformCodeNameMac);
-                break;
-            case PlatformId::PROVO:
-                platformCodes.emplace_back(PlatformCodeNameProvo);
-                break;
-            case PlatformId::SALEM:
-                platformCodes.emplace_back(PlatformCodeNameSalem);
-                break;
-            case PlatformId::JASPER:
-                platformCodes.emplace_back(PlatformCodeNameJasper);
                 break;
             case PlatformId::SERVER:
                 // For 'server' we default to the host

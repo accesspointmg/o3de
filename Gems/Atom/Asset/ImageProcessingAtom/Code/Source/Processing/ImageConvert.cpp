@@ -34,18 +34,6 @@
 // minimum texture size to be splitted. A texture will only be split when the size is larger than this number
 #define MinSizeToSplit 1 << 5
 
-#if defined(AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS)
-#if defined(TOOLS_SUPPORT_JASPER)
-    #include AZ_RESTRICTED_FILE_EXPLICIT(ImageProcess, Jasper)
-#endif
-#if defined(TOOLS_SUPPORT_PROVO)
-    #include AZ_RESTRICTED_FILE_EXPLICIT(ImageProcess, Provo)
-#endif
-#if defined(TOOLS_SUPPORT_SALEM)
-    #include AZ_RESTRICTED_FILE_EXPLICIT(ImageProcess, Salem)
-#endif
-#endif
-
 namespace ImageProcessingAtom
 {
     enum ConvertStep
@@ -775,21 +763,6 @@ namespace ImageProcessingAtom
             AZ_TracePrintf("Image processing", "Image size will be scaled for pixel format %s\n", CPixelFormats::GetInstance().GetPixelFormatInfo(dstFmt)->szName);
         }
 
-#if defined(AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS)
-#define AZ_RESTRICTED_PLATFORM_EXPANSION(CodeName, CODENAME, codename, PrivateName, PRIVATENAME, privatename, PublicName, PUBLICNAME, publicname, PublicAuxName1, PublicAuxName2, PublicAuxName3) \
-    if (ImageProcess##PrivateName::DoesSupport(m_input->m_platform))                                                                                                                              \
-    {                                                                                                                                                                                             \
-        if (!ImageProcess##PrivateName::IsPixelFormatSupported(m_input->m_presetSetting.m_pixelFormat))                                                                                           \
-        {                                                                                                                                                                                         \
-            AZ_Error("Image Processing", false, "Unsupported pixel format %s for %s",                                                                                                             \
-            CPixelFormats::GetInstance().GetPixelFormatInfo(dstFmt)->szName, m_input->m_platform.c_str());                                                                                        \
-            return false;                                                                                                                                                                         \
-        }                                                                                                                                                                                         \
-    }
-        AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS
-#undef AZ_RESTRICTED_PLATFORM_EXPANSION
-#endif //AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS
-
             return true;
     }
 
@@ -804,17 +777,6 @@ namespace ImageProcessingAtom
 
         // [GFX TODO] [ATOM-781] Platform related image prepare need to be reworked on.
         // Disabled for now since it's not working properly for atom
-#if IMAGEBUILDER_ENABLE_PLATFORM_EXPORT_PREPARE
-#if defined(AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS)
-#define AZ_RESTRICTED_PLATFORM_EXPANSION(CodeName, CODENAME, codename, PrivateName, PRIVATENAME, privatename, PublicName, PUBLICNAME, publicname, PublicAuxName1, PublicAuxName2, PublicAuxName3) \
-    if (ImageProcess##PrivateName::DoesSupport(m_input->m_platform))                                                                                                                              \
-    {                                                                                                                                                                                             \
-        ImageProcess##PrivateName::PrepareImageForExport(m_image->Get());                                                                                                                         \
-    }
-        AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS
-#undef AZ_RESTRICTED_PLATFORM_EXPANSION
-#endif //AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS
-#endif
 
         // cubemaps can have a specific subId, standard images use the subId specified in StreamingImageAsset
         uint32_t subId = IsConvertToCubemap() ? m_input->m_presetSetting.m_cubemapSetting->m_subId : RPI::StreamingImageAsset::GetImageAssetSubId();

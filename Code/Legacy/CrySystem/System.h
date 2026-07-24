@@ -37,18 +37,7 @@ struct ICVar;
 struct IFFont;
 class CWatchdogThread;
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#undef AZ_RESTRICTED_SECTION
-#define SYSTEM_H_SECTION_1 1
-#define SYSTEM_H_SECTION_2 2
-#define SYSTEM_H_SECTION_3 3
-#define SYSTEM_H_SECTION_4 4
-#endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION SYSTEM_H_SECTION_1
-#include AZ_RESTRICTED_FILE(System_h)
-#else
 #if defined(WIN32) || defined(LINUX) || defined(APPLE)
 #define AZ_LEGACY_CRYSYSTEM_TRAIT_ALLOW_CREATE_BACKUP_LOG_FILE 1
 #endif
@@ -73,8 +62,6 @@ class CWatchdogThread;
 #endif
 
 //////////////////////////////////////////////////////////////////////////
-
-#endif
 
 #ifdef WIN32
 using WIN_HMODULE = void*;
@@ -278,10 +265,7 @@ private:
 
     void AddCVarGroupDirectory(const AZStd::string& sPath) override;
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION SYSTEM_H_SECTION_3
-#include AZ_RESTRICTED_FILE(System_h)
-#elif defined(WIN32)
+#if defined(WIN32)
     bool GetWinGameFolder(char* szMyDocumentsPath, int maxPathSize);
 #endif
 
@@ -358,10 +342,6 @@ private: // ------------------------------------------------------
     ICVar* m_sys_firstlaunch;
     ICVar* m_sys_load_files_to_memory;
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION SYSTEM_H_SECTION_4
-#include AZ_RESTRICTED_FILE(System_h)
-#endif
 
     AZStd::string  m_sSavedRDriver;                                //!< to restore the driver when quitting the dedicated server
 

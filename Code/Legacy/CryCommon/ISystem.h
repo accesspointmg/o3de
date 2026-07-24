@@ -18,14 +18,6 @@
 #include <AzCore/IO/SystemFile.h>
 #include <CryCommon/IValidator.h>
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#undef AZ_RESTRICTED_SECTION
-#define ISYSTEM_H_SECTION_1 1
-#define ISYSTEM_H_SECTION_2 2
-#define ISYSTEM_H_SECTION_3 3
-#define ISYSTEM_H_SECTION_4 4
-#define ISYSTEM_H_SECTION_5 5
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
@@ -92,11 +84,9 @@ enum ESystemConfigPlatform
     CONFIG_OSX_METAL = 3,
     CONFIG_ANDROID = 4,
     CONFIG_IOS = 5,
-    CONFIG_PROVO = 7,
-    CONFIG_SALEM = 8,
-    CONFIG_JASPER = 9,
+    // 6-9 reserved (formerly console platforms)
 
-    END_CONFIG_PLATFORM_ENUM, // MUST BE LAST VALUE. USED FOR ERROR CHECKING.
+    END_CONFIG_PLATFORM_ENUM = 10, // MUST BE LAST VALUE. USED FOR ERROR CHECKING.
 };
 
 enum ESystemGlobalState
@@ -315,15 +305,7 @@ enum ESystemEvent
     //      Sent when frontend is reloaded
     ESYSTEM_EVENT_FRONTEND_RELOADED,
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION ISYSTEM_H_SECTION_1
-    #include AZ_RESTRICTED_FILE(ISystem_h)
-#endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION ISYSTEM_H_SECTION_2
-    #include AZ_RESTRICTED_FILE(ISystem_h)
-#endif
     ESYSTEM_EVENT_STREAMING_INSTALL_ERROR,
 
     // Description:
@@ -452,10 +434,6 @@ struct IErrorObserver
     // </interfuscator:shuffle>
 };
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION ISYSTEM_H_SECTION_3
-    #include AZ_RESTRICTED_FILE(ISystem_h)
-#endif
 
 namespace AZ
 {
@@ -589,10 +567,6 @@ struct SSystemGlobalEnvironment
     ISystem*                   pSystem = nullptr;
     ILog*                      pLog;
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION ISYSTEM_H_SECTION_4
-    #include AZ_RESTRICTED_FILE(ISystem_h)
-#endif
 
     AZStd::thread_id                                mMainThreadId;     //The main thread ID is used in multiple systems so should be stored globally
 
@@ -1100,10 +1074,6 @@ inline void CryWarning(EValidatorModule module, EValidatorSeverity severity, con
 #define CONST_CVAR_FLAGS (VF_NULL)
 #endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION ISYSTEM_H_SECTION_5
-    #include AZ_RESTRICTED_FILE(ISystem_h)
-#endif
 #if defined(_RELEASE) && defined(IS_CONSOLE_PLATFORM)
 #ifndef LOG_CONST_CVAR_ACCESS
 #error LOG_CONST_CVAR_ACCESS should be defined in ProjectDefines.h

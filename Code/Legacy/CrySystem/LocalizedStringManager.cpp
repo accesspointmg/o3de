@@ -11,10 +11,6 @@
 
 #include "LocalizedStringManager.h"
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#undef AZ_RESTRICTED_SECTION
-#define LOCALIZEDSTRINGMANAGER_CPP_SECTION_1 1
-#endif
 
 #include <ISystem.h>
 #include "System.h" // to access InitLocalization()
@@ -361,20 +357,12 @@ ILocalizationManager::EPlatformIndependentLanguageID CLocalizedStringsManager::P
     return ILocalizationManager::ePILID_MAX_OR_INVALID;
 }
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION LOCALIZEDSTRINGMANAGER_CPP_SECTION_1
-#include AZ_RESTRICTED_FILE(LocalizedStringManager_cpp)
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-#undef AZ_RESTRICTED_SECTION_IMPLEMENTED
-#endif // AZ_RESTRICTED_SECTION_IMPLEMENTED
-#else
 //////////////////////////////////////////////////////////////////////////
 ILocalizationManager::EPlatformIndependentLanguageID CLocalizedStringsManager::GetSystemLanguage()
 {
 
     return ILocalizationManager::EPlatformIndependentLanguageID::ePILID_English_US;
 }
-#endif // defined(AZ_RESTRICTED_PLATFORM)
 
 //Uses bitwise operations to compare the localizations we provide in this SKU and the languages that the platform supports.
 //Returns !0 if we provide more localizations than are available as system languages

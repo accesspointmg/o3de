@@ -22,12 +22,6 @@ struct ISystem;
 //////////////////////////////////////////////////////////////////////
 #if defined(ANDROID) || defined(AZ_PLATFORM_MAC)
     #define MAX_TEMP_LENGTH_SIZE    4098
-#define AZ_RESTRICTED_SECTION_IMPLEMENTED
-#elif defined(AZ_RESTRICTED_PLATFORM)
-#include AZ_RESTRICTED_FILE(Log_h)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-#undef AZ_RESTRICTED_SECTION_IMPLEMENTED
 #else
     #define MAX_TEMP_LENGTH_SIZE    8196
 #endif

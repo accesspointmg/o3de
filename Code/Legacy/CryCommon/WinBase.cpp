@@ -15,25 +15,8 @@
 
 #include <CryCommon/ISystem.h>
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#undef AZ_RESTRICTED_SECTION
-#define WINBASE_CPP_SECTION_1 1
-#define WINBASE_CPP_SECTION_2 2
-#define WINBASE_CPP_SECTION_3 3
-#define WINBASE_CPP_SECTION_4 4
-#define WINBASE_CPP_SECTION_5 5
-#define WINBASE_CPP_SECTION_6 6
-#endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION WINBASE_CPP_SECTION_1
-    #include AZ_RESTRICTED_FILE(WinBase_cpp)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-    #undef AZ_RESTRICTED_SECTION_IMPLEMENTED
-#else
     #include <signal.h>
-#endif
 
 #include <pthread.h>
 #include <sys/types.h>
@@ -205,13 +188,6 @@ size_t wcsnlen(const wchar_t* str, size_t maxLen)
 
 #endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION WINBASE_CPP_SECTION_2
-    #include AZ_RESTRICTED_FILE(WinBase_cpp)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-#undef AZ_RESTRICTED_SECTION_IMPLEMENTED
-#else
 bool QueryPerformanceCounter(LARGE_INTEGER* counter)
 {
 #if defined(LINUX)
@@ -250,18 +226,9 @@ bool QueryPerformanceFrequency(LARGE_INTEGER* frequency)
     return false;
 #endif
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION WINBASE_CPP_SECTION_4
-    #include AZ_RESTRICTED_FILE(WinBase_cpp)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-#undef AZ_RESTRICTED_SECTION_IMPLEMENTED
-#else
 
-#endif
 
 #include <chrono>
 #include <thread>
@@ -272,13 +239,6 @@ AZ::u32 Sleep(AZ::u32 dwMilliseconds)
 #if defined(LINUX) || defined(APPLE)
     std::this_thread::sleep_for(std::chrono::milliseconds(dwMilliseconds));
     return 0;
-#define AZ_RESTRICTED_SECTION_IMPLEMENTED
-#elif defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION WINBASE_CPP_SECTION_5
-    #include AZ_RESTRICTED_FILE(WinBase_cpp)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-#undef AZ_RESTRICTED_SECTION_IMPLEMENTED
 #else
     timeval tv, start, now;
     uint64 tStart;

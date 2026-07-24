@@ -99,19 +99,6 @@ namespace AssetBuilderSDK
         {
             return AssetBuilderSDK::Platform_MAC;
         }
-        if (azstricmp(newPlatformName, "provo") == 0)
-        {
-            return AssetBuilderSDK::Platform_PROVO;
-        }
-#if defined(AZ_PLATFORM_JASPER) || defined(TOOLS_SUPPORT_JASPER)
-#include AZ_RESTRICTED_FILE_EXPLICIT(AssetBuilderSDK_cpp, jasper)
-#endif
-#if defined(AZ_PLATFORM_PROVO) || defined(TOOLS_SUPPORT_PROVO)
-#include AZ_RESTRICTED_FILE_EXPLICIT(AssetBuilderSDK_cpp, provo)
-#endif
-#if defined(AZ_PLATFORM_SALEM) || defined(TOOLS_SUPPORT_SALEM)
-#include AZ_RESTRICTED_FILE_EXPLICIT(AssetBuilderSDK_cpp, salem)
-#endif
 
         return AssetBuilderSDK::Platform_NONE;
     }
@@ -130,12 +117,6 @@ namespace AssetBuilderSDK
             return "ios";
         case AssetBuilderSDK::Platform_MAC:
             return "mac";
-        case AssetBuilderSDK::Platform_PROVO:
-            return "provo";
-        case AssetBuilderSDK::Platform_SALEM:
-            return "salem";
-        case AssetBuilderSDK::Platform_JASPER:
-            return "jasper";
         }
         return "unknown platform";
     }

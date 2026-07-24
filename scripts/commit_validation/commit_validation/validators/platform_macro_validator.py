@@ -23,8 +23,6 @@ platform_macros = [
     'LINUX',
     'LINUX64',
     'MAC',
-    'PROVO',
-    'SALEM',
     'WIN32',
     'WIN32_LEAN_AND_MEAN',
     'WIN64',

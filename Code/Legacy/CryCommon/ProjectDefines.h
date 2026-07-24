@@ -16,17 +16,7 @@
 #include "BaseTypes.h"
 #include <AzCore/PlatformDef.h>
 
-// Section dictionary
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define PROJECTDEFINES_H_SECTION_STATS_AGENT 1
-#define PROJECTDEFINES_H_SECTION_TRAITS 2
-#define PROJECTDEFINES_H_SECTION_VTX_IDX 3
-#endif
-
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PROJECTDEFINES_H_SECTION_STATS_AGENT
-    #include AZ_RESTRICTED_FILE(ProjectDefines_h)
-#elif defined(WIN32) || defined(WIN64)
+#if defined(WIN32) || defined(WIN64)
     #if !defined(_RELEASE)
         #define ENABLE_STATS_AGENT
     #endif
@@ -37,13 +27,6 @@
 // WARNING: If you change this typedef, you need to update AssetProcessorPlatformConfig.ini to convert cgf and abc files to the proper index format.
 #if defined(MOBILE)
     typedef uint16 vtx_idx;
-    #define AZ_RESTRICTED_SECTION_IMPLEMENTED
-#elif defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PROJECTDEFINES_H_SECTION_VTX_IDX
-    #include AZ_RESTRICTED_FILE(ProjectDefines_h)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-    #undef AZ_RESTRICTED_SECTION_IMPLEMENTED
 #else
     // Uncomment one of the two following typedefs:
     typedef uint32 vtx_idx;
@@ -76,19 +59,14 @@
 #endif
 
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PROJECTDEFINES_H_SECTION_TRAITS
-    #include AZ_RESTRICTED_FILE(ProjectDefines_h)
-#else
-    #define PROJECTDEFINES_H_TRAIT_DISABLE_MONOLITHIC_PROFILING_MARKERS 1
-    #define PROJECTDEFINES_H_TRAIT_USE_MESH_TESSELLATION 1
-    #if defined(WIN32)
-        #define PROJECTDEFINES_H_TRAIT_USE_SVO_GI 1
-    #endif
-    #if defined(APPLE) || defined(LINUX)
-        #define AZ_LEGACY_CRYCOMMON_TRAIT_USE_PTHREADS 1
-        #define AZ_LEGACY_CRYCOMMON_TRAIT_USE_UNIX_PATHS 1
-    #endif
+#define PROJECTDEFINES_H_TRAIT_DISABLE_MONOLITHIC_PROFILING_MARKERS 1
+#define PROJECTDEFINES_H_TRAIT_USE_MESH_TESSELLATION 1
+#if defined(WIN32)
+    #define PROJECTDEFINES_H_TRAIT_USE_SVO_GI 1
+#endif
+#if defined(APPLE) || defined(LINUX)
+    #define AZ_LEGACY_CRYCOMMON_TRAIT_USE_PTHREADS 1
+    #define AZ_LEGACY_CRYCOMMON_TRAIT_USE_UNIX_PATHS 1
 #endif
 
 #if !defined(_RELEASE)

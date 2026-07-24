@@ -12,20 +12,6 @@
 
 #pragma once
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#undef AZ_RESTRICTED_SECTION
-#define PLATFORM_H_SECTION_3 3
-#define PLATFORM_H_SECTION_5 5
-#define PLATFORM_H_SECTION_6 6
-#define PLATFORM_H_SECTION_7 7
-#define PLATFORM_H_SECTION_8 8
-#define PLATFORM_H_SECTION_10 10
-#define PLATFORM_H_SECTION_11 11
-#define PLATFORM_H_SECTION_12 12
-#define PLATFORM_H_SECTION_13 13
-#define PLATFORM_H_SECTION_14 14
-#define PLATFORM_H_SECTION_15 15
-#endif
 
 
 #define ILINE AZ_FORCE_INLINE
@@ -36,23 +22,11 @@
 
 #include <AzCore/PlatformIncl.h>
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PLATFORM_H_SECTION_3
-    #include AZ_RESTRICTED_FILE(platform_h)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-#undef AZ_RESTRICTED_SECTION_IMPLEMENTED
-#elif defined(MOBILE)
+#if defined(MOBILE)
     #define CONSOLE
 #endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PLATFORM_H_SECTION_5
-    #include AZ_RESTRICTED_FILE(platform_h)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-#undef AZ_RESTRICTED_SECTION_IMPLEMENTED
-#elif defined(LINUX) || defined(APPLE)
+#if defined(LINUX) || defined(APPLE)
     #define __STDC_FORMAT_MACROS
     #include <cinttypes>
 #else
@@ -60,13 +34,7 @@
 #endif
 
 #if !defined(PRISIZE_T)
-    #if defined(AZ_RESTRICTED_PLATFORM)
-        #define AZ_RESTRICTED_SECTION PLATFORM_H_SECTION_6
-        #include AZ_RESTRICTED_FILE(platform_h)
-    #endif
-    #if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-        #undef AZ_RESTRICTED_SECTION_IMPLEMENTED
-    #elif defined(WIN64)
+    #if defined(WIN64)
         #define PRISIZE_T "I64u" //size_t defined as unsigned __int64
     #elif defined(WIN32) || defined(LINUX32)
         #define PRISIZE_T "u"
@@ -78,13 +46,7 @@
 #endif
 
 #if !defined(PRI_THREADID)
-    #if defined(AZ_RESTRICTED_PLATFORM)
-        #define AZ_RESTRICTED_SECTION PLATFORM_H_SECTION_7
-        #include AZ_RESTRICTED_FILE(platform_h)
-    #endif
-    #if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-        #undef AZ_RESTRICTED_SECTION_IMPLEMENTED
-    #elif defined(MAC) || defined(IOS) && defined(__LP64__) && defined(__LP64__)
+    #if defined(MAC) || defined(IOS) && defined(__LP64__) && defined(__LP64__)
         #define PRI_THREADID "lld"
     #elif defined(LINUX64) || defined(ANDROID)
         #define PRI_THREADID "ld"
@@ -128,13 +90,6 @@
 #endif
 
 //default stack size for threads, currently only used on pthread platforms
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PLATFORM_H_SECTION_8
-    #include AZ_RESTRICTED_FILE(platform_h)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-    #undef AZ_RESTRICTED_SECTION_IMPLEMENTED
-#endif
 
 #include <AzCore/PlatformDef.h>
 
@@ -160,21 +115,16 @@
 #   define PREFAST_ASSUME(cond)
 #endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PLATFORM_H_SECTION_10
-    #include AZ_RESTRICTED_FILE(platform_h)
-#else
-    #if defined(WIN64)
-        #include "Win64specific.h"
-    #elif defined(LINUX64) && !defined(ANDROID)
-        #include "Linux64Specific.h"
-    #elif defined(MAC)
-        #include "MacSpecific.h"
-    #elif defined(ANDROID)
-        #include "AndroidSpecific.h"
-    #elif defined(IOS)
-        #include "iOSSpecific.h"
-    #endif
+#if defined(WIN64)
+    #include "Win64specific.h"
+#elif defined(LINUX64) && !defined(ANDROID)
+    #include "Linux64Specific.h"
+#elif defined(MAC)
+    #include "MacSpecific.h"
+#elif defined(ANDROID)
+    #include "AndroidSpecific.h"
+#elif defined(IOS)
+    #include "iOSSpecific.h"
 #endif
 
 
@@ -322,9 +272,6 @@ void SetFlags(T& dest, U flags, bool b)
 // Wrapper code for non-windows builds.
 #if defined(LINUX) || defined(APPLE)
     #include "Linux_Win32Wrapper.h"
-#elif defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PLATFORM_H_SECTION_12
-    #include AZ_RESTRICTED_FILE(platform_h)
 #endif
 
 #ifdef __GNUC__
@@ -337,24 +284,13 @@ void SetFlags(T& dest, U flags, bool b)
     #define __PACKED
 #endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PLATFORM_H_SECTION_13
-    #include AZ_RESTRICTED_FILE(platform_h)
-#elif !defined(LINUX) && !defined(APPLE)
+#if !defined(LINUX) && !defined(APPLE)
     typedef int socklen_t;
 #endif
 
 // In RELEASE disable printf and fprintf
 #if defined(_RELEASE) && !defined(RELEASE_LOGGING)
-    #if defined(AZ_RESTRICTED_PLATFORM)
-        #define AZ_RESTRICTED_SECTION PLATFORM_H_SECTION_14
-        #include AZ_RESTRICTED_FILE(platform_h)
-    #endif
 #endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-    #define AZ_RESTRICTED_SECTION PLATFORM_H_SECTION_15
-    #include AZ_RESTRICTED_FILE(platform_h)
-#endif
 
 void InitRootDir(char szExeFileName[] = nullptr, uint nExeSize = 0, char szExeRootName[] = nullptr, uint nRootSize = 0);

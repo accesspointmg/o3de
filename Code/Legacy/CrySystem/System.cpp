@@ -37,18 +37,6 @@
 
 AZ_DEFINE_BUDGET(CrySystem);
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#undef AZ_RESTRICTED_SECTION
-#define SYSTEM_CPP_SECTION_1 1
-#define SYSTEM_CPP_SECTION_2 2
-#define SYSTEM_CPP_SECTION_3 3
-#define SYSTEM_CPP_SECTION_4 4
-#define SYSTEM_CPP_SECTION_5 5
-#define SYSTEM_CPP_SECTION_6 6
-#define SYSTEM_CPP_SECTION_7 7
-#define SYSTEM_CPP_SECTION_8 8
-#define SYSTEM_CPP_SECTION_9 9
-#endif
 
 #if defined(_RELEASE) && AZ_LEGACY_CRYSYSTEM_TRAIT_USE_EXCLUDEUPDATE_ON_CONSOLE
 //exclude some not needed functionality for release console builds
@@ -108,10 +96,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 #include <unwind.h>  // for _Unwind_Backtrace and _Unwind_GetIP
 #endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION SYSTEM_CPP_SECTION_1
-#include AZ_RESTRICTED_FILE(System_cpp)
-#endif
 
 #include <IRenderer.h>
 #include <IMovieSystem.h>
@@ -203,10 +187,6 @@ CSystem::CSystem()
     m_pCmdLine = NULL;
     m_pLevelSystem = NULL;
     m_pLocalizationManager = NULL;
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION SYSTEM_CPP_SECTION_2
-#include AZ_RESTRICTED_FILE(System_cpp)
-#endif
 
     m_pUserCallback = NULL;
     m_sys_firstlaunch = NULL;
@@ -380,10 +360,6 @@ void CSystem::ShutDown()
 
     SAFE_RELEASE(m_sys_firstlaunch);
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION SYSTEM_CPP_SECTION_3
-#include AZ_RESTRICTED_FILE(System_cpp)
-#endif
 
     SAFE_DELETE(m_pLocalizationManager);
 

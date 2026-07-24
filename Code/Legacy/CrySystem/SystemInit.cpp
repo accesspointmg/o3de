@@ -9,25 +9,6 @@
 #include "CrySystem_precompiled.h"
 #include "System.h"
 
-#if defined(AZ_RESTRICTED_PLATFORM) || defined(AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS)
-#undef AZ_RESTRICTED_SECTION
-#define SYSTEMINIT_CPP_SECTION_2 2
-#define SYSTEMINIT_CPP_SECTION_3 3
-#define SYSTEMINIT_CPP_SECTION_4 4
-#define SYSTEMINIT_CPP_SECTION_5 5
-#define SYSTEMINIT_CPP_SECTION_6 6
-#define SYSTEMINIT_CPP_SECTION_7 7
-#define SYSTEMINIT_CPP_SECTION_8 8
-#define SYSTEMINIT_CPP_SECTION_9 9
-#define SYSTEMINIT_CPP_SECTION_10 10
-#define SYSTEMINIT_CPP_SECTION_11 11
-#define SYSTEMINIT_CPP_SECTION_12 12
-#define SYSTEMINIT_CPP_SECTION_13 13
-#define SYSTEMINIT_CPP_SECTION_14 14
-#define SYSTEMINIT_CPP_SECTION_15 15
-#define SYSTEMINIT_CPP_SECTION_16 16
-#define SYSTEMINIT_CPP_SECTION_17 17
-#endif
 
 #include "CryPath.h"
 
@@ -108,10 +89,6 @@
 extern LONG WINAPI CryEngineExceptionFilterWER(struct _EXCEPTION_POINTERS* pExceptionPointers);
 #endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION SYSTEMINIT_CPP_SECTION_14
-#include AZ_RESTRICTED_FILE(SystemInit_cpp)
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 #define DEFAULT_LOG_FILENAME "@log@/Log.txt"
@@ -210,13 +187,6 @@ static ESystemConfigPlatform GetDevicePlatform()
 {
 #if defined(AZ_PLATFORM_WINDOWS) || defined(AZ_PLATFORM_LINUX)
     return CONFIG_PC;
-#define AZ_RESTRICTED_SECTION_IMPLEMENTED
-#elif defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION SYSTEMINIT_CPP_SECTION_2
-#include AZ_RESTRICTED_FILE(SystemInit_cpp)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-#undef AZ_RESTRICTED_SECTION_IMPLEMENTED
 #elif defined(AZ_PLATFORM_ANDROID)
     return CONFIG_ANDROID;
 #elif defined(AZ_PLATFORM_IOS)
@@ -434,10 +404,6 @@ void CSystem::OpenPlatformPaks()
     // Open engine packs
     //////////////////////////////////////////////////////////////////////////
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION SYSTEMINIT_CPP_SECTION_15
-#include AZ_RESTRICTED_FILE(SystemInit_cpp)
-#endif
 
 #ifdef AZ_PLATFORM_ANDROID
     const char* const assetsDir = "@products@";
@@ -1275,21 +1241,9 @@ void CSystem::CreateSystemVars()
 
     m_sys_firstlaunch = REGISTER_INT("sys_firstlaunch", 0, 0, "Indicates that the game was run for the first time.");
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION SYSTEMINIT_CPP_SECTION_12
-#include AZ_RESTRICTED_FILE(SystemInit_cpp)
-#endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION SYSTEMINIT_CPP_SECTION_17
-#include AZ_RESTRICTED_FILE(SystemInit_cpp)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-#undef AZ_RESTRICTED_SECTION_IMPLEMENTED
-#else
 #define SYS_STREAMING_CPU_DEFAULT_VALUE 1
 #define SYS_STREAMING_CPU_WORKER_DEFAULT_VALUE 5
-#endif
 #define DEFAULT_USE_OPTICAL_DRIVE_THREAD (gEnv->IsDedicated() ? 0 : 1)
 
     const char* localizeFolder = "Localization";

@@ -13,8 +13,6 @@
 
 #include <AzCore/variadic.h>
 
-#include "PlatformRestrictedFileDef.h"
-
 #if defined(__clang__)
     #define AZ_COMPILER_CLANG   __clang_major__
 #elif defined(__GNUC__)

@@ -701,10 +701,7 @@ namespace AzToolsFramework
         using namespace AzFramework;
 
         PlatformFlags visiblePlatforms = seed.m_platformFlags;
-#ifndef AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS
-        // don't include restricted platforms when they are not enabled
         visiblePlatforms &= PlatformFlags::UnrestrictedPlatforms;
-#endif
         auto readablePlatformListIter = m_platformFlagsToReadablePlatformList.find(visiblePlatforms);
         if (readablePlatformListIter != m_platformFlagsToReadablePlatformList.end())
         {

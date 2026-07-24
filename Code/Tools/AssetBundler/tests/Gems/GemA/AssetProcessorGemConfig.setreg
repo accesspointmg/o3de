@@ -3,7 +3,7 @@
         "AssetProcessor": {
             "Settings": {
                 "Platforms": {
-                    "provo": "enabled"
+                    "mac": "enabled"
                 }
             }
         }

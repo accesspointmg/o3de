@@ -14,18 +14,7 @@
 
 #include <AzCore/Module/Environment.h> // for AZ_DECLARE_MODULE_INITIALIZATION
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#undef AZ_RESTRICTED_SECTION
-#define DLLMAIN_CPP_SECTION_1 1
-#define DLLMAIN_CPP_SECTION_2 2
-#define DLLMAIN_CPP_SECTION_3 3
-#define DLLMAIN_CPP_SECTION_4 4
-#endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION DLLMAIN_CPP_SECTION_1
-#include AZ_RESTRICTED_FILE(DllMain_cpp)
-#endif
 
 // For lua debugger
 //#include <malloc.h>
@@ -70,10 +59,6 @@ ISystem* CreateSystemInterface(const SSystemInitParams& startupParams)
     pSystem = new CSystem();
     ModuleInitISystem(pSystem, "CrySystem");
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION DLLMAIN_CPP_SECTION_2
-#include AZ_RESTRICTED_FILE(DllMain_cpp)
-#endif
 
        // the earliest point the system exists - w2e tell the callback
     if (startupParams.pUserCallback)

@@ -131,7 +131,7 @@ def download_qa_golden_images(project_name, destination_dir, platform):
 
     :param project_name: a string of the project name of the folder in s3. ex: 'MultiplayerSample'
     :param destination_dir: a string of where the images will be downloaded to
-    :param platform: a string for the platform type ('pc', 'android', 'ios', 'darwin', 'provo')
+    :param platform: a string for the platform type ('pc', 'android', 'ios', 'darwin')
     :param filetype: a string for the file type. ex: '.jpg', '.png'
     :return:
     """

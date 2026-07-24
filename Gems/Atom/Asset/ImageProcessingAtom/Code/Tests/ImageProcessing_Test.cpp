@@ -993,15 +993,13 @@ namespace UnitTest
         SaveImageToFile(imageToProcess.Get(), "LinearToGamma_DeGamma", 1);
     }
 
-    TEST_F(ImageProcessingTest, VerifyRestrictedPlatform)
+    TEST_F(ImageProcessingTest, VerifyPlatformList)
     {
         auto outcome = BuilderSettingManager::Instance()->LoadConfigFromFolder(m_defaultSettingFolder.Native());
         ASSERT_TRUE(outcome.IsSuccess());
         PlatformNameList platforms = BuilderSettingManager::Instance()->GetPlatformList();
 
-    #ifndef AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS
         EXPECT_THAT(platforms, testing::UnorderedPointwise(testing::Eq(), {"pc", "linux", "mac", "ios", "android"}));
-    #endif //AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS
     }
 
     //test image conversion for builder

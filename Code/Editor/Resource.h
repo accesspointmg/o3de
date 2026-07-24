@@ -66,8 +66,6 @@
 #define IDC_POINTER_SO_SELECT_MINUS                2000
 #define IDC_SELECTION                              2634
 #define IDC_SELECTION_MASK                         2637
-#define IDC_PLATFORM_PROVO                         2758
-#define IDC_PLATFORM_SALEM                         2759
 #define IDC_GROUPBOX_GLOBALTAGS                    2916
 #define IDC_GROUPBOX_FRAGMENTTAGS                  2917
 #define ID_RESOURCES_REDUCEWORKINGSET              32896

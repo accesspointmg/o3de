@@ -160,10 +160,7 @@ namespace AssetBundler
         }
 
         auto visiblePlatforms = platforms;
-#ifndef AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS
-        // don't include restricted platforms when they are not enabled
         visiblePlatforms &= AzFramework::PlatformFlags::UnrestrictedPlatforms;
-#endif
         additionalSeedInfo->second->m_platformList =
             QString(AzFramework::PlatformHelper::GetCommaSeparatedPlatformList(visiblePlatforms).c_str());
 
@@ -189,10 +186,7 @@ namespace AssetBundler
             return false;
         }
 
-#ifndef AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS
-        // don't include restricted platforms when they are not enabled
         validPlatforms &= AzFramework::PlatformFlags::UnrestrictedPlatforms;
-#endif
         QString platformList = QString(AzFramework::PlatformHelper::GetCommaSeparatedPlatformList(validPlatforms).c_str());
 
         int lastRowIndex = AZStd::max(rowCount() - 1, 0);

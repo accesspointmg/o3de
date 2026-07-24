@@ -19,16 +19,8 @@
 #include <stdarg.h>
 #include <fcntl.h>
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#undef AZ_RESTRICTED_SECTION
-#define STDAFX_H_SECTION_1 1
-#define STDAFX_H_SECTION_2 2
-#endif
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION STDAFX_H_SECTION_1
-#include AZ_RESTRICTED_FILE(CrySystem_precompiled_h)
-#elif defined(LINUX) // Scrubber friendly negated define pattern
+#if defined(LINUX) // Scrubber friendly negated define pattern
 #elif !defined(APPLE)
     #include <memory.h>
     #include <malloc.h>
@@ -40,13 +32,7 @@
 
 #include <vector>
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION STDAFX_H_SECTION_2
-#include AZ_RESTRICTED_FILE(CrySystem_precompiled_h)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-#undef AZ_RESTRICTED_SECTION_IMPLEMENTED
-#elif defined(APPLE) // Scrubber friendly negated define pattern
+#if defined(APPLE) // Scrubber friendly negated define pattern
 #elif defined(ANDROID) // Scrubber friendly negated define pattern
 #elif defined(LINUX)
 #if !defined(__ARM_ARCH)

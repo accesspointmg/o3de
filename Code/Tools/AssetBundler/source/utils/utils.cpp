@@ -107,7 +107,6 @@ namespace AssetBundler
 
 
     constexpr auto EngineDirectoryName = AZ::IO::FixedMaxPath("Assets") / "Engine";
-    const char RestrictedDirectoryName[] = "restricted";
     const char PlatformsDirectoryName[] = "Platforms";
     const char GemsDirectoryName[] = "Gems";
     const char GemsSeedFileName[] = "seedList";
@@ -116,36 +115,20 @@ namespace AssetBundler
 
     namespace Internal
     {
-        const AZ::u32 PlatformFlags_RESTRICTED = aznumeric_cast<AZ::u32>(AzFramework::PlatformFlags::Platform_JASPER | AzFramework::PlatformFlags::Platform_PROVO | AzFramework::PlatformFlags::Platform_SALEM);
-
         void AddPlatformSeeds(
             const AZ::IO::Path& engineDirectory,
             const AZStd::string& rootFolderDisplayName,
             AZStd::unordered_map<AZStd::string, AZStd::string>& defaultSeedLists,
             AzFramework::PlatformFlags platformFlags)
         {
-            AZ::IO::FixedMaxPath engineRoot(AZ::Utils::GetEnginePath());
-            AZ::IO::FixedMaxPath engineRestrictedRoot = engineRoot / RestrictedDirectoryName;
-
-            AZ::IO::FixedMaxPath engineLocalPath = AZ::IO::PathView(engineDirectory.LexicallyRelative(engineRoot));
-
             AZ::IO::FileIOBase* fileIO = AZ::IO::FileIOBase::GetInstance();
             auto platformsIdxList = AzFramework::PlatformHelper::GetPlatformIndicesInterpreted(platformFlags);
             
             for (const AzFramework::PlatformId& platformId : platformsIdxList)
             {
-                const AzFramework::PlatformFlags platformFlag = AzFramework::PlatformHelper::GetPlatformFlagFromPlatformIndex(platformId);
                 const char* platformDirName = AzFramework::PlatformHelper::GetPlatformName(platformId);
 
-                AZ::IO::FixedMaxPath platformDirectory;
-                if (aznumeric_cast<AZ::u32>(platformFlag) & PlatformFlags_RESTRICTED)
-                {
-                    platformDirectory = engineRestrictedRoot / platformDirName / engineLocalPath;
-                }
-                else
-                {
-                    platformDirectory = engineDirectory / PlatformsDirectoryName / platformDirName;
-                }
+                AZ::IO::Path platformDirectory = engineDirectory / PlatformsDirectoryName / platformDirName;
 
                 if (fileIO->Exists(platformDirectory.c_str()))
                 {

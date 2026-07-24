@@ -100,7 +100,6 @@ namespace AZ::RHI
         MultisampleState m_multisampleState;
 
         /// Whether to treat this image as a cubemap.
-        // The property is required by Provo RHI.  
         // [GFX TODO][ATOM-1518] Care matching with ImageViewDescriptor::m_isCubemap.
         uint32_t m_isCubemap = 0;
     };

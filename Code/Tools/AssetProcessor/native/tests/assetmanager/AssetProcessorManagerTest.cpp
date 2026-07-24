@@ -3538,7 +3538,7 @@ void MultiplatformPathDependencyTest::SetUp()
     m_config = nullptr; // Make sure to clear this out first so the existing config can cleanup before we allocate the new one
     m_config.reset(new AssetProcessor::PlatformConfiguration());
     m_config->EnablePlatform({ "pc", { "host", "renderer", "desktop" } }, true);
-    m_config->EnablePlatform({ "provo",{ "console" } }, true);
+    m_config->EnablePlatform({ "android",{ "mobile" } }, true);
 
     m_config->AddScanFolder(ScanFolderInfo(m_assetRootDir.filePath("subfolder1"), "subfolder1", "subfolder1", false, true, m_config->GetEnabledPlatforms()));
     m_config->AddScanFolder(ScanFolderInfo(m_assetRootDir.filePath("subfolder2"), "subfolder2", "subfolder2", false, true, m_config->GetEnabledPlatforms()));
@@ -3563,7 +3563,7 @@ void MultiplatformPathDependencyTest::SetUp()
     rec.m_name = "multiplatform txt files";
     rec.m_patternMatcher = AssetBuilderSDK::FilePatternMatcher("*.txt", AssetBuilderSDK::AssetBuilderPattern::Wildcard);
     rec.m_platformSpecs.insert({"pc", AssetInternalSpec::Copy});
-    rec.m_platformSpecs.insert({"provo", AssetInternalSpec::Copy});
+    rec.m_platformSpecs.insert({"android", AssetInternalSpec::Copy});
     rec.m_supportsCreateJobs = false;
     m_mockApplicationManager->RegisterAssetRecognizerAsBuilder(rec);
 

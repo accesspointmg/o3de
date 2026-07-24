@@ -27,9 +27,6 @@ namespace AZ
         constexpr char PlatformAndroid[] = "android";
         constexpr char PlatformIOS[] = "ios";
         constexpr char PlatformMac[] = "mac";
-        constexpr char PlatformProvo[] = "provo";
-        constexpr char PlatformSalem[] = "salem";
-        constexpr char PlatformJasper[] = "jasper";
         constexpr char PlatformServer[] = "server";
 
         constexpr char PlatformCodeNameWindows[] = "Windows";
@@ -37,9 +34,6 @@ namespace AZ
         constexpr char PlatformCodeNameAndroid[] = "Android";
         constexpr char PlatformCodeNameiOS[] = "iOS";
         constexpr char PlatformCodeNameMac[] = "Mac";
-        constexpr char PlatformCodeNameProvo[] = "Provo";
-        constexpr char PlatformCodeNameSalem[] = "Salem";
-        constexpr char PlatformCodeNameJasper[] = "Jasper";
         constexpr char PlatformAll[] = "all";
         constexpr char PlatformAllClient[] = "all_client";
 
@@ -55,9 +49,6 @@ namespace AZ
             ANDROID_ID,
             IOS,
             MAC_ID,
-            PROVO,
-            SALEM,
-            JASPER,
             SERVER, // Corresponds to the customer's flavor of "server" which could be windows, ubuntu, etc
             ALL,
             ALL_CLIENT,
@@ -65,7 +56,7 @@ namespace AZ
             // Add new platforms above this
             NumPlatformIds
         );
-        constexpr int NumClientPlatforms = 8;
+        constexpr int NumClientPlatforms = 5;
         constexpr int NumPlatforms = NumClientPlatforms + 1; // 1 "Server" platform currently
         enum class PlatformFlags : AZ::u32
         {
@@ -75,9 +66,6 @@ namespace AZ
             Platform_ANDROID = 1 << PlatformId::ANDROID_ID,
             Platform_IOS = 1 << PlatformId::IOS,
             Platform_MAC = 1 << PlatformId::MAC_ID,
-            Platform_PROVO = 1 << PlatformId::PROVO,
-            Platform_SALEM = 1 << PlatformId::SALEM,
-            Platform_JASPER = 1 << PlatformId::JASPER,
             Platform_SERVER = 1 << PlatformId::SERVER,
 
             // A special platform that will always correspond to all platforms, even if new ones are added
@@ -86,9 +74,9 @@ namespace AZ
             // A special platform that will always correspond to all non-server platforms, even if new ones are added
             Platform_ALL_CLIENT = 1ULL << 31,
 
-            AllNamedPlatforms = Platform_PC | Platform_LINUX | Platform_ANDROID | Platform_IOS | Platform_MAC | Platform_PROVO | Platform_SALEM | Platform_JASPER | Platform_SERVER,
+            AllNamedPlatforms = Platform_PC | Platform_LINUX | Platform_ANDROID | Platform_IOS | Platform_MAC | Platform_SERVER,
 
-            UnrestrictedPlatforms = Platform_PC | Platform_LINUX | Platform_ANDROID | Platform_IOS | Platform_MAC | Platform_SERVER,
+            UnrestrictedPlatforms = AllNamedPlatforms,
         };
 
         AZ_DEFINE_ENUM_BITWISE_OPERATORS(PlatformFlags);

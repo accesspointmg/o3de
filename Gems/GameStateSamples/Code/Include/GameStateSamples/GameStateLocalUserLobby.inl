@@ -421,11 +421,7 @@ namespace GameStateSamples
             AZ::Color((AZ::u8)0, (AZ::u8)0, (AZ::u8)255, (AZ::u8)255), // Blue
             AZ::Color((AZ::u8)255, (AZ::u8)0, (AZ::u8)0, (AZ::u8)255), // Red
             AZ::Color((AZ::u8)0, (AZ::u8)255, (AZ::u8)0, (AZ::u8)255), // Green
-    #if defined(AZ_PLATFORM_PROVO)
-            AZ::Color((AZ::u8)255, (AZ::u8)0, (AZ::u8)127, (AZ::u8)255)// Pink
-    #else
             AZ::Color((AZ::u8)127, (AZ::u8)255, (AZ::u8)0, (AZ::u8)255)// Yellow
-    #endif
         };
         static const AZ::Color s_gamepadLightBarColorNoLocalPlayerSlot = AZ::Color::CreateOne(); // White
 

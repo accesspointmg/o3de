@@ -473,8 +473,6 @@ namespace AzToolsFramework
                 ->Attribute(AZ::Script::Attributes::Scope, AZ::Script::Attributes::ScopeFlags::Automation);
             behaviorContext->EnumProperty<ESystemConfigPlatform::CONFIG_IOS>("SystemConfigPlatform_Ios")
                 ->Attribute(AZ::Script::Attributes::Scope, AZ::Script::Attributes::ScopeFlags::Automation);
-            behaviorContext->EnumProperty<ESystemConfigPlatform::CONFIG_PROVO>("SystemConfigPlatform_Provo")
-                ->Attribute(AZ::Script::Attributes::Scope, AZ::Script::Attributes::ScopeFlags::Automation);
         }
     }
 

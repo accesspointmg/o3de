@@ -18,12 +18,6 @@
 #include <AzCore/IO/SystemFile.h> // for AZ_MAX_PATH_LEN
 #include <AzCore/std/allocator_stack.h>
 
-#if defined(AZ_RESTRICTED_PLATFORM)
-#undef AZ_RESTRICTED_SECTION
-#define SYSTEMWIN32_CPP_SECTION_1 1
-#define SYSTEMWIN32_CPP_SECTION_2 2
-#define SYSTEMWIN32_CPP_SECTION_3 3
-#endif
 
 #if defined(LINUX) || defined(APPLE)
 #include <unistd.h>
@@ -303,15 +297,7 @@ void CSystem::FatalError(const char* format, ...)
         TerminateProcess(GetCurrentProcess(), 1);
     #endif
 
-    #if defined(AZ_RESTRICTED_PLATFORM)
-        #define AZ_RESTRICTED_SECTION SYSTEMWIN32_CPP_SECTION_2
-        #include AZ_RESTRICTED_FILE(SystemWin32_cpp)
-    #endif
-    #if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-        #undef AZ_RESTRICTED_SECTION_IMPLEMENTED
-    #else
         _exit(1);
-    #endif
 #endif
 }
 
@@ -346,13 +332,6 @@ void CSystem::debug_GetCallStack(const char** pFunctions, int& nCount)
         pFunctions[i] = textLines[i];
     }
     nCount = numFrames;
-#define AZ_RESTRICTED_SECTION_IMPLEMENTED
-#elif defined(AZ_RESTRICTED_PLATFORM)
-#define AZ_RESTRICTED_SECTION SYSTEMWIN32_CPP_SECTION_3
-#include AZ_RESTRICTED_FILE(SystemWin32_cpp)
-#endif
-#if defined(AZ_RESTRICTED_SECTION_IMPLEMENTED)
-#undef AZ_RESTRICTED_SECTION_IMPLEMENTED
 #else
     AZ_UNUSED(pFunctions);
     nCount = 0;

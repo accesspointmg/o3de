@@ -157,7 +157,7 @@ namespace AssetBundler
         const auto testProjectPath = AZ::IO::Path(m_data->m_testEngineRoot) / DummyProjectName;
         AzFramework::PlatformFlags platformFlags = GetEnabledPlatformFlags(m_data->m_testEngineRoot, testProjectPath.Native());
         AzFramework::PlatformFlags hostPlatformFlag = AzFramework::PlatformHelper::GetPlatformFlag(AzToolsFramework::AssetSystem::GetHostAssetPlatform());
-        AzFramework::PlatformFlags expectedFlags = AzFramework::PlatformFlags::Platform_ANDROID | AzFramework::PlatformFlags::Platform_IOS | AzFramework::PlatformFlags::Platform_PROVO | hostPlatformFlag;
+        AzFramework::PlatformFlags expectedFlags = AzFramework::PlatformFlags::Platform_ANDROID | AzFramework::PlatformFlags::Platform_IOS | AzFramework::PlatformFlags::Platform_MAC | hostPlatformFlag;
         ASSERT_EQ(platformFlags, expectedFlags);
     }
 

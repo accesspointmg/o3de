@@ -55,16 +55,6 @@ namespace ImageProcessingAtom
         [[maybe_unused]] static constexpr const char* const LogWindow = "Image Processing";
     }
 
-#if defined(AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS)
-#define AZ_RESTRICTED_PLATFORM_EXPANSION(CodeName, CODENAME, codename, PrivateName, PRIVATENAME, privatename, PublicName, PUBLICNAME, publicname, PublicAuxName1, PublicAuxName2, PublicAuxName3) \
-    namespace ImageProcess##PrivateName                                                                                                                                                           \
-    {                                                                                                                                                                                             \
-        bool DoesSupport(AZStd::string);                                                                                                                                                          \
-    }
-    AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS
-#undef AZ_RESTRICTED_PLATFORM_EXPANSION
-#endif //AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS
-
     const char* BuilderSettingManager::s_environmentVariableName = "ImageBuilderSettingManager_Atom";
     AZ::EnvironmentVariable<BuilderSettingManager*> BuilderSettingManager::s_globalInstance = nullptr;
     AZStd::mutex BuilderSettingManager::s_instanceMutex;
@@ -486,21 +476,6 @@ namespace ImageProcessingAtom
             return STRING_OUTCOME_ERROR(result.GetError());
         }
 
-        //enable builder settings for enabled restricted platforms. These settings should be disabled by default in the setting file
-#if defined(AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS)
-#define AZ_RESTRICTED_PLATFORM_EXPANSION(CodeName, CODENAME, codename, PrivateName, PRIVATENAME, privatename, PublicName, PUBLICNAME, publicname, PublicAuxName1, PublicAuxName2, PublicAuxName3) \
-    for (auto& buildSetting : m_builderSettings)                                                                                                                                                  \
-    {                                                                                                                                                                                             \
-        if (ImageProcess##PrivateName::DoesSupport(buildSetting.first))                                                                                                                           \
-        {                                                                                                                                                                                         \
-            buildSetting.second.m_enablePlatform = true;                                                                                                                                          \
-            break;                                                                                                                                                                                \
-        }                                                                                                                                                                                         \
-    }
-    AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS
-#undef AZ_RESTRICTED_PLATFORM_EXPANSION
-#endif //AZ_TOOLS_EXPAND_FOR_RESTRICTED_PLATFORMS
-        
         return STRING_OUTCOME_SUCCESS;
     }
 

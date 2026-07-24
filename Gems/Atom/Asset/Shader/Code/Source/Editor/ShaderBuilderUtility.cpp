@@ -501,14 +501,6 @@ namespace AZ
                 {
                     platformId = AzFramework::PlatformId::IOS;
                 }
-                else if (platformIdentifier == "salem")
-                {
-                    platformId = AzFramework::PlatformId::SALEM;
-                }
-                else if (platformIdentifier == "jasper")
-                {
-                    platformId = AzFramework::PlatformId::JASPER;
-                }
                 else if (platformIdentifier == "server")
                 {
                     platformId = AzFramework::PlatformId::SERVER;
