@@ -150,7 +150,7 @@ foreach(manifest_array IN LISTS manifest_arrays)
             endforeach()
         
             # Read the engine arrays
-            set(engine_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_repos")
+            set(engine_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates")
             foreach(engine_array IN LISTS engine_arrays)
                 string(TOUPPER ${engine_array} engine_array_upper)
                 o3de_get_json_array(O3DE_PATH_${path_entry}_${engine_array_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${engine_array})
@@ -208,7 +208,7 @@ foreach(manifest_array IN LISTS manifest_arrays)
             endforeach()
 
             # Read the project arrays
-            set(project_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_repos")
+            set(project_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates")
             foreach(project_array IN LISTS project_arrays)
                 string(TOUPPER ${project_array} project_array_upper)
                 o3de_get_json_array(O3DE_PATH_${path_entry}_${project_array_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${project_array})
@@ -288,7 +288,7 @@ foreach(manifest_array IN LISTS manifest_arrays)
             endforeach()
 
             # Read the gem arrays
-            set(gem_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_repos")
+            set(gem_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates")
             foreach(gem_array IN LISTS gem_arrays)
                 string(TOUPPER ${gem_array} gem_array_upper)
                 o3de_get_json_array(O3DE_PATH_${path_entry}_${gem_array_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${gem_array})
@@ -346,7 +346,7 @@ foreach(manifest_array IN LISTS manifest_arrays)
             endforeach()
 
             # Read the template arrays
-            set(template_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_repos")
+            set(template_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates")
             foreach(template_array IN LISTS template_arrays)
                 string(TOUPPER ${template_array} template_array_upper)
                 o3de_get_json_array(O3DE_PATH_${path_entry}_${template_array_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${template_array})
@@ -404,7 +404,7 @@ foreach(manifest_array IN LISTS manifest_arrays)
             endforeach()
 
             # Read the repo arrays
-            set(repo_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates;dependent_repos")
+            set(repo_arrays "canonical_tags;user_tags;platforms;child_engine_json_paths;child_project_json_paths;child_gem_json_paths;child_template_json_paths;child_repo_json_paths;parent_json_paths;dependent_engines;dependent_projects;dependent_gems;dependent_templates")
             foreach(repo_array IN LISTS repo_arrays)
                 string(TOUPPER ${repo_array} repo_array_upper)
                 o3de_get_json_array(O3DE_PATH_${path_entry}_${repo_array_upper} ${O3DE_PATH_${path_entry}_JSON_DATA} ${repo_array})

@@ -1716,35 +1716,7 @@ class O3deObject:
                                 dependent_templates.append(extended_dependent_template)
         return dependent_templates
     
-    def get_dependent_repos(self, recurse=False, traversed=None):
-        """Returns the repo names of the object"""
-        if recurse == False:
-            return self.get_dependent().get_repos()
 
-        if not traversed:
-            traversed = set()
-        traversed.add(self.object_uri)
-
-        dependent_repos = self.get_dependent().get_repos()
-
-        if recurse:
-            collections = [
-                self.childEngineObjects,
-                self.childProjectObjects,
-                self.childGemObjects,
-                self.childTemplateObjects,
-                self.childRepoObjects,
-            ]
-
-            for collection in collections:
-                for item in collection:
-                    if item not in traversed:
-                        traversed.add(item.get_object_uri())
-                        extended_dependent_repos = item.get_dependent_repos(True, traversed)
-                        for extended_dependent_repo in extended_dependent_repos:
-                            if extended_dependent_repo not in dependent_repos:
-                                dependent_repos.append(extended_dependent_repo)
-        return dependent_repos
 
 
 
@@ -3039,7 +3011,6 @@ class ResolveDependencies:
                     ("Project", object.get_dependent_projects()),
                     ("Gem", object.get_dependent_gems()),
                     ("Template", object.get_dependent_templates()),
-                    ("Repo", object.get_dependent_repos()),
                 ]
                 
                 for dep_type, deps in dependency_types:
@@ -3562,7 +3533,6 @@ def _resolve(args: argparse) -> int:
         dependent_projects = engine.get_dependent_projects(True)
         dependent_gems = engine.get_dependent_gems(True)
         dependent_templates = engine.get_dependent_templates(True)
-        dependent_repos = engine.get_dependent_repos(True)
 
         compatible_objects = [engine]
         compatible_objects.extend(parent_objects)
@@ -3605,7 +3575,6 @@ def _resolve(args: argparse) -> int:
             'dependent_projects': dependent_projects,
             'dependent_gems': dependent_gems,
             'dependent_templates': dependent_templates,
-            'dependent_repos': dependent_repos,
         }
 
     # query all objects from the the point of view of the project object
@@ -3622,7 +3591,6 @@ def _resolve(args: argparse) -> int:
         dependent_projects = project.get_dependent_projects(True)
         dependent_gems = project.get_dependent_gems(True)
         dependent_templates = project.get_dependent_templates(True)
-        dependent_repos = project.get_dependent_repos(True)
 
         compatible_objects = [project]
         compatible_objects.extend(parent_objects)
@@ -3658,7 +3626,6 @@ def _resolve(args: argparse) -> int:
             'dependent_projects': dependent_projects,
             'dependent_gems': dependent_gems,
             'dependent_templates': dependent_templates,
-            'dependent_repos': dependent_repos,
         }
 
     # query all objects from the the point of view of the gem object
@@ -3675,7 +3642,6 @@ def _resolve(args: argparse) -> int:
         dependent_projects = gem.get_dependent_projects(True)
         dependent_gems = gem.get_dependent_gems(True)
         dependent_templates = gem.get_dependent_templates(True)
-        dependent_repos = gem.get_dependent_repos(True)
 
         compatible_objects = [gem]
         compatible_objects.extend(parent_objects)
@@ -3707,7 +3673,6 @@ def _resolve(args: argparse) -> int:
             'dependent_projects': dependent_projects,
             'dependent_gems': dependent_gems,
             'dependent_templates': dependent_templates,
-            'dependent_repos': dependent_repos,
         }
 
     # query all objects from the the point of view of the template object
@@ -3724,7 +3689,6 @@ def _resolve(args: argparse) -> int:
         dependent_projects = template.get_dependent_projects(True)
         dependent_gems = template.get_dependent_gems(True)
         dependent_templates = template.get_dependent_templates(True)
-        dependent_repos = template.get_dependent_repos(True)
 
         compatible_objects = [template]
         compatible_objects.extend(parent_objects)
@@ -3756,7 +3720,6 @@ def _resolve(args: argparse) -> int:
             'dependent_projects': dependent_projects,
             'dependent_gems': dependent_gems,
             'dependent_templates': dependent_templates,
-            'dependent_repos': dependent_repos,
         }
 
     # query all objects from the the point of view of the repo object
@@ -3773,7 +3736,6 @@ def _resolve(args: argparse) -> int:
         dependent_projects = repo.get_dependent_projects(True)
         dependent_gems = repo.get_dependent_gems(True)
         dependent_templates = repo.get_dependent_templates(True)
-        dependent_repos = repo.get_dependent_repos(True)
 
         compatible_objects = [repo]
         compatible_objects.extend(parent_objects)
@@ -3805,7 +3767,6 @@ def _resolve(args: argparse) -> int:
             'dependent_projects': dependent_projects,
             'dependent_gems': dependent_gems,
             'dependent_templates': dependent_templates,
-            'dependent_repos': dependent_repos,
         }
 
     # emit overlay objects: extends/precedence/platform info consumed by

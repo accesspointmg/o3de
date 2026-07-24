@@ -185,8 +185,6 @@ macro(o3de_engine_init)
     set_property(GLOBAL PROPERTY O3DE_ENGINE_DEPENDENT_GEMS ${O3DE_ENGINE_DEPENDENT_GEMS})
     set(O3DE_ENGINE_DEPENDENT_TEMPLATES ${engine_dependent_templates})
     set_property(GLOBAL PROPERTY O3DE_ENGINE_DEPENDENT_TEMPLATES ${O3DE_ENGINE_DEPENDENT_TEMPLATES})
-    set(O3DE_ENGINE_DEPENDENT_REPOS ${engine_dependent_repos})
-    set_property(GLOBAL PROPERTY O3DE_ENGINE_DEPENDENT_REPOS ${O3DE_ENGINE_DEPENDENT_REPOS})
 
     #env vars
     set(O3DE_ENGINE_INSTALL_NAME "@O3DE_ENGINE_NAME@" CACHE STRING "Open 3D Engine's engine name for the INSTALL target")
@@ -331,9 +329,6 @@ macro(o3de_engine_setup)
         o3de_find_package("${o3de_package_name_and_version}")
     endforeach()
     foreach(o3de_package_name_and_version IN LISTS engine_dependent_templates)
-        o3de_find_package("${o3de_package_name_and_version}")
-    endforeach()
-    foreach(o3de_package_name_and_version IN LISTS engine_dependent_repos)
         o3de_find_package("${o3de_package_name_and_version}")
     endforeach()
 

@@ -204,8 +204,6 @@ macro(o3de_project_init)
     set_property(GLOBAL PROPERTY O3DE_ENGINE_DEPENDENT_GEMS ${O3DE_ENGINE_DEPENDENT_GEMS})
     get_property(O3DE_ENGINE_DEPENDENT_TEMPLATES GLOBAL PROPERTY O3DE_PATH_${project_engine_json_path}_DEPENDENT_TEMPLATES)
     set_property(GLOBAL PROPERTY O3DE_ENGINE_DEPENDENT_TEMPLATES ${O3DE_ENGINE_DEPENDENT_TEMPLATES})
-    get_property(O3DE_ENGINE_DEPENDENT_REPOS GLOBAL PROPERTY O3DE_PATH_${project_engine_json_path}_DEPENDENT_REPOS)
-    set_property(GLOBAL PROPERTY O3DE_ENGINE_DEPENDENT_REPOS ${O3DE_ENGINE_DEPENDENT_REPOS})
 
     #env vars
     set(O3DE_ENGINE_INSTALL_NAME "@O3DE_ENGINE_NAME@" CACHE STRING "Open 3D Engine's engine name for the INSTALL target")
@@ -335,14 +333,12 @@ macro(o3de_project_setup)
     o3de_find_packages("${O3DE_ENGINE_DEPENDENT_PROJECTS}")
     o3de_find_packages("${O3DE_ENGINE_DEPENDENT_GEMS}")
     o3de_find_packages("${O3DE_ENGINE_DEPENDENT_TEMPLATES}")
-    o3de_find_packages("${O3DE_ENGINE_DEPENDENT_REPOS}")
     
     # Find all packages the project declares as dependencies
     o3de_find_packages("${project_dependent_engines}")
     o3de_find_packages("${project_dependent_projects}")
     o3de_find_packages("${project_dependent_gems}")
     o3de_find_packages("${project_dependent_templates}")
-    o3de_find_packages("${project_dependent_repos}")
     
     #PAL
     set(project_pal_dir ${project_path}/Platform/${O3DE_PAL_PLATFORM_NAME})

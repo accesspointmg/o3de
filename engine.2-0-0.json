@@ -4,12 +4,9 @@
   "engine": {
     "name": "org.o3de.engine.o3de",
     "version": "4.2.0",
-    "display_name": "",
-    "description": "",
-    "type": "engine",
-    "id": "",
-    "copyright_text": "",
-    "copyright_year": 2023
+    "display_name": "O3DE Engine",
+    "description": "The Open 3D Engine (O3DE) is a multi-platform, open source, real-time 3D engine built for the development of high-fidelity games, simulations, and visualizations.",
+    "type": "engine"
   },
   "origin": {
     "name": "The Linux Foundation",
