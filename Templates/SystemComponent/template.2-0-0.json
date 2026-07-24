@@ -1,0 +1,104 @@
+{
+  "$schemaVersion": "2.0.0",
+  "$schema": "https://canonical.o3de.org/o3de-template-2.0.0.json",
+  "template": {
+    "name": "org.o3de.template.systemcomponent",
+    "version": "0.0.0",
+    "display_name": "Default System Component Template",
+    "description": "A component template for a typical system component.",
+    "type": "",
+    "id": "",
+    "copyright_text": ""
+  },
+  "copyFiles": [
+    {
+      "file": "Source/${Name}SystemComponent.cpp",
+      "isTemplated": true
+    },
+    {
+      "file": "Source/${Name}SystemComponent.h",
+      "isTemplated": true
+    },
+    {
+      "file": "Include/${GemName}/${Name}Interface.h",
+      "isTemplated": true,
+      "isInterface": true,
+      "cleanup_hint": "interface",
+      "condition": "add_bus_interface"
+    },
+    {
+      "file": "Source/Tools/Editor${Name}SystemComponent.h",
+      "isTemplated": true,
+      "isEditor": true,
+      "cleanup_hint": "editor",
+      "condition": "include_editor"
+    },
+    {
+      "file": "Source/Tools/Editor${Name}SystemComponent.cpp",
+      "isTemplated": true,
+      "isEditor": true,
+      "cleanup_hint": "editor",
+      "condition": "include_editor"
+    }
+  ],
+  "createDirectories": [
+    {
+      "dir": "Include/${GemName}"
+    },
+    {
+      "dir": "Source"
+    }
+  ],
+  "origin": {
+    "name": "Open 3D Engine - o3de.org",
+    "url": "https://github.com/o3de/o3de"
+  },
+  "licenses": [
+    {
+      "license_identifier": "Apache-2.0 or MIT",
+      "url": "https://github.com/o3de/o3de/blob/development/LICENSE.txt",
+      "display_name": "Apache 2.0 or MIT",
+      "relative_path": ""
+    }
+  ],
+  "canonical_tags": [
+    "Template"
+  ],
+  "user_tags": [
+    "SystemComponent"
+  ],
+  "icon": {
+    "relative_path": "preview.png",
+    "url": ""
+  },
+  "documentation": {
+    "relative_path": "",
+    "url": ""
+  },
+  "children": {
+    "engines": [],
+    "projects": [],
+    "gems": [],
+    "templates": [],
+    "repos": [],
+    "overlays": []
+  },
+  "remote": {
+    "engines": [],
+    "projects": [],
+    "gems": [],
+    "templates": [],
+    "repos": [],
+    "overlays": []
+  },
+  "dependent": {
+    "gems": []
+  },
+  "platforms": [
+    "Windows",
+    "Linux",
+    "Mac",
+    "iOS",
+    "Android"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "$schemaVersion": "2.0.0",
+  "$schema": "https://canonical.o3de.org/o3de-gem-2.0.0.json",
+  "gem": {
+    "name": "org.o3de.gem.openparticlesystem",
+    "version": "0.0.0",
+    "display_name": "(Preview) OpenParticleSystem",
+    "description": "WARNING: This gem is in preview, file formats and data may change before official release. The OpenParticleSystem Gem provides a particle system framework alongside a dedicated toolset for creating natural phenomena (such as flames, smoke, rainfall, and snowfall) and specialized effects (including explosions), leveraging vast numbers of micro-particle elements and dynamic motion simulations to achieve realistic visual representations.",
+    "type": "code",
+    "id": "",
+    "copyright_text": ""
+  },
+  "origin": {
+    "name": "Open 3D Engine - o3de.org",
+    "url": "https://github.com/o3de/o3de"
+  },
+  "licenses": [
+    {
+      "license_identifier": "Apache-2.0 Or MIT",
+      "url": "https://github.com/o3de/o3de/blob/development/LICENSE.txt",
+      "display_name": "Apache 2.0 Or MIT",
+      "relative_path": ""
+    }
+  ],
+  "canonical_tags": [
+    "Gem"
+  ],
+  "user_tags": [
+    "Rendering",
+    "Particle"
+  ],
+  "icon": {
+    "relative_path": "preview.png",
+    "url": ""
+  },
+  "documentation": {
+    "relative_path": "",
+    "url": ""
+  },
+  "children": {
+    "engines": [],
+    "projects": [],
+    "gems": [],
+    "templates": [],
+    "repos": [],
+    "overlays": []
+  },
+  "remote": {
+    "engines": [],
+    "projects": [],
+    "gems": [],
+    "templates": [],
+    "repos": [],
+    "overlays": []
+  },
+  "dependent": {
+    "gems": []
+  },
+  "platforms": [
+    "Windows",
+    "Linux",
+    "Mac",
+    "iOS",
+    "Android"
+  ],
+  "requirements": ""
+}

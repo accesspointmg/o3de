@@ -1,122 +1,111 @@
 {
-    "$schemaVersion": "2.0.0",
-    "$schema": "https://canonical.o3de.org/o3de-gem-2.0.0.json",
-    "gem": {
-        "name": "org.o3de.gem.nvcloth",
-        "version": "0.0.0",
-        "display_name": "NVIDIA Cloth (NvCloth)",
-        "description": "The NVIDIA Cloth Gem provides functionality to create fast, realistic cloth simulation with the NVIDIA Cloth library.",
-        "type": "code",
-        "id": "",
-        "copyright_year": "",
-        "copyright_text": ""
+  "$schemaVersion": "2.0.0",
+  "$schema": "https://canonical.o3de.org/o3de-gem-2.0.0.json",
+  "gem": {
+    "name": "org.o3de.gem.nvcloth",
+    "version": "0.0.0",
+    "display_name": "NVIDIA Cloth (NvCloth)",
+    "description": "The NVIDIA Cloth Gem provides functionality to create fast, realistic cloth simulation with the NVIDIA Cloth library.",
+    "type": "code"
+  },
+  "origin": {
+    "name": "The Linux Foundation",
+    "url": "https://www.linuxfoundation.org"
+  },
+  "licenses": [
+    {
+      "license_identifier": "Apache-2.0",
+      "display_name": "Apache License 2.0",
+      "relative_path": "LICENSE_APACHE2.TXT",
+      "comments": [
+        "The licensee of this object has the choice of Apache-2.0 or MIT ",
+        "licenses for the code. See the LICENSE_APACHE2.TXT, LICENSE_MIT.TXT ",
+        "and LICENSE.TXT for more information."
+      ],
+      "scopes": [
+        "All source code"
+      ]
     },
-    "origin": {
-        "name": "The Linux Foundation",
-        "uri": "https://www.linuxfoundation.org"
+    {
+      "license_identifier": "MIT",
+      "display_name": "MIT License",
+      "relative_path": "LICENSE_MIT.TXT",
+      "comments": [
+        "The licensee of this object has the choice of Apache-2.0 or MIT ",
+        "licenses for the code. See the LICENSE_APACHE2.TXT, LICENSE_MIT.TXT ",
+        "and LICENSE.TXT for more information."
+      ],
+      "scopes": [
+        "All source code"
+      ]
     },
-    "licenses": [
-        {
-            "license_identifier": "Apache-2.0",
-            "uri": "https://spdx.org/licenses/Apache-2.0.html",
-            "display_name": "Apache 2.0",
-            "relative_path": "LICENSE_APACHE2.TXT",
-            "comments": [
-                "The licensee of this object has the choice of Apache-2.0 or MIT ",
-                "licenses for the code. See the LICENSE_APACHE2.TXT, LICENSE_MIT.TXT ",
-                "and LICENSE.TXT for more information."
-            ],
-            "scopes": [
-                "All source code"
-            ]
-        },
-        {
-            "license_identifier": "MIT",
-            "uri": "https://spdx.org/licenses/MIT.html",
-            "display_name": "MIT",
-            "relative_path": "LICENSE_MIT.TXT",
-            "comments": [
-                "The licensee of this object has the choice of Apache-2.0 or MIT ",
-                "licenses for the code. See the LICENSE_APACHE2.TXT, LICENSE_MIT.TXT ",
-                "and LICENSE.TXT for more information."
-            ],
-            "scopes": [
-                "All source code"
-            ]
-        },
-        {
-            "license_identifier": "CC0-1.0",
-            "uri": "https://spdx.org/licenses/CC0-1.0.html",
-            "display_name": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
-            "relative_path": "LICENSE_CC0.TXT",
-            "comments": [
-                "All artistic assets in this object are released under the CC0 1.0 ",
-                "Universal (CC0 1.0) Public Domain Dedication license. For more ",
-                "information see the LICENSE_CC0.TXT file."
-            ],
-            "scopes": [
-                "All assets"
-            ]
-        },
-        {
-            "license_identifier": "O3DE",
-            "display_name": "O3DE License",
-            "relative_path": "LICENSE.TXT",
-            "comments": [
-                "The O3DE License is a custom license for the Open 3D Engine. ",
-                "The LICENSE.TXT file contains the full text which describes ",
-                "It primarily describes how to find all third party license information."
-            ],
-            "scopes": [
-                "All third party"
-            ]
-        }
-    ],
-    "tags": {
-        "canonical": [
-            "Gem"
-        ],
-        "user": [
-            "Physics",
-            "SDK",
-            "org.o3de.gem.nvcloth",
-            "Simulation"
-        ]
+    {
+      "license_identifier": "CC0-1.0",
+      "display_name": "Creative Commons Zero v1.0 Universal",
+      "relative_path": "LICENSE_CC0.TXT",
+      "comments": [
+        "All artistic assets in this object are released under the CC0 1.0 ",
+        "Universal (CC0 1.0) Public Domain Dedication license. For more ",
+        "information see the LICENSE_CC0.TXT file."
+      ],
+      "scopes": [
+        "All assets"
+      ]
     },
-    "icon": {
-        "relative_path": "preview.png",
-        "uri": ""
-    },
-    "documentation": {
-        "relative_path": "",
-        "uri": "https://o3de.org/docs/user-guide/gems/reference/physics/nvidia/nvidia-cloth/"
-    },
-    "children": {
-        "engines": [],
-        "projects": [],
-        "gems": [],
-        "templates": [],
-        "repos": []
-    },
-    "remote": {
-        "engines": [],
-        "projects": [],
-        "gems": [],
-        "templates": [],
-        "repos": []
-    },
-    "dependent": {
-        "gems": [
-            "org.o3de.gem.commonfeaturesatom>=0.0.0",
-            "org.o3de.gem.emotionfx>=0.0.0"
-        ]
-    },
-    "platforms": [
-        "Windows",
-        "Linux",
-        "Mac",
-        "iOS",
-        "Android"
-    ],
-    "requirements": ""
+    {
+      "license_identifier": "O3DE",
+      "display_name": "O3DE License",
+      "relative_path": "LICENSE.TXT",
+      "comments": [
+        "The O3DE License is a custom license for the Open 3D Engine. ",
+        "The LICENSE.TXT file contains the full text which describes ",
+        "It primarily describes how to find all third party license information."
+      ],
+      "scopes": [
+        "All third party"
+      ]
+    }
+  ],
+  "icon": {
+    "relative_path": "preview.png"
+  },
+  "documentation": {
+    "url": "https://o3de.org/docs/user-guide/gems/reference/physics/nvidia/nvidia-cloth/"
+  },
+  "children": {
+    "engines": [],
+    "projects": [],
+    "gems": [],
+    "templates": [],
+    "repos": []
+  },
+  "remote": {
+    "engines": [],
+    "projects": [],
+    "gems": [],
+    "templates": [],
+    "repos": []
+  },
+  "dependent": {
+    "gems": [
+      "org.o3de.gem.commonfeaturesatom>=0.0.0",
+      "org.o3de.gem.emotionfx>=0.0.0"
+    ]
+  },
+  "platforms": [
+    "Windows",
+    "Linux",
+    "Mac",
+    "iOS",
+    "Android"
+  ],
+  "canonical_tags": [
+    "Gem"
+  ],
+  "user_tags": [
+    "Physics",
+    "SDK",
+    "org.o3de.gem.nvcloth",
+    "Simulation"
+  ]
 }
