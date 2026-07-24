@@ -15,7 +15,6 @@
     ],
     "icon_path": "preview.png",
     "engine": "o3de",
-    "restricted": "${Name}",
     "gem_names": [
         "Atom",
         "AudioSystem",

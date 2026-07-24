@@ -24,10 +24,8 @@ namespace ImageProcessingAtom
     const static AZ::u32 EIF_SRGBRead = 0x800;  // info for the engine: if gamma corrected rendering is on, this texture requires SRGBRead (it's not stored in linear)
     const static AZ::u32 EIF_DontResize = 0x8000; // info for the engine: for dds textures that shouldn't be resized
     const static AZ::u32 EIF_RenormalizedTexture = 0x10000;  // info for the engine: for dds textures that have renormalized color range
-    const static AZ::u32 EIF_CafeNative = 0x20000;  // info for the engine: native Cafe texture format
-    const static AZ::u32 EIF_RestrictedPlatformONative = 0x40000;  // native tiled texture for restrict platform O
+    // 0x20000, 0x40000, 0x100000 retired (console-native texture formats)
     const static AZ::u32 EIF_Tiled = 0x80000;  // info for the engine: texture has been tiled for the platform
-    const static AZ::u32 EIF_RestrictedPlatformDNative = 0x100000;  // native tiled texture for restrict platform D
     const static AZ::u32 EIF_Splitted = 0x200000;  // info for the engine: this texture is splitted
     const static AZ::u32 EIF_Colormodel = 0x7000000;  // info for the engine: bitmask: colormodel used in the texture
     const static AZ::u32 EIF_Colormodel_RGB = 0x0000000;  // info for the engine: colormodel is RGB (default)

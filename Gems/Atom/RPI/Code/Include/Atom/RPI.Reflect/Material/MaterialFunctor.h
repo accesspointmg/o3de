@@ -40,9 +40,8 @@ namespace AZ
         enum class MaterialPropertyPsoHandling
         {
             //! PSO-impacting property changes are not allowed, are ignored, and will report an error.
-            //! This should be used at runtime. It is recommended to do this on all platforms, not just the restricted ones,
-            //! to encourage best-practices. However, if a game project is not shipping on any restricted platforms,
-            //! then the team could decide to allow PSO changes.
+            //! This should be used at runtime. It is recommended to do this on all platforms
+            //! to encourage best-practices.
             Error,
 
             //! PSO-impacting property changes are allowed, but produce a warning message.

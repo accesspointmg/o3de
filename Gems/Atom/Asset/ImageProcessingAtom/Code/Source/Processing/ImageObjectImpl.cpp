@@ -437,16 +437,6 @@ namespace ImageProcessingAtom
         header.dwReserved1 = GetImageFlags();
         header.bNumPersistentMips = (AZ::u8)GetNumPersistentMips();
 
-        //tile mode for some platform native texture
-        if (HasImageFlags(EIF_RestrictedPlatformDNative))
-        {
-            header.tileMode = eTM_LinearPadded;
-        }
-        else if (HasImageFlags(EIF_RestrictedPlatformONative))
-        {
-            header.tileMode = eTM_Optimal;
-        }
-
         // setting up min and max colors
         for (int i = 0; i < 4; i++)
         {

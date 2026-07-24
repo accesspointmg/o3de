@@ -38,7 +38,6 @@ namespace InAppPurchases
 
     // This API should be re-designed to be platform-agnostic, or if that is
     // not possible we should move it to an Android specific include folder.
-    // But it can stay here for now because it's not a restricted platform.
     class PurchasedProductDetailsAndroid
         : public PurchasedProductDetails
     {
@@ -65,7 +64,6 @@ namespace InAppPurchases
 
     // This API should be re-designed to be platform-agnostic, or if that is
     // not possible we should move it to an Apple specific include folder.
-    // But it can stay here for now because it's not a restricted platform.
     class PurchasedProductDetailsApple
         : public PurchasedProductDetails
     {

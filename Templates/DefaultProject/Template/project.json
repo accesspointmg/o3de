@@ -17,7 +17,6 @@
     "external_subdirectories": [
         "Gem"
     ],
-    "restricted": "${Name}",
     "gem_names": [
         "${Name}",
         "Atom",

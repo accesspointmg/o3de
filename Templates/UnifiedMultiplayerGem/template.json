@@ -1,8 +1,5 @@
 {
     "template_name": "UnifiedMultiplayerGem",
-    "template_restricted_platform_relative_path": "Templates/UnifiedMultiplayerGem",
-    "restricted_name": "o3de",
-    "restricted_platform_relative_path": "Templates/UnifiedMultiplayerGem",
     "license": "Apache-2.0 or MIT",
     "license_url": "https://github.com/o3de/o3de/blob/development/LICENSE.txt",
     "display_name": "Unified Multiplayer Gem Template",
