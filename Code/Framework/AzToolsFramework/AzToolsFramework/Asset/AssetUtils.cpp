@@ -25,7 +25,6 @@ namespace AzToolsFramework::AssetUtils::Internal
     constexpr const char* AssetProcessorSettingsKey{ "/Amazon/AssetProcessor/Settings" };
 
     constexpr const char* AssetConfigPlatformDir = "AssetProcessorConfig";
-    constexpr const char* RestrictedPlatformDir = "restricted";
 
     AZStd::vector<AZ::IO::Path> FindWildcardMatches(AZStd::string_view sourceFolder, AZStd::string_view relativeName)
     {
@@ -166,25 +165,10 @@ namespace AzToolsFramework::AssetUtils
 
     bool AddPlatformConfigFilePaths(AZStd::string_view engineRoot, AZStd::vector<AZ::IO::Path>& configFilePaths)
     {
-        auto restrictedRoot = AZ::IO::Path{ engineRoot } / Internal::RestrictedPlatformDir;
-
-        // first collect public platform configs
+        // Collect platform configs delivered under the engine's AssetProcessorConfig directory.
+        // Platform-specific configs from other platforms are composed into place by overlay
+        // objects at workspace compose time.
         AZStd::vector<AZ::IO::Path> platformDirs{ AZ::IO::Path{ engineRoot } / Internal::AssetConfigPlatformDir };
-
-        // then collect restricted platform configs
-        // Append the AssetConfigPlatformDir value to each directory
-        AZ::IO::SystemFile::FindFileCB findRestrictedAssetConfigs = [&restrictedRoot, &platformDirs](AZStd::string_view fileView, bool isFile) -> bool
-        {
-            if (fileView != "." && fileView != "..")
-            {
-                if (!isFile)
-                {
-                    platformDirs.push_back(restrictedRoot / fileView / Internal::AssetConfigPlatformDir);
-                }
-            }
-            return true;
-        };
-        AZ::IO::SystemFile::FindFiles((restrictedRoot / "*").c_str(), findRestrictedAssetConfigs);
 
         // Iterator over all platform directories for platform config files
         AZStd::vector<AZ::IO::Path> allPlatformConfigs;
