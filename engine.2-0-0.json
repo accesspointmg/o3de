@@ -32,6 +32,7 @@
     "relative_path": "preview.svg"
   },
   "documentation": {
+    "relative_path": "README.md",
     "url": "https://www.o3de.org/docs/"
   },
   "api_versions": {
