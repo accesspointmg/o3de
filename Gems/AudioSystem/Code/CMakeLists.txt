@@ -10,7 +10,7 @@ set(AUDIOSYSTEM_COMPILEDEFINITIONS
     $<IF:$<CONFIG:Release>,AUDIO_RELEASE,ENABLE_AUDIO_LOGGING>
 )
 
-o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
+set(pal_code_path ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME})
 set(pal_common_code_path ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
 ################################################################################

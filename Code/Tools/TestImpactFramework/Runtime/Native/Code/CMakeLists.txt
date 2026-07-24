@@ -6,7 +6,7 @@
 #
 #
 
-o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Tools/TestImpactFramework/Runtime/Native/Code/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_tools_testimpactframework_runtime_native_code_path)
+set(pal_code_tools_testimpactframework_runtime_native_code_path ${O3DE_ENGINE_PATH}/Code/Tools/TestImpactFramework/Runtime/Native/Code/Source/Platform/${O3DE_PAL_PLATFORM_NAME})
 set(common_code_tools_testimpactframework_runtime_native_code_path ${O3DE_ENGINE_PATH}/Code/Tools/TestImpactFramework/Runtime/Native/Code/Source/Platform/Common)
 
 o3de_add_target(

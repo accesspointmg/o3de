@@ -260,7 +260,7 @@ macro(o3de_project_setup)
     # Now that we have all possible PAL platforms, include all pal platform cmake files
     get_property(O3DE_ALL_PAL_PLATFORM_NAMES GLOBAL PROPERTY O3DE_ALL_PAL_PLATFORM_NAMES)
     foreach(pal_platform ${O3DE_ALL_PAL_PLATFORM_NAMES})
-        o3de_pal_path(${O3DE_ENGINE_PATH}/cmake/Platform/${pal_platform}/PAL_platform.cmake pal_platform_cmake_file)
+        set(pal_platform_cmake_file ${O3DE_ENGINE_PATH}/cmake/Platform/${pal_platform}/PAL_platform.cmake)
         include(${pal_platform_cmake_file})
     endforeach()
     
@@ -297,18 +297,18 @@ macro(o3de_project_setup)
 
     # Now that we have the O3DE_PAL_PLATFORM_NAME we can resolve pal paths
     include(${_cmake_Project_cmake}/Restricted.cmake)
-    o3de_pal_path(${O3DE_ENGINE_CMAKE_PATH}/Platform/${O3DE_PAL_HOST_PLATFORM_NAME} O3DE_ENGINE_CMAKE_PAL_HOST_PATH)
-    o3de_pal_path(${O3DE_ENGINE_CMAKE_PATH}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_cmake_path)
+    set(O3DE_ENGINE_CMAKE_PAL_HOST_PATH ${O3DE_ENGINE_CMAKE_PATH}/Platform/${O3DE_PAL_HOST_PLATFORM_NAME})
+    set(pal_cmake_path ${O3DE_ENGINE_CMAKE_PATH}/Platform/${O3DE_PAL_PLATFORM_NAME})
     set(O3DE_ENGINE_CMAKE_PAL_PATH ${pal_cmake_path})
     set_property(GLOBAL PROPERTY O3DE_ENGINE_CMAKE_PAL_PATH ${O3DE_ENGINE_CMAKE_PAL_PATH})
 
     # engine cmake 3rdParty pal paths (mirrors o3de_engine_setup)
-    o3de_pal_path(${O3DE_ENGINE_CMAKE_3RDPARTY_PATH}/Platform/${O3DE_PAL_HOST_PLATFORM_NAME} O3DE_ENGINE_CMAKE_3RDPARTY_PAL_HOST_PATH)
-    o3de_pal_path(${O3DE_ENGINE_CMAKE_3RDPARTY_PATH}/Platform/${O3DE_PAL_PLATFORM_NAME} O3DE_ENGINE_CMAKE_3RDPARTY_PAL_PATH)
+    set(O3DE_ENGINE_CMAKE_3RDPARTY_PAL_HOST_PATH ${O3DE_ENGINE_CMAKE_3RDPARTY_PATH}/Platform/${O3DE_PAL_HOST_PLATFORM_NAME})
+    set(O3DE_ENGINE_CMAKE_3RDPARTY_PAL_PATH ${O3DE_ENGINE_CMAKE_3RDPARTY_PATH}/Platform/${O3DE_PAL_PLATFORM_NAME})
 
     # engine editor code pal paths (mirrors o3de_engine_setup)
-    o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Editor/Platform/${O3DE_PAL_HOST_PLATFORM_NAME} O3DE_ENGINE_CODE_EDITOR_PAL_HOST_PATH)
-    o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Editor/Platform/${O3DE_PAL_PLATFORM_NAME} O3DE_ENGINE_CODE_EDITOR_PAL_PATH)
+    set(O3DE_ENGINE_CODE_EDITOR_PAL_HOST_PATH ${O3DE_ENGINE_PATH}/Code/Editor/Platform/${O3DE_PAL_HOST_PLATFORM_NAME})
+    set(O3DE_ENGINE_CODE_EDITOR_PAL_PATH ${O3DE_ENGINE_PATH}/Code/Editor/Platform/${O3DE_PAL_PLATFORM_NAME})
 
     # Include the cmake files for the PAL platform
     include(${_cmake_Project_cmake}/FileUtil.cmake)
@@ -348,7 +348,7 @@ macro(o3de_project_setup)
     o3de_find_packages("${project_dependent_repos}")
     
     #PAL
-    o3de_pal_path(${project_path}/Platform/${O3DE_PAL_PLATFORM_NAME} project_pal_dir)
+    set(project_pal_dir ${project_path}/Platform/${O3DE_PAL_PLATFORM_NAME})
 
     include(${_cmake_Project_cmake}/GeneralSettings.cmake)    
     include(${_cmake_Project_cmake}/OutputDirectory.cmake)

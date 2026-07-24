@@ -6,7 +6,7 @@
 #
 #
 
-o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Legacy/CrySystem/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_legacy_crysystem_path)
+set(pal_code_legacy_crysystem_path ${O3DE_ENGINE_PATH}/Code/Legacy/CrySystem/Platform/${O3DE_PAL_PLATFORM_NAME})
 #set(common_code_legacy_crysystem_path ${O3DE_ENGINE_PATH}/Code/Legacy/CrySystem/Platform/Common)
 
 add_subdirectory(XML)

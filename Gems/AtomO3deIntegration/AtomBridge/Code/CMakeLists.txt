@@ -6,7 +6,7 @@
 #
 #
 
-o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+set(pal_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME})
 set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
 o3de_add_target(
@@ -116,7 +116,7 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
     set(additional_tool_deps ${pal_code_source_path}/additional_${O3DE_PAL_PLATFORM_WART}_tool_deps.cmake)
     foreach(pal_tools_platform ${O3DE_PAL_TOOLS_ENABLED})
         o3de_pal_platform_name_wart(enabled_platform_wart ${pal_tools_platform})
-        o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${enabled_platform} pal_tools_source_dir)
+        set(pal_tools_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${enabled_platform})
         o3de_get_list_relative_pal_filename(pal_runtime_dependencies_source_dir ${pal_tools_source_dir})
         list(APPEND additional_tool_deps ${pal_runtime_dependencies_source_dir}/additional_${enabled_platform_wart}_tool_deps.cmake)
     endforeach()

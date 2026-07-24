@@ -6,10 +6,10 @@
 #
 #
 
-o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Include/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_include_path)
+set(pal_code_include_path ${CMAKE_CURRENT_LIST_DIR}/Include/Platform/${O3DE_PAL_PLATFORM_NAME})
 set(pal_common_include_path ${CMAKE_CURRENT_LIST_DIR}/Include/Platform/Common)
 
-o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+set(pal_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME})
 set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
 include(${pal_code_source_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake) # O3DE_PAL_TRAIT_ATOM_RHI_DX12_SUPPORTED
@@ -26,7 +26,7 @@ set(pal_builder_tools_files)
 set(pal_builder_tools_includes)
 foreach(enabled_platform ${O3DE_PAL_TOOLS_ENABLED})
     o3de_pal_platform_name_wart(enabled_platform_wart ${enabled_platform})
-    o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${enabled_platform} pal_builder_source_dir)
+    set(pal_builder_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${enabled_platform})
     list(APPEND pal_builder_tools_includes ${pal_builder_source_dir})
     list(APPEND pal_builder_tools_files ${pal_builder_source_dir}/platform_builders_${enabled_platform_wart}_tools_files.cmake)
 endforeach()

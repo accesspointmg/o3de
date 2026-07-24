@@ -8,7 +8,7 @@
 
 set(pal_common_code_path ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
-o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_common_code_source_path)
+set(pal_common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME})
 # NOTE: all per-platform files (platform_*_files.cmake, runtime_dependencies_*.cmake)
 # live in Source/Platform/<PlatformName>/ — do not clobber this with the Common dir
 
@@ -127,7 +127,7 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 
     set(runtime_dependencies_tools ${pal_common_code_source_path}/runtime_dependencies_tools.cmake)
     foreach(pal_tools_platform ${O3DE_PAL_TOOLS_ENABLED})
-        o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${pal_tools_platform} pal_tools_path)
+        set(pal_tools_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${pal_tools_platform})
         o3de_get_list_relative_pal_filename(pal_runtime_dependencies_source_dir ${pal_tools_path})
         list(APPEND runtime_dependencies_tools ${pal_runtime_dependencies_source_dir}/runtime_dependencies_tools.cmake)
     endforeach()

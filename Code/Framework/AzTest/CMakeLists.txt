@@ -11,7 +11,7 @@ if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     set(GOOGLETEST_GIT_TAG 2fe3bd994b3189899d93f1d5a881e725e046fdc2) # release-1.8.1
     set(GOOGLETEST_VERSION_STRING "release-1.8.1")
 
-    o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Framework/AzTest/AzTest/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_framework_aztest_path)
+    set(pal_code_framework_aztest_path ${O3DE_ENGINE_PATH}/Code/Framework/AzTest/AzTest/Platform/${O3DE_PAL_PLATFORM_NAME})
     #set(common_code_framework_aztest_path ${O3DE_ENGINE_PATH}/Code/Framework/AzTest/Platform/Common)
 
     set(CMAKE_POLICY_DEFAULT_CMP0148 OLD)

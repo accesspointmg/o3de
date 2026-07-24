@@ -11,7 +11,7 @@ if(NOT O3DE_PAL_TRAIT_TEST_GOOGLE_TEST_SUPPORTED)
     return()
 endif()
 
-o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Tools/AzTestRunner/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_tools_aztestrunner_path)
+set(pal_code_tools_aztestrunner_path ${O3DE_ENGINE_PATH}/Code/Tools/AzTestRunner/Platform/${O3DE_PAL_PLATFORM_NAME})
 #set(common_code_tools_aztestrunner_path ${O3DE_ENGINE_PATH}/Code/Tools/AzTestRunner/Platform/Common)
 
 include(${pal_code_tools_aztestrunner_path}/platform_traits_${O3DE_PAL_PLATFORM_WART}.cmake)

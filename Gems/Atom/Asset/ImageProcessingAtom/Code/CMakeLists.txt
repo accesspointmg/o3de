@@ -25,13 +25,13 @@ set(pal_tools_include_files)
 set(pal_tools_include_dirs)
 foreach(enabled_platform ${O3DE_PAL_TOOLS_ENABLED})
     o3de_pal_platform_name_wart(enabled_platform_wart ${enabled_platform})
-    o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${enabled_platform} pal_tools_source_dir)
+    set(pal_tools_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${enabled_platform})
     list(APPEND pal_tools_include_dirs ${pal_tools_source_dir})
     list(APPEND pal_tools_files ${pal_tools_source_dir}/pal_tools_${enabled_platform_wart}.cmake)
     list(APPEND pal_tools_include_files ${pal_tools_source_dir}/pal_tools_${enabled_platform_wart}_files.cmake)
 endforeach()
 
-o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+set(pal_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME})
 set(common_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/Common)
 
 o3de_add_target(

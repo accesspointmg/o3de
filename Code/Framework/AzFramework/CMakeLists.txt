@@ -8,7 +8,7 @@
 
 include(AzFramework/feature_options.cmake)
 
-o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_path)
+set(pal_code_path ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME})
 set(common_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/Common)
 
 if(O3DE_PIX_ENABLED)
@@ -75,7 +75,7 @@ o3de_add_source_properties(
 
 if(O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED)
 
-    o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Tests/Platform/${O3DE_PAL_PLATFORM_NAME} test_pal_dir)
+    set(test_pal_dir ${CMAKE_CURRENT_LIST_DIR}/Tests/Platform/${O3DE_PAL_PLATFORM_NAME})
 
     o3de_add_target(
         NAME AzFrameworkTestShared STATIC

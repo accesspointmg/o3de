@@ -6,7 +6,7 @@
 #
 #
 
-o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Framework/AzNetworking/Platform/${O3DE_PAL_PLATFORM_NAME} pal_core_framework_aznetworking_path)
+set(pal_core_framework_aznetworking_path ${O3DE_ENGINE_PATH}/Code/Framework/AzNetworking/Platform/${O3DE_PAL_PLATFORM_NAME})
 set(common_core_framework_aznetworking_path ${O3DE_ENGINE_PATH}/Code/Framework/AzNetworking/Platform/Common)
 
 o3de_add_target(

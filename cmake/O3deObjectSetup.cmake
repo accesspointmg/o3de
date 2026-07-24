@@ -53,7 +53,7 @@ macro(o3de_gem_setup)
     endif()
 
     #PAL
-    o3de_pal_path(${CMAKE_CURRENT_SOURCE_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_dir)
+    set(pal_dir ${CMAKE_CURRENT_SOURCE_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME})
 endmacro()
 
 
@@ -96,6 +96,6 @@ macro(o3de_repo_setup default_repo_name)
     get_property(dependent_templates GLOBAL PROPERTY ${O3DE_PATH_${repo_json}_DEPENDENT_TEMPLATES})
 
     #PAL
-    o3de_pal_path(${CMAKE_CURRENT_SOURCE_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_dir)
+    set(pal_dir ${CMAKE_CURRENT_SOURCE_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME})
 endmacro()
 

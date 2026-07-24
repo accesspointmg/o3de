@@ -8,7 +8,7 @@
 
 add_subdirectory(tests)
 
-o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME} pal_dir)
+set(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME})
 include(${pal_dir}/o3de_install_${O3DE_PAL_PLATFORM_WART}.cmake)
 
 o3de_install_files(FILES ../o3de.py 

@@ -6,7 +6,7 @@
 #
 #
 
-o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Tools/CrashHandler/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_tools_crashhandler_path)
+set(pal_code_tools_crashhandler_path ${O3DE_ENGINE_PATH}/Code/Tools/CrashHandler/Platform/${O3DE_PAL_PLATFORM_NAME})
 #set(common_code_tools_crashhandler_path ${O3DE_ENGINE_PATH}/Code/Tools/CrashHandler/Platform/Common)
 
 include(${pal_code_tools_crashhandler_path}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)

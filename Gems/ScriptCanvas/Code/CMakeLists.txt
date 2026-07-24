@@ -247,7 +247,7 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
 
 if(SCRIPTCANVAS_BUILD_STANDALONE_APPLICATION)
 
-    o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Application/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_source_path)
+    set(pal_code_source_path ${CMAKE_CURRENT_LIST_DIR}/Application/Platform/${O3DE_PAL_PLATFORM_NAME})
 
     o3de_add_target(
         NAME ${gem_name}Application APPLICATION

@@ -12,7 +12,7 @@ endif()
 
 add_subdirectory(Plugins)
 
-o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Editor/Platform/${O3DE_PAL_PLATFORM_NAME} pal_core_editor_path)
+set(pal_core_editor_path ${O3DE_ENGINE_PATH}/Code/Editor/Platform/${O3DE_PAL_PLATFORM_NAME})
 set(common_core_editor_path ${O3DE_ENGINE_PATH}/Code/Editor/Platform/Common)
 
 o3de_add_target(
@@ -64,7 +64,7 @@ set(pal_tool_paths "")
 set(pal_tool_files "")
 foreach(enabled_platform ${O3DE_PAL_TOOLS_ENABLED})
     o3de_pal_platform_name_wart(${enabled_platform} pal_wart)
-    o3de_pal_path(${O3DE_ENGINE_PATH}/Code/Editor/Platform/${enabled_platform} pal_tool_path)
+    set(pal_tool_path ${O3DE_ENGINE_PATH}/Code/Editor/Platform/${enabled_platform})
     list(APPEND pal_tool_paths ${pal_tool_path})
     list(APPEND pal_tool_files ${pal_tool_path}/editor_lib_${pal_wart}_files.cmake})
 endforeach()

@@ -6,7 +6,7 @@
 #
 #
 
-o3de_pal_path(${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME} pal_source_dir)
+set(pal_source_dir ${CMAKE_CURRENT_LIST_DIR}/Source/Platform/${O3DE_PAL_PLATFORM_NAME})
 
 o3de_add_target(
     NAME ${gem_name}.Static STATIC

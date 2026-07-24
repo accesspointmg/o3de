@@ -6,7 +6,7 @@
 #
 #
 
-o3de_pal_path(${O3DE_ENGINE_PATH}/Code/LauncherUnified/Platform/${O3DE_PAL_PLATFORM_NAME} pal_code_launcherunified_path)
+set(pal_code_launcherunified_path ${O3DE_ENGINE_PATH}/Code/LauncherUnified/Platform/${O3DE_PAL_PLATFORM_NAME})
 set(common_code_launcherunified_path ${O3DE_ENGINE_PATH}/Code/LauncherUnified/Platform/Common)
 
 include(${pal_code_launcherunified_path}/LauncherUnified_traits_${O3DE_PAL_PLATFORM_WART}.cmake)
