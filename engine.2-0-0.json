@@ -15,14 +15,12 @@
   "licenses": [
     {
       "license_identifier": "Apache-2.0",
-      "uri": "https://spdx.org/licenses/Apache-2.0.html",
-      "display_name": "Apache 2.0",
+      "display_name": "Apache License 2.0",
       "relative_path": "LICENSE_APACHE2.TXT"
     },
     {
       "license_identifier": "MIT",
-      "uri": "https://spdx.org/licenses/MIT.html",
-      "display_name": "MIT",
+      "display_name": "MIT License",
       "relative_path": "LICENSE_MIT.TXT"
     }
   ],
@@ -31,12 +29,10 @@
   ],
   "user_tags": [],
   "icon": {
-    "relative_path": "",
-    "uri": ""
+    "relative_path": "preview.svg"
   },
   "documentation": {
-    "relative_path": "",
-    "uri": ""
+    "url": "https://www.o3de.org/docs/"
   },
   "api_versions": {
     "editor": "1.0.0",
@@ -51,6 +47,7 @@
     ],
     "gems": [
       "Gems/Achievements/gem.json",
+      "Gems/AFR/gem.json",
       "Gems/Archive/gem.json",
       "Gems/AssetValidation/gem.json",
       "Gems/Atom/gem.json",
@@ -86,6 +83,7 @@
       "Gems/LyShine/gem.json",
       "Gems/LyShineExamples/gem.json",
       "Gems/Maestro/gem.json",
+      "Gems/Meshlets/gem.json",
       "Gems/MessagePopup/gem.json",
       "Gems/Microphone/gem.json",
       "Gems/MiniAudio/gem.json",
@@ -93,6 +91,7 @@
       "Gems/Multiplayer/gem.json",
       "Gems/MultiplayerCompression/gem.json",
       "Gems/NvCloth/gem.json",
+      "Gems/OpenParticleSystem/gem.json",
       "Gems/PhysX/Common/gem.json",
       "Gems/PhysX/Core/PhysX5/gem.json",
       "Gems/PhysX/Debug/PhysX5/gem.json",
@@ -114,6 +113,7 @@
       "Gems/ScriptCanvasTesting/gem.json",
       "Gems/ScriptedEntityTweener/gem.json",
       "Gems/ScriptEvents/gem.json",
+      "Gems/SkyAtmosphere/gem.json",
       "Gems/Stars/gem.json",
       "Gems/StartingPointCamera/gem.json",
       "Gems/StartingPointInput/gem.json",
@@ -131,19 +131,27 @@
       "Gems/WhiteBox/gem.json"
     ],
     "templates": [
+      "Templates/AddTestsToProject/template.json",
       "Templates/AssetGem/template.json",
+      "Templates/Attimage/template.json",
       "Templates/CppToolGem/template.json",
+      "Templates/DataAsset/template.json",
       "Templates/DefaultComponent/template.json",
       "Templates/DefaultGem/template.json",
       "Templates/DefaultProject/template.json",
+      "Templates/FullscreenPostProcess/template.json",
       "Templates/GemRepo/template.json",
       "Templates/GraphicsGem/template.json",
+      "Templates/LevelComponent/template.json",
+      "Templates/LyShineComponent/template.json",
       "Templates/MinimalProject/template.json",
       "Templates/PrebuiltGem/template.json",
       "Templates/PythonToolGem/template.json",
       "Templates/RemoteRepo/template.json",
+      "Templates/ScreenSpaceRenderPass/template.json",
       "Templates/ScriptCanvasNode/template.json",
       "Templates/ScriptOnlyProject/template.json",
+      "Templates/SystemComponent/template.json",
       "Templates/UnifiedMultiplayerGem/template.json"
     ],
     "repos": [],
@@ -155,7 +163,7 @@
     "gems": [],
     "templates": [],
     "repos": [
-      "https://canonical.o3de.org"
+      "https://canonical.o3de.org/repo.2-0-0.json"
     ],
     "overlays": []
   },
