@@ -34,7 +34,6 @@
         "Gems/GameState",
         "Gems/GameStateSamples",
         "Gems/Gestures",
-        "Gems/GradientSignal",
         "Gems/GraphCanvas",
         "Gems/GraphModel",
         "Gems/ImGui",
