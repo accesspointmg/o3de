@@ -29,7 +29,7 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
                 Gem::AtomToolsFramework.Static
                 Gem::AtomToolsFramework.Editor
                 Gem::Atom_Feature_Common.Public
-                Gem::AtomLyIntegration_CommonFeatures.Static
+                Gem::AtomO3deIntegration_CommonFeatures.Static
                 Gem::Atom_Component_DebugCamera.Static
                 Gem::OpenParticleSystem.Editor.Static
         RUNTIME_DEPENDENCIES
@@ -42,6 +42,6 @@ if(O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
             Gem::Atom_RPI.Builders
             Gem::Atom_Feature_Common.Editor
             Gem::AtomToolsFramework.Editor
-            Gem::AtomLyIntegration_CommonFeatures.Editor
+            Gem::AtomO3deIntegration_CommonFeatures.Editor
     )
 endif()
