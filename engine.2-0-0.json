@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/Achievements/gem.json",
       "Gems/AFR/gem.json",
       "Gems/Archive/gem.json",
       "Gems/AssetValidation/gem.json",
