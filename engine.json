@@ -83,8 +83,7 @@
         "Gems/TickBusOrderViewer",
         "Gems/Vegetation",
         "Gems/VideoPlaybackFramework",
-        "Gems/VirtualGamepad",
-        "Gems/WhiteBox"
+        "Gems/VirtualGamepad"
     ],
     "gem_names": [
         "Atom_Bootstrap",
