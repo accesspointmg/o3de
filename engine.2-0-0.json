@@ -48,7 +48,6 @@
     ],
     "gems": [
       "Gems/AFR/gem.json",
-      "Gems/Archive/gem.json",
       "Gems/AssetValidation/gem.json",
       "Gems/Atom/gem.json",
       "Gems/AtomContent/gem.json",

@@ -13,7 +13,6 @@
     "build": 0,
     "external_subdirectories": [
         "Gems/AFR",
-        "Gems/Archive",
         "Gems/AssetValidation",
         "Gems/Atom",
         "Gems/AtomContent",
