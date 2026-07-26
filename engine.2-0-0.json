@@ -46,7 +46,6 @@
     "projects": [],
     "gems": [],
     "templates": [
-      "Templates/PrebuiltGem/template.json",
       "Templates/PythonToolGem/template.json",
       "Templates/RemoteRepo/template.json",
       "Templates/ScreenSpaceRenderPass/template.json",
