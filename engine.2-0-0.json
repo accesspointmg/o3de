@@ -46,7 +46,6 @@
     "projects": [],
     "gems": [],
     "templates": [
-      "Templates/DefaultGem/template.json",
       "Templates/DefaultProject/template.json",
       "Templates/FullscreenPostProcess/template.json",
       "Templates/GemRepo/template.json",
