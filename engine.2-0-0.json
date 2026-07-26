@@ -43,9 +43,7 @@
   },
   "children": {
     "engines": [],
-    "projects": [
-      "AutomatedTesting/project.json"
-    ],
+    "projects": [],
     "gems": [],
     "templates": [
       "Templates/AddTestsToProject/template.json",
