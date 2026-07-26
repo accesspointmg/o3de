@@ -27,7 +27,6 @@
     ],
     "projects": [],
     "templates": [
-        "Templates/ScriptOnlyProject",
         "Templates/UnifiedMultiplayerGem"
     ],
     "repos": [

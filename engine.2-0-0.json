@@ -46,7 +46,6 @@
     "projects": [],
     "gems": [],
     "templates": [
-      "Templates/ScriptOnlyProject/template.json",
       "Templates/SystemComponent/template.json",
       "Templates/UnifiedMultiplayerGem/template.json"
     ],
