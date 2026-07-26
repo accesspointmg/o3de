@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/NvCloth/gem.json",
       "Gems/OpenParticleSystem/gem.json",
       "Gems/PhysX/Common/gem.json",
       "Gems/PhysX/Core/PhysX5/gem.json",

@@ -13,7 +13,6 @@
     "build": 0,
     "external_subdirectories": [
         "Gems/AtomLyIntegration",
-        "Gems/NvCloth",
         "Gems/OpenParticleSystem",
         "Gems/PhysX/Common",
         "Gems/PhysX/Core/PhysX5",
