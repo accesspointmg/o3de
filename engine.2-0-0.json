@@ -46,7 +46,6 @@
     "projects": [],
     "gems": [],
     "templates": [
-      "Templates/GraphicsGem/template.json",
       "Templates/LevelComponent/template.json",
       "Templates/LyShineComponent/template.json",
       "Templates/MinimalProject/template.json",
