@@ -27,7 +27,6 @@
     ],
     "projects": [],
     "templates": [
-        "Templates/DefaultComponent",
         "Templates/DefaultGem",
         "Templates/DefaultProject",
         "Templates/GemRepo",
