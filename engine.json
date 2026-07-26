@@ -13,7 +13,6 @@
     "build": 0,
     "external_subdirectories": [
         "Gems/AtomLyIntegration",
-        "Gems/EditorPythonBindings",
         "Gems/ExpressionEvaluation",
         "Gems/FastNoise",
         "Gems/GameState",
