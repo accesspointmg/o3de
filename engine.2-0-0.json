@@ -50,8 +50,7 @@
       "Gems/PhysX/Common/gem.json",
       "Gems/PhysX/Core/PhysX5/gem.json",
       "Gems/PhysX/Debug/PhysX5/gem.json",
-      "Gems/Prefab/PrefabBuilder/gem.json",
-      "Gems/VirtualGamepad/gem.json"
+      "Gems/Prefab/PrefabBuilder/gem.json"
     ],
     "templates": [
       "Templates/AddTestsToProject/template.json",
