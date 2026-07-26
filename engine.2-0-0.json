@@ -51,7 +51,6 @@
       "Gems/PhysX/Core/PhysX5/gem.json",
       "Gems/PhysX/Debug/PhysX5/gem.json",
       "Gems/Prefab/PrefabBuilder/gem.json",
-      "Gems/Terrain/gem.json",
       "Gems/TestAssetBuilder/gem.json",
       "Gems/TextureAtlas/gem.json",
       "Gems/TickBusOrderViewer/gem.json",
