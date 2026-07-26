@@ -46,7 +46,6 @@
     "projects": [],
     "gems": [],
     "templates": [
-      "Templates/LyShineComponent/template.json",
       "Templates/MinimalProject/template.json",
       "Templates/PrebuiltGem/template.json",
       "Templates/PythonToolGem/template.json",
