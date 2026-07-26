@@ -46,7 +46,6 @@
     "projects": [],
     "gems": [],
     "templates": [
-      "Templates/RemoteRepo/template.json",
       "Templates/ScreenSpaceRenderPass/template.json",
       "Templates/ScriptCanvasNode/template.json",
       "Templates/ScriptOnlyProject/template.json",
