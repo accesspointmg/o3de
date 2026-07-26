@@ -13,7 +13,6 @@
     "build": 0,
     "external_subdirectories": [
         "Gems/AtomLyIntegration",
-        "Gems/BarrierInput",
         "Gems/CameraFramework",
         "Gems/CertificateManager",
         "Gems/Compression",

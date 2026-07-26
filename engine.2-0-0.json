@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/BarrierInput/gem.json",
       "Gems/CameraFramework/gem.json",
       "Gems/CertificateManager/gem.json",
       "Gems/Compression/gem.json",
