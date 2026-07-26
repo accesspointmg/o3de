@@ -46,7 +46,6 @@
     "projects": [],
     "gems": [],
     "templates": [
-      "Templates/AddTestsToProject/template.json",
       "Templates/AssetGem/template.json",
       "Templates/Attimage/template.json",
       "Templates/CppToolGem/template.json",
