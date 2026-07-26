@@ -27,7 +27,6 @@
     ],
     "projects": [],
     "templates": [
-        "Templates/AssetGem",
         "Templates/CppToolGem",
         "Templates/DefaultComponent",
         "Templates/DefaultGem",
