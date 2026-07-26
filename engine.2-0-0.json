@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/MiniAudio/gem.json",
       "Gems/MotionMatching/gem.json",
       "Gems/Multiplayer/gem.json",
       "Gems/MultiplayerCompression/gem.json",
