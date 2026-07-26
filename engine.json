@@ -13,7 +13,6 @@
     "build": 0,
     "external_subdirectories": [
         "Gems/AtomLyIntegration",
-        "Gems/GameStateSamples",
         "Gems/Gestures",
         "Gems/GraphCanvas",
         "Gems/GraphModel",

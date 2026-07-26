@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/GameStateSamples/gem.json",
       "Gems/Gestures/gem.json",
       "Gems/GraphCanvas/gem.json",
       "Gems/GraphModel/gem.json",
