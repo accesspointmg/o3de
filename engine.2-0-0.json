@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/DiffuseProbeGrid/gem.json",
       "Gems/EditorPythonBindings/gem.json",
       "Gems/ExpressionEvaluation/gem.json",
       "Gems/FastNoise/gem.json",
