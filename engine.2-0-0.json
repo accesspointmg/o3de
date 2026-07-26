@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/CustomAssetExample/gem.json",
       "Gems/DebugDraw/gem.json",
       "Gems/DevTextures/gem.json",
       "Gems/DiffuseProbeGrid/gem.json",
