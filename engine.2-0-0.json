@@ -46,7 +46,6 @@
     "projects": [],
     "gems": [],
     "templates": [
-      "Templates/Attimage/template.json",
       "Templates/CppToolGem/template.json",
       "Templates/DataAsset/template.json",
       "Templates/DefaultComponent/template.json",
