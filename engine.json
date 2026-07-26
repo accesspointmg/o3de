@@ -13,7 +13,6 @@
     "build": 0,
     "external_subdirectories": [
         "Gems/AtomLyIntegration",
-        "Gems/CertificateManager",
         "Gems/Compression",
         "Gems/CrashReporting",
         "Gems/CustomAssetExample",

@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/CertificateManager/gem.json",
       "Gems/Compression/gem.json",
       "Gems/CrashReporting/gem.json",
       "Gems/CustomAssetExample/gem.json",
