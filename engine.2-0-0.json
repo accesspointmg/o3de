@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/LyShine/gem.json",
       "Gems/LyShineExamples/gem.json",
       "Gems/Meshlets/gem.json",
       "Gems/MessagePopup/gem.json",

@@ -13,7 +13,6 @@
     "build": 0,
     "external_subdirectories": [
         "Gems/AtomLyIntegration",
-        "Gems/LyShine",
         "Gems/LyShineExamples",
         "Gems/Meshlets",
         "Gems/MessagePopup",
