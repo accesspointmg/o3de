@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/GraphCanvas/gem.json",
       "Gems/GraphModel/gem.json",
       "Gems/InAppPurchases/gem.json",
       "Gems/LandscapeCanvas/gem.json",
