@@ -13,7 +13,6 @@
     "build": 0,
     "external_subdirectories": [
         "Gems/AtomLyIntegration",
-        "Gems/DevTextures",
         "Gems/DiffuseProbeGrid",
         "Gems/EditorPythonBindings",
         "Gems/ExpressionEvaluation",
