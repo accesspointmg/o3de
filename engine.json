@@ -27,7 +27,6 @@
     ],
     "projects": [],
     "templates": [
-        "Templates/GemRepo",
         "Templates/GraphicsGem",
         "Templates/MinimalProject",
         "Templates/PrebuiltGem",
