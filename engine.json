@@ -13,7 +13,6 @@
     "build": 0,
     "external_subdirectories": [
         "Gems/AtomLyIntegration",
-        "Gems/LandscapeCanvas",
         "Gems/LmbrCentral",
         "Gems/LocalUser",
         "Gems/LyShine",

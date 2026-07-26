@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/LandscapeCanvas/gem.json",
       "Gems/LmbrCentral/gem.json",
       "Gems/LocalUser/gem.json",
       "Gems/LyShine/gem.json",
