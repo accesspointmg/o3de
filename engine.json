@@ -27,7 +27,6 @@
     ],
     "projects": [],
     "templates": [
-        "Templates/ScriptCanvasNode",
         "Templates/ScriptOnlyProject",
         "Templates/UnifiedMultiplayerGem"
     ],
