@@ -46,9 +46,7 @@
     "projects": [
       "AutomatedTesting/project.json"
     ],
-    "gems": [
-      "Gems/Prefab/PrefabBuilder/gem.json"
-    ],
+    "gems": [],
     "templates": [
       "Templates/AddTestsToProject/template.json",
       "Templates/AssetGem/template.json",
