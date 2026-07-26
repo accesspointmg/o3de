@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/FastNoise/gem.json",
       "Gems/GameState/gem.json",
       "Gems/GameStateSamples/gem.json",
       "Gems/Gestures/gem.json",
