@@ -27,7 +27,6 @@
     ],
     "projects": [],
     "templates": [
-        "Templates/PythonToolGem",
         "Templates/RemoteRepo",
         "Templates/ScriptCanvasNode",
         "Templates/ScriptOnlyProject",
