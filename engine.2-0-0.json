@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/AssetValidation/gem.json",
       "Gems/Atom/gem.json",
       "Gems/AtomContent/gem.json",
       "Gems/AtomO3deIntegration/gem.json",
