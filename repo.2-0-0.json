@@ -28,7 +28,7 @@
   ],
   "children": {
     "engines": [
-      "Engines/o3de/engine.2-0-0.json"
+      "Engines/o3de/engine.json"
     ],
     "projects": [],
     "gems": [],
