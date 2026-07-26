@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/Multiplayer/gem.json",
       "Gems/MultiplayerCompression/gem.json",
       "Gems/NvCloth/gem.json",
       "Gems/OpenParticleSystem/gem.json",

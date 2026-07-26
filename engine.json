@@ -13,7 +13,6 @@
     "build": 0,
     "external_subdirectories": [
         "Gems/AtomLyIntegration",
-        "Gems/Multiplayer",
         "Gems/MultiplayerCompression",
         "Gems/NvCloth",
         "Gems/OpenParticleSystem",
