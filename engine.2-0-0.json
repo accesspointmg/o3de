@@ -45,9 +45,7 @@
     "engines": [],
     "projects": [],
     "gems": [],
-    "templates": [
-      "Templates/UnifiedMultiplayerGem/template.json"
-    ],
+    "templates": [],
     "repos": [],
     "overlays": []
   },

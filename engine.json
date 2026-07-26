@@ -26,9 +26,7 @@
         "SceneProcessing"
     ],
     "projects": [],
-    "templates": [
-        "Templates/UnifiedMultiplayerGem"
-    ],
+    "templates": [],
     "repos": [
         "https://canonical.o3de.org"
     ]
