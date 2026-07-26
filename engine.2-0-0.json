@@ -47,9 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/PhysX/Common/gem.json",
-      "Gems/PhysX/Core/PhysX5/gem.json",
-      "Gems/PhysX/Debug/PhysX5/gem.json",
       "Gems/Prefab/PrefabBuilder/gem.json"
     ],
     "templates": [
