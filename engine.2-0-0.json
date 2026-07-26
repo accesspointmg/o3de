@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/CameraFramework/gem.json",
       "Gems/CertificateManager/gem.json",
       "Gems/Compression/gem.json",
       "Gems/CrashReporting/gem.json",
