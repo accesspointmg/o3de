@@ -12,7 +12,6 @@
     "copyright_year": 2023,
     "build": 0,
     "external_subdirectories": [
-        "Gems/AtomContent",
         "Gems/AtomLyIntegration",
         "Gems/AtomTressFX",
         "Gems/AudioSystem",
