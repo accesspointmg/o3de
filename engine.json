@@ -27,7 +27,6 @@
     ],
     "projects": [],
     "templates": [
-        "Templates/MinimalProject",
         "Templates/PrebuiltGem",
         "Templates/PythonToolGem",
         "Templates/RemoteRepo",
