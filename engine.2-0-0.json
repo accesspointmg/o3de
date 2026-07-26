@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/InAppPurchases/gem.json",
       "Gems/LandscapeCanvas/gem.json",
       "Gems/LmbrCentral/gem.json",
       "Gems/LocalUser/gem.json",
