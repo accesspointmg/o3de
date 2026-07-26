@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/Meshlets/gem.json",
       "Gems/MessagePopup/gem.json",
       "Gems/Microphone/gem.json",
       "Gems/MiniAudio/gem.json",

@@ -13,7 +13,6 @@
     "build": 0,
     "external_subdirectories": [
         "Gems/AtomLyIntegration",
-        "Gems/Meshlets",
         "Gems/MessagePopup",
         "Gems/Microphone",
         "Gems/MiniAudio",
