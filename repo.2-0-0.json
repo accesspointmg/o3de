@@ -1,0 +1,59 @@
+{
+  "$schemaVersion": "2.0.0",
+  "$schema": "https://canonical.o3de.org/o3de-repo-2.0.0.json",
+  "repo": {
+    "name": "org.o3de.repo.o3de",
+    "display_name": "O3DE Engine Family Repo",
+    "description": "Family repository for the O3DE engine: the engine plus one overlay per platform.",
+    "type": "repo"
+  },
+  "origin": {
+    "name": "The Linux Foundation",
+    "url": "https://www.linuxfoundation.org"
+  },
+  "licenses": [
+    {
+      "license_identifier": "Apache-2.0",
+      "display_name": "Apache License 2.0",
+      "relative_path": "Engines/o3de/LICENSE_APACHE2.TXT"
+    },
+    {
+      "license_identifier": "MIT",
+      "display_name": "MIT License",
+      "relative_path": "Engines/o3de/LICENSE_MIT.TXT"
+    }
+  ],
+  "canonical_tags": [
+    "Repo"
+  ],
+  "children": {
+    "engines": [
+      "Engines/o3de/engine.2-0-0.json"
+    ],
+    "projects": [],
+    "gems": [],
+    "templates": [],
+    "repos": [],
+    "overlays": [
+      "Overlays/o3de.android/overlay.json",
+      "Overlays/o3de.common/overlay.json",
+      "Overlays/o3de.emscripten/overlay.json",
+      "Overlays/o3de.ios/overlay.json",
+      "Overlays/o3de.linux/overlay.json",
+      "Overlays/o3de.mac/overlay.json",
+      "Overlays/o3de.windows/overlay.json"
+    ]
+  },
+  "remote": {
+    "engines": [],
+    "projects": [],
+    "gems": [],
+    "templates": [],
+    "repos": [],
+    "overlays": []
+  },
+  "source_control": {
+    "git": "https://github.com/accesspointmg/org.o3de.repo.o3de.git",
+    "branch": "2.0.0"
+  }
+}

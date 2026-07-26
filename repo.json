@@ -1,0 +1,7 @@
+{
+  "repo_name": "org.o3de.repo.o3de",
+  "$schemaVersion": "1.0.0",
+  "engines": [
+    "Engines/o3de"
+  ]
+}
