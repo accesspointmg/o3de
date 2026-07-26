@@ -47,7 +47,6 @@
       "AutomatedTesting/project.json"
     ],
     "gems": [
-      "Gems/AtomO3deIntegration/gem.json",
       "Gems/AtomTressFX/gem.json",
       "Gems/AudioSystem/gem.json",
       "Gems/BarrierInput/gem.json",
