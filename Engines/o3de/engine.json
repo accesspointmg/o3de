@@ -1,6 +1,6 @@
 {
     "$schemaVersion": "2.0.0",
-    "$schema": "https://canonical.o3de.org/o3de-engine-2.0.0.json",
+    "$schema": "https://raw.githubusercontent.com/accesspointmg/canonical.o3de.org/main/src/o3de-engine-2.0.0.json",
     "engine": {
         "name": "org.o3de.engine.o3de",
         "version": "4.2.0",
@@ -55,7 +55,7 @@
         "gems": [],
         "templates": [],
         "repos": [
-            "https://canonical.o3de.org/repo.2-0-0.json"
+            "https://raw.githubusercontent.com/accesspointmg/canonical.o3de.org/main/src/repo.json"
         ],
         "overlays": []
     },

@@ -1,6 +1,6 @@
 {
     "$schemaVersion": "2.0.0",
-    "$schema": "https://canonical.o3de.org/o3de-overlay-2.0.0.json",
+    "$schema": "https://raw.githubusercontent.com/accesspointmg/canonical.o3de.org/main/src/o3de-overlay-2.0.0.json",
     "overlay": {
         "name": "org.o3de.overlay.o3de.ios",
         "version": "0.0.0",
