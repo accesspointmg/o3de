@@ -1,0 +1,76 @@
+{
+  "$schemaVersion": "2.0.0",
+  "$schema": "https://canonical.o3de.org/o3de-template-2.0.0.json",
+  "template": {
+    "name": "org.o3de.template.attimage",
+    "version": "0.0.0",
+    "display_name": "Attimage Template",
+    "description": "Create an attimage with unique specs.",
+    "type": "",
+    "id": "",
+    "copyright_text": ""
+  },
+  "copyFiles": [
+    {
+      "file": "Source/${Name}.attimage",
+      "isTemplated": true
+    }
+  ],
+  "createDirectories": [
+    {
+      "dir": "Source"
+    }
+  ],
+  "origin": {
+    "name": "Open 3D Engine - o3de.org",
+    "url": "https://github.com/o3de/o3de"
+  },
+  "licenses": [
+    {
+      "license_identifier": "Apache-2.0 or MIT",
+      "url": "https://github.com/o3de/o3de/blob/development/LICENSE.txt",
+      "display_name": "Apache 2.0 or MIT",
+      "relative_path": ""
+    }
+  ],
+  "canonical_tags": [
+    "Template"
+  ],
+  "user_tags": [
+    "AttImage"
+  ],
+  "icon": {
+    "relative_path": "preview.png",
+    "url": ""
+  },
+  "documentation": {
+    "relative_path": "",
+    "url": ""
+  },
+  "children": {
+    "engines": [],
+    "projects": [],
+    "gems": [],
+    "templates": [],
+    "repos": [],
+    "overlays": []
+  },
+  "remote": {
+    "engines": [],
+    "projects": [],
+    "gems": [],
+    "templates": [],
+    "repos": [],
+    "overlays": []
+  },
+  "dependent": {
+    "gems": []
+  },
+  "platforms": [
+    "Windows",
+    "Linux",
+    "Mac",
+    "iOS",
+    "Android"
+  ]
+}

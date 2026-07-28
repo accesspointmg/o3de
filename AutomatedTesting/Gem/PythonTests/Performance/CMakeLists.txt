@@ -1,0 +1,46 @@
+#
+# Copyright (c) Contributors to the Open 3D Engine Project.
+# For complete copyright and license terms please see the LICENSE at the root of this distribution.
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+#
+#
+
+if(NOT O3DE_PAL_TRAIT_BUILD_TESTS_SUPPORTED OR NOT O3DE_PAL_TRAIT_BUILD_HOST_TOOLS)
+    return()
+endif()
+
+set(pal_dir ${CMAKE_CURRENT_LIST_DIR}/Platform/${O3DE_PAL_PLATFORM_NAME})
+include(${pal_dir}/PAL_${O3DE_PAL_PLATFORM_WART}.cmake)
+
+if(O3DE_PAL_TRAIT_EDITOR_LEVEL_PERF_DX12_TESTS_SUPPORTED)
+    o3de_add_pytest(
+        NAME AutomatedTesting::EditorLevelLoadingPerfTests_DX12
+        TEST_SUITE periodic
+        TEST_REQUIRES gpu
+        TEST_SERIAL
+        PATH ${CMAKE_CURRENT_LIST_DIR}/TestSuite_Periodic_DX12.py
+        RUNTIME_DEPENDENCIES
+            Legacy::Editor
+            AZ::AssetProcessor
+            AutomatedTesting.Assets
+        COMPONENT
+            Performance
+    )
+endif()
+
+if(O3DE_PAL_TRAIT_EDITOR_LEVEL_PERF_VULKAN_TESTS_SUPPORTED)
+    o3de_add_pytest(
+        NAME AutomatedTesting::EditorLevelLoadingPerfTests_Vulkan
+        TEST_SUITE periodic
+        TEST_REQUIRES gpu
+        TEST_SERIAL
+        PATH ${CMAKE_CURRENT_LIST_DIR}/TestSuite_Periodic_Vulkan.py
+        RUNTIME_DEPENDENCIES
+            Legacy::Editor
+            AZ::AssetProcessor
+            AutomatedTesting.Assets
+        COMPONENT
+            Performance
+    )
+endif()
