@@ -1,28 +1,66 @@
 {
-    "gem_name": "AFR",
-    "version": "1.0.0",
-    "display_name": "AFR",
-    "license": "License used i.e. Apache-2.0 or MIT",
-    "license_url": "Link to the license web site i.e. https://opensource.org/licenses/Apache-2.0",
-    "origin": "The name of the originator or creator",
-    "origin_url": "The website for this Gem",
-    "type": "Code",
-    "summary": "This gem enables alternate frame rendering (AFR) by alterating rendering tasks over the GPUs. The Gem is enabled by passing --afr <pipelinename> (as well as --device-count <#gpus> with the number of GPUs to use) to the executable on the command line. <pipelinename> should be a (at least partial) match for a RenderPipeline name, for which AFR should execute. This RenderPipeline needs to have a CopyToSwapChain pass at the end. If no <pipelinename> is passed, AFR is applied to the first pipeline that posses such a CopyToSwapChain pass.",
+    "$schemaVersion": "2.0.0",
+    "$schema": "https://raw.githubusercontent.com/accesspointmg/canonical.o3de.org/main/src/o3de-gem-2.0.0.json",
+    "gem": {
+        "name": "org.o3de.gem.afr",
+        "version": "1.0.0",
+        "display_name": "AFR",
+        "description": "This gem enables alternate frame rendering (AFR) by alterating rendering tasks over the GPUs. The Gem is enabled by passing --afr <pipelinename> (as well as --device-count <#gpus> with the number of GPUs to use) to the executable on the command line. <pipelinename> should be a (at least partial) match for a RenderPipeline name, for which AFR should execute. This RenderPipeline needs to have a CopyToSwapChain pass at the end. If no <pipelinename> is passed, AFR is applied to the first pipeline that posses such a CopyToSwapChain pass.",
+        "type": "code",
+        "id": "",
+        "copyright_text": ""
+    },
+    "origin": {
+        "name": "The name of the originator or creator",
+        "url": "The website for this Gem"
+    },
+    "licenses": [
+        {
+            "license_identifier": "License used i.e. Apache-2.0 or MIT",
+            "url": "Link to the license web site i.e. https://opensource.org/licenses/Apache-2.0",
+            "display_name": "License used i.e. Apache 2.0 or MIT",
+            "relative_path": ""
+        }
+    ],
     "canonical_tags": [
         "Gem"
     ],
     "user_tags": [
         "AFR"
     ],
+    "icon": {
+        "relative_path": "preview.png",
+        "url": ""
+    },
+    "documentation": {
+        "relative_path": "",
+        "url": "Link to any documentation of your Gem"
+    },
+    "children": {
+        "engines": [],
+        "projects": [],
+        "gems": [],
+        "templates": [],
+        "repos": [],
+        "overlays": []
+    },
+    "remote": {
+        "engines": [],
+        "projects": [],
+        "gems": [],
+        "templates": [],
+        "repos": [],
+        "overlays": []
+    },
+    "dependent": {
+        "gems": []
+    },
     "platforms": [
         ""
     ],
-    "icon_path": "preview.png",
     "requirements": "Notice of any requirements for this Gem i.e. This requires X other gem",
-    "documentation_url": "Link to any documentation of your Gem",
-    "dependencies": [],
-    "repo_uri": "",
-    "compatible_engines": [],
-    "engine_api_dependencies": [],
-    "restricted": "AFR"
+    "releases": [],
+    "source_control": {
+        "git": "https://github.com/accesspointmg/o3de-afr.git"
+    }
 }

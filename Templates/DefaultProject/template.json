@@ -1,19 +1,12 @@
 {
-    "template_name": "DefaultProject",
-    "origin": "Open 3D Engine - o3de.org",
-    "origin_url": "https://github.com/o3de/o3de",
-    "license": "Apache-2.0 or MIT",
-    "license_url": "https://github.com/o3de/o3de/blob/development/LICENSE.txt",
-    "display_name": "Default",
-    "summary": "This is the project template that will be used if no project template is specified during project creation.",
-    "canonical_tags": [
-        "Template",
-        "Project"
-    ],
-    "user_tags": [
-        "DefaultProject"
-    ],
-    "icon_path": "preview.png",
+    "$schemaVersion": "2.0.0",
+    "$schema": "https://raw.githubusercontent.com/accesspointmg/canonical.o3de.org/main/src/o3de-template-2.0.0.json",
+    "template": {
+        "name": "org.o3de.template.defaultproject",
+        "version": "0.0.0",
+        "display_name": "Default",
+        "description": "This is the project template that will be used if no project template is specified during project creation."
+    },
     "copyFiles": [
         {
             "file": ".gitignore",
@@ -34,6 +27,10 @@
         {
             "file": "cmake/EngineFinder.cmake",
             "isTemplated": true
+        },
+        {
+            "file": "Config/default_aws_resource_mappings.json",
+            "isTemplated": false
         },
         {
             "file": "Config/shader_global_build_options.json",
@@ -188,7 +185,7 @@
             "isTemplated": true
         },
         {
-            "file": "Registry/assimp_settings.setreg",
+            "file": "Registry/awscoreconfiguration.setreg",
             "isTemplated": false
         },
         {
@@ -426,134 +423,144 @@
         }
     ],
     "createDirectories": [
+        "AssetBundling",
+        "AssetBundling/SeedLists",
+        "Assets",
+        "cmake",
+        "Config",
+        "Gem",
+        "Gem/Include",
+        "Gem/Include/${Name}",
+        "Gem/Platform",
+        "Gem/Platform/Android",
+        "Gem/Platform/Linux",
+        "Gem/Platform/Mac",
+        "Gem/Platform/Windows",
+        "Gem/Platform/iOS",
+        "Gem/Registry",
+        "Gem/Source",
+        "Levels",
+        "Levels/DefaultLevel",
+        "Platform",
+        "Platform/Android",
+        "Platform/Linux",
+        "Platform/Mac",
+        "Platform/Windows",
+        "Platform/iOS",
+        "Registry",
+        "Registry/Platform",
+        "Registry/Platform/Android",
+        "Registry/Platform/iOS",
+        "Registry/Platform/Linux",
+        "Registry/Platform/Mac",
+        "Registry/Platform/Windows",
+        "Resources",
+        "Resources/Platform",
+        "Resources/Platform/Mac",
+        "Resources/Platform/Mac/Images.xcassets",
+        "Resources/Platform/Mac/Images.xcassets/${Name}AppIcon.appiconset",
+        "Resources/Platform/iOS",
+        "Resources/Platform/iOS/Images.xcassets",
+        "Resources/Platform/iOS/Images.xcassets/LaunchImage.launchimage",
+        "Resources/Platform/iOS/Images.xcassets/${Name}AppIcon.appiconset",
+        "ShaderLib",
+        "Shaders",
+        "Shaders/ShaderResourceGroups"
+    ],
+    "origin": {
+        "name": "The Linux Foundation",
+        "url": "https://www.linuxfoundation.org"
+    },
+    "licenses": [
         {
-            "dir": "AssetBundling"
+            "license_identifier": "Apache-2.0",
+            "display_name": "Apache License 2.0",
+            "relative_path": "LICENSE_APACHE2.TXT",
+            "comments": [
+                "The licensee of this object has the choice of Apache-2.0 or MIT ",
+                "licenses for the code. See the LICENSE_APACHE2.TXT, LICENSE_MIT.TXT ",
+                "and LICENSE.TXT for more information."
+            ],
+            "scopes": [
+                "All source code"
+            ]
         },
         {
-            "dir": "AssetBundling/SeedLists"
+            "license_identifier": "MIT",
+            "display_name": "MIT License",
+            "relative_path": "LICENSE_MIT.TXT",
+            "comments": [
+                "The licensee of this object has the choice of Apache-2.0 or MIT ",
+                "licenses for the code. See the LICENSE_APACHE2.TXT, LICENSE_MIT.TXT ",
+                "and LICENSE.TXT for more information."
+            ],
+            "scopes": [
+                "All source code"
+            ]
         },
         {
-            "dir": "Assets"
+            "license_identifier": "CC0-1.0",
+            "display_name": "Creative Commons Zero v1.0 Universal",
+            "relative_path": "LICENSE_CC0.TXT",
+            "comments": [
+                "All artistic assets in this object are released under the CC0 1.0 ",
+                "Universal (CC0 1.0) Public Domain Dedication license. For more ",
+                "information see the LICENSE_CC0.TXT file."
+            ],
+            "scopes": [
+                "All assets"
+            ]
         },
         {
-            "dir": "cmake"
-        },
-        {
-            "dir": "Config"
-        },
-        {
-            "dir": "Gem"
-        },
-        {
-            "dir": "Gem/Include"
-        },
-        {
-            "dir": "Gem/Include/${Name}"
-        },
-        {
-            "dir": "Gem/Platform"
-        },
-        {
-            "dir": "Gem/Platform/Android"
-        },
-        {
-            "dir": "Gem/Platform/Linux"
-        },
-        {
-            "dir": "Gem/Platform/Mac"
-        },
-        {
-            "dir": "Gem/Platform/Windows"
-        },
-        {
-            "dir": "Gem/Platform/iOS"
-        },
-        {
-            "dir": "Gem/Registry"
-        },
-        {
-            "dir": "Gem/Source"
-        },
-        {
-            "dir": "Levels"
-        },
-        {
-            "dir": "Levels/DefaultLevel"
-        },
-        {
-            "dir": "Platform"
-        },
-        {
-            "dir": "Platform/Android"
-        },
-        {
-            "dir": "Platform/Linux"
-        },
-        {
-            "dir": "Platform/Mac"
-        },
-        {
-            "dir": "Platform/Windows"
-        },
-        {
-            "dir": "Platform/iOS"
-        },
-        {
-            "dir": "Registry"
-        },
-        {
-            "dir": "Registry/Platform"
-        },
-        {
-            "dir": "Registry/Platform/Android"
-        },
-        {
-            "dir": "Registry/Platform/iOS"
-        },
-        {
-            "dir": "Registry/Platform/Linux"
-        },
-        {
-            "dir": "Registry/Platform/Mac"
-        },
-        {
-            "dir": "Registry/Platform/Windows"
-        },
-        {
-            "dir": "Resources"
-        },
-        {
-            "dir": "Resources/Platform"
-        },
-        {
-            "dir": "Resources/Platform/Mac"
-        },
-        {
-            "dir": "Resources/Platform/Mac/Images.xcassets"
-        },
-        {
-            "dir": "Resources/Platform/Mac/Images.xcassets/${Name}AppIcon.appiconset"
-        },
-        {
-            "dir": "Resources/Platform/iOS"
-        },
-        {
-            "dir": "Resources/Platform/iOS/Images.xcassets"
-        },
-        {
-            "dir": "Resources/Platform/iOS/Images.xcassets/LaunchImage.launchimage"
-        },
-        {
-            "dir": "Resources/Platform/iOS/Images.xcassets/${Name}AppIcon.appiconset"
-        },
-        {
-            "dir": "ShaderLib"
-        },
-        {
-            "dir": "Shaders"
-        },
-        {
-            "dir": "Shaders/ShaderResourceGroups"
+            "license_identifier": "O3DE",
+            "display_name": "O3DE License",
+            "relative_path": "LICENSE.TXT",
+            "comments": [
+                "The O3DE License is a custom license for the Open 3D Engine. ",
+                "The LICENSE.TXT file contains the full text which describes ",
+                "It primarily describes how to find all third party license information."
+            ],
+            "scopes": [
+                "All third party"
+            ]
         }
-    ]
+    ],
+    "icon": {
+        "relative_path": "preview.png"
+    },
+    "children": {
+        "engines": [],
+        "projects": [],
+        "gems": [],
+        "templates": [],
+        "repos": []
+    },
+    "remote": {
+        "engines": [],
+        "projects": [],
+        "gems": [],
+        "templates": [],
+        "repos": []
+    },
+    "dependent": {
+        "gems": []
+    },
+    "platforms": [
+        "Windows",
+        "Linux",
+        "Mac",
+        "iOS",
+        "Android"
+    ],
+    "canonical_tags": [
+        "Project",
+        "Template"
+    ],
+    "user_tags": [
+        "org.o3de.template.defaultproject"
+    ],
+    "releases": [],
+    "source_control": {
+        "git": "https://github.com/accesspointmg/o3de-defaultproject.git"
+    }
 }
