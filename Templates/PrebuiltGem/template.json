@@ -1,18 +1,12 @@
 {
-    "template_name": "PrebuiltGem",
-    "origin": "The primary repo for PrebuiltGem goes here: i.e. http://www.mydomain.com",
-    "license": "Apache-2.0 or MIT",
-    "license_url": "https://github.com/o3de/o3de/blob/development/LICENSE.txt",
-    "display_name": "Prebuilt Gem Template",
-    "summary": "Gem Template that can be used to create a Gem that where pre-built libraries can be hooked into",
-    "canonical_tags": [
-        "Template",
-        "Gem"
-    ],
-    "user_tags": [
-        "PrebuiltGem"
-    ],
-    "icon_path": "preview.png",
+    "$schemaVersion": "2.0.0",
+    "$schema": "https://raw.githubusercontent.com/accesspointmg/canonical.o3de.org/main/src/o3de-template-2.0.0.json",
+    "template": {
+        "name": "org.o3de.template.prebuiltgem",
+        "version": "0.0.0",
+        "display_name": "Prebuilt Gem Template",
+        "description": "Gem Template that can be used to create a Gem that where pre-built libraries can be hooked into"
+    },
     "copyFiles": [
         {
             "file": "CMakeLists.txt",
@@ -336,284 +330,194 @@
         }
     ],
     "createDirectories": [
-        {
-            "dir": "Assets"
-        },
-        {
-            "dir": "Code"
-        },
-        {
-            "dir": "Code/Include"
-        },
-        {
-            "dir": "Code/Include/${Name}"
-        },
-        {
-            "dir": "Code/Platform"
-        },
-        {
-            "dir": "Code/Platform/Android"
-        },
-        {
-            "dir": "Code/Platform/Android/Default"
-        },
-        {
-            "dir": "Code/Platform/Android/Monolithic"
-        },
-        {
-            "dir": "Code/Platform/Linux"
-        },
-        {
-            "dir": "Code/Platform/Linux/Default"
-        },
-        {
-            "dir": "Code/Platform/Linux/Monolithic"
-        },
-        {
-            "dir": "Code/Platform/Mac"
-        },
-        {
-            "dir": "Code/Platform/Mac/Default"
-        },
-        {
-            "dir": "Code/Platform/Mac/Monolithic"
-        },
-        {
-            "dir": "Code/Platform/Windows"
-        },
-        {
-            "dir": "Code/Platform/Windows/Default"
-        },
-        {
-            "dir": "Code/Platform/Windows/Monolithic"
-        },
-        {
-            "dir": "Code/Platform/iOS"
-        },
-        {
-            "dir": "Code/Platform/iOS/Default"
-        },
-        {
-            "dir": "Code/Platform/iOS/Monolithic"
-        },
-        {
-            "dir": "Registry"
-        },
-        {
-            "dir": "bin"
-        },
-        {
-            "dir": "bin/Android"
-        },
-        {
-            "dir": "bin/Android/debug"
-        },
-        {
-            "dir": "bin/Android/debug/Default"
-        },
-        {
-            "dir": "bin/Android/debug/Monolithic"
-        },
-        {
-            "dir": "bin/Android/release"
-        },
-        {
-            "dir": "bin/Android/release/Default"
-        },
-        {
-            "dir": "bin/Android/release/Monolithic"
-        },
-        {
-            "dir": "bin/Linux"
-        },
-        {
-            "dir": "bin/Linux/debug"
-        },
-        {
-            "dir": "bin/Linux/debug/Default"
-        },
-        {
-            "dir": "bin/Linux/debug/Monolithic"
-        },
-        {
-            "dir": "bin/Linux/release"
-        },
-        {
-            "dir": "bin/Linux/release/Default"
-        },
-        {
-            "dir": "bin/Linux/release/Monolithic"
-        },
-        {
-            "dir": "bin/Mac"
-        },
-        {
-            "dir": "bin/Mac/debug"
-        },
-        {
-            "dir": "bin/Mac/debug/Default"
-        },
-        {
-            "dir": "bin/Mac/debug/Monolithic"
-        },
-        {
-            "dir": "bin/Mac/release"
-        },
-        {
-            "dir": "bin/Mac/release/Default"
-        },
-        {
-            "dir": "bin/Mac/release/Monolithic"
-        },
-        {
-            "dir": "bin/Windows"
-        },
-        {
-            "dir": "bin/Windows/debug"
-        },
-        {
-            "dir": "bin/Windows/debug/Default"
-        },
-        {
-            "dir": "bin/Windows/debug/Monolithic"
-        },
-        {
-            "dir": "bin/Windows/release"
-        },
-        {
-            "dir": "bin/Windows/release/Default"
-        },
-        {
-            "dir": "bin/Windows/release/Monolithic"
-        },
-        {
-            "dir": "bin/iOS"
-        },
-        {
-            "dir": "bin/iOS/debug"
-        },
-        {
-            "dir": "bin/iOS/debug/Default"
-        },
-        {
-            "dir": "bin/iOS/debug/Monolithic"
-        },
-        {
-            "dir": "bin/iOS/release"
-        },
-        {
-            "dir": "bin/iOS/release/Default"
-        },
-        {
-            "dir": "bin/iOS/release/Monolithic"
-        },
-        {
-            "dir": "lib"
-        },
-        {
-            "dir": "lib/Android"
-        },
-        {
-            "dir": "lib/Android/debug"
-        },
-        {
-            "dir": "lib/Android/debug/Default"
-        },
-        {
-            "dir": "lib/Android/debug/Monolithic"
-        },
-        {
-            "dir": "lib/Android/release"
-        },
-        {
-            "dir": "lib/Android/release/Default"
-        },
-        {
-            "dir": "lib/Android/release/Monolithic"
-        },
-        {
-            "dir": "lib/Linux"
-        },
-        {
-            "dir": "lib/Linux/debug"
-        },
-        {
-            "dir": "lib/Linux/debug/Default"
-        },
-        {
-            "dir": "lib/Linux/debug/Monolithic"
-        },
-        {
-            "dir": "lib/Linux/release"
-        },
-        {
-            "dir": "lib/Linux/release/Default"
-        },
-        {
-            "dir": "lib/Linux/release/Monolithic"
-        },
-        {
-            "dir": "lib/Mac"
-        },
-        {
-            "dir": "lib/Mac/debug"
-        },
-        {
-            "dir": "lib/Mac/debug/Default"
-        },
-        {
-            "dir": "lib/Mac/debug/Monolithic"
-        },
-        {
-            "dir": "lib/Mac/release"
-        },
-        {
-            "dir": "lib/Mac/release/Default"
-        },
-        {
-            "dir": "lib/Mac/release/Monolithic"
-        },
-        {
-            "dir": "lib/Windows"
-        },
-        {
-            "dir": "lib/Windows/debug"
-        },
-        {
-            "dir": "lib/Windows/debug/Default"
-        },
-        {
-            "dir": "lib/Windows/debug/Monolithic"
-        },
-        {
-            "dir": "lib/Windows/release"
-        },
-        {
-            "dir": "lib/Windows/release/Default"
-        },
-        {
-            "dir": "lib/Windows/release/Monolithic"
-        },
-        {
-            "dir": "lib/iOS"
-        },
-        {
-            "dir": "lib/iOS/debug"
-        },
-        {
-            "dir": "lib/iOS/debug/Default"
-        },
-        {
-            "dir": "lib/iOS/debug/Monolithic"
-        },
-        {
-            "dir": "lib/iOS/release"
-        },
-        {
-            "dir": "lib/iOS/release/Default"
-        },
-        {
-            "dir": "lib/iOS/release/Monolithic"
+        "Assets",
+        "Code",
+        "Code/Include",
+        "Code/Include/${Name}",
+        "Code/Platform",
+        "Code/Platform/Android",
+        "Code/Platform/Android/Default",
+        "Code/Platform/Android/Monolithic",
+        "Code/Platform/Linux",
+        "Code/Platform/Linux/Default",
+        "Code/Platform/Linux/Monolithic",
+        "Code/Platform/Mac",
+        "Code/Platform/Mac/Default",
+        "Code/Platform/Mac/Monolithic",
+        "Code/Platform/Windows",
+        "Code/Platform/Windows/Default",
+        "Code/Platform/Windows/Monolithic",
+        "Code/Platform/iOS",
+        "Code/Platform/iOS/Default",
+        "Code/Platform/iOS/Monolithic",
+        "Registry",
+        "bin",
+        "bin/Android",
+        "bin/Android/debug",
+        "bin/Android/debug/Default",
+        "bin/Android/debug/Monolithic",
+        "bin/Android/release",
+        "bin/Android/release/Default",
+        "bin/Android/release/Monolithic",
+        "bin/Linux",
+        "bin/Linux/debug",
+        "bin/Linux/debug/Default",
+        "bin/Linux/debug/Monolithic",
+        "bin/Linux/release",
+        "bin/Linux/release/Default",
+        "bin/Linux/release/Monolithic",
+        "bin/Mac",
+        "bin/Mac/debug",
+        "bin/Mac/debug/Default",
+        "bin/Mac/debug/Monolithic",
+        "bin/Mac/release",
+        "bin/Mac/release/Default",
+        "bin/Mac/release/Monolithic",
+        "bin/Windows",
+        "bin/Windows/debug",
+        "bin/Windows/debug/Default",
+        "bin/Windows/debug/Monolithic",
+        "bin/Windows/release",
+        "bin/Windows/release/Default",
+        "bin/Windows/release/Monolithic",
+        "bin/iOS",
+        "bin/iOS/debug",
+        "bin/iOS/debug/Default",
+        "bin/iOS/debug/Monolithic",
+        "bin/iOS/release",
+        "bin/iOS/release/Default",
+        "bin/iOS/release/Monolithic",
+        "lib",
+        "lib/Android",
+        "lib/Android/debug",
+        "lib/Android/debug/Default",
+        "lib/Android/debug/Monolithic",
+        "lib/Android/release",
+        "lib/Android/release/Default",
+        "lib/Android/release/Monolithic",
+        "lib/Linux",
+        "lib/Linux/debug",
+        "lib/Linux/debug/Default",
+        "lib/Linux/debug/Monolithic",
+        "lib/Linux/release",
+        "lib/Linux/release/Default",
+        "lib/Linux/release/Monolithic",
+        "lib/Mac",
+        "lib/Mac/debug",
+        "lib/Mac/debug/Default",
+        "lib/Mac/debug/Monolithic",
+        "lib/Mac/release",
+        "lib/Mac/release/Default",
+        "lib/Mac/release/Monolithic",
+        "lib/Windows",
+        "lib/Windows/debug",
+        "lib/Windows/debug/Default",
+        "lib/Windows/debug/Monolithic",
+        "lib/Windows/release",
+        "lib/Windows/release/Default",
+        "lib/Windows/release/Monolithic",
+        "lib/iOS",
+        "lib/iOS/debug",
+        "lib/iOS/debug/Default",
+        "lib/iOS/debug/Monolithic",
+        "lib/iOS/release",
+        "lib/iOS/release/Default",
+        "lib/iOS/release/Monolithic"
+    ],
+    "origin": {
+        "name": "The Linux Foundation",
+        "url": "https://www.linuxfoundation.org"
+    },
+    "licenses": [
+        {
+            "license_identifier": "Apache-2.0",
+            "display_name": "Apache License 2.0",
+            "relative_path": "LICENSE_APACHE2.TXT",
+            "comments": [
+                "The licensee of this object has the choice of Apache-2.0 or MIT ",
+                "licenses for the code. See the LICENSE_APACHE2.TXT, LICENSE_MIT.TXT ",
+                "and LICENSE.TXT for more information."
+            ],
+            "scopes": [
+                "All source code"
+            ]
+        },
+        {
+            "license_identifier": "MIT",
+            "display_name": "MIT License",
+            "relative_path": "LICENSE_MIT.TXT",
+            "comments": [
+                "The licensee of this object has the choice of Apache-2.0 or MIT ",
+                "licenses for the code. See the LICENSE_APACHE2.TXT, LICENSE_MIT.TXT ",
+                "and LICENSE.TXT for more information."
+            ],
+            "scopes": [
+                "All source code"
+            ]
+        },
+        {
+            "license_identifier": "CC0-1.0",
+            "display_name": "Creative Commons Zero v1.0 Universal",
+            "relative_path": "LICENSE_CC0.TXT",
+            "comments": [
+                "All artistic assets in this object are released under the CC0 1.0 ",
+                "Universal (CC0 1.0) Public Domain Dedication license. For more ",
+                "information see the LICENSE_CC0.TXT file."
+            ],
+            "scopes": [
+                "All assets"
+            ]
+        },
+        {
+            "license_identifier": "O3DE",
+            "display_name": "O3DE License",
+            "relative_path": "LICENSE.TXT",
+            "comments": [
+                "The O3DE License is a custom license for the Open 3D Engine. ",
+                "The LICENSE.TXT file contains the full text which describes ",
+                "It primarily describes how to find all third party license information."
+            ],
+            "scopes": [
+                "All third party"
+            ]
         }
-    ]
+    ],
+    "icon": {
+        "relative_path": "preview.svg"
+    },
+    "children": {
+        "engines": [],
+        "projects": [],
+        "gems": [],
+        "templates": [],
+        "repos": []
+    },
+    "remote": {
+        "engines": [],
+        "projects": [],
+        "gems": [],
+        "templates": [],
+        "repos": []
+    },
+    "dependent": {
+        "gems": []
+    },
+    "platforms": [
+        "Windows",
+        "Linux",
+        "Mac",
+        "iOS",
+        "Android"
+    ],
+    "canonical_tags": [
+        "Template",
+        "Gem"
+    ],
+    "user_tags": [
+        "org.o3de.template.prebuiltgem"
+    ],
+    "releases": [],
+    "source_control": {
+        "git": "https://github.com/accesspointmg/o3de-prebuiltgem.git"
+    }
 }

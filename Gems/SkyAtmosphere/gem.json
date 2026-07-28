@@ -1,13 +1,27 @@
 {
-    "gem_name": "SkyAtmosphere",
-    "version": "1.0.0",
-    "display_name": "Sky Atmosphere",
-    "license": "Apache-2.0 Or MIT",
-    "license_url": "https://github.com/o3de/o3de/blob/development/LICENSE.txt",
-    "origin": "Open 3D Engine - o3de.org",
-    "origin_url": "https://github.com/o3de/o3de",
-    "type": "Code",
-    "summary": "The Sky Atmosphere Gem provides a physically based model for sky atmosphere.",
+    "$schemaVersion": "2.0.0",
+    "$schema": "https://raw.githubusercontent.com/accesspointmg/canonical.o3de.org/main/src/o3de-gem-2.0.0.json",
+    "gem": {
+        "name": "org.o3de.gem.skyatmosphere",
+        "version": "1.0.0",
+        "display_name": "Sky Atmosphere",
+        "description": "The Sky Atmosphere Gem provides a physically based model for sky atmosphere.",
+        "type": "code",
+        "id": "",
+        "copyright_text": ""
+    },
+    "origin": {
+        "name": "Open 3D Engine - o3de.org",
+        "url": "https://github.com/o3de/o3de"
+    },
+    "licenses": [
+        {
+            "license_identifier": "Apache-2.0 Or MIT",
+            "url": "https://github.com/o3de/o3de/blob/development/LICENSE.txt",
+            "display_name": "Apache 2.0 Or MIT",
+            "relative_path": ""
+        }
+    ],
     "canonical_tags": [
         "Gem"
     ],
@@ -15,11 +29,46 @@
         "Rendering",
         "SkyAtmosphere"
     ],
-    "icon_path": "preview.png",
+    "icon": {
+        "relative_path": "preview.png",
+        "url": ""
+    },
+    "documentation": {
+        "relative_path": "",
+        "url": ""
+    },
+    "children": {
+        "engines": [],
+        "projects": [],
+        "gems": [],
+        "templates": [],
+        "repos": [],
+        "overlays": []
+    },
+    "remote": {
+        "engines": [],
+        "projects": [],
+        "gems": [],
+        "templates": [],
+        "repos": [],
+        "overlays": []
+    },
+    "dependent": {
+        "gems": [
+            "org.o3de.gem.atom_rpi>=0.0.0",
+            "org.o3de.gem.commonfeaturesatom>=0.0.0"
+        ]
+    },
+    "platforms": [
+        "Windows",
+        "Linux",
+        "Mac",
+        "iOS",
+        "Android"
+    ],
     "requirements": "",
-    "documentation_url": "",
-    "dependencies": [
-        "Atom_RPI",
-        "CommonFeaturesAtom"
-    ]
+    "releases": [],
+    "source_control": {
+        "git": "https://github.com/accesspointmg/o3de-skyatmosphere.git"
+    }
 }
