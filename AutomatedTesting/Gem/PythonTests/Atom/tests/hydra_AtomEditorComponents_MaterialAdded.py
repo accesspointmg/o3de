@@ -239,7 +239,7 @@ def AtomEditorComponents_Material_AddedToEntity():
         # 14. Get the slot zero material from the container property Model Materials (materials defined in the fbx)
         item = material_component.get_container_item(AtomComponentProperties.material('Model Materials'), key=0)
         # item is an EditorMaterialComponentSlot which defines a number of method interfaces found in
-        # .\o3de\Gems\AtomO3deIntegration\CommonFeatures\Code\Source\Material\EditorMaterialComponentSlot.cpp
+        # .\o3de\Gems\AtomLyIntegration\CommonFeatures\Code\Source\Material\EditorMaterialComponentSlot.cpp
         label = item.GetLabel()
         Report.result(Tests.model_material_label, label == 'lambert0')
         # Asset path for lambert0 is 'objects/sphere_5lods_lambert0_11781189446760285338.fbx.azmaterial'; numbers may vary

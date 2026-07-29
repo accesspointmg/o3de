@@ -47,7 +47,7 @@ set MAYA_VERSION=2020
 echo     MAYA_VERSION = %MAYA_VERSION%
 
 :: now runt the DCCsi env
-CALL %O3DE_DEV%\Gems\AtomO3deIntegration\TechnicalArt\DccScriptingInterface\Launchers\Windows\Env_Maya.bat
+CALL %O3DE_DEV%\Gems\AtomLyIntegration\TechnicalArt\DccScriptingInterface\Launchers\Windows\Env_Maya.bat
 
 rem :: Constant Vars (Global)
 rem SET O3DEPY_GDEBUG=0

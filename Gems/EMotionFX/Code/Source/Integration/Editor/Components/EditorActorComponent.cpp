@@ -36,7 +36,7 @@
 #include <EMotionFX/Source/AttachmentSkin.h>
 #include <EMotionFX/Source/Mesh.h>
 #include <MCore/Source/AzCoreConversions.h>
-#include <AtomO3deIntegration/CommonFeatures/Material/MaterialComponentConstants.h>
+#include <AtomLyIntegration/CommonFeatures/Material/MaterialComponentConstants.h>
 
 namespace EMotionFX
 {

@@ -53,7 +53,7 @@
       "Gems/AssetValidation/gem.json",
       "Gems/Atom/gem.json",
       "Gems/AtomContent/gem.json",
-      "Gems/AtomO3deIntegration/gem.json",
+      "Gems/AtomLyIntegration/gem.json",
       "Gems/AtomTressFX/gem.json",
       "Gems/AudioSystem/gem.json",
       "Gems/BarrierInput/gem.json",

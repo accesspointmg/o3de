@@ -63,3 +63,11 @@ if(O3DE_ENGINE_IS_TOPLEVEL)
     # Call the post processing macro
     o3de_engine_post_processing()
 endif()
+
+# Prevent AssetProcessor from scanning the build directory.
+# From upstream #19940. The include sits immediately before its use so the
+# function is defined regardless of where the engine setup pulls modules in.
+include(cmake/AssetProcessorBuildExclude.cmake)
+if (PAL_TRAIT_BUILD_HOST_TOOLS)
+    o3de_exclude_build_dir_from_asset_processor(${CMAKE_SOURCE_DIR})
+endif()

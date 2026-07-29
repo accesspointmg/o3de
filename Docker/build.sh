@@ -63,7 +63,7 @@ rm -rf /home/o3de/O3DE
 chmod -R a+w /opt/O3DE/$(ls /opt/O3DE/)/Tools/O3deTestTools \
   && chmod -R a+w /opt/O3DE/$(ls /opt/O3DE/)/Tools/RemoteConsole/o3de_remote_console \
   && chmod -R a+w /opt/O3DE/$(ls /opt/O3DE/)/Gems/Atom/RPI/Tools \
-  && chmod -R a+w /opt/O3DE/$(ls /opt/O3DE/)/Gems/AtomO3deIntegration/TechnicalArt/DccScriptingInterface \
+  && chmod -R a+w /opt/O3DE/$(ls /opt/O3DE/)/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface \
   && chmod -R a+w /opt/O3DE/$(ls /opt/O3DE/)/scripts/o3de
 if [ $? -ne 0 ]
 then

@@ -22,7 +22,7 @@
 
 
 #include <AzFramework/Render/GeometryIntersectionStructures.h>
-#include <AtomO3deIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
+#include <AtomLyIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
 #include <AzFramework/Translation/TranslationDef.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
