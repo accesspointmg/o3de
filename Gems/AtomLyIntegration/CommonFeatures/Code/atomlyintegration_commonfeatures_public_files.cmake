@@ -1,4 +1,4 @@
-﻿#
+#
 # Copyright (c) Contributors to the Open 3D Engine Project.
 # For complete copyright and license terms please see the LICENSE at the root of this distribution.
 #
@@ -41,7 +41,7 @@ set(FILES
     Include/AtomLyIntegration/CommonFeatures/PostProcess/ChromaticAberration/ChromaticAberrationBus.h
     Include/AtomLyIntegration/CommonFeatures/PostProcess/ChromaticAberration/ChromaticAberrationComponentConfig.h    
     Include/AtomLyIntegration/CommonFeatures/PostProcess/MotionBlur/MotionBlurBus.h
-    Include/AtomLyIntegration/CommonFeatures/PostProcess/MotionBlur/MotionBlurComponentConfig.h
+    Include/AtomLyIntegration/CommonFeatures/PostProcess/MotionBlur/MotionBlurComponentConfig.h   
     Include/AtomLyIntegration/CommonFeatures/PostProcess/PaniniProjection/PaniniProjectionBus.h
     Include/AtomLyIntegration/CommonFeatures/PostProcess/PaniniProjection/PaniniProjectionComponentConfig.h    
     Include/AtomLyIntegration/CommonFeatures/PostProcess/FilmGrain/FilmGrainBus.h
@@ -61,8 +61,8 @@ set(FILES
     Include/AtomLyIntegration/CommonFeatures/PostProcess/ColorGrading/EditorHDRColorGradingBus.h
     Include/AtomLyIntegration/CommonFeatures/PostProcess/ColorGrading/HDRColorGradingBus.h
     Include/AtomLyIntegration/CommonFeatures/PostProcess/ColorGrading/HDRColorGradingComponentConfig.h
-    Include/AtomLyIntegration/CommonFeatures/PostProcess/Ssao/SsaoBus.h
-    Include/AtomLyIntegration/CommonFeatures/PostProcess/Ssao/SsaoComponentConfiguration.h
+    Include/AtomLyIntegration/CommonFeatures/PostProcess/AmbientOcclusion/AoBus.h
+    Include/AtomLyIntegration/CommonFeatures/PostProcess/AmbientOcclusion/AoComponentConfiguration.h
     Include/AtomLyIntegration/CommonFeatures/PostProcess/LookModification/LookModificationBus.h
     Include/AtomLyIntegration/CommonFeatures/PostProcess/LookModification/LookModificationComponentConfig.h
     Include/AtomLyIntegration/CommonFeatures/PostProcess/LookModification/LookModificationComponentConstants.h
