@@ -36,7 +36,7 @@
 #include "UiLayoutHelpers.h"
 #include "RenderGraph.h"
 
-#include <AtomO3deIntegration/AtomFont/FFont.h>
+#include <AtomLyIntegration/AtomFont/FFont.h>
 #include <Atom/RPI.Public/Image/ImageSystemInterface.h>
 
 #include <AzFramework/Translation/TranslationDef.h>

@@ -41,7 +41,7 @@
 
 #include <AzQtComponents/Components/Style.h>
 
-#include <AtomO3deIntegration/AtomViewportDisplayInfo/AtomViewportInfoDisplayBus.h>
+#include <AtomLyIntegration/AtomViewportDisplayInfo/AtomViewportInfoDisplayBus.h>
 
 // Editor
 #include "ViewManager.h"

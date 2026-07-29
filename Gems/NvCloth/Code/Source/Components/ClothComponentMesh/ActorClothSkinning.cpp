@@ -6,7 +6,7 @@
  *
  */
 
-#include <AtomO3deIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
+#include <AtomLyIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
 #include <Integration/ActorComponentBus.h>
 
 // Needed to access the Mesh information inside Actor.

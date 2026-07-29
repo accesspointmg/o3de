@@ -20,7 +20,7 @@
 #include <AzToolsFramework/API/ComponentEntitySelectionBus.h>
 #include <AzToolsFramework/ComponentMode/ComponentModeDelegate.h>
 #include <AzToolsFramework/ToolsComponents/EditorComponentBase.h>
-#include <AtomO3deIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
+#include <AtomLyIntegration/CommonFeatures/Mesh/MeshComponentBus.h>
 
 #include <PhysX/ColliderShapeBus.h>
 #include <PhysX/EditorColliderComponentRequestBus.h>

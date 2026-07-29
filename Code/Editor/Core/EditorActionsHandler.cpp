@@ -27,7 +27,7 @@
 #include <AzQtComponents/Components/SearchLineEdit.h>
 #include <AzQtComponents/Components/Style.h>
 
-#include <AtomO3deIntegration/AtomViewportDisplayInfo/AtomViewportInfoDisplayBus.h>
+#include <AtomLyIntegration/AtomViewportDisplayInfo/AtomViewportInfoDisplayBus.h>
 
 #include <Core/Widgets/PrefabEditVisualModeWidget.h>
 #include <Core/Widgets/ViewportSettingsWidgets.h>

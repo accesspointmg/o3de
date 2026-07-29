@@ -18,7 +18,7 @@
 #include <AzCore/std/smart_ptr/make_shared.h>
 #include <AzFramework/Translation/TranslationDef.h>
 
-#include <AtomO3deIntegration/CommonFeatures/Material/MaterialComponentBus.h>
+#include <AtomLyIntegration/CommonFeatures/Material/MaterialComponentBus.h>
 
 #include <GradientSignal/Ebuses/GradientRequestBus.h>
 #include <SurfaceData/SurfaceDataProviderRequestBus.h>
