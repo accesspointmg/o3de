@@ -102,6 +102,7 @@ The following are adopted as normative for the unified schema, with source secti
 | Sidecar selection algorithm; field mapping; `legacy-engine-version-map.json`; shadow validation; user-manifest disposition incl. o3de-extras | §12 | Adopted whole; extends the 2.0.0 line's existing sidecar/mapping mechanism |
 | Stable error-code discipline; complete reference chains in diagnostics | §13 | Adopted; Layer D allocates its own code range rather than overloading E20xx |
 | Phased rollout with shadow validation and per-phase acceptance; RFC split; o3de-cli as the implementation vehicle | §14 | Adopted and extended with a parallel D track (§6) |
+| Short `name` with closure-local uniqueness; CMake targets derived from `name`; `namespace` optional and diagnostic in-tree | §3.2 | Adopted for Layers A–C — no whole-tree target rename. At the release boundary the canonical name `<namespace>.<type>.<name>` becomes the registry identity (rule D7) |
 | Restricted-comparator SemVer set with the prerelease admission rule | §3.3 | Adopted for compatibility assertions *and* reused by Layer D for candidate admission, so both layers share one version grammar |
 
 Two elements of the 2.0.0 line are **superseded** by the above and are withdrawn:
@@ -148,7 +149,7 @@ From the moment materialization completes, Layers A–C see nothing but a confor
 
 ## 4. The bridge rules
 
-The two layers compose under six normative rules. These are the whole interface; everything else in Layers A–C proceeds as if Layer D did not exist.
+The two layers compose under seven normative rules. These are the whole interface; everything else in Layers A–C proceeds as if Layer D did not exist.
 
 - **D1 — Separation of documents.** Distribution metadata **MUST NOT** appear in core descriptors; it lives in Layer D documents (indexes, release records, lockfiles). Core tools **MUST** validate trees identically whether or not Layer D data is present anywhere on the machine.
 - **D2 — Hermetic configure.** Configuration, validation, generation, build, and runtime **MUST NOT** read Layer D documents, remote indexes, or the network, and **MUST NOT** download, install, or substitute anything. (Monorepo-First G3/G4/§11.4, adopted verbatim.) The only Layer D residue visible at configure time is the artifact form already materialized on disk.
@@ -156,6 +157,7 @@ The two layers compose under six normative rules. These are the whole interface;
 - **D4 — Degeneration.** Within one closure, one name resolves to exactly one instance (Monorepo-First P5, adopted). When every dependency has exactly one local candidate, resolution **MUST** degenerate to closure computation and compatibility assertion, with no candidate enumeration. Candidate enumeration and solving occur only inside explicit acquisition or upgrade commands, where their output is a proposed set of tree changes for the user to accept.
 - **D5 — Explicit compatibility at the boundary.** Packaging an object for independent release **MUST** fail unless the object declares explicit `engine_compatibility` (or is the engine); `inherited` is a monorepo fact and does not travel.
 - **D6 — Lockfiles only at the distribution layer.** Per-combination build artifacts are deletable intermediates. Pinned closures exist only as Layer D distribution lockfiles, produced by a release process, never by a configure.
+- **D7 — Canonical identity at the boundary.** Within a closure, objects are referenced by short `name` and CMake targets derive from it (Monorepo-First §3.2, adopted — no whole-tree target rename occurs, and `namespace` remains optional and diagnostic in-tree). An object released independently **MUST** declare `namespace`, and its registry identity is the **canonical name** `<namespace>.<type>.<name>` (for example `org.o3de.gem.physx`): the key for release records, lockfile entries, and acquisition, where global uniqueness — two vendors shipping a same-named gem — is a real condition rather than a closure error. Acquisition maps a canonical name to a tree placement; from that point every reference is the short `name`, and the stable `id` UUID ties the two identities together across renames on both sides of the boundary.
 
 ### 4.1 The bridge rules in practice: three user journeys
 
