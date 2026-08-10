@@ -11,6 +11,12 @@
   [accesspointmg/o3de-extras](https://github.com/accesspointmg/o3de-extras),
   plus 116 further `org.o3de.repo.*` object family repos extracted from the
   first two.
+- **See also:**
+  [O3DE Schema 2.0.0 — A Layered Object Model](https://gist.github.com/byrcolin/52990b0f48049820cbedab8736dd16e7)
+  ([canonical copy](o3de-2.0.0-layered.md)) — a response to the
+  [Monorepo-First proposal](https://gist.github.com/ericliusunniy/5ed1d4e842071584aeda9d552d4bea24)
+  and a proposed synthesis of the two; where the documents differ, the
+  layered document is the current position.
 
 ## Summary
 
