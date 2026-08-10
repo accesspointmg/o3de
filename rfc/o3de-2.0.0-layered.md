@@ -1,10 +1,10 @@
 # RFC: O3DE Schema 2.0.0 — A Layered Object Model
 
-> **Positioning**: This document is a response to the [Monorepo-First proposal](https://gist.github.com/ericliusunniy/5ed1d4e842071584aeda9d552d4bea24) and a synthesis of that proposal with the implemented [O3DE 2.0.0 Object Model](https://github.com/accesspointmg/org.o3de.repo.o3de/blob/development/rfc/o3de-2.0.0.md). It proposes **one schema in four separable layers**: a source-tree core that adopts Monorepo-First's discovery, enablement, override, module, and loading semantics substantially whole, and an optional distribution layer that gives the launcher, binary consumers, restricted-platform delivery, and third-party vendors an open contract instead of a private one.
+> **Positioning**: This document is a response to the [Monorepo-First proposal](https://gist.github.com/ericliusunniy/5ed1d4e842071584aeda9d552d4bea24) and a synthesis of that proposal with the implemented [O3DE 2.0.0 Object Model](https://github.com/accesspointmg/o3de/blob/development/rfc/o3de-2.0.0.md). It proposes **one schema in four separable layers**: a source-tree core that adopts Monorepo-First's discovery, enablement, override, module, and loading semantics substantially whole, and an optional distribution layer that gives the launcher, binary consumers, restricted-platform delivery, and third-party vendors an open contract instead of a private one.
 >
 > **Key constraint**: Nothing in the distribution layer may alter the behavior of the core. Configuration, validation, and building are offline, deterministic, and consume only the checked-out engine and project trees. A tree that carries no distribution metadata behaves exactly as Monorepo-First specifies, byte for byte.
 >
-> **Canonical copy**: [`rfc/o3de-2.0.0-layered.md`](https://github.com/accesspointmg/org.o3de.repo.o3de/blob/development/rfc/o3de-2.0.0-layered.md) · **Published gist** (revisions tracked): <https://gist.github.com/byrcolin/52990b0f48049820cbedab8736dd16e7>
+> **Canonical copy**: [`rfc/o3de-2.0.0-layered.md`](https://github.com/accesspointmg/o3de/blob/development/rfc/o3de-2.0.0-layered.md) · **Published gist** (revisions tracked): <https://gist.github.com/byrcolin/52990b0f48049820cbedab8736dd16e7>
 
 In this document, **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, and **MAY** are to be interpreted as described in [BCP 14](https://www.rfc-editor.org/info/bcp14) ([RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174)), and are normative only in bold uppercase form.
 
