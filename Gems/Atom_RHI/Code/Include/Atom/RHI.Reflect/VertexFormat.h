@@ -17,7 +17,7 @@ namespace AZ::RHI
     {
         using uint = uint32_t;
 #define VertexFormatEnumType : uint32_t
-#include "../../../RHI/Assets/ShaderLib/Atom/RHI/VertexFormat.azsli"
+#include "../../Assets/ShaderLib/Atom/RHI/VertexFormat.azsli"
 #undef VertexFormatEnumType
     } // namespace Internal
 

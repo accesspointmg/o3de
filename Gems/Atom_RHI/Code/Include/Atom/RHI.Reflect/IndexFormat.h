@@ -18,7 +18,7 @@ namespace AZ::RHI
     {
         using uint = uint32_t;
 #define IndexFormatEnumType : uint32_t
-#include "../../../RHI/Assets/ShaderLib/Atom/RHI/IndexFormat.azsli"
+#include "../../Assets/ShaderLib/Atom/RHI/IndexFormat.azsli"
 #undef IndexFormatEnumType
     } // namespace Internal
 
