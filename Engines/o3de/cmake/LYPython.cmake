@@ -369,9 +369,11 @@ if (NOT CMAKE_SCRIPT_MODE_FILE)
         # this costs a moment of time though, so we'll only do it based on stamp files.
         ly_pip_install_local_package_editable(${LY_ROOT_FOLDER}/Tools/LyTestTools ly-test-tools)
         ly_pip_install_local_package_editable(${LY_ROOT_FOLDER}/Tools/RemoteConsole/ly_remote_console ly-remote-console)
-        if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND NOT INSTALLED_ENGINE)
-            # These are test tools private to the AutomatedTesting project itself, which is not relevant to the installer.
-            ly_pip_install_local_package_editable(${LY_ROOT_FOLDER}/AutomatedTesting/Gem/PythonTests/EditorPythonTestTools editor-python-test-tools)
+        # These are test tools private to the AutomatedTesting project, which now lives beside the engine
+        # under Projects/ rather than inside it. Install them only when that project is present.
+        cmake_path(SET automated_testing_test_tools NORMALIZE ${LY_ROOT_FOLDER}/../../Projects/AutomatedTesting/Gem/PythonTests/EditorPythonTestTools)
+        if(PAL_TRAIT_BUILD_TESTS_SUPPORTED AND NOT INSTALLED_ENGINE AND EXISTS ${automated_testing_test_tools})
+            ly_pip_install_local_package_editable(${automated_testing_test_tools} editor-python-test-tools)
         endif()
 
         ly_pip_install_local_package_editable(${LY_ROOT_FOLDER}/scripts/o3de o3de)
