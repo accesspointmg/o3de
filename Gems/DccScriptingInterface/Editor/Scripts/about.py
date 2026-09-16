@@ -40,17 +40,17 @@ class DccsiAbout(QDialog):
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setSpacing(20)
 
-        dccsi_readme_url = 'https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/readme.md'
+        dccsi_readme_url = 'https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/readme.md'
 
-        dccsi_maya_readme_url = 'https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Maya/readme.md'
+        dccsi_maya_readme_url = 'https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/Tools/DCC/Maya/readme.md'
 
-        dccsi_maya_scene_exporter_url = 'https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Maya/Scripts/Python/scene_exporter/readme.md'
+        dccsi_maya_scene_exporter_url = 'https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/Tools/DCC/Maya/Scripts/Python/scene_exporter/readme.md'
 
-        dccsi_blender_readme_url = 'https://github.com/o3de/o3de/blob/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Blender/readme.md'
+        dccsi_blender_readme_url = 'https://github.com/o3de/o3de/blob/development/Gems/DccScriptingInterface/Tools/DCC/Blender/readme.md'
 
-        dccsi_blender_scene_exporter_url = 'https://github.com/o3de/o3de/blob/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Blender/Scripts/addons/SceneExporter/README.md'
+        dccsi_blender_scene_exporter_url = 'https://github.com/o3de/o3de/blob/development/Gems/DccScriptingInterface/Tools/DCC/Blender/Scripts/addons/SceneExporter/README.md'
 
-        dccsi_wing_readme_url = 'https://github.com/o3de/o3de/blob/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/IDE/Wing/readme.md'
+        dccsi_wing_readme_url = 'https://github.com/o3de/o3de/blob/development/Gems/DccScriptingInterface/Tools/IDE/Wing/readme.md'
 
         self.intro_label = QLabel()
         self.intro_label.setOpenExternalLinks(True)

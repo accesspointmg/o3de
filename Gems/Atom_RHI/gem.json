@@ -13,12 +13,6 @@
     ],
     "user_tags": [],
     "requirements": "",
-    "external_subdirectories": [
-        "DX12",
-        "Metal",
-        "Null",
-        "Vulkan"
-    ],
     "dependencies": [
         "Atom_RHI_DX12",
         "Atom_RHI_Metal",

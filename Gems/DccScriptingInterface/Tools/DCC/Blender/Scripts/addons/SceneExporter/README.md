@@ -18,9 +18,9 @@ Although it is not a hard requirement, you can enable the DccScriptingInterface 
 
 With the DCCsi enabled, you can launch Blender from the main O3DE Editor, and Blender will start in a managed way (configuration and settings) and this addon can be enabled in the preferences (without requiring a manual install, although you can still do that also)
 
-More information about DCC tool integrations and setup can be found here in the[DccScriptingInterface Readme](https://github.com/o3de/o3de/blob/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/readme.md)
+More information about DCC tool integrations and setup can be found here in the[DccScriptingInterface Readme](https://github.com/o3de/o3de/blob/development/Gems/DccScriptingInterface/readme.md)
 
-More information about the DCCsi Blender tool integration, configuration and setup, can be found here in the: [Blender Readme](https://github.com/o3de/o3de/blob/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Blender/readme.md)
+More information about the DCCsi Blender tool integration, configuration and setup, can be found here in the: [Blender Readme](https://github.com/o3de/o3de/blob/development/Gems/DccScriptingInterface/Tools/DCC/Blender/readme.md)
 
 ## Installing the DccScriptingInterface Gem
 

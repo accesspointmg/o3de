@@ -14,7 +14,7 @@
 
 Allow DccScriptingInterface Gem to be the parent python pkg
 """
-DCCSI_DOCS_URL = "https://github.com/o3de/o3de/blob/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/readme.md"
+DCCSI_DOCS_URL = "https://github.com/o3de/o3de/blob/development/Gems/DccScriptingInterface/readme.md"
 
 DCCSI_INFO = {
     'name': 'O3DE_DCCSI_GEM',

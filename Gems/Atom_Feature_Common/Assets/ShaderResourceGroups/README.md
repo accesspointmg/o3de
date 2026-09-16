@@ -28,7 +28,7 @@ it will default to
  Similarly occurs with #include \<viewsrg.srgi>  
   
 Because documents may become stale from time to time, the ultimate source of truth on how include paths are resolved is the source file  
- \<DevFolder>/Gems/Atom/Asset/Shader/Code/Source/Editor/CommonFiles/Preprocessor.cpp  
+ \<DevFolder>/Gems/AtomShader/Code/Source/Editor/CommonFiles/Preprocessor.cpp  
  Function name: void InitializePreprocessorOptions(...)  
  And yes, even the location of that file may change in the future ;-).
 

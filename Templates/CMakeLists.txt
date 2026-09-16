@@ -32,5 +32,6 @@ ly_install_directory(
         LyShineComponent
         ScreenSpaceRenderPass
         SystemComponent
+    DESTINATION Templates
     VERBATIM
 )

@@ -19,7 +19,7 @@ namespace AZ::RPI
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //! Connect to this EBus to be notified whenever the current RPI performance collection job
     //! is completed. For details on how to start an RPI performance collection job see:
-    //! "o3de/Gems/Atom/RPI/Code/Source/RPI.Private/PerformanceCVarManager.cpp".
+    //! "o3de/Gems/Atom_RPI/Code/Source/RPI.Private/PerformanceCVarManager.cpp".
     //! This EBus is available for C++, Game Client BehaviorContext (Lua) and Editor BehaviorContext (Python).
     class ATOM_RPI_PUBLIC_API PerformaceCollectionNotification : public AZ::EBusTraits
     {

@@ -38,10 +38,10 @@ from DccScriptingInterface.globals import *
 O3DE_BUG_REPORT_URL = "https://github.com/o3de/o3de/issues/new?assignees=&labels=needs-triage%2Cneeds-sig%2Ckind%2Fbug&template=bug_template.md&title=Bug+Report"
 
 # default dcc app help page, default is for maya
-DCCSI_APP_HELP_URL = "https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Maya/readme.md"
+DCCSI_APP_HELP_URL = "https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/Tools/DCC/Maya/readme.md"
 
 # default generic help url (should be replaced per-tool)
-HELP_URL = 'https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/readme.md'
+HELP_URL = 'https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/readme.md'
 # -------------------------------------------------------------------------
 
 

@@ -181,7 +181,7 @@ namespace AZ
             // shifts FirstElement to the wrong element -- the view then reads from the wrong location in
             // the underlying pool buffer with no further signal that anything is wrong. AZ_Error only logs
             // and lets that corrupted FirstElement through; escalate to AZ_Assert (matching the equivalent
-            // Vulkan check in Gems/Atom/RHI/Vulkan/Code/Source/RHI/BufferView.cpp) so validation/profile
+            // Vulkan check in Gems/Atom_RHI_Vulkan/Code/Source/RHI/BufferView.cpp) so validation/profile
             // builds catch this at creation time instead of silently misreading buffer contents at runtime.
 #if defined(AZ_RHI_ENABLE_VALIDATION)
             AZ_Assert(elementOffsetBase * bufferViewDescriptor.m_elementSize == buffer.GetMemoryView().GetOffset(),

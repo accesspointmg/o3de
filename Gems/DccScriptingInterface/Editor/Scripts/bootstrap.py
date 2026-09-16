@@ -216,7 +216,7 @@ def click_action_blender_help():
     """Open Blender DCCsi docs (readme currently)"""
     _LOGGER.debug(f'Clicked: click_action_blender_help')
 
-    url = "https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Blender/readme.md"
+    url = "https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/Tools/DCC/Blender/readme.md"
 
     return QtGui.QDesktopServices.openUrl(QUrl(url, QUrl.TolerantMode))
 # - hook ------------------------------------------------------------------
@@ -266,7 +266,7 @@ def click_action_maya_help():
     """Open Maya DCCsi docs (readme currently)"""
     _LOGGER.debug(f'Clicked: click_action_maya_help')
 
-    url = "https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Maya/readme.md"
+    url = "https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/Tools/DCC/Maya/readme.md"
 
     return QtGui.QDesktopServices.openUrl(QUrl(url, QUrl.TolerantMode))
 # - hook ------------------------------------------------------------------
@@ -316,7 +316,7 @@ def click_action_wing_help():
     """Open Wing IDE DCCsi docs (readme currently)"""
     _LOGGER.debug(f'Clicked: click_action_wing_help')
 
-    url = "https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/IDE/Wing/readme.md"
+    url = "https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/Tools/IDE/Wing/readme.md"
 
     return QtGui.QDesktopServices.openUrl(QUrl(url, QUrl.TolerantMode))
 # - hook ------------------------------------------------------------------

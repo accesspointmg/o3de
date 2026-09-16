@@ -11,7 +11,7 @@ REM
 :: Status: Prototype
 :: Version: 0.0.1
 :: Support: Maya 2022 and 2023 (python 3)
-:: Readme.md:  https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Maya
+:: Readme.md:  https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/Tools/DCC/Maya
 :: Notes:
 :: - If you have a non-standard default install location for Maya, you may need  to do manual configuration
 :: - Try overriding envars and paths in your Env_Dev.bat

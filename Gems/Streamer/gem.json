@@ -18,8 +18,5 @@
     "requirements": "",
     "documentation_url": "",
     "dependencies": [],
-    "external_subdirectories": [
-        "StreamerProfiler"
-    ],
     "restricted": "Streamer"
 }

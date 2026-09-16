@@ -48,7 +48,7 @@ float4 SampleAverageValidColors(float2 tex0, float2 tex1, float2 tex2, float2 te
     float4 blends = ConvertBlendsFloat4(dofFactors , PassSrg::m_blendFactor);
     // 0.25 is 1 / pixel number.
 #ifdef PRE_HLSL_2021
-    // See /o3de/Gems/Atom/Feature/Common/Assets/ShaderLib/PRE_HLSL_2021.md for details.
+    // See /o3de/Gems/Atom_Feature_Common/Assets/ShaderLib/PRE_HLSL_2021.md for details.
     float4 masks = blends > 0.0f ? 0.25f : 0.0f;
 #else
     float4 masks = select(blends > 0.0f, 0.25f, 0.0f);

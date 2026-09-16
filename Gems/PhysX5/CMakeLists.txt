@@ -25,15 +25,15 @@ if(PAL_TRAIT_PHYSX_SUPPORTED)
     endif()
     ly_add_target(NAME physx_5_dependency NAMESPACE Gem INTERFACE BUILD_DEPENDENCIES INTERFACE ciso646-include ${physx_5_link_group_start} 3rdParty::PhysX5 ${physx_5_link_group_end})
     set(physx_dependency physx_5_dependency)
-    set(physx_files ../Code/physx_files.cmake)
+    set(physx_files Code/physx_files.cmake)
     set(physx_module_files physx_module_files.cmake)
-    set(physx_shared_files ../Code/physx_shared_files.cmake)
-    set(physx_editor_files ../Code/physx_editor_files.cmake)
+    set(physx_shared_files Code/physx_shared_files.cmake)
+    set(physx_editor_files Code/physx_editor_files.cmake)
 else()
-    set(physx_files ../Code/physx_unsupported_files.cmake)
+    set(physx_files Code/physx_unsupported_files.cmake)
     set(physx_module_files physx_unsupported_module_files.cmake)
-    set(physx_shared_files ../Code/physx_unsupported_shared_files.cmake)
-    set(physx_editor_files ../Code/physx_unsupported_files.cmake)
+    set(physx_shared_files Code/physx_unsupported_shared_files.cmake)
+    set(physx_editor_files Code/physx_unsupported_files.cmake)
 endif()
 
 ly_add_target(
@@ -48,10 +48,10 @@ ly_add_target(
             $<$<NOT:$<CONFIG:release>>:AZ_PHYSICS_DEBUG_ENABLED>
     INCLUDE_DIRECTORIES
         PUBLIC
-            ../Code/.
-            ../Code/Source
+            Code/.
+            Code/Source
             ${pal_source_dir}
-            ../Code/Include
+            Code/Include
     BUILD_DEPENDENCIES
         PUBLIC
             ${physx_dependency}
@@ -77,7 +77,7 @@ ly_add_target(
         PRIVATE
             ${pal_source_dir}
         PUBLIC
-            ../Code/Include
+            Code/Include
     BUILD_DEPENDENCIES
         PRIVATE
             Gem::${gem_name}.Static
@@ -132,11 +132,11 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 ENABLE_NON_COMPILED_CGF
         INCLUDE_DIRECTORIES
             PRIVATE
-                ../Code/.
-                ../Code/Source
+                Code/.
+                Code/Source
                 ${pal_source_dir}
             PUBLIC
-                ../Code/Include
+                Code/Include
         BUILD_DEPENDENCIES
             PUBLIC
                 ${physx_dependency}
@@ -170,11 +170,11 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 PHYSX_ENABLE_MULTI_THREADING
         INCLUDE_DIRECTORIES
             PRIVATE
-                ../Code/.
-                ../Code/Source
+                Code/.
+                Code/Source
                 ${pal_source_dir}
             PUBLIC
-                ../Code/Include
+                Code/Include
         BUILD_DEPENDENCIES
             PRIVATE
                 Gem::${gem_name}.Editor.Static
@@ -198,10 +198,10 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         NAMESPACE Gem
         OUTPUT_NAME ${gem_name}.Tests.Gem
         FILES_CMAKE
-            ../Code/physx_tests_files.cmake
+            Code/physx_tests_files.cmake
         INCLUDE_DIRECTORIES
             PRIVATE
-                ../Code/Tests
+                Code/Tests
         BUILD_DEPENDENCIES
             PRIVATE
                 AZ::AzTestShared
@@ -236,12 +236,12 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
             OUTPUT_NAME ${gem_name}.Editor.Tests.Gem
             FILES_CMAKE
                 ${physx_module_files}
-                ../Code/physx_editor_tests_files.cmake
+                Code/physx_editor_tests_files.cmake
             INCLUDE_DIRECTORIES
                 PRIVATE
-                    ../Code/Tests
-                    ../Code/Source
-                    ../Code/.
+                    Code/Tests
+                    Code/Source
+                    Code/.
             BUILD_DEPENDENCIES
                 PRIVATE
                     3rdParty::Qt::Test

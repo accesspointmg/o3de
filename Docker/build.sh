@@ -18,7 +18,7 @@ then
     exit 1
 fi
 
-$O3DE_ROOT/python/get_python.sh 
+$O3DE_ROOT/Engines/o3de/python/get_python.sh 
 if [ $? -ne 0 ]
 then
     echo "Error bootstrapping O3DE from $O3DE_REPO"
@@ -36,7 +36,7 @@ export CPACK_OPTIONS="-D CPACK_UPLOAD_URL=${CPACK_UPLOAD_URL}"
 export CMAKE_TARGET=all
 
 cd $O3DE_ROOT && \
-    $O3DE_ROOT/scripts/build/Platform/Linux/build_installer_linux.sh
+    $O3DE_ROOT/Engines/o3de/scripts/build/Platform/Linux/build_installer_linux.sh
 if [ $? -ne 0 ]
 then
     echo "Error building installer"
@@ -62,8 +62,8 @@ rm -rf /home/o3de/O3DE
 # The python libraries that are linked in the engine needs to be writable during python bootstrapping for the O3DE user from the installer
 chmod -R a+w /opt/O3DE/$(ls /opt/O3DE/)/Tools/LyTestTools \
   && chmod -R a+w /opt/O3DE/$(ls /opt/O3DE/)/Tools/RemoteConsole/ly_remote_console \
-  && chmod -R a+w /opt/O3DE/$(ls /opt/O3DE/)/Gems/Atom/RPI/Tools \
-  && chmod -R a+w /opt/O3DE/$(ls /opt/O3DE/)/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface \
+  && chmod -R a+w /opt/O3DE/$(ls /opt/O3DE/)/Gems/Atom_RPI/Tools \
+  && chmod -R a+w /opt/O3DE/$(ls /opt/O3DE/)/Gems/DccScriptingInterface \
   && chmod -R a+w /opt/O3DE/$(ls /opt/O3DE/)/scripts/o3de
 if [ $? -ne 0 ]
 then

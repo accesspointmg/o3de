@@ -29,18 +29,5 @@
         "EditorModeFeedback",
         "EMotionFX_Atom",
         "ImguiAtom"
-    ],
-    "external_subdirectories": [
-        "AtomBridge",
-        "AtomFont",
-        "AtomImGuiTools",
-        "AtomRenderOptions",
-        "AtomViewportDisplayIcons",
-        "AtomViewportDisplayInfo",
-        "CommonFeatures",
-        "EditorModeFeedback",
-        "EMotionFXAtom",
-        "ImguiAtom",
-        "TechnicalArt/DccScriptingInterface"
     ]
 }

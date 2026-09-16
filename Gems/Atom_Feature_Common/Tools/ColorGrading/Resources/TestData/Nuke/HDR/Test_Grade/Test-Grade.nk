@@ -38,8 +38,8 @@ define_window_layout_xml {<?xml version="1.0" encoding="UTF-8"?>
 }
 Root {
  inputs 0
- name C:/Depot/o3de/Gems/Atom/Feature/Common/Tools/ColorGrading/Resources/TestData/Nuke/HDR/Test_Grade/Test-Grade.nk
- project_directory "\"C:/Depot/o3de-engine/Gems/AtomLyIntegration/CommonFeatures/Tools/ColorGrading/TestData/Nuke/"
+ name C:/Depot/o3de/Gems/Atom_Feature_Common/Tools/ColorGrading/Resources/TestData/Nuke/HDR/Test_Grade/Test-Grade.nk
+ project_directory "\"C:/Depot/o3de-engine/Gems/CommonFeaturesAtom/Tools/ColorGrading/TestData/Nuke/"
  format "2048 1556 0 0 2048 1556 1 2K_Super_35(full-ap)"
  proxy_type scale
  proxy_format "1024 778 0 0 1024 778 1 1K_Super_35(full-ap)"
@@ -57,7 +57,7 @@ Root {
 Read {
  inputs 0
  file_type exr
- file C:/Depot/o3de/Gems/Atom/Feature/Common/Tools/ColorGrading/Resources/LUTs/linear_32_LUT.exr
+ file C:/Depot/o3de/Gems/Atom_Feature_Common/Tools/ColorGrading/Resources/LUTs/linear_32_LUT.exr
  format "1024 32 0 0 1024 32 1 "
  origset true
  colorspace data
@@ -112,7 +112,7 @@ push $N16318c00
 Read {
  inputs 0
  file_type exr
- file C:/Depot/o3de/Gems/Atom/Feature/Common/Tools/ColorGrading/Resources/TestData/displaymapperpassthrough.exr
+ file C:/Depot/o3de/Gems/Atom_Feature_Common/Tools/ColorGrading/Resources/TestData/displaymapperpassthrough.exr
  format "2802 1854 0 0 2802 1854 1 "
  origset true
  name Read_DisplayMapperPassthrough
@@ -167,7 +167,7 @@ Viewer {
 }
 push $N16297800
 Write {
- file C:/Depot/o3de/Gems/Atom/Feature/Common/Tools/ColorGrading/Resources/TestData/Nuke/HDR/Test_Grade/Shot_post_test-grade.exr
+ file C:/Depot/o3de/Gems/Atom_Feature_Common/Tools/ColorGrading/Resources/TestData/Nuke/HDR/Test_Grade/Shot_post_test-grade.exr
  colorspace compositing_linear
  file_type exr
  write_ACES_compliant_EXR true
@@ -196,7 +196,7 @@ OCIOFileTransform {
  ypos -14
 }
 Write {
- file C:/Depot/o3de/Gems/Atom/Feature/Common/Tools/ColorGrading/Resources/TestData/Nuke/HDR/Test_Grade/test-grade_inv-Log2-48nits_32_LUT.exr
+ file C:/Depot/o3de/Gems/Atom_Feature_Common/Tools/ColorGrading/Resources/TestData/Nuke/HDR/Test_Grade/test-grade_inv-Log2-48nits_32_LUT.exr
  colorspace data
  file_type exr
  datatype "32 bit float"

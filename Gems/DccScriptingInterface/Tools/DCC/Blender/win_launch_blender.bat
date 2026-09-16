@@ -11,7 +11,7 @@ REM
 :: Status: Prototype
 :: Version: 0.0.1
 :: Support: Blender 3
-:: Readme.md:  https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Blender
+:: Readme.md:  https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/Tools/DCC/Blender
 :: Notes:
 :: - If you have a non-standard default install location for Blender, you may need  to do manual configuration
 :: - Try overriding envars and paths in your Env_Dev.bat

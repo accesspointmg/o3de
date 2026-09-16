@@ -106,7 +106,7 @@ What is the DCCsi?
 4. Extend O3DE and unlock its potential for content creators, and the Technical Artists that service them.
 
 For general info on the DCCsi:
-https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface
+https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface
 
 For detailed documentation:
 https://www.o3de.org/docs/user-guide/< DCC Tools, not stubbed >

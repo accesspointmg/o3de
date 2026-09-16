@@ -60,7 +60,7 @@ What is the DCCsi?
 4. Extend O3DE and unlock its potential for content creators, and the Technical Artists that service them.
 
 For general info on the DCCsi:
-https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface
+https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface
 
 For detailed documentation:
 https://www.o3de.org/docs/user-guide/< DCC Tools, not stubbed >
@@ -150,7 +150,7 @@ A general goal of the DCCsi is be self-maintained, and to not taint the users in
 
 So as to not directly modify Maya, we bootstrap additional access to site-packages in our `userSetup.py`:
 
-    C:/Depot/o3de/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Maya/Scripts/userSetup.py
+    C:/Depot/o3de/Gems/DccScriptingInterface/Tools/DCC/Maya/Scripts/userSetup.py
 
 We don't want users to have to install or use any additional version of Python, especially use of legacy versions such as python2.7, although with older versions of  Maya and possibly other dcc tools we don't have that control.  Maya 2020 and earlier versions are still on Python2.7, so instead of forcing another install of python we can just use that versions `mayapy.exe` to manage its extensions.
 

@@ -49,13 +49,13 @@ ShaderResourceGroup SceneSrg: BindingPerScene
 float GetScene_Time()
 {
     return SceneSrg::m_time;
-}#line 1 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom/Feature/Common/Assets/Materials/StandardPBR/StandardPBR_ForwardPass.azsl"
+}#line 1 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom_Feature_Common/Assets/Materials/StandardPBR/StandardPBR_ForwardPass.azsl"
 #line 1 "<built-in>"
 #line 1 "<built-in>"
 #line 373 "<built-in>"
 #line 1 "<command line>"
 #line 1 "<built-in>"
-#line 1 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom/Feature/Common/Assets/Materials/StandardPBR/StandardPBR_ForwardPass.azsl"
+#line 1 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom_Feature_Common/Assets/Materials/StandardPBR/StandardPBR_ForwardPass.azsl"
 /*
  * Copyright (c) Contributors to the Open 3D Engine Project.
  * For complete copyright and license terms please see the LICENSE at the root of this distribution.
@@ -90,7 +90,7 @@ struct VSOutput
 };
 
 
-#line 1 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom/Feature/Common/Assets/Materials/StandardPBR/./MaterialTemplate/ForwardPass.azsli"
+#line 1 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom_Feature_Common/Assets/Materials/StandardPBR/./MaterialTemplate/ForwardPass.azsli"
 /*
  * Copyright (c) Contributors to the Open 3D Engine Project.
  * For complete copyright and license terms please see the LICENSE at the root of this distribution.
@@ -155,9 +155,9 @@ void StandardPbrTemplate_ForwardPass_PS(in VSOutput IN, out PSOutput OUT, float3
 
     OUT.m_color = float4(diffuse + specular, alpha);
 }
-#line 39 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom/Feature/Common/Assets/Materials/StandardPBR/StandardPBR_ForwardPass.azsl"
+#line 39 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom_Feature_Common/Assets/Materials/StandardPBR/StandardPBR_ForwardPass.azsl"
 
-#line 1 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom/Feature/Common/Assets/Materials/StandardPBR/./StandardPBR_Common.azsli"
+#line 1 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom_Feature_Common/Assets/Materials/StandardPBR/./StandardPBR_Common.azsli"
 /*
  * Copyright (c) Contributors to the Open 3D Engine Project.
  * For complete copyright and license terms please see the LICENSE at the root of this distribution.
@@ -186,9 +186,9 @@ ShaderResourceGroup MaterialSrg : BindingPerMaterial
        MipFilter = Linear;
     };
 }
-#line 41 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom/Feature/Common/Assets/Materials/StandardPBR/StandardPBR_ForwardPass.azsl"
+#line 41 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom_Feature_Common/Assets/Materials/StandardPBR/StandardPBR_ForwardPass.azsl"
 
-#line 1 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom/Feature/Common/Assets/Materials/StandardPBR/../../../../../RPI/Assets/ShaderLib/ShaderResourceGroups/DefaultObjectSrg.azsli"
+#line 1 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom_Feature_Common/Assets/Materials/StandardPBR/../../../../../RPI/Assets/ShaderLib/ShaderResourceGroups/DefaultObjectSrg.azsli"
 /*
  * Copyright (c) Contributors to the Open 3D Engine Project.
  * For complete copyright and license terms please see the LICENSE at the root of this distribution.
@@ -215,7 +215,7 @@ float4x4 GetObject_WorldMatrix()
     modelToWorld[2] = PerObject::m_modelToWorld[2];
     return modelToWorld;
 }
-#line 43 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom/Feature/Common/Assets/Materials/StandardPBR/StandardPBR_ForwardPass.azsl"
+#line 43 "C:/Lumberyard/lyengine/branches/Atom/dev/Gems/Atom_Feature_Common/Assets/Materials/StandardPBR/StandardPBR_ForwardPass.azsl"
 
 VSOutput StandardPbr_ForwardPassVS(VSInput IN)
 {

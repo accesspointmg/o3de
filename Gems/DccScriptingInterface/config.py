@@ -21,7 +21,7 @@ This module handles core configuration of the dccsi
 
 This config.py synthetic env can be overridden or extended with a local .env
 Example, create such as file:
-    "< o3de >/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/.env"
+    "< o3de >/Gems/DccScriptingInterface/.env"
 
     ^ this is only appropriate to a developer making local settings changes,
     primarily to outside of this module, and want those settings to persist
@@ -39,7 +39,7 @@ the file:
 
 If you only want to make transient envar settings changes that only persist to
 an IDE session, you can create and modify this file:
-"C:/Depot/o3de-dev/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/Dev/Windows/Env_Dev.bat"
+"C:/Depot/o3de-dev/Gems/DccScriptingInterface/Tools/Dev/Windows/Env_Dev.bat"
 (copy and rename Env_Dev.bat.example to Env_Dev.bat) this only modifies the launcher environments.
 ^ this is a good option is good if you only want to alter the behavior while in IDE,
 or if you are troubleshooting a broken dccsi and/or modifying config.py

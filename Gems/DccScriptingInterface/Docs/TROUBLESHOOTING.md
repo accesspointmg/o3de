@@ -87,7 +87,7 @@ If this executes correctly you will see that is attempts to install the packages
 
 The install target will be something like this, matching the python major.minor version
 
-`target_loc = C:/path/to/o3de/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/3rdParty/Python/Lib/3.x/3.10.x/site-packages`
+`target_loc = C:/path/to/o3de/Gems/DccScriptingInterface/3rdParty/Python/Lib/3.x/3.10.x/site-packages`
 
 Examples of using `foundation.py` to install the dependencies for DCC tools:
 

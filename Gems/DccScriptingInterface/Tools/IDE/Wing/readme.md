@@ -14,7 +14,7 @@
 
 - The DccScriptingInterface Gem (DCCsi) can be added to your Game Project. See [Registering Gems to a Project](https://www.o3de.org/docs/user-guide/project-config/register-gems/), and [Adding and Removing Gems in a Project](https://www.o3de.org/docs/user-guide/project-config/add-remove-gems/) which you can do through the Project Manager (o3de.exe) With the DCCsi enabled, you can launch Wing Pro 8 via menus in the main Editor.
 
-- Some additional testing and improvements have been made and are in the in the current release (2210), including changes to better support Installer build folder patterns. See the [readme.md at the root of the DCCsi](https://github.com/o3de/o3de/blob/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/readme.md) for more information about advanced configuration.
+- Some additional testing and improvements have been made and are in the in the current release (2210), including changes to better support Installer build folder patterns. See the [readme.md at the root of the DCCsi](https://github.com/o3de/o3de/blob/development/Gems/DccScriptingInterface/readme.md) for more information about advanced configuration.
 
 ## TL/DR: Getting Started
 
@@ -26,11 +26,11 @@
 
 ### Using with DccScriptingInterface
 
-The [DccScriptingInterface Gem](https://github.com/o3de/o3de/blob/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/readme.md) DCCsi includes some support for various DCC tools like Blender or Maya, as well as popular IDEs that Technical Artists use in development.  Using Wing Pro via the DCCsi is recommended as it streamlines some configuration, but it is not a hard requirement.
+The [DccScriptingInterface Gem](https://github.com/o3de/o3de/blob/development/Gems/DccScriptingInterface/readme.md) DCCsi includes some support for various DCC tools like Blender or Maya, as well as popular IDEs that Technical Artists use in development.  Using Wing Pro via the DCCsi is recommended as it streamlines some configuration, but it is not a hard requirement.
 
 ![image](https://user-images.githubusercontent.com/23222931/201754413-fb78891c-9f42-4972-bf2c-e7db34120777.png)
 
-1. Enable the [DccScriptingInterface Gem](https://github.com/o3de/o3de/blob/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/readme.md) in your game project, using either the [O3DE Project Manager](https://www.o3de.org/docs/user-guide/project-config/project-manager/) or the o3de.py [commandline tools](https://www.o3de.org/docs/user-guide/project-config/add-remove-gems/)
+1. Enable the [DccScriptingInterface Gem](https://github.com/o3de/o3de/blob/development/Gems/DccScriptingInterface/readme.md) in your game project, using either the [O3DE Project Manager](https://www.o3de.org/docs/user-guide/project-config/project-manager/) or the o3de.py [commandline tools](https://www.o3de.org/docs/user-guide/project-config/add-remove-gems/)
 
 2. After adding a Gem, you should [configure and rebuild your project](https://www.o3de.org/docs/user-guide/build/configure-and-build/))
 
@@ -179,7 +179,7 @@ To use Wing, there may be things you need to do locally to get set up (and we ma
 
 The default location for the DCCsi Gem folder is something like:
 
-`C:/path/to/o3de/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface`
+`C:/path/to/o3de/Gems/DccScriptingInterface`
 
 But you are reading this, so you have already found it :)
 
@@ -310,7 +310,7 @@ This is a secondary settings file that can be manually made, or generated, for d
 
 ### Config.py and settings.local.json
 
-If you are starting Wing (or other tools) from the Editor menu's, then you may not need to do much configuration.  Because the Editor has a python framework, we can access data via `azlmbr` , and retrieve data such as the engine location (see the [dccsi editor  bootstrap.py]([o3de/bootstrap.py at development · o3de/o3de · GitHub](https://github.com/o3de/o3de/blob/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Editor/Scripts/bootstrap.py)) .)  You'll see paths and associated ENVARs are set such as:
+If you are starting Wing (or other tools) from the Editor menu's, then you may not need to do much configuration.  Because the Editor has a python framework, we can access data via `azlmbr` , and retrieve data such as the engine location (see the [dccsi editor  bootstrap.py]([o3de/bootstrap.py at development · o3de/o3de · GitHub](https://github.com/o3de/o3de/blob/development/Gems/DccScriptingInterface/Editor/Scripts/bootstrap.py)) .)  You'll see paths and associated ENVARs are set such as:
 
 ```python
 # base paths

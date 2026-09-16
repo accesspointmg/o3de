@@ -21,10 +21,5 @@
     "dependencies": [
         "Sponza",
         "ReferenceMaterials"
-    ],
-    "external_subdirectories": [
-        "Sponza",
-        "ReferenceMaterials",
-        "TestData"
     ]
 }

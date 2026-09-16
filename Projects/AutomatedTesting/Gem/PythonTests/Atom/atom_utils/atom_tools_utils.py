@@ -176,8 +176,8 @@ def get_last_lighting_preset_path() -> str:
     """
     Returns the full path to the currently selected viewport lighting background.
     Example return values observed when selecting different lighting backgrounds from the viewport dropdown:
-    "C:/git/o3de/Gems/Atom/Tools/MaterialEditor/Assets/MaterialEditor/LightingPresets/neutral_urban.lightingpreset.azasset"
-    "C:/git/o3de/Gems/Atom/Feature/Common/Assets/LightingPresets/LowContrast/artist_workshop.lightingpreset.azasset"
+    "C:/git/o3de/Gems/MaterialEditor/Assets/MaterialEditor/LightingPresets/neutral_urban.lightingpreset.azasset"
+    "C:/git/o3de/Gems/Atom_Feature_Common/Assets/LightingPresets/LowContrast/artist_workshop.lightingpreset.azasset"
     "@gemroot:Atom_TestData@/Assets/TestData/LightingPresets/beach_parking.lightingpreset.azasset"
     """
     return azlmbr.atomtools.EntityPreviewViewportSettingsRequestBus(
@@ -189,9 +189,9 @@ def get_last_model_preset_path() -> str:
     """
     Returns the full path to the currently selected viewport model.
     Example return values observed when selecting different models from the vioewport dropdown:
-    "C:/git/o3de/Gems/Atom/Tools/MaterialEditor/Assets/MaterialEditor/ViewportModels/Shaderball.modelpreset.azasset"
-    "C:/git/o3de/Gems/Atom/Tools/MaterialEditor/Assets/MaterialEditor/ViewportModels/Cone.modelpreset.azasset"
-    "C:/git/o3de/Gems/Atom/Tools/MaterialEditor/Assets/MaterialEditor/ViewportModels/BeveledCone.modelpreset.azasset"
+    "C:/git/o3de/Gems/MaterialEditor/Assets/MaterialEditor/ViewportModels/Shaderball.modelpreset.azasset"
+    "C:/git/o3de/Gems/MaterialEditor/Assets/MaterialEditor/ViewportModels/Cone.modelpreset.azasset"
+    "C:/git/o3de/Gems/MaterialEditor/Assets/MaterialEditor/ViewportModels/BeveledCone.modelpreset.azasset"
     """
     return azlmbr.atomtools.EntityPreviewViewportSettingsRequestBus(
         azlmbr.bus.Broadcast, EntityPreviewViewportSettingsRequestBusEvents.GET_LAST_MODEL_PRESET_PATH_WITHOUT_ALIAS)

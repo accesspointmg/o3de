@@ -42,7 +42,7 @@ if DCCSI_DEV_MODE:
 
 from DccScriptingInterface.azpy.shared.ui.help_menu import HelpMenu
 
-HELP_URL = 'https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Maya/Scripts/Python/scene_exporter/readme.md'
+HELP_URL = 'https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/Tools/DCC/Maya/Scripts/Python/scene_exporter/readme.md'
 
 maya_mainwindow_ptr = omui.MQtUtil.mainWindow()
 maya_mainwindow = wrapInstance(int(maya_mainwindow_ptr), QtWidgets.QWidget)

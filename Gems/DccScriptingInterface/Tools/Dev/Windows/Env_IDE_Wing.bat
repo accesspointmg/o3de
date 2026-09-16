@@ -11,7 +11,7 @@ REM
 :: Status: Prototype
 :: Version: 0.0.1
 :: Support: Wing Pro 8+
-:: Readme.md:  https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/IDE/WingIDE/readme.md
+:: Readme.md:  https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/Tools/IDE/WingIDE/readme.md
 :: Notes:
 :: - Wing 7.x was previously supported, but it was python2.7 based and we are deprecating support for py2.7
 :: - py2.7 deprecation includes apps that are pre-py3

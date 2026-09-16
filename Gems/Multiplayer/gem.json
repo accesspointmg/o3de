@@ -19,9 +19,6 @@
     "icon_path": "preview.png",
     "requirements": "",
     "documentation_url": "",
-    "external_subdirectories": [
-        "Multiplayer_ScriptCanvas"
-    ],
     "dependencies": [
         "PhysX",
         "CertificateManager",

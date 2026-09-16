@@ -52,7 +52,7 @@
           "^.*warning C4189: '[\\w]*': local variable is initialized but not referenced.*$"
         ],
         "log_testcases": [
-          "D:/workspace/o3de/Gems/Atom/RPI/Code/Source/RPI.Public/Pass/RenderPass.cpp(301,30): warning C4189: 'success': local variable is initialized but not referenced"
+          "D:/workspace/o3de/Gems/Atom_RPI/Code/Source/RPI.Public/Pass/RenderPass.cpp(301,30): warning C4189: 'success': local variable is initialized but not referenced"
         ],
         "owners": []
       }

@@ -225,7 +225,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 ${CMAKE_CURRENT_SOURCE_DIR}/Tests/UtilsTestsData/DummyTransformColor.MainPS.vulkan.spirv.txt
                 ${CMAKE_CURRENT_SOURCE_DIR}/Tests/UtilsTestsData/HelloWorld.txt
             OUTPUT_SUBDIRECTORY
-                Gems/Atom/RHI/Code/Tests/UtilsTestsData
+                Gems/Atom_RHI/Code/Tests/UtilsTestsData
         )
     endif()
 endif()

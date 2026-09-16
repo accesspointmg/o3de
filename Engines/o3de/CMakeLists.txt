@@ -138,7 +138,7 @@ if(NOT INSTALLED_ENGINE)
     add_subdirectory(python)
     add_subdirectory(Registry)
     add_subdirectory(scripts)
-    add_subdirectory(Templates)
+    add_subdirectory(${LY_ROOT_FOLDER}/../../Templates ${CMAKE_BINARY_DIR}/Templates)
     add_subdirectory(Tools)
 
     # Invoke add_subdirectory on all external subdirectories

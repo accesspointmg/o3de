@@ -80,7 +80,7 @@ In the rest of the shader code, `EvaluateVertexGeometry()` can be called in an a
 
 ### ForwardPass_BaseLighting.azsli as a specific example for the Material Interface
 
-`Gems/Atom/Feature/Common/Assets/Materials/Pipelines/MainPipeline/ForwardPass_BaseLighting.azsli` with `BasePBR_Defines.azsli` and `BasePBR.azsli`.
+`Gems/Atom_Feature_Common/Assets/Materials/Pipelines/MainPipeline/ForwardPass_BaseLighting.azsli` with `BasePBR_Defines.azsli` and `BasePBR.azsli`.
 
 ```cpp
 #pragma once

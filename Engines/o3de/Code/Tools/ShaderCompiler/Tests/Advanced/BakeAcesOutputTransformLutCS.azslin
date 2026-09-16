@@ -1,5 +1,5 @@
-#line 1 "F:/ATOM/dev/Gems/Atom/Feature/Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
-#line 1 "F:/ATOM/dev/Gems/Atom/Feature/Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
+#line 1 "F:/ATOM/dev/Gems/Atom_Feature_Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
+#line 1 "F:/ATOM/dev/Gems/Atom_Feature_Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
 /*
  * Copyright (c) Contributors to the Open 3D Engine Project.
  * For complete copyright and license terms please see the LICENSE at the root of this distribution.
@@ -11,9 +11,9 @@
 
 
 
-#line 13 "F:/ATOM/dev/Gems/Atom/Feature/Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
+#line 13 "F:/ATOM/dev/Gems/Atom_Feature_Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
 
-#line 1 "f:/ATOM/dev/Gems/Atom/Feature/Common/Assets/ShaderLib/Atom/Common/SrgSemantics.azsli"
+#line 1 "f:/ATOM/dev/Gems/Atom_Feature_Common/Assets/ShaderLib/Atom/Common/SrgSemantics.azsli"
 /*
  * Copyright (c) Contributors to the Open 3D Engine Project.
  * For complete copyright and license terms please see the LICENSE at the root of this distribution.
@@ -26,7 +26,7 @@
 
 
 
-#line 15 "f:/ATOM/dev/Gems/Atom/Feature/Common/Assets/ShaderLib/Atom/Common/SrgSemantics.azsli"
+#line 15 "f:/ATOM/dev/Gems/Atom_Feature_Common/Assets/ShaderLib/Atom/Common/SrgSemantics.azsli"
 ShaderResourceGroupSemantic SRG_PerMaterial
 {
     FrequencyId = 1;
@@ -74,13 +74,13 @@ ShaderResourceGroupSemantic SRG_Single
     ShaderVariantFallback = 128;
 };
 
-#line 14 "F:/ATOM/dev/Gems/Atom/Feature/Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
+#line 14 "F:/ATOM/dev/Gems/Atom_Feature_Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
 
 
 
-#line 15 "F:/ATOM/dev/Gems/Atom/Feature/Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
+#line 15 "F:/ATOM/dev/Gems/Atom_Feature_Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
 
-#line 1 "f:/ATOM/dev/Gems/Atom/RPI/Assets/ShaderLib/Atom/RPI/Math.azsli"
+#line 1 "f:/ATOM/dev/Gems/Atom_RPI/Assets/ShaderLib/Atom/RPI/Math.azsli"
 /*
  * Copyright (c) Contributors to the Open 3D Engine Project.
  * For complete copyright and license terms please see the LICENSE at the root of this distribution.
@@ -100,7 +100,7 @@ ShaderResourceGroupSemantic SRG_Single
 
 
 
-#line 21 "f:/ATOM/dev/Gems/Atom/RPI/Assets/ShaderLib/Atom/RPI/Math.azsli"
+#line 21 "f:/ATOM/dev/Gems/Atom_RPI/Assets/ShaderLib/Atom/RPI/Math.azsli"
 static const float FLOAT_32_MAX = 3.402823466e+38f;
 static const float FLOAT_16_MAX = 65504.0f;
 
@@ -204,10 +204,10 @@ float3 MultiplyVectorQuaternion(float3 v, float4 q)
     return v + 2.0f * cross(cross(v, q.xyz) + q.w * v, q.xyz);
 }
 
-#line 16 "F:/ATOM/dev/Gems/Atom/Feature/Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
+#line 16 "F:/ATOM/dev/Gems/Atom_Feature_Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
 
 
-#line 1 "f:/ATOM/dev/Gems/Atom/Feature/Common/Assets/ShaderLib/Atom/Features/PostProcessing/Aces.azsli"
+#line 1 "f:/ATOM/dev/Gems/Atom_Feature_Common/Assets/ShaderLib/Atom/Features/PostProcessing/Aces.azsli"
 /*
  * Copyright (c) Contributors to the Open 3D Engine Project.
  * For complete copyright and license terms please see the LICENSE at the root of this distribution.
@@ -306,7 +306,7 @@ UNDISCLOSED.
 
 
 
-#line 85 "f:/ATOM/dev/Gems/Atom/Feature/Common/Assets/ShaderLib/Atom/Features/PostProcessing/Aces.azsli"
+#line 85 "f:/ATOM/dev/Gems/Atom_Feature_Common/Assets/ShaderLib/Atom/Features/PostProcessing/Aces.azsli"
 static const float HALF_MAX = 65504.0f;
 
 // Values passed to the MoncurveR function for sRGB output.
@@ -365,9 +365,9 @@ struct SegmentedSplineParamsC9
 
 
 
-#line 121 "f:/ATOM/dev/Gems/Atom/Feature/Common/Assets/ShaderLib/Atom/Features/PostProcessing/Aces.azsli"
+#line 121 "f:/ATOM/dev/Gems/Atom_Feature_Common/Assets/ShaderLib/Atom/Features/PostProcessing/Aces.azsli"
 
-#line 1 "f:/ATOM/dev/Gems/Atom/Feature/Common/Assets/ShaderLib/Atom/Features/PostProcessing/AcesColorSpaceConversion.azsli"
+#line 1 "f:/ATOM/dev/Gems/Atom_Feature_Common/Assets/ShaderLib/Atom/Features/PostProcessing/AcesColorSpaceConversion.azsli"
 /*
  * Copyright (c) Contributors to the Open 3D Engine Project.
  * For complete copyright and license terms please see the LICENSE at the root of this distribution.
@@ -466,7 +466,7 @@ UNDISCLOSED.
 
 
 
-#line 85 "f:/ATOM/dev/Gems/Atom/Feature/Common/Assets/ShaderLib/Atom/Features/PostProcessing/AcesColorSpaceConversion.azsli"
+#line 85 "f:/ATOM/dev/Gems/Atom_Feature_Common/Assets/ShaderLib/Atom/Features/PostProcessing/AcesColorSpaceConversion.azsli"
 static const float3x3 AP0ToXYZMat =
 {
     0.95255238f, 0.00000000f, 0.00009368f,
@@ -537,7 +537,7 @@ static const float3x3 D60ToD65Cat =
     0.00307257, -0.00509595, 1.08168,
 };
 
-#line 122 "f:/ATOM/dev/Gems/Atom/Feature/Common/Assets/ShaderLib/Atom/Features/PostProcessing/Aces.azsli"
+#line 122 "f:/ATOM/dev/Gems/Atom_Feature_Common/Assets/ShaderLib/Atom/Features/PostProcessing/Aces.azsli"
 
 // Conversion factor from AP1 RGB to luminance
 
@@ -1028,7 +1028,7 @@ float GlowFwd(float ycIn, float glowGainIn, float glowMid)
 
 /* full base width of the shaper function (in degrees)*/
 
-#line 541 "f:/ATOM/dev/Gems/Atom/Feature/Common/Assets/ShaderLib/Atom/Features/PostProcessing/Aces.azsli"
+#line 541 "f:/ATOM/dev/Gems/Atom_Feature_Common/Assets/ShaderLib/Atom/Features/PostProcessing/Aces.azsli"
 float CubicBasisShaper(float x, float w )
 {
     const float M[4][4] =
@@ -1337,7 +1337,7 @@ float3 OutputDeviceTransform(const float3 oces, OutputTransformParameters otPara
     return outputCV;
 }
 
-#line 17 "F:/ATOM/dev/Gems/Atom/Feature/Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
+#line 17 "F:/ATOM/dev/Gems/Atom_Feature_Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
 
 ShaderResourceGroup PassSrg : SRG_PerPass
 {
@@ -1376,7 +1376,7 @@ ShaderResourceGroup PassSrg : SRG_PerPass
 */
 
 
-#line 45 "F:/ATOM/dev/Gems/Atom/Feature/Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
+#line 45 "F:/ATOM/dev/Gems/Atom_Feature_Common/Assets/Shaders/PostProcessing/BakeAcesOutputTransformLutCS.azsl"
 [numthreads(4,4,4)]
 void MainCS(uint3 dispatch_id: SV_DispatchThreadID)
 {

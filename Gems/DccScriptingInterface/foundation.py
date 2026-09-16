@@ -16,7 +16,7 @@ Running this module installs the DCCsi python requirements.txt for other python
 interpreters (like Maya)
 
 It installs based on the python version into a location (such as):
-    '<o3de>/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/3rdParty/Python/Lib/3.x'
+    '<o3de>/Gems/DccScriptingInterface/3rdParty/Python/Lib/3.x'
 
 This is to ensure that we are not modifying the users DCC tools install directly.
 
@@ -25,11 +25,11 @@ For this script to function on windows you may need Administrator privileges.
 to install/update packages and other functions that write to disk.
 
 Suggestion: we could move the package location and be more cross-platform:
-from: '<o3de>/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/3rdParty/Python/Lib/3.x'
+from: '<o3de>/Gems/DccScriptingInterface/3rdParty/Python/Lib/3.x'
 to (windows): '/Users/<Username>/AppData/Local/Programs/'
 
 Open an admin elevated cmd prompt here:
-    '<o3de>/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface'
+    '<o3de>/Gems/DccScriptingInterface'
 
 The following would execute this script, the default behavior is to check
 the o3de python and install the requirements.txt for that python version,

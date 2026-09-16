@@ -61,7 +61,7 @@ class TemplateGenerator:
             'materialTypeVersion': '',
             'propertyValues': {}
         })
-        self.template_source_directory = Path(os.environ['O3DE_DEV']) / 'Gems/Atom/Feature/Common/Assets/Materials/Types'
+        self.template_source_directory = Path(os.environ['O3DE_DEV']) / 'Gems/Atom_Feature_Common/Assets/Materials/Types'
         self.material_type_definitions = [x for x in self.template_source_directory.glob('*.materialtype')]
         self.material_name = self.get_material_name(material_type)
         self.material_type_dictionary = {}

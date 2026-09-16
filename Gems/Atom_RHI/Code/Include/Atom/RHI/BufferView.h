@@ -57,7 +57,7 @@ namespace AZ::RHI
         // Convenient helper function to get both of the indices (Read and ReadWrite) in the BindlessSrg for a given device:
         //     - If @outReadIndex != nullptr, it will get the shader index (READ) in Bindless::m_ByteAddressBuffer[].
         //     - If @outReadWriteIndex != nullptr, it will get the shader index (ReadWrite) in Bindless::m_RWByteAddressBuffer[].
-        //     See "/o3de/Gems/Atom/Feature/Common/Assets/ShaderLib/Atom/Features\Bindless.azsli" for details.
+        //     See "/o3de/Gems/Atom_Feature_Common/Assets/ShaderLib/Atom/Features\Bindless.azsli" for details.
         // Returns true if @deviceIndex is valid, otherwise returns false.
         bool GetBindlessIndices(int deviceIndex, uint32_t* outReadIndex, uint32_t* outReadWriteIndex = nullptr) const;
 

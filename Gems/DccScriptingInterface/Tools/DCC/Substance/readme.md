@@ -68,13 +68,13 @@ print(azpy)
 
 I can start the latest version of Adobe CC Substance Designer with the following .bat file:
 
-https://github.com/o3de/o3de/blob/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Substance/windows_launch_substabce_designer.bat
+https://github.com/o3de/o3de/blob/development/Gems/DccScriptingInterface/Tools/DCC/Substance/windows_launch_substabce_designer.bat
 
 ### General Info
 
 The DCCsi utilizes a set of package dependencies defined in a requirements.txt file
 
-[< o3de> / Gems / AtomLyIntegration / TechnicalArt / DccScriptingInterface / requirements.txt](https://github.com/o3de/o3de/blob/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/requirements.txt)
+[< o3de> / Gems / AtomLyIntegration / TechnicalArt / DccScriptingInterface / requirements.txt](https://github.com/o3de/o3de/blob/development/Gems/DccScriptingInterface/requirements.txt)
 
 When the O3DE engine is built (cmake), these packages are installed into the O3DE python interpreter/runtime, so python scripts utilizing them have access to these packages; i.e. when a python script is executed by the main Editor.exe python runtime.
 
@@ -92,11 +92,11 @@ Many DCC applications such as Substance Designer also come with a managed python
 
 The DCCsi currently manages **<u>Substance Designer</u>** from this location:
 
-[< o3de > / Gems / AtomLyIntegration / TechnicalArt / DccScriptingInterface / Tools / DCC / Substance]([o3de/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Substance at development · o3de/o3de · GitHub](https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Substance))
+[< o3de > / Gems / AtomLyIntegration / TechnicalArt / DccScriptingInterface / Tools / DCC / Substance]([o3de/Gems/DccScriptingInterface/Tools/DCC/Substance at development · o3de/o3de · GitHub](https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/Tools/DCC/Substance))
 
 **Windows**: Currently you can start Substance Designer with O3DE extensions using the .bat file in the following location:
 
-[< o3de > / Gems / AtomLyIntegration / TechnicalArt / DccScriptingInterface / Tools / DCC / Substance / windows_launch_substance_designer.bat](https://github.com/o3de/o3de/tree/development/Gems/AtomLyIntegration/TechnicalArt/DccScriptingInterface/Tools/DCC/Substance/windows_launch_substance_designer.bat)
+[< o3de > / Gems / AtomLyIntegration / TechnicalArt / DccScriptingInterface / Tools / DCC / Substance / windows_launch_substance_designer.bat](https://github.com/o3de/o3de/tree/development/Gems/DccScriptingInterface/Tools/DCC/Substance/windows_launch_substance_designer.bat)
 
 **Mac**: < to do: not yet implemented or tested >
 

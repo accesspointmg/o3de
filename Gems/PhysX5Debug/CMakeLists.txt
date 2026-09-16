@@ -18,13 +18,13 @@ include(${physx_pal_source_dir}/PAL_${PAL_PLATFORM_NAME_LOWERCASE}.cmake) # for 
 
 if(PAL_TRAIT_PHYSX_SUPPORTED)
     set(physxdebug_dependency physx_5_dependency)
-    set(physxdebug_files ../Code/physxdebug_files.cmake)
+    set(physxdebug_files Code/physxdebug_files.cmake)
     set(physxdebug_module_files physxdebug_module_files.cmake)
-    set(physxdebug_editor_files ../Code/physxdebug_editor_files.cmake)
+    set(physxdebug_editor_files Code/physxdebug_editor_files.cmake)
 else()
-    set(physxdebug_files ../Code/physxdebug_unsupported_files.cmake)
+    set(physxdebug_files Code/physxdebug_unsupported_files.cmake)
     set(physxdebug_module_files physxdebug_unsupported_module_files.cmake)
-    set(physxdebug_editor_files ../Code/physxdebug_unsupported_files.cmake)
+    set(physxdebug_editor_files Code/physxdebug_unsupported_files.cmake)
 endif()
 
 ########################################################################################
@@ -37,9 +37,9 @@ ly_add_target(
         ${physxdebug_files}
     INCLUDE_DIRECTORIES
         PRIVATE
-            ../Code/Source
+            Code/Source
         PUBLIC
-            ../Code/Include
+            Code/Include
     BUILD_DEPENDENCIES
         PUBLIC
             ${physxdebug_dependency}
@@ -91,9 +91,9 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 PHYSXDEBUG_GEM_EDITOR
         INCLUDE_DIRECTORIES
             PRIVATE
-                ../Code/Source
+                Code/Source
             PUBLIC
-                ../Code/Include
+                Code/Include
         BUILD_DEPENDENCIES
             PRIVATE
                 ${physxdebug_dependency}
