@@ -60,14 +60,23 @@ class TestFindProjectJson(object):
 
         assert project == mock_project_json
 
-    @mock.patch('os.path.isfile', mock.MagicMock(side_effect=[False, True]))
+    @mock.patch('os.path.isfile', mock.MagicMock(side_effect=[False, False, True]))
     @mock.patch('json.loads', mock.MagicMock())
     def test_FindProjectJson_EngineRoot_ReturnsProjectJson(self):
         project = abstract_resource_locator._find_project_json(mock_engine_root, mock_project)
 
         assert project == os.path.join(mock_engine_root, mock_project_json)
 
-    @mock.patch('os.path.isfile', mock.MagicMock(side_effect=[False, False]))
+    @mock.patch('os.path.isfile', mock.MagicMock(side_effect=[False, True, True]))
+    @mock.patch('builtins.open', mock.mock_open())
+    @mock.patch('json.load', mock.MagicMock(side_effect=[{'projects': [f'../../Projects/{mock_project}']},
+                                                        {'project_name': mock_project}]))
+    def test_FindProjectJson_EngineJsonProjects_ReturnsProjectJson(self):
+        project = abstract_resource_locator._find_project_json(mock_engine_root, mock_project)
+
+        assert project == os.path.normpath(os.path.join(mock_engine_root, '../../Projects', mock_project, 'project.json'))
+
+    @mock.patch('os.path.isfile', mock.MagicMock(side_effect=[False, False, False]))
     @mock.patch('json.loads', mock.MagicMock())
     @mock.patch('ly_test_tools.environment.file_system.find_ancestor_file')
     def test_FindProjectJson_FindAncestorProject_ReturnsProjectJson(self, mock_find_ancestor):
@@ -78,7 +87,7 @@ class TestFindProjectJson(object):
         assert project == mock_find_ancestor_project
         assert mock_find_ancestor.called
 
-    @mock.patch('os.path.isfile', mock.MagicMock(side_effect=[False, False]))
+    @mock.patch('os.path.isfile', mock.MagicMock(side_effect=[False, False, False]))
     @mock.patch('json.loads', mock.MagicMock())
     @mock.patch('ly_test_tools.environment.file_system.find_ancestor_file')
     def test_FindProjectJson_NoProjectReturned_RaisesOSError(self, mock_find_ancestor):

@@ -86,6 +86,21 @@ def _find_project_json(engine_root, project):
             except KeyError as err:
                 logger.warning(f"Project key could not be found due to error: {err}")
 
+    # Check the projects the engine declares in engine.json; paths are relative to the engine root and may
+    # point outside it (for example ../../Projects/<project> when projects sit beside the engine)
+    if not project_json:
+        engine_json = os.path.join(engine_root, 'engine.json')
+        if os.path.isfile(engine_json):
+            with open(engine_json, "r") as engine_json_file:
+                engine_json_data = json.load(engine_json_file)
+            for engine_project_path in engine_json_data.get("projects", []):
+                check_project_json = os.path.normpath(os.path.join(engine_root, engine_project_path, 'project.json'))
+                if os.path.isfile(check_project_json):
+                    with open(check_project_json, "r") as project_json_file:
+                        if project == json.load(project_json_file).get("project_name"):
+                            project_json = check_project_json
+                            break
+
     # Check internally for a project bundled with the engine
     if not project_json:
         check_project_json = os.path.join(engine_root, project, 'project.json')
