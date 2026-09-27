@@ -6,7 +6,7 @@
  *
  */
 
-#include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_MaterialInputs.azsli>
+#include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_MaterialInputs.azsli>
 
 #if MATERIALPIPELINE_SHADER_HAS_PIXEL_STAGE
 
@@ -22,14 +22,14 @@
         return o_normal_useTexture;
     }
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexEval.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_PixelGeometryEval.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_SurfaceEval.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingBrdf.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_PixelGeometryEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_SurfaceEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingBrdf.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingEval.azsli>
 
 #else
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/DepthPass_VertexEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/DepthPass_VertexEval.azsli>
 
 #endif

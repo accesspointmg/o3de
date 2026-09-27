@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <Atom/Feature/Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_MaterialInputs.azsli>
+#include <Atom_Feature_Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_MaterialInputs.azsli>
 
 #if MATERIALPIPELINE_SHADER_HAS_PIXEL_STAGE
 
@@ -41,10 +41,10 @@
     }
 
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexEval.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_PixelGeometryEval.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_SurfaceEval.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_LightingEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_PixelGeometryEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_SurfaceEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_LightingEval.azsli>
 
 #elif MATERIALPIPELINE_SHADER_HAS_GEOMETRIC_PIXEL_STAGE
 
@@ -71,11 +71,11 @@
         return SampleDepthFromHeightmap(heightmap, mapSampler, uv, uv_ddx, uv_ddy);
     }
     
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexEval.azsli>
     
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_PixelGeometryEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_PixelGeometryEval.azsli>
 
-    #include "Atom/Feature/Common/Assets/Shaders/Materials/MaterialFunctions/StandardGetAlphaAndClip.azsli"
+    #include "Atom_Feature_Common/Assets/Shaders/Materials/MaterialFunctions/StandardGetAlphaAndClip.azsli"
 
     void EvaluateSurface(VsOutput IN, VsSystemValues SV, PixelGeometryData geoData, const MaterialParameters params)
     {
@@ -86,6 +86,6 @@
 #else
 
     //TODO(MaterialPipeline): I think we should rename these to "PositionOnly_*"
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/DepthPass_VertexEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/DepthPass_VertexEval.azsli>
 
 #endif

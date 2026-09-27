@@ -12,7 +12,7 @@
 #define EvaluatePixelGeometry EvaluatePixelGeometry_StandardMultilayerPBR
 #endif
 
-#include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_PixelGeometryEval.azsli>
+#include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_PixelGeometryEval.azsli>
 
 PixelGeometryData EvaluatePixelGeometry_StandardMultilayerPBR(
     VsSystemValues SV,

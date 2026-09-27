@@ -28,7 +28,7 @@
 
 #if MATERIALPIPELINE_SHADER_HAS_PIXEL_STAGE
 
-#include <Atom/Feature/Common/Assets/Shaders/Materials/MaterialInputs/UvSetCount.azsli>
+#include <Atom_Feature_Common/Assets/Shaders/Materials/MaterialInputs/UvSetCount.azsli>
 
 // by default the Vertex-Data is empty, so enable the parts we need
 #define MATERIAL_USES_VERTEX_POSITION 1
@@ -50,12 +50,12 @@
         float3 vertexNormal;
     };
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_SurfaceData.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingData.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingBrdf.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_SurfaceData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingBrdf.azsli>
 
 #else
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/DepthPass_VertexData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/DepthPass_VertexData.azsli>
 
 #endif

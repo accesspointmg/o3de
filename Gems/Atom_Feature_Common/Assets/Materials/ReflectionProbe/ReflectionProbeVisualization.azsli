@@ -93,10 +93,10 @@
 
     // use the lighting model (lightingData, BRDF - function and ApplyLights) from the BasePBR
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingEval.azsli>
 
 #else
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/DepthPass_VertexEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/DepthPass_VertexEval.azsli>
 
 #endif

@@ -17,7 +17,7 @@
 #define ENABLE_TRANSMISSION 0
 
 #include <Atom/Features/PBR/LightingOptions.azsli>
-#include <Atom/Feature/Common/Assets/Shaders/Materials/MaterialInputs/UvSetCount.azsli>
+#include <Atom_Feature_Common/Assets/Shaders/Materials/MaterialInputs/UvSetCount.azsli>
 
 // defines for the MeshInfoUtil
 #define MATERIAL_USES_VERTEX_POSITION 1

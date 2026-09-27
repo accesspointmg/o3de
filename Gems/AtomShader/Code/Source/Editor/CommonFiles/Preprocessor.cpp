@@ -406,17 +406,28 @@ namespace AZ
                 }
             }
 
-            // finally the <engineroot>/Gems fallback
-            AZ::IO::Path engineGemsFolder(AZStd::string_view{ AZ::Utils::GetEnginePath() });
-            engineGemsFolder /= "Gems";
-            if (auto it = AZStd::find_if(includePaths.begin(), includePaths.end(), PathCompare(engineGemsFolder));
-                it == includePaths.end())
+            // finally the gem-container fallback: the folder that holds each gem, so an include may name a gem by
+            // its folder, e.g. <Atom_Feature_Common/Assets/...>. This used to be the single <engineroot>/Gems folder,
+            // which assumed every gem lives inside the engine. Gems now sit beside the engine (and may live anywhere),
+            // so derive the containers from the scan folders: <gem>/Assets -> <gem> -> container.
+            auto AddIncludePathIfMissing = [&includePaths, &PathCompare](AZ::IO::Path folder)
             {
-                if (AZ::IO::SystemFile::Exists(engineGemsFolder.c_str()))
+                folder = folder.LexicallyNormal();
+                if (auto it = AZStd::find_if(includePaths.begin(), includePaths.end(), PathCompare(folder));
+                    it == includePaths.end() && AZ::IO::SystemFile::Exists(folder.c_str()))
                 {
-                    includePaths.emplace_back(AZStd::move(engineGemsFolder.Native()));
+                    includePaths.emplace_back(AZStd::move(folder.Native()));
+                }
+            };
+            for (const AZ::IO::Path scanFolder : scanFoldersVector)
+            {
+                if (AZ::IO::SystemFile::Exists((scanFolder / "ShaderLib").c_str()))
+                {
+                    AddIncludePathIfMissing(scanFolder.ParentPath().ParentPath());
                 }
             }
+            // keep the historical <engineroot>/Gems root for engines that still nest their gems
+            AddIncludePathIfMissing(AZ::IO::Path(AZStd::string_view{ AZ::Utils::GetEnginePath() }) / "Gems");
 
             return includePaths;
         }

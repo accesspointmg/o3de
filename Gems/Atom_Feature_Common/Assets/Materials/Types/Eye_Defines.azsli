@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include <Atom/Feature/Common/Assets/Shaders/Materials/MaterialInputs/UvSetCount.azsli>
+#include <Atom_Feature_Common/Assets/Shaders/Materials/MaterialInputs/UvSetCount.azsli>
 
 
 #ifndef PIPELINE_HAS_OBJECT_SRG
@@ -31,11 +31,11 @@
 #include <Atom/Features/Materials/MaterialSrg.azsli>
 
 #if MATERIALPIPELINE_SHADER_HAS_PIXEL_STAGE
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/Eye/Eye_VertexData.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/Eye/Eye_PixelGeometryData.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/Skin/Skin_SurfaceData.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingData.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_LightingBrdf.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/Eye/Eye_VertexData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/Eye/Eye_PixelGeometryData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/Skin/Skin_SurfaceData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_LightingBrdf.azsli>
 #else    
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/DepthPass_VertexData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/DepthPass_VertexData.azsli>
 #endif

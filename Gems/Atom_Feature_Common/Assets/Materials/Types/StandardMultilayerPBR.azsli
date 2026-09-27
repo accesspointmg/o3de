@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include <Atom/Feature/Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_MaterialInputs.azsli>
+#include <Atom_Feature_Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_MaterialInputs.azsli>
 
 // TODO(MaterialPipeline): There is no good reason for StandardMultilayerPBR to have o_opacity_mode, it doesn't support transparency or alpha cutout.
 // It is only needed because the Transparent - Shader needs it, and that shader is part of the "Standard" lighting model. We can't use "Base" lighting 
@@ -18,9 +18,9 @@ option enum class OpacityMode {Opaque, Cutout, Blended, TintedTransparent} o_opa
 
 #if MATERIALPIPELINE_SHADER_HAS_PIXEL_STAGE || MATERIALPIPELINE_SHADER_HAS_GEOMETRIC_PIXEL_STAGE
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_Common.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_Common.azsli>
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/MaterialFunctions/MultilayerParallaxDepth.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/MaterialFunctions/MultilayerParallaxDepth.azsli>
     bool CanHandleParallax()
     {
         // Parallax mapping's non uniform uv transformations break screen space subsurface scattering, disable it when subsurface scattering is enabled.
@@ -65,12 +65,12 @@ option enum class OpacityMode {Opaque, Cutout, Blended, TintedTransparent} o_opa
             ;
     }
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_VertexEval.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_PixelGeometryEval.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_SurfaceEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_VertexEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_PixelGeometryEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_SurfaceEval.azsli>
 
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_LightingEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_LightingEval.azsli>
 
 #elif MATERIALPIPELINE_SHADER_HAS_GEOMETRIC_PIXEL_STAGE
 
@@ -86,8 +86,8 @@ option enum class OpacityMode {Opaque, Cutout, Blended, TintedTransparent} o_opa
         return ShouldHandleParallax();
     }
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_VertexEval.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_PixelGeometryEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_VertexEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardMultilayerPBR/StandardMultilayerPBR_PixelGeometryEval.azsli>
 
     void EvaluateSurface(VsOutput IN, VsSystemValues SV, PixelGeometryData geoData, const MaterialParameters params)
     {
@@ -95,6 +95,6 @@ option enum class OpacityMode {Opaque, Cutout, Blended, TintedTransparent} o_opa
     }
 
 #else
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/DepthPass_VertexEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/DepthPass_VertexEval.azsli>
 
 #endif

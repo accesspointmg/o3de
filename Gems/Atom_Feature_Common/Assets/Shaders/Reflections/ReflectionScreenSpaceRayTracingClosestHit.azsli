@@ -16,7 +16,7 @@
 #define ENABLE_SPECULARAA 0
 
 #include "ReflectionScreenSpaceRayTracingCommon.azsli"
-#include <Atom/RPI/Assets/ShaderLib/Atom/RPI/TangentSpace.azsli>
+#include <Atom_RPI/Assets/ShaderLib/Atom/RPI/TangentSpace.azsli>
 #include <Atom/Features/PBR/Microfacet/Fresnel.azsli>
 
 #include <Atom/Features/FallbackPBRMaterial/MaterialInfoUtil.azsli>

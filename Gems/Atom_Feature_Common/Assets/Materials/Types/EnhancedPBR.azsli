@@ -8,14 +8,14 @@
 
 #pragma once
 
-#include <Atom/Feature/Common/Assets/Shaders/Materials/EnhancedPBR/EnhancedPBR_MaterialInputs.azsli>
+#include <Atom_Feature_Common/Assets/Shaders/Materials/EnhancedPBR/EnhancedPBR_MaterialInputs.azsli>
 
 #if MATERIALPIPELINE_SHADER_HAS_PIXEL_STAGE
     // Subsurface
-    #include "Atom/Feature/Common/Assets/Shaders/Materials/MaterialInputs/SubsurfaceInput.azsli"
+    #include "Atom_Feature_Common/Assets/Shaders/Materials/MaterialInputs/SubsurfaceInput.azsli"
 
     // Transmission
-    #include "Atom/Feature/Common/Assets/Shaders/Materials/MaterialInputs/TransmissionInput.azsli"
+    #include "Atom_Feature_Common/Assets/Shaders/Materials/MaterialInputs/TransmissionInput.azsli"
 
     COMMON_OPTIONS_BASE_COLOR()
     COMMON_OPTIONS_VERTEX_COLOR()
@@ -46,11 +46,11 @@
         return SampleDepthFromHeightmap(heightmap, mapSampler, uv, uv_ddx, uv_ddy);
     }
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/EnhancedPBR/EnhancedPBR_VertexEval.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/EnhancedPBR/EnhancedPBR_PixelGeometryEval.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/EnhancedPBR/EnhancedPBR_SurfaceEval.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/EnhancedPBR/EnhancedPBR_LightingBrdf.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_LightingEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/EnhancedPBR/EnhancedPBR_VertexEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/EnhancedPBR/EnhancedPBR_PixelGeometryEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/EnhancedPBR/EnhancedPBR_SurfaceEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/EnhancedPBR/EnhancedPBR_LightingBrdf.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_LightingEval.azsli>
 
 #elif MATERIALPIPELINE_SHADER_HAS_GEOMETRIC_PIXEL_STAGE
 
@@ -77,14 +77,14 @@
         return SampleDepthFromHeightmap(heightmap, mapSampler, uv, uv_ddx, uv_ddy);
     }
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexEval.azsli>
     
     // For cases where the pixel stage is only calculating geometry (like alpha clipping and parallax PDO), we can use StandardPBR_PixelGeometryData
     // instead of EnhancedPBR_PixelGeometryData because the detail-layer UVS are the only difference and those aren't used for clipping or depth.
 
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_PixelGeometryEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_PixelGeometryEval.azsli>
     
-    #include "Atom/Feature/Common/Assets/Shaders/Materials/MaterialFunctions/StandardGetAlphaAndClip.azsli"
+    #include "Atom_Feature_Common/Assets/Shaders/Materials/MaterialFunctions/StandardGetAlphaAndClip.azsli"
 
     void EvaluateSurface(VsOutput IN, VsSystemValues SV, PixelGeometryData geoData, const MaterialParameters params)
     {
@@ -92,5 +92,5 @@
     }
 
 #else
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/DepthPass_VertexEval.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/DepthPass_VertexEval.azsli>
 #endif

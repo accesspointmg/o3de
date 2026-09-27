@@ -14,7 +14,7 @@
 
 #define AZ_COLLECTING_PARTIAL_SRG_INCLUDES
 // we need all data-types to be fully defined before the first partial srg definition
-#include <Atom/Feature/Common/Assets/ShaderResourceGroups/ViewSrgIncludesAll.azsli>
+#include <Atom_Feature_Common/Assets/ShaderResourceGroups/ViewSrgIncludesAll.azsli>
 #undef AZ_COLLECTING_PARTIAL_SRG_INCLUDES
 
 // this file is from the project, and contains the first partial ViewSrg definition.
@@ -22,5 +22,5 @@
 #include <viewsrg.srgi>
 
 #define AZ_COLLECTING_PARTIAL_SRGS
-#include <Atom/Feature/Common/Assets/ShaderResourceGroups/ViewSrgAll.azsli>
+#include <Atom_Feature_Common/Assets/ShaderResourceGroups/ViewSrgAll.azsli>
 #undef AZ_COLLECTING_PARTIAL_SRGS

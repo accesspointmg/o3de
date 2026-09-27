@@ -40,7 +40,7 @@ float3 GetViewRayDirection(float4x4 projectionInverseMatrix, float4x4 viewInvers
 }
 
 
-#include <Atom/Feature/Common/Assets/Shaders/Materials/MaterialInputs/UvSetCount.azsli>
+#include <Atom_Feature_Common/Assets/Shaders/Materials/MaterialInputs/UvSetCount.azsli>
 // tell the MeshInfoUtil what vertex-data we need
 #define MATERIAL_USES_VERTEX_POSITION 1
 #define MATERIAL_USES_VERTEX_NORMAL 1

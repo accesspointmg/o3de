@@ -11,7 +11,7 @@
 #include <viewsrg_all.srgi>
 #include <Atom/Features/PBR/DefaultObjectSrg.azsli>
 #include <Atom/Features/InstancedTransforms.azsli>
-#include <Atom/Feature/Common/Assets/Shaders/Materials/MaterialInputs/AlphaInput.azsli>
+#include <Atom_Feature_Common/Assets/Shaders/Materials/MaterialInputs/AlphaInput.azsli>
 #include <Atom/RPI/ShaderResourceGroups/UnusedFallbackDrawSrg.azsli>
 
 option bool o_baseColor_useTexture = false;

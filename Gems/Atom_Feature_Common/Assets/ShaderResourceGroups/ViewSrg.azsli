@@ -67,6 +67,6 @@ partial ShaderResourceGroup ViewSrg
     }
 }
 
-#include <Atom/Feature/Common/Assets/ShaderResourceGroups/Decals/ViewSrg.azsli>
-#include <Atom/Feature/Common/Assets/ShaderResourceGroups/CoreLights/ViewSrg.azsli>
-#include <Atom/Feature/Common/Assets/ShaderResourceGroups/PostProcessing/ViewSrg.azsli>
+#include <Atom_Feature_Common/Assets/ShaderResourceGroups/Decals/ViewSrg.azsli>
+#include <Atom_Feature_Common/Assets/ShaderResourceGroups/CoreLights/ViewSrg.azsli>
+#include <Atom_Feature_Common/Assets/ShaderResourceGroups/PostProcessing/ViewSrg.azsli>

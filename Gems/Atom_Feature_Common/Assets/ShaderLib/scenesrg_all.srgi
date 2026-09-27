@@ -18,7 +18,7 @@
 
 #define AZ_COLLECTING_PARTIAL_SRG_INCLUDES
 // we need all data-types to be fully defined before the first partial srg definition
-#include <Atom/Feature/Common/Assets/ShaderResourceGroups/SceneSrgIncludesAll.azsli>
+#include <Atom_Feature_Common/Assets/ShaderResourceGroups/SceneSrgIncludesAll.azsli>
 #undef AZ_COLLECTING_PARTIAL_SRG_INCLUDES
 
 // this file is from the project, and contains the first partial SceneSrg definition.
@@ -27,5 +27,5 @@
 
 #define AZ_COLLECTING_PARTIAL_SRGS
 // Include all partial SceneSrg - definitions from the engine
-#include <Atom/Feature/Common/Assets/ShaderResourceGroups/SceneSrgAll.azsli>
+#include <Atom_Feature_Common/Assets/ShaderResourceGroups/SceneSrgAll.azsli>
 #undef AZ_COLLECTING_PARTIAL_SRGS

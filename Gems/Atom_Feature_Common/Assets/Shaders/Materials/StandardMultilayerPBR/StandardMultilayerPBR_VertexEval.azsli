@@ -12,7 +12,7 @@
 #define EvaluateVertexGeometry  EvaluateVertexGeometry_StandardMultilayerPBR
 #endif
 
-#include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexEval.azsli>
+#include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexEval.azsli>
     
 VsOutput EvaluateVertexGeometry_StandardMultilayerPBR(
     const MaterialParameters params,

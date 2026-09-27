@@ -10,7 +10,7 @@
 #pragma once
 
 #define ENABLE_VERTEX_COLOR 1
-#include <Atom/Feature/Common/Assets/Shaders/Materials/MaterialInputs/UvSetCount.azsli>
+#include <Atom_Feature_Common/Assets/Shaders/Materials/MaterialInputs/UvSetCount.azsli>
 
 #ifndef PIPELINE_HAS_OBJECT_SRG
 #define PIPELINE_HAS_OBJECT_SRG 1
@@ -33,15 +33,15 @@
 #include <Atom/Features/Materials/MaterialSrg.azsli>
 
 #if MATERIALPIPELINE_SHADER_HAS_PIXEL_STAGE
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexData.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_PixelGeometryData.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_SurfaceData.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingData.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_LightingBrdf.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_PixelGeometryData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_SurfaceData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_LightingData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_LightingBrdf.azsli>
 #elif  MATERIALPIPELINE_SHADER_HAS_GEOMETRIC_PIXEL_STAGE
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexData.azsli>
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_PixelGeometryData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/BasePBR/BasePBR_VertexData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/StandardPBR/StandardPBR_PixelGeometryData.azsli>
     
 #else
-    #include <Atom/Feature/Common/Assets/Shaders/Materials/DepthPass_VertexData.azsli>
+    #include <Atom_Feature_Common/Assets/Shaders/Materials/DepthPass_VertexData.azsli>
 #endif
