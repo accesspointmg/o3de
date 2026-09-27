@@ -1,5 +1,6 @@
 {
     "project_name": "AutomatedTesting",
+    "engine": "o3de",
     "product_name": "AutomatedTesting",
     "version": "1.1.0",
     "executable_name": "AutomatedTestingLauncher",

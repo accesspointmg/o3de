@@ -170,6 +170,36 @@ function(ly_generate_project_build_path_setreg project_real_path)
     string(CONFIGURE ${project_build_path_template} project_build_path_setreg_content @ONLY)
     set(project_user_build_path_setreg_file ${project_real_path}/user/Registry/Platform/${PAL_PLATFORM_NAME}/build_path.setreg)
     file(GENERATE OUTPUT ${project_user_build_path_setreg_file} CONTENT "${project_build_path_setreg_content}")
+
+    # A project that is not inside the engine tree cannot find the engine by scanning upward for engine.json.
+    # The runtime's designed override is "engine_path" in <project>/user/project.json, read at engine discovery
+    # (the project must also name its engine in project.json "engine"). The build knows which engine it is
+    # building against, so record it there. Never overwrite a value the user set; nested projects are unaffected.
+    cmake_path(IS_PREFIX LY_ROOT_FOLDER "${project_real_path}" NORMALIZE project_is_inside_engine)
+    if(NOT project_is_inside_engine)
+        set(project_user_json_file ${project_real_path}/user/project.json)
+        set(project_user_json "{}")
+        if(EXISTS ${project_user_json_file})
+            file(READ ${project_user_json_file} project_user_json)
+        endif()
+        string(JSON project_user_json_type ERROR_VARIABLE project_user_json_error TYPE "${project_user_json}")
+        if(project_user_json_error OR NOT project_user_json_type STREQUAL "OBJECT")
+            message(WARNING "Not recording engine_path: ${project_user_json_file} is not a JSON object (${project_user_json_error})")
+        else()
+            string(JSON user_engine_path ERROR_VARIABLE user_engine_path_error GET "${project_user_json}" engine_path)
+            if(user_engine_path_error)
+                string(JSON project_user_json SET "${project_user_json}" engine_path "\"${LY_ROOT_FOLDER}\"")
+                file(WRITE ${project_user_json_file} "${project_user_json}\n")
+            elseif(NOT EXISTS "${user_engine_path}/engine.json")
+                # The recorded engine no longer exists (e.g. the engine moved): replace the stale value
+                string(JSON project_user_json SET "${project_user_json}" engine_path "\"${LY_ROOT_FOLDER}\"")
+                file(WRITE ${project_user_json_file} "${project_user_json}\n")
+            elseif(NOT user_engine_path STREQUAL LY_ROOT_FOLDER)
+                message(WARNING "${project_user_json_file} sets engine_path '${user_engine_path}', which differs from "
+                    "the engine being built (${LY_ROOT_FOLDER}). Leaving it unchanged.")
+            endif()
+        endif()
+    endif()
 endfunction()
 
 function(install_project_asset_artifacts project_real_path)
