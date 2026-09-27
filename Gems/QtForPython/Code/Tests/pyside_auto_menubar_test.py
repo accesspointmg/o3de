@@ -37,7 +37,7 @@ class TestEditorMenuBarAutomation(object):
         request.addfinalizer(editor.ensure_stopped)
 
         editor.deploy()
-        editor.launch(["--runpython", "@engroot@/Gems/QtForPython/Code/Tests/pyside_auto_menubar_test_case.py"])
+        editor.launch(["--runpython", "@gemroot:QtForPython@/Code/Tests/pyside_auto_menubar_test_case.py"])
 
         editorlog_file = os.path.join(editor.workspace.release.paths.project_log(), 'Editor.log')
 
