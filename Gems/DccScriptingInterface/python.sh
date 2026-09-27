@@ -47,7 +47,7 @@ if ! [ -x "$(command -v cmake)" ]; then
 fi
 
 # Calculate the engine ID
-CALC_PATH=$DIR/../../../../cmake/CalculateEnginePathId.cmake
+CALC_PATH=$DIR/../../Engines/o3de/cmake/CalculateEnginePathId.cmake
 LY_ROOT_FOLDER=$DIR/../../../..
 ENGINE_ID=$(cmake -P $CALC_PATH $LY_ROOT_FOLDER)
 if [ $? -ne 0 ]
@@ -84,7 +84,7 @@ fi
 PYTHON_VENV_HASH=$(cat $PYTHON_VENV_HASH_FILE)
 
 # Calculate the expected hash from the current python package
-CURRENT_PYTHON_PACKAGE_HASH=$(cmake -P $DIR/../../../../python/get_python_package_hash.cmake $DIR/.. $PAL $ARCH)
+CURRENT_PYTHON_PACKAGE_HASH=$(cmake -P $DIR/../../Engines/o3de/python/get_python_package_hash.cmake $DIR/.. $PAL $ARCH)
 
 if [ "$PYTHON_VENV_HASH" != "$CURRENT_PYTHON_PACKAGE_HASH" ]
 then

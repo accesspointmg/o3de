@@ -6,6 +6,6 @@
         "patch": 0
     },
     "include": [
-        "../CMakePresets.json"
+        "../../Engines/o3de/CMakePresets.json"
     ]
 }

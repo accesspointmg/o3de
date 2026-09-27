@@ -171,7 +171,7 @@ border-radius: 1px;</string>
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../../../../../Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
+          <iconset resource="../../../../../Engines/o3de/Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
            <normaloff>:/ColorPickerDialog/ColorGrid/toggle-normal-on.svg</normaloff>:/ColorPickerDialog/ColorGrid/toggle-normal-on.svg</iconset>
          </property>
         </widget>
@@ -205,7 +205,7 @@ border-radius: 1px;</string>
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../../../../../Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
+          <iconset resource="../../../../../Engines/o3de/Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
            <normaloff>:/Gallery/Grid-small.svg</normaloff>:/Gallery/Grid-small.svg</iconset>
          </property>
         </widget>
@@ -256,7 +256,7 @@ border-radius: 1px;</string>
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../../../../../Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
+          <iconset resource="../../../../../Engines/o3de/Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
            <normaloff>:/OpenParticleSystem/Icons/Particle.svg</normaloff>:/OpenParticleSystem/Icons/Particle.svg</iconset>
          </property>
         </widget>
@@ -307,7 +307,7 @@ border-radius: 1px;</string>
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../../../../../Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
+          <iconset resource="../../../../../Engines/o3de/Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
            <normaloff>:/stylesheet/img/UI20/toolbar/SketchMode.svg</normaloff>:/stylesheet/img/UI20/toolbar/SketchMode.svg</iconset>
          </property>
         </widget>
@@ -364,7 +364,7 @@ border-radius: 1px;</string>
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../../../../../Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
+          <iconset resource="../../../../../Engines/o3de/Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
            <normaloff>:/stylesheet/img/UI20/toolbar/joints/SwingLimits.svg</normaloff>:/stylesheet/img/UI20/toolbar/joints/SwingLimits.svg</iconset>
          </property>
         </widget>
@@ -415,7 +415,7 @@ border-radius: 1px;</string>
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../../../../../Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
+          <iconset resource="../../../../../Engines/o3de/Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
            <normaloff>:/ColorPickerDialog/ColorGrid/eyedropper-normal.svg</normaloff>:/ColorPickerDialog/ColorGrid/eyedropper-normal.svg</iconset>
          </property>
         </widget>
@@ -466,7 +466,7 @@ border-radius: 1px;</string>
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../../../../../Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
+          <iconset resource="../../../../../Engines/o3de/Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
            <normaloff>:/stylesheet/img/UI20/toolbar/Measure.svg</normaloff>:/stylesheet/img/UI20/toolbar/Measure.svg</iconset>
          </property>
         </widget>
@@ -517,7 +517,7 @@ border-radius: 1px;</string>
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../../../../../Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
+          <iconset resource="../../../../../Engines/o3de/Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
            <normaloff>:/stylesheet/img/UI20/toolbar/joints/MaxForce.svg</normaloff>:/stylesheet/img/UI20/toolbar/joints/MaxForce.svg</iconset>
          </property>
         </widget>
@@ -568,7 +568,7 @@ border-radius: 1px;</string>
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../../../../../Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
+          <iconset resource="../../../../../Engines/o3de/Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
            <normaloff>:/stylesheet/img/UI20/toolbar/Lighting.svg</normaloff>:/stylesheet/img/UI20/toolbar/Lighting.svg</iconset>
          </property>
         </widget>
@@ -619,7 +619,7 @@ border-radius: 1px;</string>
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../../../../../Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
+          <iconset resource="../../../../../Engines/o3de/Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
            <normaloff>:/stylesheet/img/UI20/toolbar/XY2_copy.svg</normaloff>:/stylesheet/img/UI20/toolbar/XY2_copy.svg</iconset>
          </property>
         </widget>
@@ -670,7 +670,7 @@ border-radius: 1px;</string>
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../../../../../Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
+          <iconset resource="../../../../../Engines/o3de/Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
            <normaloff>:/stylesheet/img/logging/pending.svg</normaloff>:/stylesheet/img/logging/pending.svg</iconset>
          </property>
         </widget>
@@ -721,7 +721,7 @@ border-radius: 1px;</string>
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../../../../../Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
+          <iconset resource="../../../../../Engines/o3de/Code/Framework/AzQtComponents/AzQtComponents/Components/resources.qrc">
            <normaloff>:/stylesheet/img/UI20/toolbar/AutoFit.svg</normaloff>:/stylesheet/img/UI20/toolbar/AutoFit.svg</iconset>
          </property>
         </widget>
