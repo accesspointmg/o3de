@@ -299,10 +299,11 @@ print ('entityId invalid is ' + str(entityId.id))
 
         try
         {
+            pybind11::globals()["o3de_tests_folder"] = GetEditorPythonBindingsTestsFolder().c_str();
             pybind11::exec(R"(
                 import sys, os
                 import azlmbr.paths
-                sys.path.append(os.path.join(azlmbr.paths.engroot,'Gems','EditorPythonBindings','Code','Tests'))
+                sys.path.append(o3de_tests_folder)
                 from test_package import import_test as itest
                 print('ImportModule')
                 itest.test_call()
@@ -398,11 +399,12 @@ print ('entityId invalid is ' + str(entityId.id))
 
         try
         {
+            pybind11::globals()["o3de_tests_folder"] = GetEditorPythonBindingsTestsFolder().c_str();
             pybind11::exec(R"(
                 import sys, os
                 import azlmbr.paths
-                sys.path.append(os.path.join(azlmbr.paths.engroot,'Gems','EditorPythonBindings','Code','Tests'))
-                sys.path.append(os.path.join(azlmbr.paths.engroot,'Gems','EditorPythonBindings','Code','Tests','test_package'))
+                sys.path.append(o3de_tests_folder)
+                sys.path.append(os.path.join(o3de_tests_folder, 'test_package'))
 
                 from test_package import import_many
                 import_many.test_many_entity_id()

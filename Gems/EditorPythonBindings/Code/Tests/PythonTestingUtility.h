@@ -27,6 +27,13 @@
 
 namespace UnitTest
 {
+    //! This gem's Code/Tests folder, located from this header's own source path so the tests do not depend on
+    //! where the gem sits relative to the engine root.
+    inline AZ::IO::FixedMaxPath GetEditorPythonBindingsTestsFolder()
+    {
+        return AZ::IO::FixedMaxPath(AZ::IO::PathView(__FILE__).ParentPath());
+    }
+
     struct CommandRegistrationBusSupression
         : public AzFramework::CommandRegistrationBus::Handler
     {

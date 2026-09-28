@@ -219,7 +219,7 @@ sys.version
             return static_cast<int>(LogTypes::Skip);
         };
 
-        AZ::IO::Path filename = AZ::IO::PathView(m_engineRoot / "Gems" / "EditorPythonBindings" / "Code" / "Tests" / "EditorPythonBindingsTest.py");
+        AZ::IO::Path filename = AZ::IO::PathView(GetEditorPythonBindingsTestsFolder() / "EditorPythonBindingsTest.py");
 
         AZ::Entity e;
         e.CreateComponent<EditorPythonBindings::PythonSystemComponent>();
@@ -281,7 +281,7 @@ sys.version
             return static_cast<int>(LogTypes::Skip);
         };
 
-        AZ::IO::Path filename = AZ::IO::PathView(m_engineRoot / "Gems" / "EditorPythonBindings" / "Code" / "Tests" / "EditorPythonBindingsTestWithArgs.py");
+        AZ::IO::Path filename = AZ::IO::PathView(GetEditorPythonBindingsTestsFolder() / "EditorPythonBindingsTestWithArgs.py");
 
         AZ::Entity e;
         e.CreateComponent<EditorPythonBindings::PythonSystemComponent>();
