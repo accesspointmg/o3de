@@ -11,6 +11,7 @@
 #include <native/unittests/AssetProcessorUnitTests.h>
 #include <native/unittests/UnitTestUtils.h> // for the assert absorber.
 #include <native/tests/MockAssetDatabaseRequestsHandler.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 namespace UnitTest
 {
@@ -66,7 +67,7 @@ namespace UnitTest
         auto projectPathKey = bootstrapKey + "/project_path";
         AZ::IO::FixedMaxPath enginePath;
         registry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-        registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+        registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
         AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
         // Forcing the branch token into settings registry before starting the application manager.

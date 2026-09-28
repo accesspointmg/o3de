@@ -23,6 +23,7 @@
 #include <AzFramework/Archive/Archive.h>
 #include <AzFramework/Archive/ArchiveVars.h>
 #include <AzFramework/Archive/INestedArchive.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 namespace UnitTest
 {
@@ -44,7 +45,7 @@ namespace UnitTest
                 AZ::SettingsRegistryInterface::FixedValueString(AZ::SettingsRegistryMergeUtils::BootstrapSettingsRootKey) + "/project_path";
             AZ::IO::FixedMaxPath enginePath;
             registry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-            registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+            registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
             AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
             AZ::ComponentApplication::StartupParameters startupParameters;

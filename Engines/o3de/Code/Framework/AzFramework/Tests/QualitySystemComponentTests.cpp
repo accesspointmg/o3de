@@ -18,6 +18,7 @@
 #include <AzFramework/Quality/QualitySystemComponent.h>
 #include <AzFramework/Quality/QualityCVarGroup.h>
 #include "DeviceAttribute/TestDeviceAttribute.h" 
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 namespace UnitTest
 {
@@ -43,7 +44,7 @@ namespace UnitTest
             auto projectPathKey = FixedValueString(AZ::SettingsRegistryMergeUtils::BootstrapSettingsRootKey) + "/project_path";
             AZ::IO::FixedMaxPath enginePath;
             m_settingsRegistry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-            m_settingsRegistry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+            m_settingsRegistry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
             AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*m_settingsRegistry);
 
             m_console = AZ::Interface<AZ::IConsole>::Get();

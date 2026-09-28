@@ -23,6 +23,7 @@
 #include <tests/UnitTestUtilities.h>
 #include <utilities/UuidManager.h>
 #include <AzToolsFramework/Metadata/MetadataManager.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 namespace AssetProcessor
 {
@@ -129,7 +130,7 @@ namespace AssetProcessor
                 AZ::SettingsRegistryInterface::FixedValueString(AZ::SettingsRegistryMergeUtils::BootstrapSettingsRootKey) + "/project_path";
             AZ::IO::FixedMaxPath enginePath;
             settingsRegistry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-            settingsRegistry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+            settingsRegistry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
             AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*settingsRegistry);
             AssetUtilities::ComputeProjectCacheRoot(m_data->m_cacheRootDir);
             QString normalizedCacheRoot = AssetUtilities::NormalizeDirectoryPath(m_data->m_cacheRootDir.absolutePath());

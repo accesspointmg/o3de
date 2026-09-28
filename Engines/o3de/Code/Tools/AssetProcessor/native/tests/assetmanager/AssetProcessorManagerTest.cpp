@@ -25,6 +25,7 @@
 #include <AzCore/Utils/Utils.h>
 #include <tests/assetmanager/AssetManagerTestingBase.h>
 #include <utilities/ProductOutputUtil.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 using namespace AssetProcessor;
 
@@ -117,7 +118,7 @@ void AssetProcessorManagerTest::SetUp()
         AZ::SettingsRegistryInterface::FixedValueString(AZ::SettingsRegistryMergeUtils::BootstrapSettingsRootKey) + "/project_path";
     AZ::IO::FixedMaxPath enginePath;
     registry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-    registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+    registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
     AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
     m_gameName = AssetUtilities::ComputeProjectName("AutomatedTesting", true);

@@ -33,6 +33,7 @@
 
 #include <Tests/Printers.h>
 #include <Tests/Matchers.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 namespace EMotionFX
 {
@@ -65,7 +66,7 @@ namespace EMotionFX
             {
                 AZ::IO::FixedMaxPath enginePath;
                 settingsRegistry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-                settingsRegistry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+                settingsRegistry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
                 AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*settingsRegistry);
             }
         }

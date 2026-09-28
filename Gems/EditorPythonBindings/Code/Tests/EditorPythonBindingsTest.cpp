@@ -17,6 +17,7 @@
 #include <AzCore/Settings/SettingsRegistryMergeUtils.h>
 #include <AzFramework/StringFunc/StringFunc.h>
 #include <AzToolsFramework/API/EditorPythonRunnerRequestsBus.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 namespace UnitTest
 {
@@ -325,7 +326,7 @@ sys.version
                 + "/project_path";
             AZ::IO::FixedMaxPath enginePath;
             registry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-            registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+            registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
             AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
             m_app.RegisterComponentDescriptor(EditorPythonBindings::PythonSystemComponent::CreateDescriptor());

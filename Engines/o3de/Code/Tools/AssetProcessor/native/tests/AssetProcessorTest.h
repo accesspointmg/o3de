@@ -18,6 +18,7 @@
 #include <AzCore/Component/ComponentApplicationLifecycle.h>
 #include <tests/ApplicationManagerTests.h>
 #include "UnitTestUtilities.h"
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 namespace AssetProcessor
 {
@@ -52,7 +53,7 @@ namespace AssetProcessor
             {
                 AZ::IO::FixedMaxPath enginePath;
                 settingsRegistry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-                settingsRegistry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+                settingsRegistry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
                 AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*settingsRegistry);
 
                 AZ::ComponentApplicationLifecycle::RegisterEvent(*settingsRegistry, "SystemComponentsActivated");

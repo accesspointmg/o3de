@@ -21,6 +21,7 @@
 #include <AzCore/UnitTest/TestTypes.h>
 #include <AzCore/Debug/TraceMessageBus.h>
 #include <AzCore/UserSettings/UserSettingsComponent.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 class AssetBundleComponentTests
     : public UnitTest::LeakDetectionFixture,
@@ -48,7 +49,7 @@ protected:
             AZ::SettingsRegistryInterface::FixedValueString(AZ::SettingsRegistryMergeUtils::BootstrapSettingsRootKey) + "/project_path";
         AZ::IO::FixedMaxPath enginePath;
         registry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-        registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+        registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
         AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
         AZ::ComponentApplication::Descriptor desc;

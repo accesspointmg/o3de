@@ -55,6 +55,7 @@
 #include <UiRadioButtonGroupComponent.h>
 #include <UiParticleEmitterComponent.h>
 #include <UiCanvasManager.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 AZ_TOOLS_UNIT_TEST_HOOK(DEFAULT_UNIT_TEST_ENV);
 
@@ -88,7 +89,7 @@ protected:
             AZ::SettingsRegistryInterface::FixedValueString(AZ::SettingsRegistryMergeUtils::BootstrapSettingsRootKey) + "/project_path";
         AZ::IO::FixedMaxPath enginePath;
         registry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-        registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+        registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
         AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
         AZ::ComponentApplication::StartupParameters startupParameters;

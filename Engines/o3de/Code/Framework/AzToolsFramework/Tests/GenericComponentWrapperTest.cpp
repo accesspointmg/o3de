@@ -14,6 +14,7 @@
 #include <AzToolsFramework/ToolsComponents/GenericComponentWrapper.h>
 #include <AzToolsFramework/Application/ToolsApplication.h>
 #include <AzToolsFramework/API/EntityCompositionRequestBus.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 // Test that editor-components wrapped within a GenericComponentWrapper
 // are moved out of the wrapper when a slice is loaded.
@@ -62,7 +63,7 @@ protected:
             AZ::SettingsRegistryInterface::FixedValueString(AZ::SettingsRegistryMergeUtils::BootstrapSettingsRootKey) + "/project_path";
         AZ::IO::FixedMaxPath enginePath;
         registry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-        registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+        registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
         AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
         AZ::ComponentApplication::StartupParameters startupParameters;
@@ -191,7 +192,7 @@ public:
             AZ::SettingsRegistryInterface::FixedValueString(AZ::SettingsRegistryMergeUtils::BootstrapSettingsRootKey) + "/project_path";
         AZ::IO::FixedMaxPath enginePath;
         registry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-        registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+        registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
         AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
         AZ::ComponentApplication::StartupParameters startupParameters;

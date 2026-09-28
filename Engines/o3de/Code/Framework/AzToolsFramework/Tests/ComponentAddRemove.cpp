@@ -24,6 +24,7 @@
 #include <AzToolsFramework/ToolsComponents/EditorPendingCompositionBus.h>
 #include <AzToolsFramework/ToolsComponents/EditorPendingCompositionComponent.h>
 #include <AzToolsFramework/ToolsComponents/GenericComponentWrapper.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 
 namespace UnitTest
@@ -574,7 +575,7 @@ namespace UnitTest
                 AZ::SettingsRegistryInterface::FixedValueString(AZ::SettingsRegistryMergeUtils::BootstrapSettingsRootKey) + "/project_path";
             AZ::IO::FixedMaxPath enginePath;
             registry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-            registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+            registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
             AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
             AzFramework::Application::Descriptor descriptor;

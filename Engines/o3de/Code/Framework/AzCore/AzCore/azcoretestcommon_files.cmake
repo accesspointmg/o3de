@@ -9,6 +9,7 @@
 set(FILES
     UnitTest/MockComponentApplication.h
     UnitTest/MockComponentApplication.cpp
+    UnitTest/TestProjectPath.h
     UnitTest/UnitTest.h
     UnitTest/TestTypes.h
     UnitTest/Mocks/MockFileIOBase.h

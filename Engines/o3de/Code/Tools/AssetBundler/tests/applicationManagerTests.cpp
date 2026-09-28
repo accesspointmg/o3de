@@ -22,6 +22,7 @@
 #include <source/utils/applicationManager.h>
 #include <AzCore/UnitTest/TestTypes.h>
 #include <tests/main.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 namespace AssetBundler
 {
@@ -68,7 +69,7 @@ namespace AssetBundler
             auto projectPathKey = AZ::SettingsRegistryInterface::FixedValueString(AZ::SettingsRegistryMergeUtils::BootstrapSettingsRootKey)
                 + "/project_path";
             AZ::IO::FixedMaxPath enginePath = AZ::SettingsRegistryMergeUtils::FindEngineRoot(*registry);
-            registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+            registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
             AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
 

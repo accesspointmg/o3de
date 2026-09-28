@@ -22,6 +22,7 @@
 #include <native/tests/MockAssetDatabaseRequestsHandler.h>
 
 #include <gmock/gmock.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 namespace AssetProcessorMessagesTests
 {
@@ -133,7 +134,7 @@ namespace AssetProcessorMessagesTests
             constexpr AZ::SettingsRegistryInterface::FixedValueString projectPathKey{ bootstrapKey + "/project_path" };
             AZ::IO::FixedMaxPath enginePath;
             registry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-            registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+            registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
             AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
             // Force the branch token into settings registry before starting the application manager.

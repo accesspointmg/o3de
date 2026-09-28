@@ -31,6 +31,7 @@
 #include <SceneAPI/SceneCore/Events/SceneSerializationBus.h>
 #include <SceneAPI/SceneCore/Mocks/DataTypes/Groups/MockIGroup.h>
 #include <SceneBuilder/SceneBuilderWorker.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 // This component descriptor allows for a component to be created beforehand,
 // and is then returned when an instance of that component is requested.
@@ -145,7 +146,7 @@ public:
             AZ::SettingsRegistryInterface::FixedValueString(AZ::SettingsRegistryMergeUtils::BootstrapSettingsRootKey) + "/project_path";
         AZ::IO::FixedMaxPath enginePath;
         registry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-        registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+        registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
         AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
         AZ::ComponentApplication::StartupParameters startupParameters;

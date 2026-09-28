@@ -21,6 +21,7 @@
 #include <SceneBuilder/SceneBuilderWorker.h>
 #include <SceneAPI/SceneCore/Events/ExportProductList.h>
 #include <Tests/FileIOBaseTestTypes.h>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 using namespace AZ;
 using namespace SceneBuilder;
@@ -37,7 +38,7 @@ protected:
             AZ::SettingsRegistryInterface::FixedValueString(AZ::SettingsRegistryMergeUtils::BootstrapSettingsRootKey) + "/project_path";
         AZ::IO::FixedMaxPath enginePath;
         registry->Get(enginePath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_EngineRootFolder);
-        registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+        registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
         AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
         AZ::ComponentApplication::StartupParameters startupParameters;

@@ -24,6 +24,7 @@
 #include <source/utils/applicationManager.h>
 
 #include <QApplication>
+#include <AzCore/UnitTest/TestProjectPath.h>
 
 extern char g_cachedEngineRoot[AZ_MAX_PATH_LEN];
 
@@ -107,7 +108,7 @@ namespace AssetBundler
             auto projectPathKey = AZ::SettingsRegistryInterface::FixedValueString(AZ::SettingsRegistryMergeUtils::BootstrapSettingsRootKey)
                 + "/project_path";
             AZ::IO::FixedMaxPath enginePath = AZ::SettingsRegistryMergeUtils::FindEngineRoot(*registry);
-            registry->Set(projectPathKey, (enginePath / "AutomatedTesting").Native());
+            registry->Set(projectPathKey, ::UnitTest::GetTestProjectPath(enginePath, "AutomatedTesting").Native());
             AZ::SettingsRegistryMergeUtils::MergeSettingsToRegistry_AddRuntimeFilePaths(*registry);
 
             AZ::IO::FixedMaxPath executableDirectory = AZ::Utils::GetExecutableDirectory();
