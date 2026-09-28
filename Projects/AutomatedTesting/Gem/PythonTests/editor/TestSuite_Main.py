@@ -23,7 +23,7 @@ class TestAutomationNoAutoTestMode(EditorTestSuite):
 
     # Helper for test level cleanup
     def cleanup_test_level(self, workspace):
-        file_system.delete([os.path.join(workspace.paths.engine_root(), "AutomatedTesting", "Levels", "tmp_level")],
+        file_system.delete([os.path.join(workspace.paths.project(), "Levels", "tmp_level")],
                            True, True)
 
     @pytest.mark.skip(reason="Skipped for intermittently failing.")
@@ -108,9 +108,9 @@ class TestAutomation(EditorTestSuite):
     # These tests require no UI interaction or modal dialog interactions
 
     def cleanup_temp_levels(self, workspace):
-        file_system.delete([os.path.join(workspace.paths.engine_root(), "AutomatedTesting", "Levels", "tmp_level_1")],
+        file_system.delete([os.path.join(workspace.paths.project(), "Levels", "tmp_level_1")],
                         True, True)
-        file_system.delete([os.path.join(workspace.paths.engine_root(), "AutomatedTesting", "Levels", "tmp_level_2")],
+        file_system.delete([os.path.join(workspace.paths.project(), "Levels", "tmp_level_2")],
                         True, True)
 
     class test_EditorWorkflow_ParentEntityTransform_Affects_ChildEntityTransform(EditorBatchedTest):

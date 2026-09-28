@@ -19,7 +19,7 @@ class TestAutomation(EditorTestSuite):
 
     # Helpers for test asset cleanup
     def cleanup_test_level(self, workspace):
-        file_system.delete([os.path.join(workspace.paths.engine_root(), "AutomatedTesting", "Levels", "tmp_level")],
+        file_system.delete([os.path.join(workspace.paths.project(), "Levels", "tmp_level")],
                            True, True)
 
     class test_AltitudeFilter_Component(EditorBatchedTest):

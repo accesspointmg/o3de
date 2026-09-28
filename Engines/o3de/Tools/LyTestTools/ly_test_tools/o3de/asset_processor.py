@@ -727,10 +727,12 @@ class AssetProcessor(object):
             if not os.path.isdir(make_dir):
                 os.makedirs(make_dir, exist_ok=True)
         for copyfile_name in ['Registry/AssetProcessorPlatformConfig.setreg',
-                              os.path.join(self._workspace.project, "project.json"),
                               os.path.join('Assets', 'Engine', 'exclude.filetag')]:
             shutil.copyfile(os.path.join(self._workspace.paths.engine_root(), copyfile_name),
                             os.path.join(self._temp_asset_root, copyfile_name))
+        # The project need not live inside the engine root; take its project.json from the resolved project path
+        shutil.copyfile(os.path.join(self._workspace.paths.project(), "project.json"),
+                        os.path.join(self._temp_asset_root, self._workspace.project, "project.json"))
 
     def delete_temp_asset_root(self):
         """

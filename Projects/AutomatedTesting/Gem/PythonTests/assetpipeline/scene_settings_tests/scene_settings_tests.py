@@ -15,9 +15,9 @@ import tempfile
 
 def cleanup_test_files(workspace, test_file_names):
     for test_file_name in test_file_names:
-        file_system.delete([os.path.join(workspace.paths.engine_root(), "AutomatedTesting", test_file_name)],
+        file_system.delete([os.path.join(workspace.paths.project(), test_file_name)],
                             True, True)
-        file_system.delete([os.path.join(workspace.paths.engine_root(), "AutomatedTesting", test_file_name +".assetinfo")],
+        file_system.delete([os.path.join(workspace.paths.project(), test_file_name +".assetinfo")],
                             True, True)
 
 
@@ -25,7 +25,7 @@ def setup_test_files(workspace, test_file_names):
     cleanup_test_files(workspace, test_file_names)
     for test_file_name in test_file_names:
         test_file_source = os.path.join(os.path.dirname(os.path.abspath(__file__)), test_file_name)
-        test_file_destination = os.path.join(workspace.paths.engine_root(), "AutomatedTesting", test_file_name)
+        test_file_destination = os.path.join(workspace.paths.project(), test_file_name)
         shutil.copyfile(test_file_source, test_file_destination)
 
 
