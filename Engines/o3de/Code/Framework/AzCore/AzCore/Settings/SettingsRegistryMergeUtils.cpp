@@ -21,6 +21,7 @@
 #include <AzCore/Settings/SettingsRegistryMergeUtils.h>
 #include <AzCore/Settings/SettingsRegistryVisitorUtils.h>
 #include <AzCore/std/string/conversions.h>
+#include <AzCore/StringFunc/StringFunc.h>
 #include <AzCore/Utils/Utils.h>
 #include <AzCore/Dependency/Dependency.h>
 #include <AzCore/Outcome/Outcome.h>
@@ -167,6 +168,23 @@ namespace AZ::Internal
             if (AZ::IO::SystemFile::Exists((rootCandidate / rootFileToLocate).c_str()))
             {
                 return rootCandidate;
+            }
+
+            // A build tree outside the source tree records the directory holding rootFileToLocate in
+            // <rootFileToLocate>.location (written at configure time, e.g. <build>/engine.json.location).
+            // Honor it only if the named directory really contains rootFileToLocate.
+            AZ::IO::FixedMaxPath locationFile = rootCandidate / rootFileToLocate;
+            locationFile.Native() += ".location";
+            if (AZ::IO::SystemFile::Exists(locationFile.c_str()))
+            {
+                if (auto contents = AZ::Utils::ReadFile<AZStd::string>(locationFile.Native()); contents.IsSuccess())
+                {
+                    const AZ::IO::FixedMaxPath locatedRoot{ AZ::StringFunc::TrimWhiteSpace(contents.GetValue(), true, true) };
+                    if (!locatedRoot.empty() && AZ::IO::SystemFile::Exists((locatedRoot / rootFileToLocate).c_str()))
+                    {
+                        return locatedRoot;
+                    }
+                }
             }
 
             // Note for posix filesystems the parent directory of '/' is '/' and for windows
