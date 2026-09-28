@@ -83,7 +83,19 @@ function(ly_install_directory)
             endif()
             # take out the last directory since install asks for the destination of the folder, without including the fodler itself
             cmake_path(GET ly_install_directory_DESTINATION PARENT_PATH ly_install_directory_DESTINATION)
-            cmake_path(RELATIVE_PATH ly_install_directory_DESTINATION BASE_DIRECTORY ${LY_ROOT_FOLDER})       
+            cmake_path(IS_PREFIX LY_ROOT_FOLDER "${ly_install_directory_DESTINATION}" NORMALIZE destination_is_inside_engine)
+            if(destination_is_inside_engine)
+                cmake_path(RELATIVE_PATH ly_install_directory_DESTINATION BASE_DIRECTORY ${LY_ROOT_FOLDER})
+            else()
+                # Outside the engine root (e.g. a gem beside the engine): use the install layout's
+                # External/<root-subdirectory>/<relative-path> mapping for external subdirectories,
+                # instead of an engine-relative '../..' path that would escape the install prefix
+                ly_get_root_subdirectory_which_is_parent(${ly_install_directory_DESTINATION} destination_root)
+                cmake_path(RELATIVE_PATH ly_install_directory_DESTINATION BASE_DIRECTORY ${destination_root} OUTPUT_VARIABLE destination_relative)
+                cmake_path(GET destination_root FILENAME destination_root_name)
+                set(ly_install_directory_DESTINATION "External/${destination_root_name}/${destination_relative}")
+                cmake_path(NORMAL_PATH ly_install_directory_DESTINATION)
+            endif()
         endif()
 
         unset(exclude_patterns)

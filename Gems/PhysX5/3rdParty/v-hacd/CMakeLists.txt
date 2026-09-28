@@ -33,5 +33,5 @@ ly_install_files(
     FILES
         LICENSE.txt
         PackageInfo.json
-    DESTINATION Gems/PhysX/Core/PhysX5/3rdParty/v-hacd
+    DESTINATION External/PhysX5/3rdParty/v-hacd
 )
