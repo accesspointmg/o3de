@@ -1,0 +1,5 @@
+# Engine-root artifacts: the engine object is no longer the repository root, so the root
+# .gitignore anchors (/[Bb]uild, /[Ii]nstall/, /imgui.ini) no longer reach them.
+/[Bb]uild
+/[Ii]nstall/
+/imgui.ini
