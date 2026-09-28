@@ -81,7 +81,7 @@ class TestsAssetProcessorGUI(object):
         # Wait for AP to have finished processing
         asset_processor.wait_for_idle()
 
-        path_to_test_asset = os.path.join(workspace.paths.engine_root(), "Gems", "TestAssetBuilder", "Assets", "GenericAssetBuilderAssets", "asset_with_dependencies.auto_test_depasset")
+        path_to_test_asset = os.path.join(workspace.paths.gem("TestAssetBuilder"), "Assets", "GenericAssetBuilderAssets", "asset_with_dependencies.auto_test_depasset")
         path_to_output_dir = setup_temp_dir()
         result, _ = asset_processor.run_builder(extra_params=
                  ["-debug", path_to_test_asset,

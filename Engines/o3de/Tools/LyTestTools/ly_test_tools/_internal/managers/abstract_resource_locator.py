@@ -46,6 +46,39 @@ def _find_engine_root(initial_path):
     raise exceptions.LyTestToolsFrameworkException(f"Unable to find engine root directory. Verify root file '{root_file}' exists")
 
 
+def _find_gem_path(engine_root, gem_name, project_path=None):
+    # type (str, str, str) -> str
+    """
+    Find the directory of a gem by its gem_name.
+
+    Gems are resolved from the "external_subdirectories" declared by the engine's engine.json and, when given,
+    the project's project.json; those paths are relative to the declaring object and may point outside the
+    engine root. Falls back to <engine_root>/Gems/<gem_name> for engines that nest their gems.
+
+    :param engine_root: The root of the O3DE directory where engine.json exists
+    :param gem_name: The gem_name of the gem
+    :param project_path: Optional project directory whose project.json also declares gems
+    :return: Full path to the gem directory
+    """
+    declarers = [(engine_root, 'engine.json')]
+    if project_path:
+        declarers.append((project_path, 'project.json'))
+    for declarer_root, declarer_file in declarers:
+        declarer_json = os.path.join(declarer_root, declarer_file)
+        if not os.path.isfile(declarer_json):
+            continue
+        with open(declarer_json, "r") as declarer_json_file:
+            subdirectories = json.load(declarer_json_file).get("external_subdirectories", [])
+        for subdirectory in subdirectories:
+            candidate = os.path.normpath(os.path.join(declarer_root, subdirectory))
+            gem_json = os.path.join(candidate, 'gem.json')
+            if os.path.isfile(gem_json):
+                with open(gem_json, "r") as gem_json_file:
+                    if json.load(gem_json_file).get("gem_name") == gem_name:
+                        return candidate
+    return os.path.join(engine_root, 'Gems', gem_name)
+
+
 def _find_project_json(engine_root, project):
     # type (str, str) -> str
     """
@@ -162,6 +195,15 @@ class AbstractResourceLocator(object):
         :return: path to the project directory
         """
         return os.path.dirname(self._project_json)
+
+    def gem(self, gem_name):
+        """
+        Return path to a gem's directory, resolved from the gems the engine and project declare.
+        ex. engine_root/Gems/<gem> for nested gems, or wherever engine.json points for gems beside the engine.
+        :param gem_name: The gem_name of the gem
+        :return: path to the gem directory
+        """
+        return _find_gem_path(self._engine_root, gem_name, self.project())
 
     def project_settings(self):
         """

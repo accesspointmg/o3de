@@ -49,6 +49,24 @@ class TestFindEngineRoot(object):
             abstract_resource_locator._find_engine_root(mock_initial_path)
 
 
+class TestFindGemPath(object):
+
+    @mock.patch('os.path.isfile', mock.MagicMock(side_effect=[True, True]))
+    @mock.patch('builtins.open', mock.mock_open())
+    @mock.patch('json.load', mock.MagicMock(side_effect=[{'external_subdirectories': ['../../Gems/MockGem']},
+                                                        {'gem_name': 'MockGem'}]))
+    def test_FindGemPath_DeclaredBesideEngine_ReturnsDeclaredPath(self):
+        gem = abstract_resource_locator._find_gem_path(mock_engine_root, 'MockGem')
+
+        assert gem == os.path.normpath(os.path.join(mock_engine_root, '../../Gems/MockGem'))
+
+    @mock.patch('os.path.isfile', mock.MagicMock(return_value=False))
+    def test_FindGemPath_NotDeclared_ReturnsNestedFallback(self):
+        gem = abstract_resource_locator._find_gem_path(mock_engine_root, 'MockGem')
+
+        assert gem == os.path.join(mock_engine_root, 'Gems', 'MockGem')
+
+
 @mock.patch('builtins.open', mock.MagicMock())
 class TestFindProjectJson(object):
 
